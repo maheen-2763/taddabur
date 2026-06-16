@@ -1,0 +1,313 @@
+/* public/css/tafsir-page.css */
+
+/* ════════════════════════════════════
+   TAFSIR PAGE LAYOUT
+════════════════════════════════════ */
+.tafsir-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1rem 5rem;
+}
+
+/* ════════════════════════════════════
+   BREADCRUMB
+════════════════════════════════════ */
+.tafsir-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.tafsir-breadcrumb a {
+    color: var(--emerald);
+    text-decoration: none;
+    transition: color 0.15s;
+}
+
+.tafsir-breadcrumb a:hover {
+    color: var(--gold);
+}
+
+.tafsir-breadcrumb .sep {
+    color: var(--border);
+    font-size: 0.65rem;
+}
+
+/* ════════════════════════════════════
+   AYAH CARD (top section)
+════════════════════════════════════ */
+.tafsir-ayah-card {
+    background: var(--cream-dark);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Gold accent line at top */
+.tafsir-ayah-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), var(--emerald));
+}
+
+.tafsir-ayah-ref {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+}
+
+.tafsir-ref-badge {
+    background: rgba(27, 94, 59, 0.1);
+    color: var(--emerald);
+    border: 1px solid rgba(27, 94, 59, 0.15);
+    border-radius: 50px;
+    padding: 0.25rem 0.85rem;
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+}
+
+.tafsir-back-btn {
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: color 0.15s;
+}
+
+.tafsir-back-btn:hover {
+    color: var(--emerald);
+}
+
+/* Arabic ayah text */
+.tafsir-arabic {
+    font-family: "Scheherazade New", "Amiri", serif;
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    direction: rtl;
+    text-align: right;
+    color: var(--emerald-dark);
+    line-height: 2.4;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+/* Translation text */
+.tafsir-translation {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+    line-height: 1.85;
+    font-style: italic;
+    padding-left: 0.75rem;
+    border-left: 2px solid var(--border);
+}
+
+/* ════════════════════════════════════
+   TAFSIR SELECTOR
+════════════════════════════════════ */
+.tafsir-selector-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.tafsir-selector-label {
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    text-transform: uppercase;
+}
+
+.tafsir-selector {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--cream-dark);
+    color: var(--ink);
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
+    cursor: pointer;
+    outline: none;
+    min-width: 220px;
+}
+
+.tafsir-selector:focus {
+    border-color: var(--gold);
+}
+
+/* ════════════════════════════════════
+   TAFSIR CONTENT CARD
+════════════════════════════════════ */
+.tafsir-content-card {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.tafsir-content-header {
+    background: rgba(27, 94, 59, 0.04);
+    border-bottom: 1px solid var(--border);
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.tafsir-scholar-info {
+    flex-grow: 1;
+}
+
+.tafsir-scholar-name {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    color: var(--emerald-dark);
+    margin-bottom: 0.1rem;
+}
+
+.tafsir-scholar-period {
+    font-size: 0.78rem;
+    color: var(--muted);
+}
+
+.tafsir-scholar-arabic {
+    font-family: "Amiri", serif;
+    font-size: 1.4rem;
+    color: var(--gold-dark);
+    direction: rtl;
+}
+
+/* Tafsir body text */
+.tafsir-body {
+    padding: 1.75rem 1.5rem;
+    font-size: 0.95rem;
+    line-height: 2;
+    color: var(--ink);
+}
+
+.tafsir-body p {
+    margin-bottom: 1rem;
+}
+
+.tafsir-body p:last-child {
+    margin-bottom: 0;
+}
+
+/* Inline Quran references */
+.tafsir-body .quran-ref {
+    color: var(--emerald);
+    font-style: italic;
+    font-weight: 500;
+}
+
+/* ════════════════════════════════════
+   LOADING STATE
+════════════════════════════════════ */
+.tafsir-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 3rem;
+    color: var(--muted);
+    font-size: 0.88rem;
+}
+
+/* ════════════════════════════════════
+   NAVIGATION (Prev / Next Ayah)
+════════════════════════════════════ */
+.tafsir-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    gap: 1rem;
+}
+
+.tafsir-nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: all 0.2s;
+}
+
+.tafsir-nav-btn:hover {
+    border-color: var(--emerald);
+    color: var(--emerald);
+    background: rgba(27, 94, 59, 0.04);
+}
+
+.tafsir-nav-center {
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--muted);
+}
+
+/* ════════════════════════════════════
+   NOT AVAILABLE STATE
+════════════════════════════════════ */
+.tafsir-unavailable {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    color: var(--muted);
+}
+
+.tafsir-unavailable-icon {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 0.75rem;
+    opacity: 0.3;
+}
+
+/* ════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════ */
+@media (max-width: 576px) {
+    .tafsir-page {
+        padding: 1rem 0.75rem 4rem;
+    }
+    .tafsir-ayah-card {
+        padding: 1.25rem;
+    }
+    .tafsir-body {
+        padding: 1.25rem;
+    }
+    .tafsir-arabic {
+        font-size: 1.4rem;
+    }
+    .tafsir-nav {
+        flex-direction: column;
+    }
+    .tafsir-nav-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

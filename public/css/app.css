@@ -1,0 +1,14 @@
+.badge-free {
+    background: rgba(27, 94, 59, 0.1);
+    color: var(--emerald);
+}
+
+.badge-basic {
+    background: rgba(180, 130, 40, 0.1);
+    color: var(--gold);
+}
+
+.badge-premium {
+    background: linear-gradient(135deg, var(--emerald), var(--gold));
+    color: white;
+}
