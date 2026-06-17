@@ -13,7 +13,7 @@
             </div>
 
             <small class="text-muted">
-                🔥 Day Streak
+                🔥 Streak
             </small>
         </div>
 
@@ -33,7 +33,7 @@
             </div>
 
             <small class="text-muted">
-                📖 Surah Completed
+                🕌 Surah Completed
             </small>
         </div>
 
@@ -45,7 +45,7 @@
             </div>
 
             <small class="text-muted">
-                📚 Stories
+                📚 Stories Read
             </small>
         </div>
         <hr>

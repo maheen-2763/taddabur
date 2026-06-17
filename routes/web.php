@@ -255,4 +255,8 @@ Route::get(
 )->name('reflections.show');
 
 
+Route::get('/time-test', function () {
+    return now();
+});
+
 require __DIR__ . '/auth.php';

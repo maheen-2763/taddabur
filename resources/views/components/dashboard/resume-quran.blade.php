@@ -36,11 +36,11 @@
         <div class="mb-3">
 
             <div class="fw-semibold">
-                {{ $surah->name_transliteration }}
+                Surah: {{ $surah->name_transliteration }}
             </div>
 
             <small class="text-muted">
-                Ayah {{ $ayahPosition }} of {{ $totalAyahs }}
+                Ayah: {{ $ayahPosition }} of {{ $totalAyahs }}
             </small>
 
         </div>
