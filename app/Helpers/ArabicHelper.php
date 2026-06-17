@@ -25,4 +25,24 @@ class ArabicHelper
     {
         return Hijri::Date('j F Y') . ' هـ';
     }
+
+    public static function stripBismillah(string $text): string
+    {
+        $patterns = [
+            'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ',
+            'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
+            'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ',
+        ];
+
+        foreach ($patterns as $pattern) {
+
+            if (str_starts_with($text, $pattern)) {
+                return trim(
+                    mb_substr($text, mb_strlen($pattern))
+                );
+            }
+        }
+
+        return $text;
+    }
 }

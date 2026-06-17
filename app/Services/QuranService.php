@@ -220,20 +220,21 @@ class QuranService
             [
                 'user_id' => $user->id,
                 'story_id' => null,
-            ],
-            [
-                'last_read_at' => now(),
-                'last_ayah_id' => $ayah->id,
             ]
         );
 
-        $progress->update([
-            'last_ayah_id' => $ayah->id,
-        ]);
-
+        // Calculate streak using previous read date
         $progress->updateStreak();
-    }
 
+        // Refresh model from DB
+        $progress->refresh();
+
+        // Update activity
+        $progress->last_ayah_id = $ayah->id;
+        $progress->last_read_at = now();
+
+        $progress->save();
+    }
     // -------------------------------------------------------
     // GET USER'S QURAN PROGRESS
     // -------------------------------------------------------

@@ -1,11 +1,11 @@
-<div class="card-islamic p-4 mb-4">
+<div class="card-islamic p-4 mb-3">
 
-    <h5 class="heading-font mb-4">
+    <h5 class="heading-font mb-3">
         <i class="bi bi-graph-up me-2"></i>
         Your Progress
     </h5>
 
-    <div class="row text-center g-4">
+    <div class="row text-center g-3">
 
         <div class="col-6">
             <div class="stat-number">
@@ -49,6 +49,13 @@
             </small>
         </div>
         <hr>
+        @php
+            $completion = round((($stats['totalAyahsRead'] ?? 0) / 6236) * 100, 1);
+        @endphp
+
+        <div class="small text-muted">
+            {{ $completion }}% Complete
+        </div>
 
         <div class="text-center">
             <div class="fw-bold">

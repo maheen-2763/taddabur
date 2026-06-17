@@ -18,8 +18,8 @@
                 $progressPercentage = $totalChapters ? round(($currentChapter / $totalChapters) * 100) : 0;
 
                 $categoryIcons = [
-                    'prophet' => 'ﷺ',
-                    'companion' => '۞',
+                    'prophet' => '🕌',
+                    'companion' => '🤝',
                     'general' => '✦',
                 ];
 

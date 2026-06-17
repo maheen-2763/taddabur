@@ -15,7 +15,6 @@ class ReadingProgress extends Model
     protected $fillable = [
         'user_id',
         'last_ayah_id',
-        'quran_ayahs_read',
         'story_id',
         'last_chapter_id',
         'reading_streak_days',
@@ -61,20 +60,30 @@ class ReadingProgress extends Model
         $today = now()->toDateString();
         $yesterday = now()->subDay()->toDateString();
 
-        if ($this->last_read_at?->toDateString() === $today) {
-            // Already read today — no change needed
+        if (!$this->last_read_at) {
+
+            $this->reading_streak_days = 1;
+            $this->save();
+
             return;
         }
 
-        if ($this->last_read_at?->toDateString() === $yesterday) {
-            // Read yesterday — extend streak
-            $this->increment('reading_streak_days');
-        } else {
-            // Missed a day — reset streak to 1
-            $this->update(['reading_streak_days' => 1]);
+        $lastReadDate = $this->last_read_at->toDateString();
+
+        if ($lastReadDate === $today) {
+            return;
         }
 
-        $this->update(['last_read_at' => now()]);
+        if ($lastReadDate === $yesterday) {
+
+            $this->reading_streak_days++;
+            $this->save();
+
+            return;
+        }
+
+        $this->reading_streak_days = 1;
+        $this->save();
     }
 
     // Quran completion percentage

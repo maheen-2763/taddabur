@@ -9,8 +9,7 @@
         <div class="d-flex justify-content-between align-items-start mb-4">
 
             <h5 class="heading-font mb-0" style="color:var(--gold-light)">
-                <i class="bi bi-sun me-2"></i>
-                Today's Reflection
+                ۞ Today's Reflection
             </h5>
 
             <small dir="rtl" style="color:rgba(255,255,255,.6)">
@@ -20,18 +19,22 @@
         </div>
 
         {{-- Bismillah --}}
-        <div class="text-center mb-4">
 
-            <div class="arabic-sm" style="opacity:.8">
-                بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيمِ
+        @if ($dailyContent->ayah->surah->number !== 9)
+            <div class="text-center mb-4">
+
+                <div class="arabic-sm" style="opacity:.8">
+                    بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيمِ
+                </div>
+
             </div>
+        @endif
 
-        </div>
 
         {{-- Ayah --}}
         <p class="arabic text-center mb-3" style="font-size:1.8rem; line-height:2.3; color:rgba(255,255,255,.95);">
 
-            {{ $dailyContent->ayah->text_arabic }}
+            ﴿ {{ $dailyContent->ayah->text_arabic }} ﴾
 
         </p>
 

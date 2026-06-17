@@ -26,7 +26,6 @@
     | The Bismillah text that appears at start of ayah 1
     | in the database for most surahs
     */
-    $bismillahText = 'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ';
 
     $showBismillahTop = !in_array($surah->number, [1, 9]);
 
@@ -289,9 +288,9 @@
                         $ayahText = $ayah->text_arabic;
 
                         if ($showBismillahTop && $ayah->number === 1) {
-                            // Strip Bismillah from start of ayah 1
-                            $ayahText = trim(str_replace($bismillahText, '', $ayahText));
+                            $ayahText = \App\Helpers\ArabicHelper::stripBismillah($ayahText);
                         }
+
                     @endphp
 
                     <div class="ayah-card {{ $ayah->number === $lastAyahNumber ? 'last-read' : '' }}"
