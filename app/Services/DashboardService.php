@@ -82,36 +82,82 @@ class DashboardService
     private function getAchievement(int $ayahsRead): array
     {
         $levels = [
-            500 => 'Beginning the Journey',
-            1000 => 'Knowledge Seeker',
-            3000 => 'Ayah Explorer',
-            5000 => 'Advanced Seeker',
-            6236 => 'Quran Completer',
+            [
+                'goal' => 10,
+                'title' => 'First Steps',
+                'arabic' => 'بِسْمِ اللّٰهِ',
+                'icon' => '🌱',
+            ],
+            [
+                'goal' => 50,
+                'title' => 'Seeker of Guidance',
+                'arabic' => 'طَالِبُ الْهُدَى',
+                'icon' => '🕊️',
+            ],
+            [
+                'goal' => 100,
+                'title' => 'Companion of the Quran',
+                'arabic' => 'صَاحِبُ الْقُرْآن',
+                'icon' => '📖',
+            ],
+            [
+                'goal' => 500,
+                'title' => 'Student of Revelation',
+                'arabic' => 'طَالِبُ الْوَحْي',
+                'icon' => '🌙',
+            ],
+            [
+                'goal' => 1000,
+                'title' => 'Keeper of Ayat',
+                'arabic' => 'حَافِظُ الْآيَات',
+                'icon' => '⭐',
+            ],
+            [
+                'goal' => 3000,
+                'title' => 'Walker of Light',
+                'arabic' => 'سَالِكُ النُّور',
+                'icon' => '✨',
+            ],
+            [
+                'goal' => 5000,
+                'title' => 'Bearer of Wisdom',
+                'arabic' => 'حَامِلُ الْحِكْمَة',
+                'icon' => '🏆',
+            ],
+            [
+                'goal' => 6236,
+                'title' => 'Quran Completer',
+                'arabic' => 'خَاتِمُ الْقُرْآن',
+                'icon' => '👑',
+            ],
         ];
 
-        $title = 'Beginning the Journey';
-        $nextGoal = null;
+        $current = $levels[0];
+        $next = null;
 
-        foreach ($levels as $goal => $name) {
-
-            if ($ayahsRead >= $goal) {
-                $title = $name;
+        foreach ($levels as $level) {
+            if ($ayahsRead >= $level['goal']) {
+                $current = $level;
             } else {
-                $nextGoal = $goal;
+                $next = $level;
                 break;
             }
         }
 
         return [
-            'title' => $title,
+            'title' => $current['title'],
+            'arabic' => $current['arabic'],
+            'icon' => $current['icon'],
             'ayahsRead' => $ayahsRead,
-            'nextGoal' => $nextGoal,
-            'remaining' => $nextGoal
-                ? max(0, $nextGoal - $ayahsRead)
+            'nextGoal' => $next['goal'] ?? null,
+            'remaining' => $next
+                ? max(0, $next['goal'] - $ayahsRead)
                 : 0,
+            'progress' => $next
+                ? round(($ayahsRead / $next['goal']) * 100)
+                : 100,
         ];
     }
-
     private function getCompletedSurahsCount(User $user): int
     {
         return SurahProgress::where('user_id', $user->id)
