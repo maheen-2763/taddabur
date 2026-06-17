@@ -22,12 +22,12 @@
             <small class="text-muted d-block mb-2">
                 Last read
                 @if ($quranProgress->last_read_at)
-                    • {{ $quranProgress->last_read_at?->format('d M Y, h:i A') }}
+                    • {{ $quranProgress->last_read_at?->diffForHumans() }}
                 @endif
             </small>
 
             <p class="arabic-sm mb-3">
-                {{ $ayah->text_arabic }}
+                ﴿ {{ $ayah->text_arabic }}﴾
             </p>
 
         </div>

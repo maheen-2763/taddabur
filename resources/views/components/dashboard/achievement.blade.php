@@ -1,8 +1,7 @@
 <div class="card-islamic p-4">
 
-    <h5 class="heading-font mb-4">
-        <i class="bi bi-award-fill me-2"></i>
-        Quran Achievement
+    <h5 class="heading-font mb-3">
+        ❋ Quran Achievement
     </h5>
 
     <div class="text-center">

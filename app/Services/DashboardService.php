@@ -67,7 +67,8 @@ class DashboardService
     public function getCurrentStreak(User $user): int
     {
         return ReadingProgress::where('user_id', $user->id)
-            ->max('reading_streak_days') ?? 0;
+            ->whereNull('story_id')
+            ->value('reading_streak_days') ?? 0;
     }
 
     // --------------------------
@@ -134,6 +135,7 @@ class DashboardService
 
         $current = $levels[0];
         $next = null;
+        $previousGoal = $current['goal'];
 
         foreach ($levels as $level) {
             if ($ayahsRead >= $level['goal']) {
@@ -153,9 +155,16 @@ class DashboardService
             'remaining' => $next
                 ? max(0, $next['goal'] - $ayahsRead)
                 : 0,
+
+
             'progress' => $next
-                ? round(($ayahsRead / $next['goal']) * 100)
+                ? round(
+                    (($ayahsRead - $previousGoal)
+                        / ($next['goal'] - $previousGoal))
+                        * 100
+                )
                 : 100,
+
         ];
     }
     private function getCompletedSurahsCount(User $user): int
