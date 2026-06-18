@@ -7,7 +7,6 @@ let currentAyahId = null;
 let currentWordCount = 0;
 let wordHighlightTimer = null;
 let currentAudioBtn = null;
-let listenedAyahs = new Set();
 
 // These are set by the blade via window object
 // window.QURAN_CONFIG = { surahNumber, totalAyahs, ... }
@@ -31,18 +30,31 @@ window.addEventListener("scroll", () => {
 
 // ════════════════════════════════════════════
 // SIDEBAR — Highlight current ayah
-// ════════════════════════════════════════════
+// ═══════════════════════════════════════════
+//
+// ✅ FIX: getBoundingClientRect().bottom gives the
+//         REAL position of toolbar's bottom edge on
+//         screen right now — not a hardcoded guess.
+//         offsetHeight was wrong because it doesn't
+//         account for sticky positioning + scroll.
+//
 function updateSidebarActive() {
     const cards = document.querySelectorAll(".ayah-card");
-    const toolbar = document.querySelector(".reader-toolbar");
-    const toolbarHeight = toolbar ? toolbar.offsetHeight + 20 : 100;
+
+    const toolbar =
+        document.getElementById("readerToolbar") ||
+        document.querySelector(".reader-toolbar");
+
+    // ✅ Real-time toolbar bottom edge + small buffer
+    const triggerLine = toolbar
+        ? toolbar.getBoundingClientRect().bottom + 10
+        : 90;
 
     let activeNum = null;
 
     cards.forEach((card) => {
         const rect = card.getBoundingClientRect();
-
-        if (rect.top <= toolbarHeight && rect.bottom > toolbarHeight) {
+        if (rect.top <= triggerLine && rect.bottom > triggerLine) {
             activeNum = card.dataset.ayahNumber;
         }
     });
@@ -338,9 +350,9 @@ function playAudio(surah, ayahNumber, ayahId, btn) {
             }
 
             currentAyahId = ayahId;
-            currentWordCount = document.querySelectorAll(
-                `#arabic-${ayahId} .arabic-word`,
-            ).length;
+
+            // ✅ Wrap words JUST before playing — lazy loading
+            currentWordCount = wrapWordsForHighlight(ayahId);
 
             document.getElementById("audioLabel").textContent =
                 `${data.reciter} — ${data.surah_name} ${surah}:${ayahNumber}`;
@@ -395,6 +407,9 @@ function onAudioTimeUpdate() {
         timeEl.textContent = `${formatTime(audioEl.currentTime)} / ${formatTime(audioEl.duration)}`;
 }
 
+// ════════════════════════════════════════════
+// AUDIO ENDED — Server is the source of truth
+// ════════════════════════════════════════════
 function onAudioEnded() {
     clearWordHighlights();
 
@@ -407,26 +422,41 @@ function onAudioEnded() {
         .querySelectorAll(".ayah-card.playing-now")
         .forEach((c) => c.classList.remove("playing-now"));
 
-    // ✅ Track listened ayahs for completion
-    if (currentAyahId) {
-        listenedAyahs.add(String(currentAyahId));
-
-        console.log("Current Ayah:", currentAyahId);
-        console.log("Listened Count:", listenedAyahs.size);
-        console.log("Total Ayahs:", window.QURAN_CONFIG.totalAyahs);
-
-        console.log("ENDED");
-
-        const cfg = window.QURAN_CONFIG || {};
-        if (
-            cfg.isLoggedIn &&
-            !cfg.isCompleted &&
-            listenedAyahs.size >= cfg.totalAyahs
-        ) {
-            console.log("🚀 Calling completeSurah()");
-            completeSurah();
-        }
+    // ✅ Tell the SERVER this ayah was listened to.
+    //    Server remembers forever — not just this session.
+    if (currentAyahId && window.QURAN_CONFIG?.isLoggedIn) {
+        markAyahListened(currentAyahId);
     }
+}
+
+function markAyahListened(ayahId) {
+    const CSRF = document.querySelector('meta[name="csrf-token"]').content;
+
+    fetch("/quran/audio-completed", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            "X-CSRF-TOKEN": CSRF,
+        },
+        body: JSON.stringify({ ayah_id: ayahId }),
+    })
+        .then((r) => r.json())
+        .then((data) => {
+            // ✅ Only show modal the FIRST time it becomes complete
+            //    Re-listening later will NOT show it again
+            if (data.newly_completed) {
+                const modalEl = document.getElementById("completionModal");
+                if (modalEl) {
+                    new bootstrap.Modal(modalEl, {
+                        backdrop: "static",
+                        keyboard: false,
+                    }).show();
+                }
+                updateCompletedBadge();
+            }
+        })
+        .catch((err) => console.error("Listened tracking error:", err));
 }
 
 function seekAudio(event) {
@@ -476,37 +506,63 @@ function clearWordHighlights() {
 }
 
 // ════════════════════════════════════════════
-// COMPLETION
+// WRAP WORDS FOR HIGHLIGHT
 // ════════════════════════════════════════════
-function completeSurah() {
-    if (window.surahCompletionCalled) return;
-    window.surahCompletionCalled = true;
+//
+// WHY: Blade renders plain text for performance
+//      (2,860 spans upfront would slow page load
+//      for a 286-ayah surah like Al-Baqarah).
+//
+//      We wrap words into <span> elements ONLY
+//      when audio actually starts playing for
+//      that specific ayah — lazy loading.
+//
+function wrapWordsForHighlight(ayahId) {
+    const container = document.getElementById("arabic-" + ayahId);
+    if (!container) return 0;
 
-    const CSRF = document.querySelector('meta[name="csrf-token"]').content;
-    const surahNumber = window.QURAN_CONFIG?.surahNumber;
+    // Already wrapped before — don't redo it
+    if (container.dataset.wrapped === "1") {
+        return container.querySelectorAll(".arabic-word").length;
+    }
 
-    fetch(`/quran/${surahNumber}/complete`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            "X-CSRF-TOKEN": CSRF,
-        },
-    })
-        .then((r) => r.json())
-        .then((data) => {
-            if (data.status === "completed") {
-                const modalEl = document.getElementById("completionModal");
-                if (modalEl) {
-                    new bootstrap.Modal(modalEl, {
-                        backdrop: "static",
-                        keyboard: false,
-                    }).show();
-                }
-                updateCompletedBadge();
-            }
-        })
-        .catch((err) => console.error("Completion error:", err));
+    // Save the ornament/sajda elements so we can
+    // put them back after rebuilding the words
+    const ornament = container.querySelector(".ayah-end-ornament");
+    const sajda = container.querySelector('[title="Sajda"]');
+
+    // Get ONLY the Arabic text (ignore ornament/sajda nodes)
+    let arabicText = "";
+    container.childNodes.forEach((node) => {
+        if (node.nodeType === Node.TEXT_NODE) {
+            arabicText += node.textContent;
+        }
+    });
+
+    arabicText = arabicText.trim();
+    if (!arabicText) return 0;
+
+    // Split text into words and wrap each one
+    const words = arabicText.split(/\s+/).filter((w) => w.trim());
+
+    const wrappedHtml = words
+        .map(
+            (word, i) =>
+                `<span class="arabic-word" data-word-index="${i}">${word}</span>`,
+        )
+        .join(" ");
+
+    // Rebuild the container with wrapped words
+    container.innerHTML = wrappedHtml + " ";
+
+    // Put ornament and sajda back at the end
+    if (ornament) container.appendChild(ornament);
+    if (sajda) container.appendChild(sajda);
+
+    // Mark as wrapped so we never redo this
+    container.dataset.wrapped = "1";
+
+    return words.length;
 }
 
 // ✅ Fixed — waits for modal animation before navigating
@@ -654,10 +710,28 @@ function formatTime(s) {
 // ════════════════════════════════════════════
 document.addEventListener("DOMContentLoaded", function () {
     const cfg = window.QURAN_CONFIG || {};
+    const hash = window.location.hash;
 
-    // Scroll to last read ayah
-    if (cfg.lastAyahNumber && !cfg.isCompleted) {
-        setTimeout(() => scrollToAyah(cfg.lastAyahNumber), 700);
+    // ✅ PRIORITY 1 — User arrived via a direct ayah link
+    //    (search result, shared link, bookmark)
+    //    This ALWAYS wins — never overridden by resume logic
+    if (hash && hash.startsWith("#ayah-")) {
+        const num = parseInt(hash.replace("#ayah-", ""));
+        if (num) {
+            setTimeout(() => {
+                scrollToAyah(num);
+                flashHighlightAyah(num);
+            }, 400);
+        }
+    }
+    // ✅ PRIORITY 2 — No specific ayah requested
+    //    → fall back to resume position
+    else if (
+        cfg.resumeAyahNumber &&
+        cfg.resumeAyahNumber > 1 &&
+        !cfg.isSurahCompleted
+    ) {
+        setTimeout(() => scrollToAyah(cfg.resumeAyahNumber), 700);
     }
 
     // Save progress on ayah click
@@ -737,5 +811,45 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 });
+
+// ════════════════════════════════════════════
+// FLASH HIGHLIGHT — used everywhere an ayah
+// needs to visually "announce itself" to the user
+// (sidebar click, jump input, search result, resume)
+// ════════════════════════════════════════════
+function flashHighlightAyah(num) {
+    const el = document.getElementById("ayah-" + num);
+    if (!el) return;
+
+    el.classList.add("flash-highlight");
+    setTimeout(() => el.classList.remove("flash-highlight"), 2000);
+
+    // Also sync the sidebar active state
+    document
+        .querySelectorAll(".sidebar-item")
+        .forEach((i) => i.classList.remove("active"));
+
+    const sidebarItem = document.getElementById("sidebar-" + num);
+    if (sidebarItem) sidebarItem.classList.add("active");
+}
+
+// Sidebar click — now flashes + syncs active state
+function jumpFromSidebar(num) {
+    scrollToAyah(num);
+    flashHighlightAyah(num);
+}
+
+// Jump-to-Ayah input — now flashes too
+function jumpToAyah(num) {
+    const n = parseInt(num);
+    const total = window.QURAN_CONFIG?.totalAyahs || 0;
+
+    if (n >= 1 && n <= total) {
+        scrollToAyah(n);
+        flashHighlightAyah(n);
+    } else {
+        showFlash(`Please enter a number between 1 and ${total}`, "warning");
+    }
+}
 
 // ← JS FILE ENDS HERE. Nothing after this.

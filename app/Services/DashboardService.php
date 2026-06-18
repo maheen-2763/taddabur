@@ -80,70 +80,50 @@ class DashboardService
     }
 
 
+
     private function getAchievement(int $ayahsRead): array
     {
         $levels = [
             [
-                'goal' => 10,
-                'title' => 'First Steps',
-                'arabic' => 'بِسْمِ اللّٰهِ',
-                'icon' => '🌱',
+                'goal' => 0,
+                'title' => 'Beginning the Journey',
+                'arabic' => 'بِدَايَةُ الرِّحْلَة',
+                'icon' => '🕌',
             ],
-            [
-                'goal' => 50,
-                'title' => 'Seeker of Guidance',
-                'arabic' => 'طَالِبُ الْهُدَى',
-                'icon' => '🕊️',
-            ],
-            [
-                'goal' => 100,
-                'title' => 'Companion of the Quran',
-                'arabic' => 'صَاحِبُ الْقُرْآن',
-                'icon' => '📖',
-            ],
-            [
-                'goal' => 500,
-                'title' => 'Student of Revelation',
-                'arabic' => 'طَالِبُ الْوَحْي',
-                'icon' => '🌙',
-            ],
-            [
-                'goal' => 1000,
-                'title' => 'Keeper of Ayat',
-                'arabic' => 'حَافِظُ الْآيَات',
-                'icon' => '⭐',
-            ],
-            [
-                'goal' => 3000,
-                'title' => 'Walker of Light',
-                'arabic' => 'سَالِكُ النُّور',
-                'icon' => '✨',
-            ],
-            [
-                'goal' => 5000,
-                'title' => 'Bearer of Wisdom',
-                'arabic' => 'حَامِلُ الْحِكْمَة',
-                'icon' => '🏆',
-            ],
-            [
-                'goal' => 6236,
-                'title' => 'Quran Completer',
-                'arabic' => 'خَاتِمُ الْقُرْآن',
-                'icon' => '👑',
-            ],
+            ['goal' => 10, 'title' => 'First Steps', 'arabic' => 'بِسْمِ اللّٰهِ', 'icon' => '🌱'],
+            ['goal' => 50, 'title' => 'Seeker of Guidance', 'arabic' => 'طَالِبُ الْهُدَى', 'icon' => '🕊️'],
+            ['goal' => 100, 'title' => 'Companion of the Quran', 'arabic' => 'صَاحِبُ الْقُرْآن', 'icon' => '📖'],
+            ['goal' => 500, 'title' => 'Student of Revelation', 'arabic' => 'طَالِبُ الْوَحْي', 'icon' => '🌙'],
+            ['goal' => 1000, 'title' => 'Keeper of Ayat', 'arabic' => 'حَافِظُ الْآيَات', 'icon' => '⭐'],
+            ['goal' => 3000, 'title' => 'Walker of Light', 'arabic' => 'سَالِكُ النُّور', 'icon' => '✨'],
+            ['goal' => 5000, 'title' => 'Bearer of Wisdom', 'arabic' => 'حَامِلُ الْحِكْمَة', 'icon' => '🏆'],
+            ['goal' => 6236, 'title' => 'Quran Completer', 'arabic' => 'خَاتِمُ الْقُرْآن', 'icon' => '👑'],
         ];
 
         $current = $levels[0];
         $next = null;
-        $previousGoal = $current['goal'];
+        $previousGoal = 0;
 
-        foreach ($levels as $level) {
+        foreach ($levels as $index => $level) {
             if ($ayahsRead >= $level['goal']) {
                 $current = $level;
+                $previousGoal = $level['goal'];
             } else {
                 $next = $level;
                 break;
             }
+        }
+
+        $progress = 100;
+
+        if ($next) {
+            $range = $next['goal'] - $previousGoal;
+
+            $progress = $range > 0
+                ? round((($ayahsRead - $previousGoal) / $range) * 100)
+                : 100;
+
+            $progress = max(0, min(100, $progress));
         }
 
         return [
@@ -155,16 +135,7 @@ class DashboardService
             'remaining' => $next
                 ? max(0, $next['goal'] - $ayahsRead)
                 : 0,
-
-
-            'progress' => $next
-                ? round(
-                    (($ayahsRead - $previousGoal)
-                        / ($next['goal'] - $previousGoal))
-                        * 100
-                )
-                : 100,
-
+            'progress' => $progress,
         ];
     }
     private function getCompletedSurahsCount(User $user): int

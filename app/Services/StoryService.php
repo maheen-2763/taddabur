@@ -150,7 +150,7 @@ class StoryService
     public function getInProgressStories(User $user, int $limit = 3): Collection
     {
         return ReadingProgress::where('user_id', $user->id)
-            ->whereNotNull('story_id')
+            ->whereHas('story')
             ->with(['story', 'lastChapter'])
             ->latest()
             ->take($limit)

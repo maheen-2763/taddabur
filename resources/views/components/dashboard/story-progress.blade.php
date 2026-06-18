@@ -9,6 +9,8 @@
         </h5>
 
         @foreach ($storyProgress as $progress)
+            @continue(!$progress->story)
+
             @php
 
                 $totalChapters = $progress->story->chapters->count();

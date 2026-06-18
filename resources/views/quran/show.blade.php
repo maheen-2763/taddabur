@@ -174,7 +174,7 @@
             <div id="sidebarList">
                 @foreach ($ayahs as $ayah)
                     <div class="sidebar-item" id="sidebar-{{ $ayah->number }}"
-                        onclick="scrollToAyah({{ $ayah->number }})">
+                        onclick="jumpFromSidebar({{ $ayah->number }})">
                         <span class="sidebar-item-num">{{ $ayah->number }}</span>
                         <span class="sidebar-item-text">
                             {{ Str::limit($ayah->text_arabic, 15) }}
@@ -232,17 +232,18 @@
                 </div>
             @endif
 
+
             {{-- Resume Banner --}}
             @auth
-                @if ($lastAyahNumber && !$isSurahCompleted)
+                @if ($resumeAyahNumber && $resumeAyahNumber > 1 && !$isSurahCompleted)
                     <div class="resume-banner" id="lastReadBanner">
                         <span style="font-size:0.85rem">
                             <i class="bi bi-bookmark-fill me-2" style="color:var(--gold)"></i>
-                            You left off at <strong>Ayah {{ $lastAyahNumber }}</strong>
+                            Continue from <strong>Ayah {{ $resumeAyahNumber }}</strong>
                         </span>
-                        <a href="#ayah-{{ $lastAyahNumber }}" class="btn btn-sm"
-                            style="background:var(--gold); color:#1A1A2E; border:none; font-size:0.78rem"
-                            onclick="hideBanner(); scrollToAyah({{ $lastAyahNumber }})">
+                        <a href="#ayah-{{ $resumeAyahNumber }}" class="btn btn-sm"
+                            style="background:var(--gold); color:#1A1A2E; border:none"
+                            onclick="hideBanner(); scrollToAyah({{ $resumeAyahNumber }}); flashHighlightAyah({{ $resumeAyahNumber }})">
                             Resume
                         </a>
                     </div>
@@ -531,6 +532,7 @@
             upgradeUrl: '{{ route('subscription.upgrade') }}',
             freeTranslationSlug: '{{ $translations->where('is_free', true)->first()?->slug ?? 'sahih-international' }}',
             lastAyahNumber: {{ $lastAyahNumber ?? 'null' }},
+            resumeAyahNumber: {{ $resumeAyahNumber ?? 'null' }},
         };
     </script>
     <script src="{{ asset('js/quran-show.js') }}" defer></script>
