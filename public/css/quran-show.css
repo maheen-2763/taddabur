@@ -607,3 +607,21 @@
         transform: translateX(-50%) translateY(0);
     }
 }
+
+/* ════════════════════════════════════
+   FLASH HIGHLIGHT — temporary glow when
+   an ayah is jumped to (search, sidebar, resume)
+════════════════════════════════════ */
+@keyframes flashHighlight {
+    0% {
+        background: rgba(201, 150, 58, 0.35);
+    }
+    100% {
+        background: transparent;
+    }
+}
+
+.ayah-card.flash-highlight {
+    animation: flashHighlight 2s ease;
+    border-radius: var(--radius);
+}

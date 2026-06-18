@@ -197,20 +197,6 @@
                             </div>
                         @endif
 
-                        {{-- Hadith references --}}
-                        @if ($chapter->hadith_references)
-                            <div class="card-islamic p-3 mt-4">
-                                <h6 class="heading-font mb-2" style="font-size:0.8rem; color:var(--muted)">
-                                    Hadith References
-                                </h6>
-
-                                @foreach ($chapter->hadith_references as $hadith)
-                                    <div class="text-muted small mb-1">
-                                        • {{ $hadith }}
-                                    </div>
-                                @endforeach
-                            </div>
-                        @endif
 
                         {{-- Story info --}}
                         <hr class="divider-gold">

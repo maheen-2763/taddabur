@@ -102,10 +102,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/{surah}/complete', [QuranController::class, 'markSurahComplete'])
             ->name('complete');
 
-        Route::post(
-            '/quran/{ayah}/audio-completed',
-            [QuranController::class, 'audioCompleted']
-        )->name('quran.audio.completed');
+        Route::post('/audio-completed', [QuranController::class, 'audioCompleted'])
+            ->name('audio.completed');
     });
     // --------------------------------------------------------
     // STORY ROUTES

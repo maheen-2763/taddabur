@@ -66,6 +66,9 @@ class QuranController extends Controller
         );
 
         $data = $this->quranService->getSurahForReading($surah, $user, $translationSlug);
+        $data['resumeAyahNumber'] = $user
+            ? $this->quranService->getResumeAyahNumber($user, $surah)
+            : null;
 
         // ✅ Plan info passed to view
         $data['isPremium']      = $this->quranService->userIsPremium($user);
@@ -402,35 +405,53 @@ class QuranController extends Controller
         }
     }
 
-    public function audioCompleted(Request $request)
+    // POST /quran/audio-completed
+    public function audioCompleted(Request $request): JsonResponse
     {
+        $request->validate(['ayah_id' => 'required|exists:ayahs,id']);
+
         $ayah = Ayah::findOrFail($request->ayah_id);
+        $user = Auth::user();
 
-        ListenedAyah::firstOrCreate([
-            'user_id' => Auth::id(),
-            'ayah_id' => $ayah->id,
-        ], [
-            'surah_id' => $ayah->surah_id,
-        ]);
+        // ✅ Record this ayah as listened — unique per user+ayah
+        // firstOrCreate means listening to ayah 3 twice
+        // still only counts ONCE — exactly what you asked for
+        ListenedAyah::firstOrCreate(
+            ['user_id' => $user->id, 'ayah_id' => $ayah->id],
+            ['surah_id' => $ayah->surah_id]
+        );
 
-        $listenedCount = ListenedAyah::where(
-            'user_id',
-            Auth::id()
-        )
-            ->where(
-                'surah_id',
-                $ayah->surah_id
-            )
+        // ✅ Count UNIQUE ayahs listened for this surah — ever,
+        // across ALL sessions, not just this page visit
+        $listenedCount = ListenedAyah::where('user_id', $user->id)
+            ->where('surah_id', $ayah->surah_id)
             ->count();
 
-        $totalAyahs = Ayah::where(
-            'surah_id',
-            $ayah->surah_id
-        )
-            ->count();
+        $totalAyahs       = Ayah::where('surah_id', $ayah->surah_id)->count();
+        $isFullyListened  = $listenedCount >= $totalAyahs;
+        $newlyCompleted   = false;
+
+        if ($isFullyListened) {
+            $progress = SurahProgress::where('user_id', $user->id)
+                ->where('surah_id', $ayah->surah_id)
+                ->first();
+
+            // ✅ Only mark complete + flag "newly" if not already done
+            // This stops the modal showing again on re-listens
+            if (!$progress?->is_completed) {
+                SurahProgress::updateOrCreate(
+                    ['user_id' => $user->id, 'surah_id' => $ayah->surah_id],
+                    ['is_completed' => true, 'completed_at' => now()]
+                );
+                $newlyCompleted = true;
+            }
+        }
 
         return response()->json([
-            'completed' => $listenedCount >= $totalAyahs
+            'listened_count'  => $listenedCount,
+            'total_ayahs'     => $totalAyahs,
+            'completed'       => $isFullyListened,
+            'newly_completed' => $newlyCompleted,
         ]);
     }
 }
