@@ -10,6 +10,7 @@ use App\Models\StoryChapter;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
+use App\Models\ChapterCompletion;
 
 class StoryService
 {
@@ -174,5 +175,39 @@ class StoryService
             ->inRandomOrder()
             ->take($limit)
             ->get();
+    }
+    public function markChapterComplete(User $user, Story $story, StoryChapter $chapter): ChapterCompletion
+    {
+        return ChapterCompletion::firstOrCreate([
+            'user_id'          => $user->id,
+            'story_chapter_id' => $chapter->id,
+        ], [
+            'story_id'     => $story->id,
+            'completed_at' => now(),
+        ]);
+    }
+
+    // -------------------------------------------------------
+    // GET SET OF COMPLETED CHAPTER IDS FOR A USER + STORY
+    // Used by the story show page to render checkmarks accurately
+    // -------------------------------------------------------
+    public function getCompletedChapterIds(User $user, Story $story): array
+    {
+        return ChapterCompletion::where('user_id', $user->id)
+            ->where('story_id', $story->id)
+            ->pluck('story_chapter_id')
+            ->toArray();
+    }
+
+    // -------------------------------------------------------
+    // CHECK IF A SPECIFIC CHAPTER IS COMPLETED
+    // Used on the chapter reading page itself (e.g. to disable
+    // the "Mark as Read" button if already marked)
+    // -------------------------------------------------------
+    public function isChapterCompleted(User $user, StoryChapter $chapter): bool
+    {
+        return ChapterCompletion::where('user_id', $user->id)
+            ->where('story_chapter_id', $chapter->id)
+            ->exists();
     }
 }

@@ -517,7 +517,14 @@
             </div>
         </div>
     </div>
+    <button class="mobile-jump-btn d-md-none" id="mobileSidebarBtn" onclick="toggleMobileSidebar()"
+        title="Jump to Ayah">
+        <i class="bi bi-list-ol"></i>
+    </button>
 
+    {{-- Mobile overlay --}}
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()">
+    </div>
 @endsection
 
 @push('scripts')
@@ -535,5 +542,5 @@
             resumeAyahNumber: {{ $resumeAyahNumber ?? 'null' }},
         };
     </script>
-    <script src="{{ asset('js/quran-show.js') }}" defer></script>
+    <script src="{{ asset('js/quran-show.js') }}"></script>
 @endpush
