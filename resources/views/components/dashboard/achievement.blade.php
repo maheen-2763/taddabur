@@ -1,63 +1,31 @@
-<div class="card-islamic p-4">
+{{-- resources/views/components/dashboard/achievement.blade.php --}}
 
-    <h5 class="heading-font mb-3">
-        ❋ Quran Achievement
-    </h5>
+<div class="d-card text-center">
 
-    <div class="text-center">
+    <h5 class="d-card-title justify-content-center">❋ Quran Achievement</h5>
 
-        <div style="font-size:3rem">
-            {{ $achievement['icon'] }}
+    <div class="d-achievement-icon">{{ $achievement['icon'] }}</div>
+
+    <p class="arabic" style="font-size:1.3rem">{{ $achievement['arabic'] }}</p>
+
+    <div class="d-achievement-title">{{ $achievement['title'] }}</div>
+    <p class="d-achievement-count">📖 {{ number_format($achievement['ayahsRead']) }} Ayahs Read</p>
+
+    @if ($achievement['nextGoal'])
+        <hr style="border-color:var(--border)">
+
+        <p class="d-achievement-milestone-label">Next Milestone</p>
+        <div class="d-achievement-milestone-num">{{ number_format($achievement['nextGoal']) }} Ayahs</div>
+
+        <div class="d-progress mb-2">
+            <div class="d-progress-fill" style="width: {{ $achievement['progress'] }}%"></div>
         </div>
 
-        <div class="arabic text-center">
-            {{ $achievement['arabic'] }}
-        </div>
-
-        <h5 class="heading-font mt-3 mb-2">
-            {{ $achievement['title'] }}
-        </h5>
-
-        <p class="text-muted mb-3">
-            📖 {{ number_format($achievement['ayahsRead']) }}
-            Ayahs Read
-        </p>
-
-        @if ($achievement['nextGoal'])
-            <hr>
-
-            <small class="text-muted d-block mb-2">
-                Next Milestone
-            </small>
-
-            <div class="fw-bold mb-2">
-                {{ number_format($achievement['nextGoal']) }}
-                Ayahs
-            </div>
-
-            <div class="progress mb-2" style="height:8px;">
-                <div class="progress-bar" style="width: {{ $achievement['progress'] }}%">
-                </div>
-            </div>
-
-            <small class="text-success">
-                {{ number_format($achievement['remaining']) }}
-                Ayahs Remaining
-            </small>
-        @else
-            <div class="badge bg-success mt-3 px-3 py-2">
-                👑 Quran Completed
-            </div>
-        @endif
-
-    </div>
+        <small class="d-achievement-remaining">
+            {{ number_format($achievement['remaining']) }} Ayahs Remaining
+        </small>
+    @else
+        <div class="d-achievement-complete">👑 Quran Completed</div>
+    @endif
 
 </div>
-@push('styles')
-    <style>
-        .arabic {
-            font-family: 'Amiri', serif;
-            font-size: 1.5rem;
-        }
-    </style>
-@endpush

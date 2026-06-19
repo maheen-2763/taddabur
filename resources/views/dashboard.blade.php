@@ -2,38 +2,36 @@
 
 @section('title', 'Dashboard')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
+@endpush
+
 @section('content')
-    <div class="container py-4">
-
-
+    <div class="container py-4 dashboard-wrap">
 
         <x-dashboard.welcome :user="auth()->user()" />
 
+        <div class="mt-4">
+            <x-dashboard.daily-ayah-bold :dailyContent="$dashboard['dailyContent']" />
+        </div>
 
-
-        <div class="row g-4">
+        <div class="row g-4 mt-2">
 
             <div class="col-lg-8">
-
-                <x-dashboard.todays-reflection :dailyContent="$dashboard['dailyContent']" />
-
-
-                <x-dashboard.resume-quran :quranProgress="$dashboard['quranProgress']" />
-
-                <x-dashboard.story-progress :storyProgress="$dashboard['storyProgress']" />
-
+                <div class="dashboard-stack">
+                    <x-dashboard.resume-quran :quranProgress="$dashboard['quranProgress']" />
+                    <x-dashboard.story-progress :storyProgress="$dashboard['storyProgress']" />
+                </div>
             </div>
 
-
             <div class="col-lg-4">
-
-                <x-dashboard.progress :stats="$dashboard['stats']" />
-
-
-                <x-dashboard.achievement :achievement="$dashboard['achievement']" />
-
-
+                <div class="dashboard-stack">
+                    <x-dashboard.progress :stats="$dashboard['stats']" :user="auth()->user()" />
+                    <x-dashboard.achievement :achievement="$dashboard['achievement']" />
+                </div>
             </div>
 
         </div>
-    @endsection
+
+    </div>
+@endsection

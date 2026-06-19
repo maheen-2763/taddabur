@@ -1,53 +1,42 @@
-<div class="card-islamic p-4 mt-4">
+{{-- resources/views/components/dashboard/continue-learning.blade.php --}}
 
-    <h5 class="heading-font mb-4">
-        <i class="bi bi-book me-2"></i>
-        Continue Learning
+<div class="d-card">
+
+    <h5 class="d-card-title">
+        <i class="bi bi-compass" style="color:var(--emerald)"></i>
+        Explore More
     </h5>
 
-    <div class="d-grid gap-2">
+    <div class="d-explore-grid">
 
-        <a href="{{ route('stories.index') }}" class="btn btn-outline-success text-start">
-            📖 Stories
+        <a href="{{ route('stories.index') }}" class="d-explore-item is-live">
+            <span class="d-explore-item-label">📖 Stories</span>
+            <i class="bi bi-arrow-right d-explore-arrow"></i>
         </a>
 
-        <div class="learning-coming-soon card-islamic p-2">
-            👳 Sahabah
-            <span class="badge bg-warning text-dark">
-                Coming Soon
-            </span>
+        <div class="d-explore-item">
+            <span class="d-explore-item-label">👳 Sahabah</span>
+            <span class="d-explore-soon">Coming Soon</span>
         </div>
 
-
-        <div class="learning-coming-soon card-islamic p-2">
-            🕌 Four Imams
-            <span class="badge bg-warning text-dark">
-                Coming Soon
-            </span>
+        <div class="d-explore-item">
+            <span class="d-explore-item-label">🕌 Four Imams</span>
+            <span class="d-explore-soon">Coming Soon</span>
         </div>
 
-
-
-        <div class="learning-coming-soon card-islamic p-2">
-            📜 Hadith
-            <span class="badge bg-warning text-dark">
-                Coming Soon
-            </span>
+        <div class="d-explore-item">
+            <span class="d-explore-item-label">📜 Hadith</span>
+            <span class="d-explore-soon">Coming Soon</span>
         </div>
 
-
-        <div class="learning-coming-soon card-islamic p-2">
-            📚 Tafsir
-            <span class="badge bg-warning text-dark">
-                Coming Soon
-            </span>
+        <div class="d-explore-item">
+            <span class="d-explore-item-label">📚 Tafsir</span>
+            <span class="d-explore-soon">Coming Soon</span>
         </div>
 
-        <div class="learning-coming-soon card-islamic p-2">
-            🤖 Taddabur AI
-            <span class="badge bg-warning text-dark">
-                Coming Soon
-            </span>
+        <div class="d-explore-item">
+            <span class="d-explore-item-label">🤖 Taddabur AI</span>
+            <span class="d-explore-soon">Coming Soon</span>
         </div>
 
     </div>

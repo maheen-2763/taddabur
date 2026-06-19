@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Prophet;
 use App\Models\Story;
+use App\Models\ReadingProgress;
 use App\Models\StoryChapter;
 use App\Services\StoryService;
 use Illuminate\Http\JsonResponse;
@@ -33,22 +34,27 @@ class StoryController extends Controller
     }
 
     // GET /stories/{story:slug}
-    public function show(Story $story)
+    public function show(Story $story): View
     {
         $user = Auth::user();
 
-        // ✅ Service handles access check
         if (!$this->storyService->userCanAccessStory($user, $story)) {
-            return redirect()
-                ->route('subscription.upgrade')
-                ->with('upgrade_message', 'Upgrade to read "' . $story->title . '"');
+            abort(403);
         }
 
-        $firstChapter = $story->chapters()->first();
+        $story->load(['chapters' => fn($q) => $q->orderBy('order'), 'prophet']);
 
-        if (!$firstChapter) abort(404);
+        $progress = $user
+            ? ReadingProgress::where('user_id', $user->id)
+            ->where('story_id', $story->id)
+            ->first()
+            : null;
 
-        return redirect()->route('stories.chapter', [$story->slug, $firstChapter->slug]);
+        $completedChapterIds = $user
+            ? $this->storyService->getCompletedChapterIds($user, $story)
+            : [];
+
+        return view('stories.show', compact('story', 'progress', 'completedChapterIds'));
     }
 
 
@@ -56,24 +62,23 @@ class StoryController extends Controller
     // GET /stories/{story:slug}/{chapter}
     public function chapter(Story $story, StoryChapter $chapter): View
     {
-
         abort_if($chapter->story_id !== $story->id, 404);
 
         $user = Auth::user();
 
-        // ✅ Service handles access check
         if (!$this->storyService->userCanAccessStory($user, $story)) {
             return redirect()
                 ->route('subscription.upgrade')
                 ->with('upgrade_message', 'Upgrade to continue reading.');
         }
 
-        // ✅ Service loads all chapter context (allChapters, prev, next)
         $data = $this->storyService->getChapterWithContext($story, $chapter);
 
-        // ✅ Service saves progress and streak
         if ($user) {
             $data['progress'] = $this->storyService->saveStoryProgress($user, $story, $chapter);
+            $data['isChapterCompleted'] = $this->storyService->isChapterCompleted($user, $chapter);
+        } else {
+            $data['isChapterCompleted'] = false;
         }
 
         return view('stories.chapter', $data);
@@ -91,6 +96,9 @@ class StoryController extends Controller
     // GET /prophets/{prophet:slug}
     public function prophetStories(Prophet $prophet): View
     {
+        // ✅ Load stories_count so the view can display it correctly
+        $prophet->loadCount('stories');
+
         // ✅ Service filters by user plan automatically
         $stories = $this->storyService->getStoriesForProphet($prophet, Auth::user());
 
@@ -100,17 +108,21 @@ class StoryController extends Controller
     // POST /stories/{story}/chapters/{chapter}/complete (AJAX)
     public function markComplete(Story $story, StoryChapter $chapter): JsonResponse
     {
-        // ✅ Service saves progress
-        $this->storyService->saveStoryProgress(Auth::user(), $story, $chapter);
+        $user = Auth::user();
 
-        // ✅ Service calculates percentage
+        // ✅ Explicit completion record — only created by this button
+        $this->storyService->markChapterComplete($user, $story, $chapter);
+
+        // Still save general reading progress too
+        $this->storyService->saveStoryProgress($user, $story, $chapter);
+
         $percentage = $this->storyService->getCompletionPercentage($story, $chapter);
 
         return response()->json([
             'status'     => 'completed',
             'percentage' => $percentage,
             'message'    => $percentage === 100
-                ? 'MashaAllah! You completed this story.'
+                ? 'Alhamdulillah! You completed this story.'
                 : "Progress: {$percentage}%",
         ]);
     }

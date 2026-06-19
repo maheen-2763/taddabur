@@ -7,6 +7,7 @@ let currentAyahId = null;
 let currentWordCount = 0;
 let wordHighlightTimer = null;
 let currentAudioBtn = null;
+let manualJumpActive = false;
 
 // These are set by the blade via window object
 // window.QURAN_CONFIG = { surahNumber, totalAyahs, ... }
@@ -40,6 +41,7 @@ window.addEventListener("scroll", () => {
 //
 function updateSidebarActive() {
     const cards = document.querySelectorAll(".ayah-card");
+    if (manualJumpActive) return;
 
     const toolbar =
         document.getElementById("readerToolbar") ||
@@ -764,53 +766,41 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-/*
-    |----------------------------------------------------------
-    | BISMILLAH LOGIC
-    |----------------------------------------------------------
-    | The Bismillah text that appears at start of ayah 1
-    | in the database for most surahs
-    */
 // ════════════════════════════════════════════
-// DOM READY
+// MOBILE SIDEBAR DRAWER
 // ════════════════════════════════════════════
-document.addEventListener("DOMContentLoaded", function () {
-    const cfg = window.QURAN_CONFIG || {};
+function toggleMobileSidebar() {
+    const sidebar = document.getElementById("quranSidebar");
+    const overlay = document.getElementById("sidebarOverlay");
+    const isOpen = sidebar.classList.contains("mobile-open");
 
-    // Scroll to last read ayah
-    if (cfg.lastAyahNumber && !cfg.isSurahCompleted) {
-        setTimeout(() => scrollToAyah(cfg.lastAyahNumber), 700);
+    if (isOpen) {
+        closeMobileSidebar();
+    } else {
+        sidebar.classList.add("mobile-open");
+        overlay.classList.add("visible");
+        document.body.style.overflow = "hidden";
     }
+}
 
-    // Save progress on ayah click
-    if (cfg.isLoggedIn) {
-        const CSRF = document.querySelector('meta[name="csrf-token"]').content;
+function closeMobileSidebar() {
+    const sidebar = document.getElementById("quranSidebar");
+    const overlay = document.getElementById("sidebarOverlay");
 
-        document
-            .querySelectorAll(".ayah-card[data-ayah-id]")
-            .forEach((card) => {
-                card.addEventListener("click", function () {
-                    const ayahId = this.dataset.ayahId;
-                    if (!ayahId) return;
+    sidebar.classList.remove("mobile-open");
+    overlay.classList.remove("visible");
+    document.body.style.overflow = "";
+}
 
-                    fetch("/quran/progress", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            Accept: "application/json",
-                            "X-CSRF-TOKEN": CSRF,
-                        },
-                        body: JSON.stringify({ ayah_id: ayahId }),
-                    });
-
-                    document
-                        .querySelectorAll(".ayah-card.last-read")
-                        .forEach((c) => c.classList.remove("last-read"));
-                    this.classList.add("last-read");
-                });
-            });
+// Close mobile sidebar when user jumps to an ayah
+// Update jumpFromSidebar to also close on mobile
+const _originalJumpFromSidebar = jumpFromSidebar;
+jumpFromSidebar = function (num) {
+    _originalJumpFromSidebar(num);
+    if (window.innerWidth < 600) {
+        setTimeout(closeMobileSidebar, 400);
     }
-});
+};
 
 // ════════════════════════════════════════════
 // FLASH HIGHLIGHT — used everywhere an ayah
@@ -835,8 +825,32 @@ function flashHighlightAyah(num) {
 
 // Sidebar click — now flashes + syncs active state
 function jumpFromSidebar(num) {
+    // ✅ Pause scroll-based sidebar updates
+    manualJumpActive = true;
+
+    // Remove active from all sidebar items
+    document
+        .querySelectorAll(".sidebar-item")
+        .forEach((i) => i.classList.remove("active"));
+
+    // Set correct sidebar item active IMMEDIATELY
+    const sidebarItem = document.getElementById("sidebar-" + num);
+    if (sidebarItem) {
+        sidebarItem.classList.add("active");
+        sidebarItem.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+
+    // Scroll reader to correct ayah
     scrollToAyah(num);
+
+    // Flash highlight in reader
     flashHighlightAyah(num);
+
+    // ✅ After scroll finishes — resume auto-highlight
+    // 1000ms is enough for smooth scroll to complete
+    setTimeout(() => {
+        manualJumpActive = false;
+    }, 1000);
 }
 
 // Jump-to-Ayah input — now flashes too
@@ -845,8 +859,28 @@ function jumpToAyah(num) {
     const total = window.QURAN_CONFIG?.totalAyahs || 0;
 
     if (n >= 1 && n <= total) {
+        // ✅ Same pause logic for input jump
+        manualJumpActive = true;
+
+        document
+            .querySelectorAll(".sidebar-item")
+            .forEach((i) => i.classList.remove("active"));
+
+        const sidebarItem = document.getElementById("sidebar-" + n);
+        if (sidebarItem) {
+            sidebarItem.classList.add("active");
+            sidebarItem.scrollIntoView({
+                block: "nearest",
+                behavior: "smooth",
+            });
+        }
+
         scrollToAyah(n);
         flashHighlightAyah(n);
+
+        setTimeout(() => {
+            manualJumpActive = false;
+        }, 1000);
     } else {
         showFlash(`Please enter a number between 1 and ${total}`, "warning");
     }

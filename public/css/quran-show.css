@@ -61,11 +61,23 @@
 /* ════════════════════════════════════════════
    SIDEBAR
 ════════════════════════════════════════════ */
+/* ════════════════════════════════════════════
+   SIDEBAR — Responsive for all devices
+════════════════════════════════════════════ */
+
+/* ── DESKTOP (1200px+) ──────────────────── */
+.quran-layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    min-height: 80vh;
+}
+
 .quran-sidebar {
     border-right: 1px solid var(--border);
     position: sticky;
-    top: 58px;
-    height: calc(100vh - 58px);
+    top: 0;
+    /* ✅ Full viewport height minus actual toolbar */
+    height: calc(100vh - var(--scroll-offset, 120px));
     overflow-y: auto;
     background: var(--cream);
     scrollbar-width: thin;
@@ -73,7 +85,7 @@
 }
 
 .quran-sidebar::-webkit-scrollbar {
-    width: 4px;
+    width: 3px;
 }
 .quran-sidebar::-webkit-scrollbar-track {
     background: transparent;
@@ -85,19 +97,19 @@
 
 .sidebar-title {
     font-family: var(--font-heading);
-    font-size: 0.62rem;
+    font-size: 0.6rem;
     letter-spacing: 0.1em;
     color: var(--muted);
     text-transform: uppercase;
     padding: 0 1rem;
-    margin: 0.75rem 0 0.4rem;
+    margin: 0.6rem 0 0.3rem;
 }
 
 .sidebar-jump-input {
-    margin: 0 1rem;
-    width: calc(100% - 2rem);
+    margin: 0 0.75rem;
+    width: calc(100% - 1.5rem);
     padding: 0.3rem 0.6rem;
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     border: 1px solid var(--border);
     border-radius: var(--radius);
     background: var(--cream-dark);
@@ -113,8 +125,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.35rem 1rem;
-    text-decoration: none;
+    padding: 0.3rem 0.75rem;
     border-left: 2px solid transparent;
     transition: all 0.15s;
     cursor: pointer;
@@ -132,16 +143,16 @@
 
 .sidebar-item-num {
     font-family: var(--font-heading);
-    font-size: 0.65rem;
+    font-size: 0.62rem;
     color: var(--gold);
-    width: 20px;
+    width: 18px;
     text-align: center;
     flex-shrink: 0;
 }
 
 .sidebar-item-text {
     font-family: var(--quran-font);
-    font-size: 0.88rem;
+    font-size: 0.82rem;
     direction: rtl;
     color: var(--emerald);
     overflow: hidden;
@@ -158,6 +169,117 @@
     color: var(--emerald-dark);
 }
 
+/* ── TABLET (600px - 900px) ─────────────── */
+@media (max-width: 900px) and (min-width: 600px) {
+    .quran-layout {
+        /* ✅ Narrow sidebar on tablet */
+        grid-template-columns: 160px 1fr;
+    }
+
+    .quran-sidebar {
+        top: 0;
+        height: calc(100vh - var(--scroll-offset, 120px));
+    }
+
+    /* Hide Arabic text preview on tablet — too narrow */
+    .sidebar-item-text {
+        display: none;
+    }
+
+    /* Center the number since text is hidden */
+    .sidebar-item {
+        justify-content: center;
+        padding: 0.3rem 0.5rem;
+    }
+
+    .sidebar-item-num {
+        font-size: 0.7rem;
+        width: auto;
+    }
+
+    /* Shrink jump input */
+    .sidebar-jump-input {
+        font-size: 0.72rem;
+        padding: 0.25rem 0.4rem;
+    }
+}
+
+/* ── MOBILE (below 600px) ───────────────── */
+@media (max-width: 599px) {
+    /* ✅ Sidebar hidden on mobile — replaced with
+       a floating button to open it as a drawer */
+    .quran-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .quran-sidebar {
+        display: none;
+    }
+
+    /* ✅ Mobile floating jump button */
+    .mobile-jump-btn {
+        display: flex;
+        position: fixed;
+        bottom: 5rem;
+        left: 1rem;
+        width: 42px;
+        height: 42px;
+        background: var(--emerald);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 500;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        font-size: 1rem;
+    }
+
+    /* ✅ Mobile drawer sidebar */
+    .quran-sidebar.mobile-open {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 280px;
+        z-index: 900;
+        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+        height: 100vh;
+        overflow-y: auto;
+    }
+
+    /* Overlay behind drawer */
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 800;
+    }
+
+    .sidebar-overlay.visible {
+        display: block;
+    }
+}
+
+/* ── LARGE DESKTOP (1400px+) ────────────── */
+@media (min-width: 1400px) {
+    .quran-layout {
+        grid-template-columns: 280px 1fr;
+    }
+
+    .sidebar-item {
+        padding: 0.4rem 1rem;
+    }
+    .sidebar-item-text {
+        font-size: 0.9rem;
+    }
+    .sidebar-item-num {
+        font-size: 0.7rem;
+    }
+}
 /* ════════════════════════════════════════════
    SURAH HEADER
 ════════════════════════════════════════════ */
