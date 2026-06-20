@@ -18,7 +18,7 @@
 
         <div class="d-resume-meta">
             <small class="d-resume-lastread">
-                Last read
+                {{ $readCount ?? 0 }} of {{ $totalAyahs }} ayahs read
                 @if ($quranProgress->last_read_at)
                     · {{ $quranProgress->last_read_at?->diffForHumans() }}
                 @endif
@@ -38,8 +38,12 @@
             <div class="d-progress-fill" style="width: {{ $progress }}%"></div>
         </div>
 
-        <div class="text-end">
-            <a href="{{ route('quran.show', $surah->number) }}#ayah-{{ $ayah->number }}" class="btn-emerald btn btn-sm">
+        <div class="d-flex justify-content-end gap-3 mt-1">
+            <a href="{{ route('quran.show', $surah->number) }}#ayah-1" class="btn-emerald btn btn-sm flex-shrink-0">
+                Start Over
+            </a>
+            <a href="{{ route('quran.show', $surah->number) }}#ayah-{{ $ayah->number }}"
+                class="btn-emerald btn btn-sm flex-shrink-0">
                 Continue Reading →
             </a>
         </div>

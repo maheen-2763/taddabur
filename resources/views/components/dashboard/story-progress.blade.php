@@ -51,7 +51,7 @@
                     @if ($progress->lastChapter)
                         <a href="{{ route('stories.chapter', [$progress->story->slug, $progress->lastChapter->slug]) }}"
                             class="btn-emerald btn btn-sm flex-shrink-0">
-                            Continue →
+                            Continue Story →
                         </a>
                     @endif
 

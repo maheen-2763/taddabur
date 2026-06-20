@@ -66,9 +66,9 @@ class QuranController extends Controller
         );
 
         $data = $this->quranService->getSurahForReading($surah, $user, $translationSlug);
-        $data['resumeAyahNumber'] = $user
-            ? $this->quranService->getResumeAyahNumber($user, $surah)
-            : null;
+        $data['readAyahsCount'] = $user
+            ? $this->quranService->getReadAyahsCount($user, $surah)
+            : 0;
 
         // ✅ Plan info passed to view
         $data['isPremium']      = $this->quranService->userIsPremium($user);
@@ -453,5 +453,19 @@ class QuranController extends Controller
             'completed'       => $isFullyListened,
             'newly_completed' => $newlyCompleted,
         ]);
+    }
+
+
+    public function sajdas(): View
+    {
+        $sajdaAyahs = Ayah::where('sajda', true)
+            ->join('surahs', 'surahs.id', '=', 'ayahs.surah_id')
+            ->orderBy('surahs.number')
+            ->orderBy('ayahs.number')
+            ->select('ayahs.*')
+            ->with('surah:id,number,name_arabic,name_transliteration,name_english')
+            ->get();
+
+        return view('quran.sajdas', compact('sajdaAyahs'));
     }
 }

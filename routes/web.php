@@ -37,9 +37,19 @@ Route::get('/', [HomeController::class, 'index'])
 
 // Public Quran browsing (reading only, no tafsir/audio)
 Route::get('/quran', [QuranController::class, 'index'])->name('quran.index');
+
+
+
+Route::get('/allah-names', [App\Http\Controllers\AllahNameController::class, 'index'])
+    ->name('allah-names.index');
+
+
 // ✅ ADD THIS — search must come BEFORE /{surah}
 Route::get('/quran/search', [QuranController::class, 'search'])
     ->name('quran.search');
+
+Route::get('/quran/sajdas', [QuranController::class, 'sajdas'])
+    ->name('quran.sajdas');
 // ✅ This comes AFTER search
 Route::get('/quran/{surah}', [QuranController::class, 'show'])->name('quran.show');
 
@@ -169,6 +179,7 @@ Route::get('/test-name', function () {
 
     return view('test');
 });
+
 
 // ============================================================
 // ADMIN ROUTES

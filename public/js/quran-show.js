@@ -726,15 +726,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }, 400);
         }
     }
-    // ✅ PRIORITY 2 — No specific ayah requested
-    //    → fall back to resume position
-    else if (
-        cfg.resumeAyahNumber &&
-        cfg.resumeAyahNumber > 1 &&
-        !cfg.isSurahCompleted
-    ) {
-        setTimeout(() => scrollToAyah(cfg.resumeAyahNumber), 700);
-    }
 
     // Save progress on ayah click
     if (cfg.isLoggedIn) {

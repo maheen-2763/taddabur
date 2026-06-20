@@ -22,6 +22,7 @@ class StoryChapter extends Model
         'hadith_references',
         'image',
         'slug',
+        'read_time_minutes'
     ];
 
     protected $casts = [

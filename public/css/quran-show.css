@@ -13,14 +13,13 @@
 ════════════════════════════════════════════ */
 .reader-toolbar {
     position: sticky;
-    top: 0;
+    top: 76px; /* was: top: 44px — now matches real navbar height */
     z-index: 100;
     background: var(--cream);
     border-bottom: 1px solid var(--border);
     padding: 0.6rem 0;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
-
 /* Unified dropdown style */
 .toolbar-select {
     border: 1px solid var(--border) !important;
@@ -75,9 +74,8 @@
 .quran-sidebar {
     border-right: 1px solid var(--border);
     position: sticky;
-    top: 0;
-    /* ✅ Full viewport height minus actual toolbar */
-    height: calc(100vh - var(--scroll-offset, 120px));
+    top: 76px;
+    height: calc(100vh - 76px - var(--scroll-offset, 120px));
     overflow-y: auto;
     background: var(--cream);
     scrollbar-width: thin;
@@ -177,7 +175,7 @@
     }
 
     .quran-sidebar {
-        top: 0;
+        top: 76px;
         height: calc(100vh - var(--scroll-offset, 120px));
     }
 
@@ -364,6 +362,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap; /* ✅ added */
+    gap: 0.6rem; /* ✅ added */
     background: rgba(201, 150, 58, 0.07);
     border: 1px solid rgba(201, 150, 58, 0.3);
     border-radius: var(--radius);

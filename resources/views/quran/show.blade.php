@@ -71,6 +71,11 @@
                         <i class="bi bi-search"></i>
                     </a>
 
+                    <a href="{{ route('quran.sajdas') }}" class="btn btn-sm" style="border:1px solid var(--border)"
+                        title="Verses of Prostration">
+                        ۩
+                    </a>
+
                     {{-- Translation --}}
                     <select id="translationPicker" class="toolbar-select" onchange="handleTranslationChange(this)">
                         @foreach ($translations as $t)
@@ -232,20 +237,26 @@
                 </div>
             @endif
 
-
             {{-- Resume Banner --}}
             @auth
-                @if ($resumeAyahNumber && $resumeAyahNumber > 1 && !$isSurahCompleted)
+                @if ($lastAyahNumber && !$isSurahCompleted)
                     <div class="resume-banner" id="lastReadBanner">
                         <span style="font-size:0.85rem">
                             <i class="bi bi-bookmark-fill me-2" style="color:var(--gold)"></i>
-                            Continue from <strong>Ayah {{ $resumeAyahNumber }}</strong>
+                            {{ $readAyahsCount ?? 0 }} of {{ $surah->ayah_count }} ayahs read in this Surah
                         </span>
-                        <a href="#ayah-{{ $resumeAyahNumber }}" class="btn btn-sm"
-                            style="background:var(--gold); color:#1A1A2E; border:none"
-                            onclick="hideBanner(); scrollToAyah({{ $resumeAyahNumber }}); flashHighlightAyah({{ $resumeAyahNumber }})">
-                            Resume
-                        </a>
+
+                        <div class="d-flex gap-2 flex-shrink-0">
+                            <a href="#ayah-1" class="btn btn-sm btn-outline-secondary" style="font-size:0.76rem"
+                                onclick="hideBanner(); scrollToAyah(1); flashHighlightAyah(1)">
+                                Start from Beginning
+                            </a>
+                            <a href="#ayah-{{ $lastAyahNumber }}" class="btn btn-sm"
+                                style="background:var(--gold); color:#1A1A2E; border:none; font-size:0.76rem"
+                                onclick="hideBanner(); scrollToAyah({{ $lastAyahNumber }}); flashHighlightAyah({{ $lastAyahNumber }})">
+                                Continue from Ayah {{ $lastAyahNumber }}
+                            </a>
+                        </div>
                     </div>
                 @endif
             @endauth
@@ -539,7 +550,6 @@
             upgradeUrl: '{{ route('subscription.upgrade') }}',
             freeTranslationSlug: '{{ $translations->where('is_free', true)->first()?->slug ?? 'sahih-international' }}',
             lastAyahNumber: {{ $lastAyahNumber ?? 'null' }},
-            resumeAyahNumber: {{ $resumeAyahNumber ?? 'null' }},
         };
     </script>
     <script src="{{ asset('js/quran-show.js') }}"></script>
