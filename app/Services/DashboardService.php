@@ -7,6 +7,7 @@ use App\Models\ReadingProgress;
 use App\Models\User;
 use App\Models\UserReadAyah;
 use App\Models\SurahProgress;
+use App\Models\AllahName;
 
 class DashboardService
 {
@@ -19,24 +20,33 @@ class DashboardService
 
     public function forUser(User $user): array
     {
-        $quranProgress = $this->quranService->getQuranProgress($user);
-        $storyProgress = $this->storyService->getInProgressStories($user);
-
+        // ✅ Fetch each piece of data ONCE, store it, reuse it
+        $quranProgress  = $this->quranService->getQuranProgress($user);
+        $quranReadCount = null;
+        if ($quranProgress?->lastAyah) {
+            $quranReadCount = $this->quranService->getReadAyahsCount(
+                $user,
+                $quranProgress->lastAyah->surah
+            );
+        }
+        $storyProgress  = $this->storyService->getInProgressStories($user);
+        $totalAyahsRead = $this->getTotalAyahsRead($user);
 
         return [
-            'dailyContent' => $this->getDailyContent(),
-            'quranProgress' => $quranProgress,
-            'storyProgress' => $storyProgress,
-            'achievement' => $this->getAchievement(
-                $this->getTotalAyahsRead($user)
-            ),
+            'dailyContent'      => $this->getDailyContent(),
+            'quranProgress'     => $quranProgress,
+            'quranReadCount' => $quranReadCount,
+            'storyProgress'     => $storyProgress,
+            'achievement'       => $this->getAchievement($totalAyahsRead),
+
+            // ✅ Correct level — sibling of dailyContent, not nested
+            'allahNamesPreview' => AllahName::inRandomOrder()->take(5)->get(),
 
             'stats' => [
-                'streak' => $this->getCurrentStreak($user),
-                'totalAyahsRead' => $this->getTotalAyahsRead($user),
-                'storyCount' => $this->storyService->getInProgressStories($user)->count(),
-                'quranProgress' => $this->quranService->getQuranProgress($user)?->quran_progress_percentage ?? 0,
-
+                'streak'          => $this->getCurrentStreak($user),
+                'totalAyahsRead'  => $totalAyahsRead,        // ✅ reused
+                'storyCount'      => $storyProgress->count(), // ✅ reused, no new query
+                'quranProgress'   => $quranProgress?->quran_progress_percentage ?? 0, // ✅ reused
                 'completedSurahs' => $this->getCompletedSurahsCount($user),
             ],
         ];
@@ -47,17 +57,17 @@ class DashboardService
     // --------------------------
     public function getDailyContent(): ?DailyContent
     {
-        return DailyContent::today()
-            ->with([
-                'ayah.surah',
-                'ayah.translations.translation'
-            ])
+        return DailyContent::with([
+            'ayah.surah',
+            'ayah.translations.translation'
+        ])
+            ->today()
             ->first()
-            ?? DailyContent::latest()
-            ->with([
+            ?? DailyContent::with([
                 'ayah.surah',
                 'ayah.translations.translation'
             ])
+            ->latest('scheduled_for')
             ->first();
     }
 

@@ -261,26 +261,13 @@ class QuranService
         return $recitation->audioUrlFor($surah, $ayah);
     }
 
-    // ════════════════════════════════════════════
-    // GET RESUME AYAH NUMBER
-    // Returns the NEXT ayah the user should continue
-    // from — based on the HIGHEST ayah number they
-    // have ever listened to in this surah.
-    //
-    // Example: User listened to ayahs 1,2,3,4
-    //          → Resume point = ayah 5 ✅
-    // ════════════════════════════════════════════
-    public function getResumeAyahNumber(User $user, Surah $surah): int
+
+
+
+    public function getReadAyahsCount(User $user, Surah $surah): int
     {
-        $maxListenedNumber = \App\Models\ListenedAyah::where('listened_ayahs.user_id', $user->id)
-            ->where('listened_ayahs.surah_id', $surah->id)  // ✅ Prefixed
-            ->join('ayahs', 'ayahs.id', '=', 'listened_ayahs.ayah_id')
-            ->max('ayahs.number');
-
-        if (!$maxListenedNumber) {
-            return 1;
-        }
-
-        return min($maxListenedNumber + 1, $surah->ayah_count);
+        return UserReadAyah::where('user_id', $user->id)
+            ->whereHas('ayah', fn($q) => $q->where('surah_id', $surah->id))
+            ->count();
     }
 }

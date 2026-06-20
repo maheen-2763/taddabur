@@ -12,6 +12,7 @@
         <x-dashboard.welcome :user="auth()->user()" />
 
         <div class="mt-4">
+            <x-dashboard.allah-names-preview :names="$dashboard['allahNamesPreview']" />
             <x-dashboard.daily-ayah-bold :dailyContent="$dashboard['dailyContent']" />
         </div>
 
@@ -19,13 +20,14 @@
 
             <div class="col-lg-8">
                 <div class="dashboard-stack">
-                    <x-dashboard.resume-quran :quranProgress="$dashboard['quranProgress']" />
+                    <x-dashboard.resume-quran :quranProgress="$dashboard['quranProgress']" :readCount="$dashboard['quranReadCount']" />
                     <x-dashboard.story-progress :storyProgress="$dashboard['storyProgress']" />
                 </div>
             </div>
 
             <div class="col-lg-4">
                 <div class="dashboard-stack">
+
                     <x-dashboard.progress :stats="$dashboard['stats']" :user="auth()->user()" />
                     <x-dashboard.achievement :achievement="$dashboard['achievement']" />
                 </div>

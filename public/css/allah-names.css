@@ -1,0 +1,409 @@
+/* public/css/allah-names.css
+   ════════════════════════════════════════════
+   99 NAMES OF ALLAH — Honeycomb Grid (v3)
+   ════════════════════════════════════════════
+   STRUCTURE CHANGE: Each hex is now TWO stacked
+   layers, not one:
+
+   1. .hex-cover  → the closed gold book cover
+                    (what you see normally)
+   2. .hex-back   → sits underneath, holds the
+                    Arabic name, dimmed/invisible
+                    until revealed
+
+   On click, .hex-cover rotates open on a LEFT
+   hinge (like a real book cover swinging back)
+   using rotateY + backface-visibility:hidden —
+   the standard "flip card" technique. As it
+   swings away, .hex-back becomes visible and
+   its Arabic name rises upward while glowing.
+
+   RTL FIX: Previous version never loaded an
+   Arabic web font — 'Amiri'/'Scheherazade New'
+   were referenced but never imported, so the
+   browser fell back to a generic font that
+   rendered glyphs incorrectly. Fixed below with
+   a proper @import, plus unicode-bidi:isolate
+   on every Arabic span for correct bidi handling.
+
+   PERFORMANCE: Still pure CSS — rotateY/opacity/
+   text-shadow are all GPU-accelerated. No JS
+   animation loops.
+════════════════════════════════════════════ */
+
+@import url("https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Scheherazade+New:wght@400;700&display=swap");
+
+.honeycomb-wrap {
+    --hex-w: 92px;
+    --hex-h: calc(var(--hex-w) * 1.1547);
+    --hex-clip: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+/* ════════════════════════════════════════════
+   PAGE HEADER
+════════════════════════════════════════════ */
+.honeycomb-header {
+    text-align: center;
+    padding: 2rem 1rem 1.5rem;
+}
+
+.honeycomb-header .arabic-title {
+    font-family: "Amiri", "Scheherazade New", serif;
+    font-size: clamp(1.8rem, 5vw, 2.6rem);
+    color: var(--emerald-dark);
+    direction: rtl;
+    unicode-bidi: isolate;
+    display: block;
+    margin-bottom: 0.4rem;
+}
+
+.honeycomb-header .latin-title {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    color: var(--ink-soft);
+    letter-spacing: 0.04em;
+    display: block;
+    margin-bottom: 0.75rem;
+}
+
+.honeycomb-header .verse-ref {
+    max-width: 560px;
+    margin: 0 auto;
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-style: italic;
+    line-height: 1.7;
+}
+
+.honeycomb-header .verse-ref small {
+    display: block;
+    font-style: normal;
+    color: var(--gold-dark);
+    margin-top: 0.3rem;
+}
+
+/* ════════════════════════════════════════════
+   HONEYCOMB CONTAINER
+   ✅ direction:rtl makes each row's flex items
+   order RIGHT-TO-LEFT — Ar-Rahman (Name #1) now
+   starts on the right and flows leftward, like
+   reading a Quran page. Letter shaping inside
+   each hex was already correct (font fix); this
+   fixes the SEQUENCE order of the names.
+════════════════════════════════════════════ */
+.honeycomb-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 1rem 3rem;
+    direction: rtl;
+}
+
+.hex-row {
+    display: flex;
+}
+
+/* margin-inline-start (not margin-left) so the
+   offset automatically flips to the correct side
+   under RTL direction — no manual mirroring needed */
+.hex-row.hex-row-offset {
+    margin-inline-start: calc(var(--hex-w) / 2);
+}
+
+.hex-row + .hex-row {
+    margin-top: calc(var(--hex-h) * -0.25);
+}
+
+/* ════════════════════════════════════════════
+   HEX CELL — the 3D "book" stage
+   perspective HERE means each hex gets its own
+   independent vanishing point, so the cover
+   opens correctly no matter where it sits in
+   the grid.
+════════════════════════════════════════════ */
+.hex-cell {
+    position: relative;
+    width: var(--hex-w);
+    height: var(--hex-h);
+    margin: 0 2px;
+    cursor: pointer;
+    perspective: 420px;
+}
+
+/* ════════════════════════════════════════════
+   LAYER 1 — BACK (revealed name, glows upward)
+════════════════════════════════════════════ */
+.hex-back {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    clip-path: var(--hex-clip);
+    background: linear-gradient(150deg, var(--emerald-dark) 0%, #0a2a18 100%);
+}
+
+.hex-back-arabic {
+    font-family: "Amiri", "Scheherazade New", serif;
+    font-size: 1.05rem;
+    direction: rtl;
+    unicode-bidi: isolate;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.12);
+    opacity: 0;
+    transform: translateY(12px);
+    transition:
+        opacity 0.4s ease,
+        transform 0.4s ease,
+        color 0.4s ease,
+        text-shadow 0.4s ease;
+}
+
+/* ════════════════════════════════════════════
+   LAYER 2 — COVER (closed book, swings open)
+════════════════════════════════════════════ */
+.hex-cover {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.15rem;
+    clip-path: var(--hex-clip);
+    backface-visibility: hidden;
+    transform-origin: right center; /* hinge on the right edge */
+    transform: rotateY(0deg);
+
+    background: linear-gradient(
+        145deg,
+        var(--cream) 0%,
+        var(--cream-dark) 55%,
+        rgba(201, 150, 58, 0.22) 100%
+    );
+
+    border: 1.5px solid var(--gold-dark);
+
+    box-shadow:
+        inset 0 2px 3px rgba(255, 255, 255, 0.55),
+        inset 0 -4px 5px rgba(0, 0, 0, 0.12),
+        0 4px 9px rgba(0, 0, 0, 0.14);
+
+    transition:
+        transform 0.6s cubic-bezier(0.34, 1.05, 0.64, 1),
+        box-shadow 0.4s ease;
+}
+
+.hex-number {
+    font-family: var(--font-heading);
+    font-size: 0.6rem;
+    color: var(--gold-dark);
+    opacity: 0.75;
+}
+
+.hex-cover-arabic {
+    font-family: "Amiri", "Scheherazade New", serif;
+    font-size: 1rem;
+    color: var(--emerald-dark);
+    direction: rtl;
+    unicode-bidi: isolate;
+    text-align: center;
+    line-height: 1.3;
+    padding: 0 0.3rem;
+}
+
+/* Hover — gentle preview lift, cover not open yet */
+.hex-cell:hover .hex-cover {
+    transform: translateZ(6px) rotateY(-8deg);
+    box-shadow:
+        inset 0 2px 3px rgba(255, 255, 255, 0.6),
+        inset 0 -4px 5px rgba(0, 0, 0, 0.1),
+        0 8px 16px rgba(201, 150, 58, 0.2);
+}
+
+/* ════════════════════════════════════════════
+   ACTIVE STATE — book opens, name glows upward
+════════════════════════════════════════════ */
+.hex-cell.is-active {
+    z-index: 30;
+}
+
+/* Cover swings open on its left hinge, like
+   opening a book held in your hands */
+.hex-cell.is-active .hex-cover {
+    transform: rotateY(115deg);
+    box-shadow:
+        inset 0 2px 3px rgba(255, 255, 255, 0.4),
+        0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Name rises into view with a glow — exactly
+   the "name appears glowing upward" effect */
+.hex-cell.is-active .hex-back-arabic {
+    opacity: 1;
+    color: var(--gold-light);
+    transform: translateY(-6px);
+    text-shadow:
+        0 0 8px rgba(255, 255, 255, 0.85),
+        0 0 18px var(--gold-light),
+        0 0 30px var(--gold);
+    animation: hexGlowRise 0.9s ease-out 1;
+}
+
+@keyframes hexGlowRise {
+    0% {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+    55% {
+        opacity: 1;
+        transform: translateY(-10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(-6px);
+    }
+}
+
+/* ════════════════════════════════════════════
+   REFLECTION — meaning label above the hex
+════════════════════════════════════════════ */
+.hex-reflection {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(6px);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
+
+    background: linear-gradient(135deg, var(--emerald-dark), var(--emerald));
+    border: 1px solid var(--gold-light);
+    color: white;
+    padding: 0.5rem 0.9rem;
+    border-radius: 10px;
+    font-size: 0.72rem;
+    text-align: center;
+    white-space: nowrap;
+    z-index: 40;
+
+    box-shadow:
+        0 0 18px rgba(201, 150, 58, 0.5),
+        0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.hex-reflection strong {
+    display: block;
+    color: var(--gold-light);
+    font-size: 0.78rem;
+    margin-bottom: 0.1rem;
+}
+
+.hex-reflection::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--emerald);
+}
+
+.hex-cell.is-active .hex-reflection {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-10px);
+}
+
+/* ════════════════════════════════════════════
+   DASHBOARD PREVIEW — single row, simpler
+════════════════════════════════════════════ */
+.honeycomb-preview-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0 0.25rem;
+    direction: rtl;
+}
+
+.honeycomb-preview-row .hex-cell {
+    width: 68px;
+    height: calc(68px * 1.1547);
+}
+
+.honeycomb-preview-row .hex-cover-arabic,
+.honeycomb-preview-row .hex-back-arabic {
+    font-size: 0.82rem;
+}
+
+.d-explore-allah-names-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    font-family: var(--font-heading);
+    font-size: 0.82rem;
+    color: var(--emerald);
+    text-decoration: none;
+}
+
+.d-explore-allah-names-link:hover {
+    color: var(--gold-dark);
+}
+
+/* ════════════════════════════════════════════
+   MOBILE FALLBACK (≤700px)
+════════════════════════════════════════════ */
+@media (max-width: 700px) {
+    .honeycomb-container .hex-row {
+        display: contents;
+    }
+
+    .honeycomb-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.6rem;
+        padding: 1rem 1rem 3rem;
+    }
+
+    .hex-cell {
+        width: 100%;
+        height: 88px;
+        margin: 0;
+    }
+
+    .hex-cover,
+    .hex-back {
+        clip-path: none;
+        border-radius: 14px;
+    }
+
+    .hex-cover-arabic,
+    .hex-back-arabic {
+        font-size: 1.05rem;
+    }
+
+    .hex-reflection {
+        font-size: 0.68rem;
+        white-space: normal;
+        max-width: 140px;
+    }
+}
+
+@media (max-width: 480px) {
+    .honeycomb-preview-row .hex-cell {
+        width: 56px;
+        height: calc(56px * 1.1547);
+    }
+    .honeycomb-preview-row .hex-cover-arabic,
+    .honeycomb-preview-row .hex-back-arabic {
+        font-size: 0.72rem;
+    }
+}

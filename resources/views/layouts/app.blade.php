@@ -101,6 +101,9 @@
             background: var(--emerald-dark);
             border-bottom: 2px solid var(--gold-dark);
             padding: 0.75rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1030;
         }
 
         .navbar-brand-text {
