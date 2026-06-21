@@ -13,13 +13,14 @@
 ════════════════════════════════════════════ */
 .reader-toolbar {
     position: sticky;
-    top: 76px; /* was: top: 44px — now matches real navbar height */
+    top: 0;
     z-index: 100;
     background: var(--cream);
     border-bottom: 1px solid var(--border);
     padding: 0.6rem 0;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
+
 /* Unified dropdown style */
 .toolbar-select {
     border: 1px solid var(--border) !important;
@@ -60,22 +61,11 @@
 /* ════════════════════════════════════════════
    SIDEBAR
 ════════════════════════════════════════════ */
-/* ════════════════════════════════════════════
-   SIDEBAR — Responsive for all devices
-════════════════════════════════════════════ */
-
-/* ── DESKTOP (1200px+) ──────────────────── */
-.quran-layout {
-    display: grid;
-    grid-template-columns: 240px 1fr;
-    min-height: 80vh;
-}
-
 .quran-sidebar {
     border-right: 1px solid var(--border);
     position: sticky;
-    top: 76px;
-    height: calc(100vh - 76px - var(--scroll-offset, 120px));
+    top: 58px;
+    height: calc(100vh - 58px);
     overflow-y: auto;
     background: var(--cream);
     scrollbar-width: thin;
@@ -83,7 +73,7 @@
 }
 
 .quran-sidebar::-webkit-scrollbar {
-    width: 3px;
+    width: 4px;
 }
 .quran-sidebar::-webkit-scrollbar-track {
     background: transparent;
@@ -95,19 +85,19 @@
 
 .sidebar-title {
     font-family: var(--font-heading);
-    font-size: 0.6rem;
+    font-size: 0.62rem;
     letter-spacing: 0.1em;
     color: var(--muted);
     text-transform: uppercase;
     padding: 0 1rem;
-    margin: 0.6rem 0 0.3rem;
+    margin: 0.75rem 0 0.4rem;
 }
 
 .sidebar-jump-input {
-    margin: 0 0.75rem;
-    width: calc(100% - 1.5rem);
+    margin: 0 1rem;
+    width: calc(100% - 2rem);
     padding: 0.3rem 0.6rem;
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     border: 1px solid var(--border);
     border-radius: var(--radius);
     background: var(--cream-dark);
@@ -123,7 +113,8 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.3rem 0.75rem;
+    padding: 0.35rem 1rem;
+    text-decoration: none;
     border-left: 2px solid transparent;
     transition: all 0.15s;
     cursor: pointer;
@@ -141,16 +132,16 @@
 
 .sidebar-item-num {
     font-family: var(--font-heading);
-    font-size: 0.62rem;
+    font-size: 0.65rem;
     color: var(--gold);
-    width: 18px;
+    width: 20px;
     text-align: center;
     flex-shrink: 0;
 }
 
 .sidebar-item-text {
     font-family: var(--quran-font);
-    font-size: 0.82rem;
+    font-size: 0.88rem;
     direction: rtl;
     color: var(--emerald);
     overflow: hidden;
@@ -167,117 +158,6 @@
     color: var(--emerald-dark);
 }
 
-/* ── TABLET (600px - 900px) ─────────────── */
-@media (max-width: 900px) and (min-width: 600px) {
-    .quran-layout {
-        /* ✅ Narrow sidebar on tablet */
-        grid-template-columns: 160px 1fr;
-    }
-
-    .quran-sidebar {
-        top: 76px;
-        height: calc(100vh - var(--scroll-offset, 120px));
-    }
-
-    /* Hide Arabic text preview on tablet — too narrow */
-    .sidebar-item-text {
-        display: none;
-    }
-
-    /* Center the number since text is hidden */
-    .sidebar-item {
-        justify-content: center;
-        padding: 0.3rem 0.5rem;
-    }
-
-    .sidebar-item-num {
-        font-size: 0.7rem;
-        width: auto;
-    }
-
-    /* Shrink jump input */
-    .sidebar-jump-input {
-        font-size: 0.72rem;
-        padding: 0.25rem 0.4rem;
-    }
-}
-
-/* ── MOBILE (below 600px) ───────────────── */
-@media (max-width: 599px) {
-    /* ✅ Sidebar hidden on mobile — replaced with
-       a floating button to open it as a drawer */
-    .quran-layout {
-        grid-template-columns: 1fr;
-    }
-
-    .quran-sidebar {
-        display: none;
-    }
-
-    /* ✅ Mobile floating jump button */
-    .mobile-jump-btn {
-        display: flex;
-        position: fixed;
-        bottom: 5rem;
-        left: 1rem;
-        width: 42px;
-        height: 42px;
-        background: var(--emerald);
-        color: white;
-        border: none;
-        border-radius: 50%;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        z-index: 500;
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-        font-size: 1rem;
-    }
-
-    /* ✅ Mobile drawer sidebar */
-    .quran-sidebar.mobile-open {
-        display: block;
-        position: fixed;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        width: 280px;
-        z-index: 900;
-        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
-        height: 100vh;
-        overflow-y: auto;
-    }
-
-    /* Overlay behind drawer */
-    .sidebar-overlay {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.4);
-        z-index: 800;
-    }
-
-    .sidebar-overlay.visible {
-        display: block;
-    }
-}
-
-/* ── LARGE DESKTOP (1400px+) ────────────── */
-@media (min-width: 1400px) {
-    .quran-layout {
-        grid-template-columns: 280px 1fr;
-    }
-
-    .sidebar-item {
-        padding: 0.4rem 1rem;
-    }
-    .sidebar-item-text {
-        font-size: 0.9rem;
-    }
-    .sidebar-item-num {
-        font-size: 0.7rem;
-    }
-}
 /* ════════════════════════════════════════════
    SURAH HEADER
 ════════════════════════════════════════════ */
@@ -362,8 +242,6 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    flex-wrap: wrap; /* ✅ added */
-    gap: 0.6rem; /* ✅ added */
     background: rgba(201, 150, 58, 0.07);
     border: 1px solid rgba(201, 150, 58, 0.3);
     border-radius: var(--radius);
@@ -396,7 +274,7 @@
     transition:
         background 0.2s,
         padding 0.2s;
-    scroll-margin-top: 120px;
+    scroll-margin-top: 70px;
 }
 
 .ayah-card:last-child {
@@ -641,6 +519,135 @@
 }
 
 /* ════════════════════════════════════════════
+   NOTE BANNER
+   Same sliding-open pattern as Tafsir, but
+   EMERALD accent (not gold) — visually signals
+   "your personal reflection" vs "scholarly info"
+════════════════════════════════════════════ */
+.note-banner {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition:
+        max-height 0.35s ease,
+        opacity 0.3s ease;
+    margin-top: 0;
+}
+
+.note-banner.open {
+    max-height: 600px;
+    opacity: 1;
+    margin-top: 0.65rem;
+}
+
+.note-inner {
+    background: var(--cream-dark);
+    border-left: 3px solid var(--emerald);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 0.85rem 1.1rem;
+}
+
+.note-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.note-head strong {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    color: var(--emerald-dark);
+}
+
+.note-close {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+}
+
+.note-title-input {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--cream);
+    padding: 0.4rem 0.65rem;
+    font-size: 0.82rem;
+    margin-bottom: 0.5rem;
+    outline: none;
+}
+
+.note-title-input:focus {
+    border-color: var(--emerald);
+}
+
+.note-content-input {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--cream);
+    padding: 0.55rem 0.65rem;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    resize: vertical;
+    min-height: 70px;
+    outline: none;
+    font-family: var(--font-body);
+}
+
+.note-content-input:focus {
+    border-color: var(--emerald);
+}
+
+.note-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.65rem;
+}
+
+.note-save-btn {
+    background: var(--emerald);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 0.35rem 1.1rem;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.note-save-btn:hover {
+    background: var(--emerald-light);
+}
+
+.note-delete-btn {
+    background: none;
+    border: none;
+    color: #b04040;
+    font-size: 0.76rem;
+    cursor: pointer;
+    padding: 0;
+}
+
+.note-delete-btn:hover {
+    text-decoration: underline;
+}
+
+/* Note button active state — same family as .bookmarked */
+.ayah-btn.has-note {
+    background: var(--emerald);
+    border-color: var(--emerald);
+    color: white;
+}
+
+/* ════════════════════════════════════════════
    SCROLL TO TOP
 ════════════════════════════════════════════ */
 .scroll-top-btn {
@@ -730,10 +737,6 @@
     }
 }
 
-/* ════════════════════════════════════
-   FLASH HIGHLIGHT — temporary glow when
-   an ayah is jumped to (search, sidebar, resume)
-════════════════════════════════════ */
 @keyframes flashHighlight {
     0% {
         background: rgba(201, 150, 58, 0.35);
@@ -746,4 +749,32 @@
 .ayah-card.flash-highlight {
     animation: flashHighlight 2s ease;
     border-radius: var(--radius);
+}
+
+/* ════════════════════════════════════
+   READ CHECKMARK — explicit user
+   confirmation, not inferred
+════════════════════════════════════ */
+.ayah-checkmark {
+    display: none;
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    width: 16px;
+    height: 16px;
+    background: var(--emerald);
+    color: white;
+    border-radius: 50%;
+    font-size: 0.55rem;
+    align-items: center;
+    justify-content: center;
+}
+
+.ayah-card.marked-read .ayah-checkmark {
+    display: flex;
+}
+
+.ayah-card.marked-read .ayah-num-badge {
+    border-color: var(--emerald);
+    color: var(--emerald);
 }

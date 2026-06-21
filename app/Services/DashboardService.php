@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\DailyContent;
 use App\Models\ReadingProgress;
 use App\Models\User;
+use App\Models\Note;
 use App\Models\UserReadAyah;
 use App\Models\SurahProgress;
 use App\Models\AllahName;
@@ -41,6 +42,12 @@ class DashboardService
 
             // ✅ Correct level — sibling of dailyContent, not nested
             'allahNamesPreview' => AllahName::inRandomOrder()->take(5)->get(),
+            'recentNotes' => Note::where('user_id', $user->id)
+                ->quranNotes()
+                ->latest()
+                ->take(5)
+                ->with('ayah.surah')
+                ->get(),
 
             'stats' => [
                 'streak'          => $this->getCurrentStreak($user),

@@ -47,7 +47,6 @@ function updateSidebarActive() {
         document.getElementById("readerToolbar") ||
         document.querySelector(".reader-toolbar");
 
-    // ✅ Real-time toolbar bottom edge + small buffer
     const triggerLine = toolbar
         ? toolbar.getBoundingClientRect().bottom + 10
         : 90;
@@ -203,69 +202,6 @@ function changeTranslation(slug) {
     const url = new URL(location.href);
     url.searchParams.set("translation", slug);
     location.href = url.toString();
-}
-
-// ════════════════════════════════════════════
-// TAFSIR
-// ════════════════════════════════════════════
-function toggleTafsir(btn, surah, ayahId) {
-    const banner = document.getElementById("tafsir-" + ayahId);
-    const isOpen = banner.classList.contains("open");
-
-    // Close all open ones first
-    document
-        .querySelectorAll(".tafsir-banner.open")
-        .forEach((b) => b.classList.remove("open"));
-    document
-        .querySelectorAll('.ayah-btn.active[id^="tafsir-btn"]')
-        .forEach((b) => {
-            b.classList.remove("active");
-            b.innerHTML = '<i class="bi bi-book"></i> Tafsir';
-        });
-
-    if (isOpen) return; // Was open — just close it
-
-    // Open this one
-    banner.classList.add("open");
-    btn.classList.add("active");
-    btn.innerHTML = '<i class="bi bi-book-fill"></i> Tafsir';
-
-    // Load content if not already loaded
-    const textEl = document.getElementById("tafsir-text-" + ayahId);
-    if (textEl.dataset.loaded) return;
-
-    const tafsirSlug = window.selectedTafsir || "";
-    const CSRF = document.querySelector('meta[name="csrf-token"]').content;
-
-    fetch(`/quran/${surah}/${ayahId}/tafsir?tafsir=${tafsirSlug}`, {
-        headers: { Accept: "application/json", "X-CSRF-TOKEN": CSRF },
-    })
-        .then((r) => r.json())
-        .then((data) => {
-            if (data.error) {
-                textEl.innerHTML = `<span class="text-danger">${data.message || data.error}</span>`;
-                return;
-            }
-            document.getElementById("tafsir-name-" + ayahId).textContent =
-                data.tafsir_name;
-            document.getElementById("tafsir-scholar-" + ayahId).textContent =
-                data.scholar;
-            textEl.innerHTML = `<p class="mb-0" style="color:var(--ink)">${data.text}</p>`;
-            textEl.dataset.loaded = "1";
-        })
-        .catch(() => {
-            textEl.innerHTML =
-                '<span class="text-danger">Failed to load. Try again.</span>';
-        });
-}
-
-function closeTafsir(ayahId) {
-    document.getElementById("tafsir-" + ayahId)?.classList.remove("open");
-    const btn = document.getElementById("tafsir-btn-" + ayahId);
-    if (btn) {
-        btn.classList.remove("active");
-        btn.innerHTML = '<i class="bi bi-book"></i> Tafsir';
-    }
 }
 
 // ════════════════════════════════════════════
@@ -726,36 +662,92 @@ document.addEventListener("DOMContentLoaded", function () {
             }, 400);
         }
     }
-
-    // Save progress on ayah click
     if (cfg.isLoggedIn) {
-        const CSRF = document.querySelector('meta[name="csrf-token"]').content;
-
         document
             .querySelectorAll(".ayah-card[data-ayah-id]")
             .forEach((card) => {
-                card.addEventListener("click", function () {
+                card.addEventListener("click", function (e) {
+                    // Tool buttons have their OWN job — not "mark as read"
+                    if (
+                        e.target.closest(
+                            ".ayah-actions, .note-banner, .tafsir-banner",
+                        )
+                    ) {
+                        return;
+                    }
+
                     const ayahId = this.dataset.ayahId;
                     if (!ayahId) return;
 
-                    fetch("/quran/progress", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            Accept: "application/json",
-                            "X-CSRF-TOKEN": CSRF,
-                        },
-                        body: JSON.stringify({ ayah_id: ayahId }),
-                    });
-
-                    document
-                        .querySelectorAll(".ayah-card.last-read")
-                        .forEach((c) => c.classList.remove("last-read"));
-                    this.classList.add("last-read");
+                    markAyahAsRead(this, ayahId);
                 });
             });
     }
 });
+
+// ════════════════════════════════════════════
+// MARK AS READ — explicit user action, not
+// inferred from dwell-time or accidental clicks
+// ════════════════════════════════════════════
+function markAyahAsRead(card, ayahId) {
+    // Already marked — just re-glow, don't re-fetch
+    if (card.classList.contains("marked-read")) {
+        flashHighlightAyah(card.dataset.ayahNumber);
+        return;
+    }
+
+    const CSRF = document.querySelector('meta[name="csrf-token"]').content;
+
+    fetch("/quran/progress", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            "X-CSRF-TOKEN": CSRF,
+        },
+        body: JSON.stringify({ ayah_id: ayahId }),
+    })
+        .then((r) => r.json())
+        .then((data) => {
+            if (data.status !== "saved") return;
+
+            // ✅ Persistent checkmark — doesn't fade
+            card.classList.add("marked-read");
+
+            // ✅ Update resume banner LIVE — no reload needed
+            updateResumeBannerLive(
+                data.ayah_number,
+                data.read_count,
+                data.total_ayahs,
+            );
+
+            flashHighlightAyah(card.dataset.ayahNumber);
+        })
+        .catch(() => showFlash("Could not save your progress.", "error"));
+}
+
+function updateResumeBannerLive(ayahNumber, readCount, totalAyahs) {
+    const countText = document.getElementById("readCountText");
+    if (countText) {
+        countText.innerHTML =
+            `<i class="bi bi-bookmark-fill me-2" style="color:var(--gold)"></i>` +
+            `${readCount} of ${totalAyahs} ayahs read in this Surah`;
+    }
+
+    const continueBtn = document.getElementById("continueBtn");
+    if (continueBtn) {
+        continueBtn.textContent = `Continue from Ayah ${ayahNumber}`;
+        continueBtn.setAttribute("href", `#ayah-${ayahNumber}`);
+        continueBtn.setAttribute(
+            "onclick",
+            `hideBanner(); scrollToAyah(${ayahNumber}); flashHighlightAyah(${ayahNumber})`,
+        );
+    }
+
+    // If this is the FIRST ayah ever marked, the banner
+    // won't exist yet — it will appear correctly on next
+    // page load (minor, acceptable limitation for now)
+}
 
 // ════════════════════════════════════════════
 // MOBILE SIDEBAR DRAWER
@@ -850,7 +842,6 @@ function jumpToAyah(num) {
     const total = window.QURAN_CONFIG?.totalAyahs || 0;
 
     if (n >= 1 && n <= total) {
-        // ✅ Same pause logic for input jump
         manualJumpActive = true;
 
         document
@@ -874,6 +865,135 @@ function jumpToAyah(num) {
         }, 1000);
     } else {
         showFlash(`Please enter a number between 1 and ${total}`, "warning");
+    }
+}
+
+// ════════════════════════════════════════════
+// NOTES — Personal reflections per ayah
+// ════════════════════════════════════════════
+function toggleNoteEditor(btn, ayahId) {
+    const banner = document.getElementById("note-" + ayahId);
+    const isOpen = banner.classList.contains("open");
+
+    document.querySelectorAll(".note-banner.open").forEach((b) => {
+        if (b !== banner) b.classList.remove("open");
+    });
+
+    if (isOpen) {
+        banner.classList.remove("open");
+        return;
+    }
+
+    const existing = (window.USER_NOTES || {})[ayahId];
+    const titleEl = document.getElementById("note-title-" + ayahId);
+    const contentEl = document.getElementById("note-content-" + ayahId);
+    const deleteBtn = document.getElementById("note-delete-" + ayahId);
+
+    titleEl.value = existing?.title || "";
+    contentEl.value = existing?.content || "";
+    deleteBtn.style.display = existing ? "inline" : "none";
+
+    banner.classList.add("open");
+    contentEl.focus();
+}
+
+function closeNoteEditor(ayahId) {
+    document.getElementById("note-" + ayahId)?.classList.remove("open");
+}
+
+function saveNote(ayahId, surahNumber) {
+    const CSRF = document.querySelector('meta[name="csrf-token"]').content;
+    const titleEl = document.getElementById("note-title-" + ayahId);
+    const contentEl = document.getElementById("note-content-" + ayahId);
+    const content = contentEl.value.trim();
+
+    if (!content) {
+        showFlash("Please write something before saving.", "warning");
+        return;
+    }
+
+    const existing = (window.USER_NOTES || {})[ayahId];
+    const isUpdate = !!existing?.id;
+    const url = isUpdate ? `/notes/${existing.id}` : "/notes";
+    const method = isUpdate ? "PUT" : "POST";
+
+    fetch(url, {
+        method: method,
+        headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            "X-CSRF-TOKEN": CSRF,
+        },
+        body: JSON.stringify({
+            ayah_id: ayahId,
+            title: titleEl.value.trim(),
+            content: content,
+            is_private: true,
+        }),
+    })
+        .then((r) => r.json())
+        .then((data) => {
+            if (!data.note) {
+                showFlash(
+                    "Could not save your note. Please try again.",
+                    "error",
+                );
+                return;
+            }
+            window.USER_NOTES = window.USER_NOTES || {};
+            window.USER_NOTES[ayahId] = data.note;
+            updateNoteButtonState(ayahId, true);
+            closeNoteEditor(ayahId);
+            showFlash("✓ Note saved", "success");
+        })
+        .catch(() =>
+            showFlash(
+                "Could not save your note. Check your connection.",
+                "error",
+            ),
+        );
+}
+
+function deleteNote(ayahId) {
+    const existing = (window.USER_NOTES || {})[ayahId];
+    if (!existing?.id) return;
+    if (!confirm("Delete this note? This cannot be undone.")) return;
+
+    const CSRF = document.querySelector('meta[name="csrf-token"]').content;
+
+    fetch(`/notes/${existing.id}`, {
+        method: "DELETE",
+        headers: { Accept: "application/json", "X-CSRF-TOKEN": CSRF },
+    })
+        .then((r) => r.json())
+        .then((data) => {
+            if (data.status !== "deleted") {
+                showFlash("Could not delete your note.", "error");
+                return;
+            }
+            delete window.USER_NOTES[ayahId];
+            updateNoteButtonState(ayahId, false);
+            closeNoteEditor(ayahId);
+            showFlash("Note deleted", "info");
+        })
+        .catch(() =>
+            showFlash(
+                "Could not delete your note. Check your connection.",
+                "error",
+            ),
+        );
+}
+
+function updateNoteButtonState(ayahId, hasNote) {
+    const btn = document.getElementById("note-btn-" + ayahId);
+    if (!btn) return;
+    const label = btn.querySelector("span");
+    if (hasNote) {
+        btn.classList.add("has-note");
+        if (label) label.textContent = " Note";
+    } else {
+        btn.classList.remove("has-note");
+        if (label) label.textContent = " Add Note";
     }
 }
 

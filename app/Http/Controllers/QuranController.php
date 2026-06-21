@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Note;
+use App\Models\UserReadAyah;
 use App\Models\Ayah;
 use App\Models\AyahTafsir;
 use App\Models\AyahTranslation;
@@ -69,6 +71,21 @@ class QuranController extends Controller
         $data['readAyahsCount'] = $user
             ? $this->quranService->getReadAyahsCount($user, $surah)
             : 0;
+
+        // After $this->quranService->getSurahForReading(...) is called
+        $data['userNotes'] = $user
+            ? Note::where('user_id', $user->id)
+            ->whereIn('ayah_id', $data['ayahs']->pluck('id'))
+            ->get()
+            ->keyBy('ayah_id')
+            : collect();
+
+        $data['readAyahIds'] = $user
+            ? UserReadAyah::where('user_id', $user->id)
+            ->whereIn('ayah_id', $data['ayahs']->pluck('id'))
+            ->pluck('ayah_id')
+            ->toArray()
+            : [];
 
         // ✅ Plan info passed to view
         $data['isPremium']      = $this->quranService->userIsPremium($user);
@@ -309,7 +326,16 @@ class QuranController extends Controller
         $ayah = Ayah::find($request->ayah_id);
         $this->quranService->saveReadingProgress(Auth::user(), $ayah);
 
-        return response()->json(['status' => 'saved']);
+        // ✅ Return live counts so the banner can update
+        //    instantly WITHOUT a page reload
+        $readCount = $this->quranService->getReadAyahsCount(Auth::user(), $ayah->surah);
+
+        return response()->json([
+            'status'      => 'saved',
+            'ayah_number' => $ayah->number,
+            'read_count'  => $readCount,
+            'total_ayahs' => $ayah->surah->ayah_count,
+        ]);
     }
 
     // ── POST /quran/{surah}/complete ──────────────────────

@@ -24,6 +24,12 @@
             </p>
         </div>
 
+        {{-- The Allah Medallion — crowning piece above
+             the 99 Names grid --}}
+        <div class="allah-medallion">
+            <span class="allah-medallion-arabic">ٱللَّٰه</span>
+        </div>
+
         {{-- Honeycomb Grid — each cell is a "book" that opens on click --}}
         <div class="honeycomb-container">
             @foreach ($rows as $rowIndex => $row)

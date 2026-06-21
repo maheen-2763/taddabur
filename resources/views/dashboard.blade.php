@@ -30,6 +30,7 @@
 
                     <x-dashboard.progress :stats="$dashboard['stats']" :user="auth()->user()" />
                     <x-dashboard.achievement :achievement="$dashboard['achievement']" />
+                    <x-dashboard.notes-preview :notes="$dashboard['recentNotes']" />
                 </div>
             </div>
 
