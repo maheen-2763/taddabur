@@ -412,6 +412,18 @@
                                         onclick="shareAyah({{ $surah->number }}, {{ $ayah->number }}, this)">
                                         <i class="bi bi-share"></i> Share
                                     </button>
+
+
+                                    {{-- Mark as Read — explicit, one-way confirmation --}}
+                                    @auth
+                                        @php $isRead = in_array($ayah->id, $readAyahIds ?? []); @endphp
+                                        <button class="ayah-btn {{ $isRead ? 'marked-read' : '' }}"
+                                            id="read-btn-{{ $ayah->id }}"
+                                            onclick="markAsRead(this, {{ $ayah->id }})" {{ $isRead ? 'disabled' : '' }}>
+                                            <i class="bi {{ $isRead ? 'bi-check-circle-fill' : 'bi-check-circle' }}"></i>
+                                            <span class="d-none d-sm-inline">{{ $isRead ? ' Read' : ' Mark as Read' }}</span>
+                                        </button>
+                                    @endauth
                                     {{-- Note — personal reflection on this ayah --}}
                                     @auth
                                         @if ($isPremium)

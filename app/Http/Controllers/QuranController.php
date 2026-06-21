@@ -494,4 +494,15 @@ class QuranController extends Controller
 
         return view('quran.sajdas', compact('sajdaAyahs'));
     }
+
+    // GET /quran/my-progress
+    public function myProgress(): View
+    {
+        $progress       = $this->quranService->getAllSurahsProgress(Auth::user());
+        $totalAyahs     = 6236;
+        $totalRead      = $progress->sum('read_count');
+        $totalCompleted = $progress->where('is_completed', true)->count();
+
+        return view('quran.my-progress', compact('progress', 'totalAyahs', 'totalRead', 'totalCompleted'));
+    }
 }

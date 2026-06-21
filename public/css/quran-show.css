@@ -778,3 +778,11 @@
     border-color: var(--emerald);
     color: var(--emerald);
 }
+
+.ayah-btn.marked-read {
+    background: var(--emerald);
+    border-color: var(--emerald);
+    color: white;
+    opacity: 0.9;
+    cursor: default;
+}
