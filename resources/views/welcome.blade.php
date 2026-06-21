@@ -102,8 +102,8 @@
         }
 
         /* ==========================================
-                                                                                                                                                                                               TADDABUR PREMIUM ASMA BACKGROUND
-                                                                                                                                                                                            ========================================== */
+                                                                                                                                                                                                   TADDABUR PREMIUM ASMA BACKGROUND
+                                                                                                                                                                                                ========================================== */
 
         .allah-hero-bg {
             position: absolute;

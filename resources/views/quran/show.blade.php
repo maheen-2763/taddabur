@@ -19,22 +19,22 @@
 @endpush
 
 @php
-    /*
-    |----------------------------------------------------------
-    | BISMILLAH LOGIC
-    |----------------------------------------------------------
-    | The Bismillah text that appears at start of ayah 1
-    | in the database for most surahs
-    */
-
     $showBismillahTop = !in_array($surah->number, [1, 9]);
 
-    // Last read ayah number (for resume banner)
     $lastAyahNumber = auth()->check()
         ? ($quranProgress?->lastAyah?->surah_id === $surah->id
             ? $quranProgress->lastAyah->number
             : null)
         : null;
+
+    // ✅ Add this here too
+    $userNotesForJs = ($userNotes ?? collect())->map(function ($note) {
+        return [
+            'id' => $note->id,
+            'title' => $note->title,
+            'content' => $note->content,
+        ];
+    });
 @endphp
 
 @section('content')
@@ -236,12 +236,11 @@
                     </span>
                 </div>
             @endif
-
             {{-- Resume Banner --}}
             @auth
                 @if ($lastAyahNumber && !$isSurahCompleted)
                     <div class="resume-banner" id="lastReadBanner">
-                        <span style="font-size:0.85rem">
+                        <span id="readCountText" style="font-size:0.85rem">
                             <i class="bi bi-bookmark-fill me-2" style="color:var(--gold)"></i>
                             {{ $readAyahsCount ?? 0 }} of {{ $surah->ayah_count }} ayahs read in this Surah
                         </span>
@@ -251,7 +250,7 @@
                                 onclick="hideBanner(); scrollToAyah(1); flashHighlightAyah(1)">
                                 Start from Beginning
                             </a>
-                            <a href="#ayah-{{ $lastAyahNumber }}" class="btn btn-sm"
+                            <a href="#ayah-{{ $lastAyahNumber }}" class="btn btn-sm" id="continueBtn"
                                 style="background:var(--gold); color:#1A1A2E; border:none; font-size:0.76rem"
                                 onclick="hideBanner(); scrollToAyah({{ $lastAyahNumber }}); flashHighlightAyah({{ $lastAyahNumber }})">
                                 Continue from Ayah {{ $lastAyahNumber }}
@@ -305,7 +304,9 @@
 
                     @endphp
 
-                    <div class="ayah-card {{ $ayah->number === $lastAyahNumber ? 'last-read' : '' }}"
+                    <div class="ayah-card
+            {{ in_array($ayah->id, $readAyahIds ?? []) ? 'marked-read' : '' }}
+            {{ $ayah->number === $lastAyahNumber ? 'last-read' : '' }}"
                         id="ayah-{{ $ayah->number }}" data-ayah-id="{{ $ayah->id }}"
                         data-ayah-number="{{ $ayah->number }}" data-ayah-text="{{ addslashes($ayahText) }}">
 
@@ -316,6 +317,10 @@
                                 <div class="ayah-num-badge">
                                     {{ $ayah->number }}
                                 </div>
+                                {{-- ✅ Checkmark — shows when this ayah is marked read --}}
+                                <span class="ayah-checkmark">
+                                    <i class="bi bi-check-lg"></i>
+                                </span>
                                 <div class="ayah-tooltip">
                                     {{ $surah->name_transliteration }}
                                     {{ $surah->number }}:{{ $ayah->number }}
@@ -329,8 +334,7 @@
 
                                 {{-- ✅ Arabic text
                          Words are NOT wrapped in spans here for performance
-                         They are wrapped in JS only when audio plays
-                    --}}
+                         They are wrapped in JS only when audio plays- --}}
                                 <p class="ayah-arabic-text mb-0" id="arabic-{{ $ayah->id }}">
                                     {{ $ayahText }}<span class="ayah-end-ornament">
                                         &#xFD3F;{{ \App\Helpers\ArabicHelper::toEasternArabic($ayah->number) }}&#xFD3E;</span>
@@ -408,14 +412,84 @@
                                         onclick="shareAyah({{ $surah->number }}, {{ $ayah->number }}, this)">
                                         <i class="bi bi-share"></i> Share
                                     </button>
+                                    {{-- Note — personal reflection on this ayah --}}
+                                    @auth
+                                        @if ($isPremium)
+                                            <button class="ayah-btn {{ isset($userNotes[$ayah->id]) ? 'has-note' : '' }}"
+                                                id="note-btn-{{ $ayah->id }}"
+                                                onclick="toggleNoteEditor(this, {{ $ayah->id }})">
+                                                <i class="bi bi-pencil-square"></i>
+                                                <span class="d-none d-sm-inline">
+                                                    {{ isset($userNotes[$ayah->id]) ? ' Note' : ' Add Note' }}
+                                                </span>
+                                            </button>
+                                        @else
+                                            <button class="ayah-btn position-relative" onclick="redirectToUpgrade('Notes')">
+                                                <i class="bi bi-pencil-square"></i>
+                                                <span class="d-none d-sm-inline"> Note</span>
+                                                <span class="lock-icon">🔒</span>
+                                            </button>
+                                        @endif
+                                    @endauth
 
                                 </div>
-
+                                {{-- Note Banner — personal reflection editor --}}
+                                @auth
+                                    <div class="note-banner" id="note-{{ $ayah->id }}">
+                                        <div class="note-inner">
+                                            <div class="note-head">
+                                                <strong>Your Note</strong>
+                                                <button class="note-close"
+                                                    onclick="closeNoteEditor({{ $ayah->id }})">&times;</button>
+                                            </div>
+                                            <input type="text" class="note-title-input"
+                                                id="note-title-{{ $ayah->id }}" placeholder="Optional title..."
+                                                maxlength="255">
+                                            <textarea class="note-content-input" id="note-content-{{ $ayah->id }}" rows="3"
+                                                placeholder="Write your reflection on this ayah..."></textarea>
+                                            <div class="note-actions">
+                                                <button class="note-delete-btn" id="note-delete-{{ $ayah->id }}"
+                                                    onclick="deleteNote({{ $ayah->id }})" style="display:none">
+                                                    Delete
+                                                </button>
+                                                <button class="note-save-btn"
+                                                    onclick="saveNote({{ $ayah->id }}, {{ $surah->number }})">
+                                                    Save Note
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endauth
                             </div>
                         </div>
                     </div>
                 @endforeach
             </div>
+
+            {{-- Note Banner — personal reflection editor --}}
+            @auth
+                <div class="note-banner" id="note-{{ $ayah->id }}">
+                    <div class="note-inner">
+                        <div class="note-head">
+                            <strong>Your Note</strong>
+                            <button class="note-close" onclick="closeNoteEditor({{ $ayah->id }})">&times;</button>
+                        </div>
+                        <input type="text" class="note-title-input" id="note-title-{{ $ayah->id }}"
+                            placeholder="Optional title..." maxlength="255">
+                        <textarea class="note-content-input" id="note-content-{{ $ayah->id }}" rows="3"
+                            placeholder="Write your reflection on this ayah..."></textarea>
+                        <div class="note-actions">
+                            <button class="note-delete-btn" id="note-delete-{{ $ayah->id }}"
+                                onclick="deleteNote({{ $ayah->id }})" style="display:none">
+                                Delete
+                            </button>
+                            <button class="note-save-btn" onclick="saveNote({{ $ayah->id }}, {{ $surah->number }})">
+                                Save Note
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            @endauth
 
             {{-- Bottom Navigation --}}
             <div class="d-flex justify-content-between mt-5 pt-3" style="border-top:1px solid var(--border)">
@@ -551,6 +625,7 @@
             freeTranslationSlug: '{{ $translations->where('is_free', true)->first()?->slug ?? 'sahih-international' }}',
             lastAyahNumber: {{ $lastAyahNumber ?? 'null' }},
         };
+        window.USER_NOTES = @json($userNotesForJs);
     </script>
     <script src="{{ asset('js/quran-show.js') }}"></script>
 @endpush

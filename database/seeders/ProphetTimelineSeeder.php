@@ -11,9 +11,10 @@ class ProphetTimelineSeeder extends Seeder
     {
         $this->seedAdam();
         $this->seedNuh();
+        $this->seedIbrahim();
 
         // Add new prophet timeline methods below as we complete each story.
-        // Example: $this->seedIbrahim();
+        // Example: $this->seedMusa();
 
         $this->command->info('✅ Prophet timelines seeded.');
     }
@@ -146,14 +147,78 @@ class ProphetTimelineSeeder extends Seeder
         $this->command->info('  ✅ Nuh timeline seeded.');
     }
 
+    private function seedIbrahim(): void
+    {
+        $prophet = Prophet::where('slug', 'ibrahim')->first();
+        if (!$prophet) {
+            $this->command->warn('⚠️  Prophet "ibrahim" not found, skipped.');
+            return;
+        }
+
+        $prophet->update([
+            'timeline' => [
+                [
+                    'title' => "Disputing with His Father",
+                    'description' => "Ibrahim gently called his father away from idol worship, warning him of Allah's punishment.",
+                    'period' => 'Early Calling',
+                    'order' => 1,
+                ],
+                [
+                    'title' => 'Breaking the Idols',
+                    'description' => 'He shattered his people\'s idols, exposing the absurdity of worshipping what cannot speak.',
+                    'period' => 'Confrontation',
+                    'order' => 2,
+                ],
+                [
+                    'title' => 'Thrown into the Fire',
+                    'description' => 'Sentenced to burn for his defiance, Allah commanded the fire to be coolness and safety upon him.',
+                    'period' => 'Miracle',
+                    'order' => 3,
+                ],
+                [
+                    'title' => 'Seeking Certainty',
+                    'description' => 'He debated a tyrant king about life and death, and asked Allah to show him how the dead are revived.',
+                    'period' => 'Deepening Faith',
+                    'order' => 4,
+                ],
+                [
+                    'title' => 'Settling His Family Near the Sacred House',
+                    'description' => 'He left his descendants in a barren valley near the Ka\'bah, trusting Allah completely for their provision.',
+                    'period' => 'Trust',
+                    'order' => 5,
+                ],
+                [
+                    'title' => 'The Sacrifice of Ismail',
+                    'description' => 'Commanded in a vision to sacrifice his son, both father and son submitted fully — until Allah ransomed Ismail.',
+                    'period' => 'The Trial',
+                    'order' => 6,
+                ],
+                [
+                    'title' => "Building the Ka'bah",
+                    'description' => 'Ibrahim and Ismail raised the foundations of the House of Allah and prayed for their descendants.',
+                    'period' => 'Legacy',
+                    'order' => 7,
+                ],
+                [
+                    'title' => 'Khalilullah — Friend of Allah',
+                    'description' => 'His complete submission earned him a title unlike any other prophet: the intimate Friend of Allah.',
+                    'period' => 'Honor',
+                    'order' => 8,
+                ],
+            ],
+        ]);
+
+        $this->command->info('  ✅ Ibrahim timeline seeded.');
+    }
+
     // ---------------------------------------------------------------
     // Template for the next prophet — copy this pattern when ready:
     //
-    // private function seedIbrahim(): void
+    // private function seedMusa(): void
     // {
-    //     $prophet = Prophet::where('slug', 'ibrahim')->first();
+    //     $prophet = Prophet::where('slug', 'musa')->first();
     //     if (!$prophet) {
-    //         $this->command->warn('⚠️  Prophet "ibrahim" not found, skipped.');
+    //         $this->command->warn('⚠️  Prophet "musa" not found, skipped.');
     //         return;
     //     }
     //
@@ -163,7 +228,7 @@ class ProphetTimelineSeeder extends Seeder
     //         ],
     //     ]);
     //
-    //     $this->command->info('  ✅ Ibrahim timeline seeded.');
+    //     $this->command->info('  ✅ Musa timeline seeded.');
     // }
     // ---------------------------------------------------------------
 }

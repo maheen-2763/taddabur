@@ -13,6 +13,8 @@ class DashboardController extends Controller
     // GET /dashboard
     public function index(): View
     {
+
+
         return view('dashboard', [
             'dashboard' => $this->dashboardService->forUser(Auth::user())
         ]);
