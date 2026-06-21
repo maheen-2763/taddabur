@@ -36,16 +36,11 @@
         Your Progress
     </h5>
 
-    <div class="d-stats-grid">
+    <div class="d-stats-grid d-stats-grid-3">
 
         <div class="d-stat-item">
             <div class="d-stat-number">{{ $stats['streak'] ?? 0 }}</div>
             <small class="d-stat-label">🔥 Day Streak</small>
-        </div>
-
-        <div class="d-stat-item">
-            <div class="d-stat-number">{{ number_format($ayahsRead) }}</div>
-            <small class="d-stat-label">📖 Ayahs Read</small>
         </div>
 
         <div class="d-stat-item">
@@ -69,6 +64,21 @@
         </div>
 
         <p class="d-journey-percent">{{ $completion }}% Complete</p>
+
+        {{-- ✅ Add this --}}
+        <a href="{{ route('quran.my-progress') }}"
+            style="display:block; text-align:center; font-size:0.75rem;
+              color:var(--emerald); margin-top:0.5rem">
+            View Full Progress →
+        </a>
     </div>
 
 </div>
+
+@push('styles')
+    <style>
+        .d-stats-grid-3 {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+    </style>
+@endpush

@@ -57,13 +57,15 @@
             width: 56px;
             height: 56px;
             background: linear-gradient(135deg, var(--emerald), var(--emerald-light));
-            border-radius: var(--radius);
+            border: 1.5px solid transparent;
+            border-radius: 50% 50% 6px 6px / 65% 65% 6px 6px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.4rem;
             color: var(--gold-light);
             flex-shrink: 0;
+            transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
         }
 
         .prophet-chip {
@@ -102,89 +104,35 @@
         }
 
         /* ==========================================
-                                                                                                                                                                                                   TADDABUR PREMIUM ASMA BACKGROUND
-                                                                                                                                                                                                ========================================== */
+               HERO AMBIENT BACKGROUND
+               Subtle geometric + watermark texture only.
+               The rotating Asma-ul-Husna display now lives
+               in the "Coming Soon" card, not here — keeps
+               the hero calm and avoids overlapping the
+               ayah card on the right.
+            ========================================== */
 
         .allah-hero-bg {
             position: absolute;
             inset: 0;
-
             overflow: hidden;
-
             pointer-events: none;
-
             z-index: 1;
         }
 
-        /* Allah Watermark */
-
         .allah-watermark {
             position: absolute;
-
-            top: 62%;
+            top: 58%;
             left: 50%;
-
             transform: translate(-50%, -50%);
-
             font-family: 'Amiri', serif;
-
-            font-size: clamp(16rem, 32vw, 36rem);
-
-            line-height: 1.15;
-
-            color: rgba(255, 255, 255, 0.035);
-
+            font-size: clamp(10rem, 18vw, 20rem);
+            line-height: 1;
+            color: rgba(201, 150, 58, 0.08);
             white-space: nowrap;
-
             user-select: none;
-        }
-
-        /* Current Name */
-
-        .hero-asma {
-            position: absolute;
-
-            top: 62%;
-            left: 50%;
-
-            transform: translate(-50%, -50%);
-
-            text-align: center;
-
-            width: 100%;
-
-            z-index: 2;
-        }
-
-        /* Arabic Name */
-
-        .hero-asma-ar {
-            font-family: var(--font-arabic);
-
-            font-size: clamp(2rem, 3vw, 3.5rem);
-
-            color: rgba(201, 150, 58, 0.75);
-
-            text-shadow:
-                0 0 30px rgba(201, 150, 58, 0.10);
-
-            transition: opacity 1.5s ease;
-        }
-
-        /* Meaning */
-
-        .hero-asma-en {
-            margin-top: 0.5rem;
-
-            font-size: 0.85rem;
-
-            letter-spacing: 3px;
-
-            text-transform: uppercase;
-
-            color: rgba(255, 255, 255, 0.45);
-
-            transition: opacity 1.5s ease;
+            -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 75%);
+            mask-image: radial-gradient(circle at center, black 40%, transparent 75%);
         }
 
         .hero .container {
@@ -194,15 +142,9 @@
 
         .hero::after {
             content: '';
-
             position: absolute;
             inset: 0;
-
-            background:
-                radial-gradient(circle at center,
-                    rgba(255, 255, 255, 0.03),
-                    transparent 55%);
-
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.03), transparent 55%);
             pointer-events: none;
         }
 
@@ -214,6 +156,159 @@
         .card-islamic:hover {
             transform: translateY(-4px);
         }
+
+        .card-islamic:hover .feature-icon {
+            background: transparent;
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        /* ==========================================
+               COMING SOON CARDS
+            ========================================== */
+
+        .card-coming-soon {
+            position: relative;
+            border: 1px dashed var(--border);
+            border-radius: var(--radius);
+            background: var(--cream-dark);
+            transition: border-color 0.2s ease;
+        }
+
+        .card-coming-soon:hover {
+            border-color: var(--gold);
+        }
+
+        .card-coming-soon:hover .feature-icon-outline {
+            background: rgba(201, 150, 58, 0.1);
+        }
+
+        .badge-coming-soon {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(201, 150, 58, 0.12);
+            color: var(--gold);
+            border: 1px solid rgba(201, 150, 58, 0.3);
+            font-size: 0.7rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            padding: 0.25rem 0.6rem;
+            border-radius: 50px;
+        }
+
+        .feature-icon-outline {
+            width: 56px;
+            height: 56px;
+            background: transparent;
+            border: 1.5px solid var(--gold);
+            border-radius: 50% 50% 6px 6px / 65% 65% 6px 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: var(--gold);
+            flex-shrink: 0;
+            transition: background 0.25s ease;
+        }
+
+        /* Mini Asma-ul-Husna preview, embedded in its Coming Soon card */
+        .asma-preview {
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .asma-preview-ar {
+            font-family: var(--font-arabic);
+            font-size: 1.4rem;
+            color: var(--gold);
+            transition: opacity 1.2s ease;
+        }
+
+        .asma-preview-en {
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--ink);
+            opacity: 0.6;
+            transition: opacity 1.2s ease;
+        }
+
+        /* ==========================================
+               ORNAMENTAL DIVIDER — small gold star motif
+               used between every major section heading
+            ========================================== */
+
+        .divider-ornament {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 1rem auto 0;
+            max-width: 220px;
+        }
+
+        .divider-ornament .line {
+            flex: 1;
+            height: 1px;
+            background: rgba(201, 150, 58, 0.35);
+        }
+
+        .divider-ornament svg {
+            flex-shrink: 0;
+            color: var(--gold);
+        }
+
+        /* Manuscript-style corner brackets on the hero ayah card */
+        .ayah-card {
+            position: relative;
+        }
+
+        .ayah-card::before,
+        .ayah-card::after {
+            content: '';
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            border: 2px solid var(--gold);
+            opacity: 0.55;
+            pointer-events: none;
+        }
+
+        .ayah-card::before {
+            top: -1px;
+            left: -1px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .ayah-card::after {
+            bottom: -1px;
+            right: -1px;
+            border-left: none;
+            border-top: none;
+        }
+
+        /* ==========================================
+               REFLECTION BAND — second dark band, echoes
+               the hero, gives the page a mid-scroll pause
+            ========================================== */
+
+        .reflect-band {
+            position: relative;
+            padding: 5rem 0;
+            background: linear-gradient(160deg, var(--emerald-dark) 0%, #0a2a18 100%);
+            overflow: hidden;
+        }
+
+        .reflect-band-bg {
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z' fill='none' stroke='rgba(201,150,58,0.06)' stroke-width='1'/%3E%3C/svg%3E");
+            background-size: 60px 60px;
+            pointer-events: none;
+        }
     </style>
 @endpush
 
@@ -224,27 +319,11 @@
 ============================================================ --}}
     <section class="hero">
         <div class="allah-hero-bg">
-
-            <div class="allah-watermark">
-                ﷲ
-            </div>
-
-            <div class="hero-asma">
-                <div id="asma-ar" class="hero-asma-ar">
-                    {{ $allahNames->first()->name_ar ?? '' }}
-                </div>
-
-                <div id="asma-en" class="hero-asma-en">
-                    {{ $allahNames->first()->meaning ?? '' }}
-                </div>
-            </div>
-
+            <div class="allah-watermark">ﷲ</div>
         </div>
 
         <div class="container position-relative">
             <div class="row align-items-center gy-5">
-
-
 
                 {{-- Left: Text --}}
                 <div class="col-lg-6">
@@ -255,7 +334,7 @@
                     </h1>
                     <p class="mb-4"
                         style="color: rgba(255,255,255,0.85); font-size:1.1rem; max-width:480px; line-height: 1.6; ">
-                        A simple space to read, reflect, and understand the Qur’an — with Tafsir and prophetic guidance, so
+                        A simple space to read, reflect, and understand the Qur'an — with Tafsir and prophetic guidance, so
                         every Muslim can access deep Quranic knowledge.
                     </p>
                     <div class="d-flex flex-wrap gap-3">
@@ -275,16 +354,16 @@
 
                 {{-- Right: Arabic ayah --}}
                 <div class="col-lg-5 offset-lg-1">
-                    <div
+                    <div class="ayah-card"
                         style="background:rgba(255,255,255,0.05); border-radius:var(--radius-lg); padding:2rem; border:1px solid rgba(201,150,58,0.2)">
-                        <p class="hero-ayah" style="margin-bottom:1.5rem;">
+                        <p class="hero-ayah" lang="ar" dir="rtl" style="margin-bottom:1.5rem;">
                             اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ
                         </p>
                         <p class="hero-ayah-ref">
                             "Read in the name of your Lord who created." — Al-'Alaq 96:1
                         </p>
                         <hr style="border-color:rgba(201,150,58,0.2)">
-                        <p class="hero-ayah" style="margin-bottom:1.5rem;">
+                        <p class="hero-ayah" lang="ar" dir="rtl" style="margin-bottom:1.5rem;">
                             وَعَلَّمَ الْإِنسَانَ مَا لَمْ يَعْلَمْ
                         </p>
                         <p class="hero-ayah-ref">
@@ -298,40 +377,42 @@
     </section>
 
     {{-- ============================================================
-     STATS BAR
+     STATS BAR — sacred counts only, no pricing mixed in
 ============================================================ --}}
     <section class="py-3" style="background:var(--cream-dark); border-bottom:1px solid var(--border)">
         <div class="container">
             <div class="row text-center">
-                <div class="col-6 col-md-3 stats-box">
-                    <span class="stats-number">114</span>
+                <div class="col-4 stats-box">
+                    <span class="stats-number" data-target="114">0</span>
                     <small class="text-muted">Surahs</small>
                 </div>
-                <div class="col-6 col-md-3 stats-box">
-                    <span class="stats-number">6,236</span>
+                <div class="col-4 stats-box">
+                    <span class="stats-number" data-target="6236" data-format="comma">0</span>
                     <small class="text-muted">Ayahs</small>
                 </div>
-                <div class="col-6 col-md-3 stats-box">
-                    <span class="stats-number">25</span>
+                <div class="col-4 stats-box">
+                    <span class="stats-number" data-target="25">0</span>
                     <small class="text-muted">Prophets</small>
-                </div>
-                <div class="col-6 col-md-3 stats-box">
-                    <span class="stats-number">$1.99</span>
-                    <small class="text-muted">Starting price</small>
                 </div>
             </div>
         </div>
     </section>
 
     {{-- ============================================================
-     FEATURES
+     FEATURES (live today)
 ============================================================ --}}
     <section class="py-5">
         <div class="container">
             <div class="text-center mb-5">
                 <h2 class="heading-font mb-2">Everything You Need to Learn</h2>
                 <p class="text-muted">One platform. Deep knowledge. Affordable for everyone.</p>
-                <hr class="divider-gold">
+                <div class="divider-ornament">
+                    <span class="line"></span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z" />
+                    </svg>
+                    <span class="line"></span>
+                </div>
             </div>
 
             <div class="row g-4">
@@ -359,11 +440,18 @@
         <div class="container">
             <div class="text-center mb-4">
                 <h2 class="heading-font mb-2">Stories of the Prophets</h2>
-                <p class="text-muted">From Adam (AS) to Muhammad (SAW) — every story told in depth.</p>
+                <p class="text-muted">From Adam (AS) to Muhammad ﷺ — every story told in depth.</p>
+                <div class="divider-ornament">
+                    <span class="line"></span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z" />
+                    </svg>
+                    <span class="line"></span>
+                </div>
             </div>
             <div class="d-flex flex-wrap justify-content-center gap-2 mb-4">
-                @foreach (['Adam', 'Nuh', 'Ibrahim', 'Musa', 'Yusuf', 'Isa', 'Dawud', 'Sulayman', 'Yunus', 'Muhammad'] as $name)
-                    <a href="{{ route('prophets.index') }}" class="prophet-chip">{{ $name }} (AS) →
+                @foreach (['Adam' => 'AS', 'Nuh' => 'AS', 'Ibrahim' => 'AS', 'Musa' => 'AS', 'Yusuf' => 'AS', 'Isa' => 'AS', 'Dawud' => 'AS', 'Sulayman' => 'AS', 'Yunus' => 'AS', 'Muhammad' => 'ﷺ'] as $name => $honorific)
+                    <a href="{{ route('prophets.index') }}" class="prophet-chip">{{ $name }} {{ $honorific }} →
                         Stories</a>
                 @endforeach
                 <a href="{{ route('prophets.index') }}" class="prophet-chip" style="border-style:dashed">
@@ -379,17 +467,144 @@
     </section>
 
     {{-- ============================================================
-     PRICING PREVIEW
+     GROWING EVERY MONTH (roadmap — clearly marked Coming Soon)
 ============================================================ --}}
     <section class="py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="heading-font mb-2">Always Growing</h2>
+                <p class="text-muted">
+                    More authentic knowledge is on its way — built the same way as everything else here:
+                    sourced, reviewed, and free to start.
+                </p>
+                <div class="divider-ornament">
+                    <span class="line"></span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z" />
+                    </svg>
+                    <span class="line"></span>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                {{-- Sahaba Stories --}}
+                <div class="col-md-6 col-lg-3">
+                    <div class="card-coming-soon p-4 h-100">
+                        <span class="badge-coming-soon">Coming Soon</span>
+                        <div class="feature-icon-outline mb-3">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <h5 class="heading-font mb-1" style="font-size:1rem">Sahaba Stories</h5>
+                        <p class="text-muted mb-0" style="font-size:0.9rem">
+                            The companions who carried the message forward — their courage, sacrifice, and lives
+                            beside the Prophet ﷺ.
+                        </p>
+                    </div>
+                </div>
+
+                {{-- Tadabbur AI — with live mini preview --}}
+                <div class="col-md-6 col-lg-3">
+                    <div class="card-coming-soon p-4 h-100">
+                        <span class="badge-coming-soon">Coming Soon</span>
+                        <div class="feature-icon-outline mb-3">
+                            <i class="bi bi-robot"></i>
+                        </div>
+                        <h5 class="heading-font mb-1" style="font-size:1rem">Tadabbur AI</h5>
+                        <p class="text-muted mb-0" style="font-size:0.9rem">
+                            Ask questions about any ayah and get clear answers — grounded only in your existing
+                            Tafsir sources, built to help you reflect, not replace a scholar.
+                        </p>
+                    </div>
+                </div>
+
+                {{-- Four Imams --}}
+                <div class="col-md-6 col-lg-3">
+                    <div class="card-coming-soon p-4 h-100">
+                        <span class="badge-coming-soon">Coming Soon</span>
+                        <div class="feature-icon-outline mb-3">
+                            <i class="bi bi-bank"></i>
+                        </div>
+                        <h5 class="heading-font mb-1" style="font-size:1rem">The Four Imams</h5>
+                        <p class="text-muted mb-0" style="font-size:0.9rem">
+                            The lives and legacy of Imam Abu Hanifa, Malik, Ash-Shafi'i, and Ahmad ibn Hanbal.
+                        </p>
+                    </div>
+                </div>
+
+                {{-- Hadith Collection --}}
+                <div class="col-md-6 col-lg-3">
+                    <div class="card-coming-soon p-4 h-100">
+                        <span class="badge-coming-soon">Coming Soon</span>
+                        <div class="feature-icon-outline mb-3">
+                            <i class="bi bi-collection"></i>
+                        </div>
+                        <h5 class="heading-font mb-1" style="font-size:1rem">Hadith Collection</h5>
+                        <p class="text-muted mb-0" style="font-size:0.9rem">
+                            Authenticated hadith from Sahih Bukhari, Sahih Muslim and more, explained in context.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-5">
+                <p class="text-muted mb-2" style="font-size:0.9rem">Want to know the moment these launch?</p>
+                <a href="{{ route('register') }}" class="btn-emerald btn">
+                    Create a Free Account
+                </a>
+            </div>
+        </div>
+    </section>
+
+    {{-- ============================================================
+     REFLECTION BAND — a pause before the pricing ask
+============================================================ --}}
+    <section class="reflect-band">
+        <div class="reflect-band-bg"></div>
+        <div class="container position-relative text-center">
+            <div class="divider-ornament" style="margin-bottom:1.5rem">
+                <span class="line" style="background:rgba(201,150,58,0.4)"></span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"
+                    style="color:var(--gold-light)">
+                    <path d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z" />
+                </svg>
+                <span class="line" style="background:rgba(201,150,58,0.4)"></span>
+            </div>
+            <p class="hero-ayah" lang="ar" dir="rtl"
+                style="text-align:center; border-right:none; padding-right:0; display:inline-block; margin-bottom:1.5rem; max-width:720px;">
+                كِتَابٌ أَنزَلْنَاهُ إِلَيْكَ مُبَارَكٌ لِّيَدَّبَّرُوا آيَاتِهِ وَلِيَتَذَكَّرَ أُولُو الْأَلْبَابِ
+            </p>
+            <p class="mb-1"
+                style="color:rgba(255,255,255,0.8); font-size:1.05rem; max-width:600px; margin-inline:auto;">
+                "A blessed Book which We have revealed to you, that they might reflect upon its verses and that
+                those of understanding would be reminded."
+            </p>
+            <p class="hero-ayah-ref" style="text-align:center; margin-bottom:2rem">— Sad 38:29</p>
+            <a href="{{ route('quran.index') }}" class="btn btn-lg"
+                style="background:transparent; color:var(--gold-light); border:1px solid rgba(201,150,58,0.4)">
+                Begin Your Tadabbur
+            </a>
+        </div>
+    </section>
+
+    {{-- ============================================================
+     PRICING PREVIEW
+============================================================ --}}
+    <section class="py-5" style="background:var(--cream-dark)">
         <div class="container text-center">
             <h2 class="heading-font mb-2">Knowledge Should Be Affordable</h2>
             <p class="text-muted small">
-                Built for learning the Qur’an — not profit-driven complexity.
+                Built for learning the Qur'an — not profit-driven complexity.
             </p>
             <p class="text-muted mb-4">
                 Simple pricing. No hidden charges. Cancel anytime.
             </p>
+            <div class="divider-ornament" style="margin-bottom:2rem">
+                <span class="line"></span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z" />
+                </svg>
+                <span class="line"></span>
+            </div>
             <div class="row justify-content-center g-4">
                 @foreach ([['plan' => 'Free', 'price' => '$0', 'note' => 'forever', 'features' => ['Quran reading', '1 translation', '5 free stories'], 'cta' => 'Start Free', 'href' => route('register'), 'highlight' => false], ['plan' => 'Basic', 'price' => '$1.99', 'note' => 'per month', 'features' => ['All translations', 'Full tafsir', 'All stories'], 'cta' => 'Get Basic', 'href' => route('subscription.upgrade'), 'highlight' => true], ['plan' => 'Premium', 'price' => '$3.99', 'note' => 'per month', 'features' => ['Audio recitations', 'Personal notes', 'Downloads'], 'cta' => 'Go Premium', 'href' => route('subscription.upgrade'), 'highlight' => false]] as $plan)
                     <div class="col-md-4">
@@ -417,19 +632,62 @@
                                 class="{{ $plan['highlight'] ? 'btn-gold' : 'btn-emerald' }} btn w-100">
                                 {{ $plan['cta'] }}
                             </a>
-
                         </div>
-
                     </div>
                 @endforeach
             </div>
         </div>
     </section>
 
-
 @endsection
 
 @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const counters = document.querySelectorAll('.stats-number[data-target]');
+            if (!counters.length) return;
+
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            const animateCounter = (el) => {
+                const target = parseInt(el.dataset.target, 10);
+                const useComma = el.dataset.format === 'comma';
+
+                if (prefersReducedMotion) {
+                    el.textContent = useComma ? target.toLocaleString() : target;
+                    return;
+                }
+
+                const duration = 1200;
+                const start = performance.now();
+
+                const step = (now) => {
+                    const progress = Math.min((now - start) / duration, 1);
+                    const value = Math.round(progress * target);
+                    el.textContent = useComma ? value.toLocaleString() : value;
+                    if (progress < 1) requestAnimationFrame(step);
+                };
+
+                requestAnimationFrame(step);
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        animateCounter(entry.target);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.5
+            });
+
+            counters.forEach((el) => observer.observe(el));
+
+        });
+    </script>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
@@ -443,8 +701,8 @@
 
             let current = 0;
 
-            const ar = document.getElementById('asma-ar');
-            const en = document.getElementById('asma-en');
+            const ar = document.getElementById('asma-preview-ar');
+            const en = document.getElementById('asma-preview-en');
 
             if (!ar || !en) return;
 
@@ -469,7 +727,7 @@
 
                 }, 1000);
 
-            }, 8000);
+            }, 4000);
 
         });
     </script>

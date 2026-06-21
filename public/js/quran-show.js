@@ -662,39 +662,15 @@ document.addEventListener("DOMContentLoaded", function () {
             }, 400);
         }
     }
-    if (cfg.isLoggedIn) {
-        document
-            .querySelectorAll(".ayah-card[data-ayah-id]")
-            .forEach((card) => {
-                card.addEventListener("click", function (e) {
-                    // Tool buttons have their OWN job — not "mark as read"
-                    if (
-                        e.target.closest(
-                            ".ayah-actions, .note-banner, .tafsir-banner",
-                        )
-                    ) {
-                        return;
-                    }
-
-                    const ayahId = this.dataset.ayahId;
-                    if (!ayahId) return;
-
-                    markAyahAsRead(this, ayahId);
-                });
-            });
-    }
 });
 
 // ════════════════════════════════════════════
-// MARK AS READ — explicit user action, not
-// inferred from dwell-time or accidental clicks
+// MARK AS READ — explicit, one-way confirmation
+// Once marked, button disables — no accidental
+// re-triggering, no ambiguity about user intent
 // ════════════════════════════════════════════
-function markAyahAsRead(card, ayahId) {
-    // Already marked — just re-glow, don't re-fetch
-    if (card.classList.contains("marked-read")) {
-        flashHighlightAyah(card.dataset.ayahNumber);
-        return;
-    }
+function markAsRead(btn, ayahId) {
+    if (btn.classList.contains("marked-read")) return;
 
     const CSRF = document.querySelector('meta[name="csrf-token"]').content;
 
@@ -711,17 +687,20 @@ function markAyahAsRead(card, ayahId) {
         .then((data) => {
             if (data.status !== "saved") return;
 
-            // ✅ Persistent checkmark — doesn't fade
-            card.classList.add("marked-read");
+            btn.classList.add("marked-read");
+            btn.disabled = true;
+            btn.innerHTML =
+                '<i class="bi bi-check-circle-fill"></i><span class="d-none d-sm-inline"> Read</span>';
 
-            // ✅ Update resume banner LIVE — no reload needed
+            const card = btn.closest(".ayah-card");
+            if (card) card.classList.add("marked-read");
+
             updateResumeBannerLive(
                 data.ayah_number,
                 data.read_count,
                 data.total_ayahs,
             );
-
-            flashHighlightAyah(card.dataset.ayahNumber);
+            flashHighlightAyah(data.ayah_number);
         })
         .catch(() => showFlash("Could not save your progress.", "error"));
 }

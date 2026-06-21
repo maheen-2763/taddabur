@@ -85,7 +85,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-
+    Route::get('/my-progress', [QuranController::class, 'myProgress'])
+        ->name('quran.my-progress');
 
     // --------------------------------------------------------
     // QURAN ROUTES
@@ -94,6 +95,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('/{surah}', [QuranController::class, 'show'])
             ->name('show');
+
+
 
         // ✅ Removed middleware — controller handles plan check
         Route::get('/{surah}/{ayah}/tafsir', [QuranController::class, 'tafsir'])
@@ -105,6 +108,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('/{surah}/{ayah}/translation', [QuranController::class, 'translation'])
             ->name('translation');
+
 
         Route::post('/progress', [QuranController::class, 'saveProgress'])
             ->name('progress.save');

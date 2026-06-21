@@ -8,6 +8,7 @@ use App\Models\AyahTranslation;
 use App\Models\ReadingProgress;
 use App\Models\Recitation;
 use App\Models\Surah;
+use App\Models\SurahProgress;
 use App\Models\Tafsir;
 use App\Models\Translation;
 use App\Models\User;
@@ -261,13 +262,55 @@ class QuranService
         return $recitation->audioUrlFor($surah, $ayah);
     }
 
-
-
-
     public function getReadAyahsCount(User $user, Surah $surah): int
     {
         return UserReadAyah::where('user_id', $user->id)
             ->whereHas('ayah', fn($q) => $q->where('surah_id', $surah->id))
             ->count();
+    }
+
+    // ════════════════════════════════════════════
+    // GET ALL SURAHS PROGRESS — powers the dedicated
+    // progress page. ONE pass over all 114 surahs.
+    //
+    // PERFORMANCE: Only 3 queries total, regardless
+    // of having 114 surahs:
+    //   1. All surahs
+    //   2. Read-ayah counts, grouped by surah
+    //   3. Completed surah IDs
+    // (NOT 114 separate per-surah queries)
+    // ════════════════════════════════════════════
+    public function getAllSurahsProgress(User $user): \Illuminate\Support\Collection
+    {
+        $surahs = Surah::select('id', 'number', 'name_arabic', 'name_transliteration', 'ayah_count')
+            ->orderBy('number')
+            ->get();
+
+        $readCounts = UserReadAyah::where('user_id', $user->id)
+            ->join('ayahs', 'ayahs.id', '=', 'user_read_ayahs.ayah_id')
+            ->selectRaw('ayahs.surah_id, count(*) as cnt')
+            ->groupBy('ayahs.surah_id')
+            ->pluck('cnt', 'surah_id');
+
+        $completedSurahIds = SurahProgress::where('user_id', $user->id)
+            ->where('is_completed', true)
+            ->pluck('surah_id')
+            ->toArray();
+
+        return $surahs->map(function ($surah) use ($readCounts, $completedSurahIds) {
+            $readCount   = $readCounts[$surah->id] ?? 0;
+            $isCompleted = in_array($surah->id, $completedSurahIds);
+
+            return [
+                'surah'        => $surah,
+                'read_count'   => $readCount,
+                'total_ayahs'  => $surah->ayah_count,
+                'percentage'   => $surah->ayah_count ? round(($readCount / $surah->ayah_count) * 100) : 0,
+                'is_completed' => $isCompleted,
+                'status'       => $isCompleted
+                    ? 'completed'
+                    : ($readCount > 0 ? 'in_progress' : 'not_started'),
+            ];
+        });
     }
 }
