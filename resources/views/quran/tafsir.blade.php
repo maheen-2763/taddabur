@@ -43,9 +43,16 @@
                 </a>
             </div>
 
+            @php
+                $displayText = $ayah->text_arabic;
+                if (!in_array($surah->number, [1, 9]) && $ayah->number === 1) {
+                    $displayText = \App\Helpers\ArabicHelper::stripBismillah($displayText);
+                }
+            @endphp
+
             {{-- Arabic text --}}
             <p class="tafsir-arabic">
-                {{ $ayah->text_arabic }}
+                {{ $displayText }}
                 <span
                     style="font-family:'Amiri',serif;
                          font-size:1rem;

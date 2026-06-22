@@ -7,6 +7,13 @@
         $ayahPosition = $ayah->number;
         $totalAyahs = $surah->ayah_count;
         $progress = $totalAyahs ? round(($ayahPosition / $totalAyahs) * 100) : 0;
+
+        // ✅ Same fix as the main reader — strip Bismillah
+        // from ayah 1 of every surah except Al-Fatihah/At-Tawbah
+        $displayText = $ayah->text_arabic;
+        if (!in_array($surah->number, [1, 9]) && $ayah->number === 1) {
+            $displayText = \App\Helpers\ArabicHelper::stripBismillah($displayText);
+        }
     @endphp
 
     <div class="d-card">
@@ -26,7 +33,9 @@
         </div>
 
         <div class="d-resume-ayah-box">
-            <p class="arabic-sm">﴿ {{ $ayah->text_arabic }} ﴾</p>
+            <p class="arabic-sm mb-3">
+                ﴿ {{ $displayText }}﴾
+            </p>
         </div>
 
         <div class="d-resume-progress-row">

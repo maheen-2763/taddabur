@@ -21,11 +21,14 @@
 @php
     $showBismillahTop = !in_array($surah->number, [1, 9]);
 
-    $lastAyahNumber = auth()->check()
-        ? ($quranProgress?->lastAyah?->surah_id === $surah->id
-            ? $quranProgress->lastAyah->number
-            : null)
-        : null;
+    // ✅ Highest ayah number ACTUALLY marked read —
+    // immune to out-of-order marking, uses $readAyahIds
+    // and $ayahs which are already loaded by the controller
+    $lastAyahNumber = auth()->check() ? $ayahs->whereIn('id', $readAyahIds ?? [])->max('number') : null;
+
+    // ✅ The NEXT unread ayah — what the Continue button
+    // should actually point to
+    $resumeAyahNumber = $lastAyahNumber ? min($lastAyahNumber + 1, $surah->ayah_count) : null;
 
     // ✅ Add this here too
     $userNotesForJs = ($userNotes ?? collect())->map(function ($note) {
@@ -246,15 +249,15 @@
                         </span>
 
                         <div class="d-flex gap-2 flex-shrink-0">
-                            <a href="#ayah-1" class="btn btn-sm btn-outline-secondary" style="font-size:0.76rem"
+                            <button type="button" class="btn btn-sm btn-outline-secondary" style="font-size:0.76rem"
                                 onclick="hideBanner(); scrollToAyah(1); flashHighlightAyah(1)">
                                 Start from Beginning
-                            </a>
-                            <a href="#ayah-{{ $lastAyahNumber }}" class="btn btn-sm" id="continueBtn"
+                            </button>
+                            <button type="button" class="btn btn-sm" id="continueBtn"
                                 style="background:var(--gold); color:#1A1A2E; border:none; font-size:0.76rem"
-                                onclick="hideBanner(); scrollToAyah({{ $lastAyahNumber }}); flashHighlightAyah({{ $lastAyahNumber }})">
-                                Continue from Ayah {{ $lastAyahNumber }}
-                            </a>
+                                onclick="hideBanner(); scrollToAyah({{ $resumeAyahNumber }}); flashHighlightAyah({{ $resumeAyahNumber }})">
+                                Continue from Ayah {{ $resumeAyahNumber }}
+                            </button>
                         </div>
                     </div>
                 @endif

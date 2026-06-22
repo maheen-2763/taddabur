@@ -691,6 +691,18 @@ function markAsRead(btn, ayahId) {
                 data.total_ayahs,
             );
             flashHighlightAyah(data.ayah_number);
+
+            // ✅ Moved here — "data" actually exists in this scope
+            if (data.newly_completed) {
+                const modalEl = document.getElementById("completionModal");
+                if (modalEl) {
+                    new bootstrap.Modal(modalEl, {
+                        backdrop: "static",
+                        keyboard: false,
+                    }).show();
+                }
+                updateCompletedBadge();
+            }
         })
         .catch(() => showFlash("Could not save your progress.", "error"));
 }

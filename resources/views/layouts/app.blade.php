@@ -427,46 +427,74 @@
     </main>
 
     {{-- FOOTER --}}
+    {{-- Footer section only — replace your existing footer in layouts/app.blade.php --}}
     <footer class="footer-islamic mt-5">
         <div class="container">
             <div class="row">
-                <div class="col-md-4 mb-3">
-                    <h5 class="heading-font mb-2" style="color: var(--gold-light)">Taddabur</h5>
-                    <p class="mb-0" style="font-size:0.85rem">
-                        Quran reading, tafsir, and prophet stories — for every Muslim, at every level.
+
+                {{-- Brand column --}}
+                <div class="col-md-4 mb-4">
+                    <div class="mb-3">
+                        @include('components.logo', ['height' => 32])
+                    </div>
+                    <p class="mb-0" style="font-size:0.85rem; color:rgba(255,255,255,0.65)">
+                        Quran reading, Tafsir, and Prophet stories —<br>
+                        for every Muslim, at every level.
                     </p>
-                </div>
-                <div class="col-md-2 mb-3">
-                    <h6 class="text-white mb-2">Learn</h6>
-                    <ul class="list-unstyled mb-0">
-                        <li><a href="{{ route('quran.index') }}">Quran</a></li>
-                        <li><a href="{{ route('stories.index') }}">Stories</a></li>
-                        <li><a href="{{ route('prophets.index') }}">Prophets</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-2 mb-3">
-                    <h6 class="text-white mb-2">Account</h6>
-                    <ul class="list-unstyled mb-0">
-                        @auth
-                            <li><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                            <li><a href="{{ route('profile.edit') }}">Profile</a></li>
-                        @else
-                            <li><a href="{{ route('login') }}">Sign In</a></li>
-                            <li><a href="{{ route('register') }}">Register</a></li>
-                        @endauth
-                        <li><a href="{{ route('pricing') }}">Pricing</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4 mb-3 text-md-end">
-                    <p class="mb-1" style="font-size:0.8rem">
-                        <i class="bi bi-heart-fill" style="color:var(--gold)"></i>
+                    <p class="mt-3 mb-0" style="font-size:0.78rem; color:rgba(255,255,255,0.35)">
+                        <i class="bi bi-heart-fill me-1" style="color:var(--gold)"></i>
                         Built with love for the Ummah
                     </p>
-                    <p class="mb-0" style="font-size:0.75rem">
+                </div>
+
+                {{-- Learn column --}}
+                <div class="col-6 col-md-2 mb-3 offset-md-1">
+                    <h6 class="text-white mb-3"
+                        style="font-family:var(--font-heading); font-size:0.8rem; letter-spacing:0.06em;">LEARN</h6>
+                    <ul class="list-unstyled mb-0" style="font-size:0.875rem;">
+                        <li class="mb-2"><a href="{{ route('quran.index') }}">Quran</a></li>
+                        <li class="mb-2"><a href="{{ route('stories.index') }}">Stories</a></li>
+                        <li class="mb-2"><a href="{{ route('prophets.index') }}">Prophets</a></li>
+                    </ul>
+                </div>
+
+                {{-- Account column --}}
+                <div class="col-6 col-md-2 mb-3">
+                    <h6 class="text-white mb-3"
+                        style="font-family:var(--font-heading); font-size:0.8rem; letter-spacing:0.06em;">ACCOUNT</h6>
+                    <ul class="list-unstyled mb-0" style="font-size:0.875rem;">
+                        @auth
+                            <li class="mb-2"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+                            <li class="mb-2"><a href="{{ route('profile.edit') }}">Profile</a></li>
+                        @else
+                            <li class="mb-2"><a href="{{ route('login') }}">Sign In</a></li>
+                            <li class="mb-2"><a href="{{ route('register') }}">Register</a></li>
+                        @endauth
+                        <li class="mb-2"><a href="{{ route('pricing') }}">Pricing</a></li>
+                    </ul>
+                </div>
+
+                {{-- Legal column --}}
+                <div class="col-md-2 mb-3">
+                    <h6 class="text-white mb-3"
+                        style="font-family:var(--font-heading); font-size:0.8rem; letter-spacing:0.06em;">LEGAL</h6>
+                    <ul class="list-unstyled mb-0" style="font-size:0.875rem;">
+                        <li class="mb-2"><a href="#">Terms</a></li>
+                        <li class="mb-2"><a href="#">Privacy</a></li>
+                    </ul>
+                </div>
+
+            </div>
+
+            {{-- Bottom bar --}}
+            <div class="row mt-2 pt-3" style="border-top:1px solid rgba(201,150,58,0.15);">
+                <div class="col-12 text-center">
+                    <p class="mb-0" style="font-size:0.75rem; color:rgba(255,255,255,0.3);">
                         &copy; {{ now()->year }} Taddabur. All rights reserved.
                     </p>
                 </div>
             </div>
+
         </div>
     </footer>
     @stack('scripts')
