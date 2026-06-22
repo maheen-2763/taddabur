@@ -5,7 +5,7 @@
 
         {{-- Logo --}}
         <a class="navbar-brand navbar-brand-text" href="{{ url('#') }}">
-            ✨ Taddabur
+            @include('components.logo')
         </a>
 
         {{-- Mobile toggle --}}
