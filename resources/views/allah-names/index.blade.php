@@ -62,8 +62,6 @@
 
     </div>
 
-    {{-- One shared audio element reused for all 99 names --}}
-    <audio id="namesAudioPlayer" style="display:none"></audio>
 
 @endsection
 

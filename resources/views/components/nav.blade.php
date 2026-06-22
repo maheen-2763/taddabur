@@ -1,45 +1,47 @@
-<nav class="navbar navbar-expand-lg navbar-islamic">
+{{--
+    Navigation Component — Taddabur
+    Place this file at: resources/views/components/nav.blade.php
+--}}
+<nav class="navbar navbar-islamic navbar-expand-lg">
     <div class="container">
 
-
-
         {{-- Logo --}}
-        <a class="navbar-brand navbar-brand-text" href="{{ url('#') }}">
-            @include('components.logo')
+        <a class="navbar-brand text-decoration-none" href="{{ route('home') }}">
+            @include('components.logo', ['height' => 34])
         </a>
 
         {{-- Mobile toggle --}}
-        <button class="navbar-toggler border-0" aria-label="Toggle navigation" type="button" data-bs-toggle="collapse"
-            data-bs-target="#navMain" style="color:white">
-            <i class="bi bi-list fs-4"></i>
+        <button class="navbar-toggler border-0 p-1" type="button" data-bs-toggle="collapse" data-bs-target="#navMain"
+            aria-controls="navMain" aria-expanded="false" aria-label="Toggle navigation"
+            style="color:rgba(255,255,255,0.8)">
+            <i class="bi bi-list" style="font-size:1.5rem;"></i>
         </button>
 
+        {{-- Links --}}
         <div class="collapse navbar-collapse" id="navMain">
-
-            {{-- Left links --}}
-            <ul class="navbar-nav me-auto gap-1">
+            <ul class="navbar-nav mx-auto gap-1">
                 <li class="nav-item">
-                    <a class="nav-link nav-link-islamic {{ request()->routeIs('quran.*') ? 'active' : '' }}"
+                    <a class="nav-link-islamic nav-link {{ request()->routeIs('quran.*') ? 'active' : '' }}"
                         href="{{ route('quran.index') }}">
                         <i class="bi bi-book me-1"></i>Quran
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link nav-link-islamic {{ request()->routeIs('stories.*') ? 'active' : '' }}"
+                    <a class="nav-link-islamic nav-link {{ request()->routeIs('stories.*') ? 'active' : '' }}"
                         href="{{ route('stories.index') }}">
                         <i class="bi bi-journal-text me-1"></i>Stories
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link nav-link-islamic {{ request()->routeIs('prophets.*') ? 'active' : '' }}"
+                    <a class="nav-link-islamic nav-link {{ request()->routeIs('prophets.*') ? 'active' : '' }}"
                         href="{{ route('prophets.index') }}">
-                        <i class="bi bi-people me-1"></i>Prophets
+                        <i class="bi bi-stars me-1"></i>Prophets
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link nav-link-islamic {{ request()->routeIs('pricing') ? 'active' : '' }}"
+                    <a class="nav-link-islamic nav-link {{ request()->routeIs('pricing') ? 'active' : '' }}"
                         href="{{ route('pricing') }}">
-                        <i class="bi bi-star me-1"></i>Pricing
+                        <i class="bi bi-gem me-1"></i>Pricing
                     </a>
                 </li>
             </ul>
@@ -48,59 +50,53 @@
             <div class="d-flex align-items-center gap-2">
 
                 {{-- Dark mode toggle --}}
-                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">
-                    <i id="theme-icon" class="bi bi-moon-fill" style="font-size:0.8rem"></i>
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+                    <i id="theme-icon" class="bi bi-moon-fill"></i>
                 </button>
 
                 @auth
-                    {{-- Authenticated user --}}
+                    {{-- Plan badge --}}
+                    @php $plan = auth()->user()->subscription_plan ?? 'free'; @endphp
+                    <span class="badge badge-{{ $plan }} text-uppercase"
+                        style="font-size:0.65rem; letter-spacing:0.05em;">
+                        {{ ucfirst($plan) }}
+                    </span>
+
                     <div class="dropdown">
-                        <button class="btn btn-sm d-flex align-items-center gap-2"
-                            style="background:rgba(255,255,255,0.12); color:white; border-radius:var(--radius)"
-                            data-bs-toggle="dropdown">
-
-                            {{-- Plan badge --}}
-                            <span class="badge badge-{{ auth()->user()->plan }}" style="font-size:0.65rem">
-                                {{ strtoupper(auth()->user()->plan) }}
+                        <button class="btn btn-sm d-flex align-items-center gap-2 dropdown-toggle"
+                            style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15);
+                                       color:#fff; border-radius:var(--radius); padding:0.35rem 0.85rem;"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle"></i>
+                            <span
+                                style="font-size:0.85rem; max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                                {{ auth()->user()->name }}
                             </span>
-
-                            {{ auth()->user()->name }}
-                            <i class="bi bi-chevron-down" style="font-size:0.7rem"></i>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow">
+                        <ul class="dropdown-menu dropdown-menu-end mt-1"
+                            style="border-color:var(--border); border-radius:var(--radius);">
                             <li>
-                                <a class="dropdown-item" href="{{ route('dashboard') }}">
+                                <a class="dropdown-item small" href="{{ route('dashboard') }}">
                                     <i class="bi bi-speedometer2 me-2"></i>Dashboard
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="{{ route('bookmarks.index') }}">
-                                    <i class="bi bi-bookmark me-2"></i>Bookmarks
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{{ route('profile.edit') }}">
+                                <a class="dropdown-item small" href="{{ route('profile.edit') }}">
                                     <i class="bi bi-person me-2"></i>Profile
                                 </a>
                             </li>
-                            @if (!auth()->user()->isPremium())
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="{{ route('subscription.upgrade') }}"
-                                        style="color:var(--gold)">
-                                        <i class="bi bi-lightning-fill me-2"></i>Upgrade Plan
-                                    </a>
-                                </li>
-                            @endif
+                            <li>
+                                <a class="dropdown-item small" href="{{ route('subscription.upgrade') }}">
+                                    <i class="bi bi-star me-2" style="color:var(--gold)"></i>Upgrade
+                                </a>
+                            </li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
                             <li>
-                                <form action="{{ route('logout') }}" method="POST">
+                                <form method="POST" action="{{ route('logout') }}">
                                     @csrf
-                                    <button class="dropdown-item text-danger" type="submit">
+                                    <button type="submit" class="dropdown-item small text-danger">
                                         <i class="bi bi-box-arrow-right me-2"></i>Sign Out
                                     </button>
                                 </form>
@@ -108,9 +104,7 @@
                         </ul>
                     </div>
                 @else
-                    {{-- Guest --}}
-                    <a href="{{ route('login') }}" class="btn btn-sm nav-link-islamic"
-                        style="border:1px solid rgba(255,255,255,0.3)">
+                    <a href="{{ route('login') }}" class="nav-link-islamic nav-link" style="font-size:0.85rem;">
                         Sign In
                     </a>
                     <a href="{{ route('register') }}" class="btn-gold btn btn-sm">
@@ -118,7 +112,7 @@
                     </a>
                 @endauth
             </div>
-
         </div>
+
     </div>
 </nav>

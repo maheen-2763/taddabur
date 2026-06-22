@@ -5,8 +5,8 @@
 @push('styles')
     <style>
         /* ================================================
-               AUTH BACKGROUND
-            ================================================ */
+           AUTH BACKGROUND
+        ================================================ */
         .auth-section {
             min-height: 100vh;
             display: flex;
@@ -62,8 +62,8 @@
         }
 
         /* ================================================
-               WRAPPER
-            ================================================ */
+           WRAPPER
+        ================================================ */
         .auth-wrapper {
             position: relative;
             z-index: 1;
@@ -72,32 +72,13 @@
         }
 
         /* ================================================
-               BRAND HEADER
-            ================================================ */
+           BRAND HEADER
+        ================================================ */
         .auth-bismillah {
             font-family: var(--font-arabic);
             font-size: 1.4rem;
             color: var(--gold-light);
             opacity: 0.85;
-        }
-
-        /* Custom crescent+lantern SVG mark */
-        .auth-logo-mark {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-        }
-
-        .auth-logo-mark svg {
-            flex-shrink: 0;
-        }
-
-        .auth-brand-text {
-            font-family: var(--font-heading);
-            font-size: 1.6rem;
-            color: var(--gold-light);
-            letter-spacing: 0.04em;
         }
 
         .auth-tagline {
@@ -118,8 +99,8 @@
         }
 
         /* ================================================
-               CARD
-            ================================================ */
+           CARD
+        ================================================ */
         .auth-card {
             position: relative;
             background: var(--cream);
@@ -156,8 +137,8 @@
         }
 
         /* ================================================
-               FORM ELEMENTS
-            ================================================ */
+           FORM ELEMENTS
+        ================================================ */
         .auth-card .form-control {
             border-radius: var(--radius);
             border-color: var(--border);
@@ -216,8 +197,8 @@
         }
 
         /* ================================================
-               TASBIH LOADING STATE
-            ================================================ */
+           TASBIH LOADING STATE
+        ================================================ */
         .tasbih-loader {
             display: none;
             align-items: center;
@@ -290,8 +271,8 @@
         }
 
         /* ================================================
-               FOOTER VERSE
-            ================================================ */
+           FOOTER VERSE
+        ================================================ */
         .ayah-footer {
             color: rgba(255, 255, 255, 0.55);
             font-size: 0.82rem;
@@ -317,38 +298,13 @@
             {{-- ── Brand header ── --}}
             <div class="text-center mb-4">
 
-                <div class="auth-bismillah mb-2" lang="ar" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+                <div class="auth-bismillah mb-3" lang="ar" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
 
-                {{-- Custom crescent + lantern mark --}}
-                <a href="{{ url('/') }}" class="auth-logo-mark justify-content-center mb-1">
-                    <svg width="38" height="38" viewBox="0 0 38 38" fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        {{-- Crescent --}}
-                        <path
-                            d="M22 6C16.477 6 12 10.477 12 16C12 21.523 16.477 26 22 26C23.91 26 25.694 25.457 27.2 24.52C25.434 25.468 23.41 26 21.25 26C14.484 26 9 20.516 9 13.75C9 9.178 11.454 5.176 15.13 3C13.213 3.946 11.535 5.327 10.222 7C8.826 8.78 8 11.04 8 13.5C8 19.85 13.15 25 19.5 25C22.18 25 24.637 24.05 26.55 22.46C24.694 24.4 22.49 26 19.5 26C13.149 26 8 20.851 8 14.5C8 8.149 13.149 3 19.5 3C20.35 3 21.187 3.09 22 3.26V6Z"
-                            fill="none" />
-                        <path
-                            d="M23 5C17.477 5 13 9.477 13 15C13 20.523 17.477 25 23 25C24.476 25 25.876 24.68 27.13 24.1C25.1 25.289 22.72 26 20.16 26C12.96 26 7.16 20.2 7.16 13C7.16 5.8 12.96 0 20.16 0C21.84 0 23.45 0.31 24.93 0.87C23.74 2.13 23 3.98 23 6V5Z"
-                            fill="#E8BE6D" opacity="0.9" />
-                        {{-- Lantern body --}}
-                        <rect x="16" y="18" width="6" height="10" rx="1.5" fill="#C9963A" opacity="0.85" />
-                        {{-- Lantern top --}}
-                        <path d="M15 18 L19 14 L23 18 Z" fill="#E8BE6D" opacity="0.9" />
-                        {{-- Lantern bottom --}}
-                        <rect x="15.5" y="28" width="7" height="2" rx="1" fill="#C9963A" opacity="0.7" />
-                        {{-- Lantern handle --}}
-                        <line x1="19" y1="14" x2="19" y2="12" stroke="#E8BE6D"
-                            stroke-width="1.2" opacity="0.7" />
-                        {{-- Lantern glow --}}
-                        <rect x="17.5" y="20" width="3" height="5" rx="1" fill="#FAF6EE" opacity="0.5" />
-                        {{-- Star --}}
-                        <path d="M30 4 L30.9 6.9 L34 7 L31.7 9 L32.5 12 L30 10.4 L27.5 12 L28.3 9 L26 7 L29.1 6.9 Z"
-                            fill="#E8BE6D" opacity="0.75" />
-                    </svg>
-                    <span class="auth-brand-text">Taddabur</span>
+                <a href="{{ url('/') }}" class="text-decoration-none d-inline-block mb-1">
+                    @include('components.logo', ['variant' => 'stacked', 'height' => 48])
                 </a>
 
-                <p class="auth-tagline mt-1 mb-1">Reflect. Understand. Grow.</p>
+                <p class="auth-tagline mt-2 mb-1">Reflect. Understand. Grow.</p>
 
                 {{-- Hijri date — rendered by JS --}}
                 <div class="hijri-date" id="hijri-date" lang="ar" dir="rtl" aria-label="Today's Hijri date"></div>

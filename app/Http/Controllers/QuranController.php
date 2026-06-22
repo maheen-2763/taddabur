@@ -324,18 +324,37 @@ class QuranController extends Controller
 
         $request->validate(['ayah_id' => 'required|exists:ayahs,id']);
 
-        $ayah = Ayah::find($request->ayah_id);
-        $this->quranService->saveReadingProgress(Auth::user(), $ayah);
+        $ayah = Ayah::with('surah')->find($request->ayah_id);
+        $user = Auth::user();
 
-        // ✅ Return live counts so the banner can update
-        //    instantly WITHOUT a page reload
-        $readCount = $this->quranService->getReadAyahsCount(Auth::user(), $ayah->surah);
+        $this->quranService->saveReadingProgress($user, $ayah);
+
+        $readCount  = $this->quranService->getReadAyahsCount($user, $ayah->surah);
+        $totalAyahs = $ayah->surah->ayah_count;
+
+        // ✅ Check if EXPLICIT reading is now 100% complete
+        $newlyCompleted = false;
+
+        if ($readCount >= $totalAyahs) {
+            $progress = SurahProgress::where('user_id', $user->id)
+                ->where('surah_id', $ayah->surah_id)
+                ->first();
+
+            if (!$progress?->is_completed) {
+                SurahProgress::updateOrCreate(
+                    ['user_id' => $user->id, 'surah_id' => $ayah->surah_id],
+                    ['is_completed' => true, 'completed_at' => now()]
+                );
+                $newlyCompleted = true;
+            }
+        }
 
         return response()->json([
-            'status'      => 'saved',
-            'ayah_number' => $ayah->number,
-            'read_count'  => $readCount,
-            'total_ayahs' => $ayah->surah->ayah_count,
+            'status'          => 'saved',
+            'ayah_number'      => $ayah->number,
+            'read_count'       => $readCount,
+            'total_ayahs'      => $totalAyahs,
+            'newly_completed'  => $newlyCompleted,
         ]);
     }
 

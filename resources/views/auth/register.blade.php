@@ -79,20 +79,6 @@
             opacity: 0.85;
         }
 
-        .auth-logo-mark {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-        }
-
-        .auth-brand-text {
-            font-family: var(--font-heading);
-            font-size: 1.6rem;
-            color: var(--gold-light);
-            letter-spacing: 0.04em;
-        }
-
         .auth-tagline {
             color: rgba(255, 255, 255, 0.6);
             font-size: 0.8rem;
@@ -332,27 +318,13 @@
             {{-- ── Brand header ── --}}
             <div class="text-center mb-4">
 
-                <div class="auth-bismillah mb-2" lang="ar" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+                <div class="auth-bismillah mb-3" lang="ar" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
 
-                <a href="{{ url('/') }}" class="auth-logo-mark justify-content-center mb-1">
-                    <svg width="38" height="38" viewBox="0 0 38 38" fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M23 5C17.477 5 13 9.477 13 15C13 20.523 17.477 25 23 25C24.476 25 25.876 24.68 27.13 24.1C25.1 25.289 22.72 26 20.16 26C12.96 26 7.16 20.2 7.16 13C7.16 5.8 12.96 0 20.16 0C21.84 0 23.45 0.31 24.93 0.87C23.74 2.13 23 3.98 23 6V5Z"
-                            fill="#E8BE6D" opacity="0.9" />
-                        <rect x="16" y="18" width="6" height="10" rx="1.5" fill="#C9963A" opacity="0.85" />
-                        <path d="M15 18 L19 14 L23 18 Z" fill="#E8BE6D" opacity="0.9" />
-                        <rect x="15.5" y="28" width="7" height="2" rx="1" fill="#C9963A" opacity="0.7" />
-                        <line x1="19" y1="14" x2="19" y2="12" stroke="#E8BE6D"
-                            stroke-width="1.2" opacity="0.7" />
-                        <rect x="17.5" y="20" width="3" height="5" rx="1" fill="#FAF6EE" opacity="0.5" />
-                        <path d="M30 4 L30.9 6.9 L34 7 L31.7 9 L32.5 12 L30 10.4 L27.5 12 L28.3 9 L26 7 L29.1 6.9 Z"
-                            fill="#E8BE6D" opacity="0.75" />
-                    </svg>
-                    <span class="auth-brand-text">Taddabur</span>
+                <a href="{{ url('/') }}" class="text-decoration-none d-inline-block mb-1">
+                    @include('components.logo', ['variant' => 'stacked', 'height' => 48])
                 </a>
 
-                <p class="auth-tagline mt-1 mb-1">Begin your journey of reflection</p>
+                <p class="auth-tagline mt-2 mb-1">Begin your journey of reflection</p>
                 <div class="hijri-date" id="hijri-date" lang="ar" dir="rtl" aria-label="Today's Hijri date"></div>
 
             </div>
@@ -410,8 +382,8 @@
                         <label for="password" class="form-label">Password</label>
                         <div class="input-group">
                             <input id="password" type="password" name="password"
-                                class="form-control @error('password') is-invalid @enderror"
-                                placeholder="Min. 8 characters" required autocomplete="new-password">
+                                class="form-control @error('password') is-invalid @enderror" placeholder="Min. 8 characters"
+                                required autocomplete="new-password">
                             <button class="btn btn-toggle-pass" type="button" onclick="togglePassword('password', this)"
                                 tabindex="-1">
                                 <i class="bi bi-eye"></i>
