@@ -8,6 +8,7 @@ let currentWordCount = 0;
 let wordHighlightTimer = null;
 let currentAudioBtn = null;
 let manualJumpActive = false;
+let highestMarkedAyahNumber = window.QURAN_CONFIG?.lastAyahNumber || 0;
 
 // These are set by the blade via window object
 // window.QURAN_CONFIG = { surahNumber, totalAyahs, ... }
@@ -238,17 +239,6 @@ function playAudio(surah, ayahNumber, ayahId, btn) {
     }
 
     // Save reading progress
-    if (window.QURAN_CONFIG?.isLoggedIn) {
-        fetch("/quran/progress", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-                "X-CSRF-TOKEN": CSRF,
-            },
-            body: JSON.stringify({ ayah_id: ayahId }),
-        });
-    }
 
     // Reset previous state
     clearWordHighlights();
@@ -706,26 +696,27 @@ function markAsRead(btn, ayahId) {
 }
 
 function updateResumeBannerLive(ayahNumber, readCount, totalAyahs) {
+    // Only advance forward — never let the banner
+    // regress to an earlier ayah, even if marked later
+    if (ayahNumber > highestMarkedAyahNumber) {
+        highestMarkedAyahNumber = ayahNumber;
+
+        const continueBtn = document.getElementById("continueBtn");
+        if (continueBtn) {
+            continueBtn.textContent = `Continue from Ayah ${highestMarkedAyahNumber}`;
+            continueBtn.setAttribute(
+                "onclick",
+                `hideBanner(); scrollToAyah(${highestMarkedAyahNumber}); flashHighlightAyah(${highestMarkedAyahNumber})`,
+            );
+        }
+    }
+
     const countText = document.getElementById("readCountText");
     if (countText) {
         countText.innerHTML =
             `<i class="bi bi-bookmark-fill me-2" style="color:var(--gold)"></i>` +
             `${readCount} of ${totalAyahs} ayahs read in this Surah`;
     }
-
-    const continueBtn = document.getElementById("continueBtn");
-    if (continueBtn) {
-        continueBtn.textContent = `Continue from Ayah ${ayahNumber}`;
-        continueBtn.setAttribute("href", `#ayah-${ayahNumber}`);
-        continueBtn.setAttribute(
-            "onclick",
-            `hideBanner(); scrollToAyah(${ayahNumber}); flashHighlightAyah(${ayahNumber})`,
-        );
-    }
-
-    // If this is the FIRST ayah ever marked, the banner
-    // won't exist yet — it will appear correctly on next
-    // page load (minor, acceptable limitation for now)
 }
 
 // ════════════════════════════════════════════

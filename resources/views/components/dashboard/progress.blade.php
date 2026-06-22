@@ -66,10 +66,8 @@
         <p class="d-journey-percent">{{ $completion }}% Complete</p>
 
         {{-- ✅ Add this --}}
-        <a href="{{ route('quran.my-progress') }}"
-            style="display:block; text-align:center; font-size:0.75rem;
-              color:var(--emerald); margin-top:0.5rem">
-            View Full Progress →
+        <a href="{{ route('quran.my-progress') }}" class="btn-emerald btn btn-sm w-100 mt-3" style="font-size:0.78rem">
+            <i class="bi bi-graph-up-arrow me-1"></i> View Full Progress
         </a>
     </div>
 

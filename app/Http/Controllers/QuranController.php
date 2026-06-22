@@ -68,6 +68,7 @@ class QuranController extends Controller
         );
 
         $data = $this->quranService->getSurahForReading($surah, $user, $translationSlug);
+
         $data['readAyahsCount'] = $user
             ? $this->quranService->getReadAyahsCount($user, $surah)
             : 0;

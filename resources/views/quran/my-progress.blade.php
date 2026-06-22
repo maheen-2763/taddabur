@@ -11,6 +11,11 @@
 
     <div class="progress-page">
 
+        <a href="{{ route('dashboard') }}" class="btn btn-sm"
+            style="border:1px solid var(--border); margin-bottom:1rem; display:inline-flex; align-items:center; gap:0.4rem">
+            <i class="bi bi-arrow-left"></i> Back to Dashboard
+        </a>
+
         {{-- Header --}}
         <div class="progress-header">
             <p class="title">📖 My Quran Journey</p>
@@ -87,6 +92,10 @@
         </div>
 
     </div>
+    <button class="scroll-top-btn" id="progressScrollTopBtn" onclick="window.scrollTo({top:0, behavior:'smooth'})"
+        title="Back to top">
+        <i class="bi bi-chevron-up"></i>
+    </button>
 
 @endsection
 
@@ -105,5 +114,11 @@
                 }
             });
         }
+
+        window.addEventListener('scroll', () => {
+            const btn = document.getElementById('progressScrollTopBtn');
+            if (!btn) return;
+            btn.classList.toggle('visible', window.scrollY > 400);
+        });
     </script>
 @endpush
