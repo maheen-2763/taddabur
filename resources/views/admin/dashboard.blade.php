@@ -491,6 +491,75 @@
 
     </div>
 
+    {{-- Bonus quran engagement row --}}
+    <div class="row g-3 mb-2">
+
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="text-muted mb-1" style="font-size:0.7rem">AYAHS READ</p>
+                        <div class="stat-number" style="color:var(--emerald); font-size:1.5rem;">
+                            {{ number_format($totalReadAyahs ?? 0) }}</div>
+                    </div>
+                    <div class="stat-icon" style="background:rgba(27,94,59,0.1)">
+                        <i class="bi bi-check2-all" style="color:var(--emerald)"></i>
+                    </div>
+                </div>
+                <small class="text-muted">across all users</small>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="text-muted mb-1" style="font-size:0.7rem">AYAHS LISTENED</p>
+                        <div class="stat-number" style="color:var(--emerald); font-size:1.5rem;">
+                            {{ number_format($totalListenedAyahs ?? 0) }}</div>
+                    </div>
+                    <div class="stat-icon" style="background:rgba(27,94,59,0.1)">
+                        <i class="bi bi-headphones" style="color:var(--emerald)"></i>
+                    </div>
+                </div>
+                <small class="text-muted">audio recitations</small>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="text-muted mb-1" style="font-size:0.7rem">CHAPTERS COMPLETED</p>
+                        <div class="stat-number" style="color:var(--gold); font-size:1.5rem;">
+                            {{ number_format($totalChapterCompletions ?? 0) }}</div>
+                    </div>
+                    <div class="stat-icon" style="background:rgba(201,150,58,0.1)">
+                        <i class="bi bi-patch-check" style="color:var(--gold)"></i>
+                    </div>
+                </div>
+                <small class="text-muted">story chapters finished</small>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="text-muted mb-1" style="font-size:0.7rem">JUZS</p>
+                        <div class="stat-number" style="color:var(--gold); font-size:1.5rem;">{{ $totalJuzs ?? 30 }}
+                        </div>
+                    </div>
+                    <div class="stat-icon" style="background:rgba(201,150,58,0.1)">
+                        <i class="bi bi-collection" style="color:var(--gold)"></i>
+                    </div>
+                </div>
+                <small class="text-muted">Juz divisions mapped</small>
+            </div>
+        </div>
+
+    </div>
+
     {{-- Most Read Surahs + Notes --}}
     <div class="row g-3 mb-2">
 
@@ -650,14 +719,22 @@
     {{-- ══════════════════════════════════════════════════
      SECTION 4 — USER ENGAGEMENT (top readers)
 ══════════════════════════════════════════════════ --}}
-    <div class="section-heading">Top Users by Time Spent</div>
+    <div class="section-heading">Top Users by Engagement</div>
     <div class="row g-3 mb-2">
 
         <div class="col-md-6">
             <div class="admin-card">
                 <div class="admin-card-header">
                     <h6>Most Engaged Users</h6>
-                    <span style="font-size:0.72rem; color:#999">last 30 days</span>
+                    <span style="font-size:0.72rem; color:#999">
+                        @if (DB::getSchemaBuilder()->hasTable('user_sessions'))
+                            time spent · last 30 days
+                        @else
+                            ayahs read · last 30 days
+                            <span class="badge ms-1" style="background:#FEF3C7;color:#92400E;font-size:0.6rem;">session
+                                tracking coming</span>
+                        @endif
+                    </span>
                 </div>
                 <div class="p-3">
                     @forelse ($topEngagedUsers ?? [] as $user)
