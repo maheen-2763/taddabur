@@ -55,12 +55,6 @@
                 </button>
 
                 @auth
-                    {{-- Plan badge --}}
-                    @php $plan = auth()->user()->subscription_plan ?? 'free'; @endphp
-                    <span class="badge badge-{{ $plan }} text-uppercase"
-                        style="font-size:0.65rem; letter-spacing:0.05em;">
-                        {{ ucfirst($plan) }}
-                    </span>
 
                     <div class="dropdown">
                         <button class="btn btn-sm d-flex align-items-center gap-2 dropdown-toggle"

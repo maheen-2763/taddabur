@@ -432,15 +432,15 @@
                 class="sidebar-link {{ request()->routeIs('admin.quran.*') ? 'active' : '' }}">
                 <i class="bi bi-book"></i> Surahs & Ayahs
             </a>
-            {{-- <a href="{{ route('quran.tafsir') ?? '#' }}"
+            {{-- <a href="{{ route('admin.tafsir.index') ?? '#' }}"
                 class="sidebar-link {{ request()->routeIs('admin.tafsir.*') ? 'active' : '' }}">
                 <i class="bi bi-mortarboard"></i> Tafsir
-            </a> --}}
-            {{-- <a href="{{ route('translations.index') ?? '#' }}"
+            </a>
+            <a href="{{ route('admin.translations.index') ?? '#' }}"
                 class="sidebar-link {{ request()->routeIs('admin.translations.*') ? 'active' : '' }}">
                 <i class="bi bi-translate"></i> Translations
             </a>
-            <a href="{{ route('reciters.index') ?? '#' }}"
+            <a href="{{ route('admin.reciters.index') ?? '#' }}"
                 class="sidebar-link {{ request()->routeIs('admin.reciters.*') ? 'active' : '' }}">
                 <i class="bi bi-mic"></i> Reciters
             </a> --}}
