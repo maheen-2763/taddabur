@@ -269,7 +269,9 @@ Route::get(
 
 
 Route::get('/time-test', function () {
-    return now();
+    return view('test');
 });
+
+
 
 require __DIR__ . '/auth.php';

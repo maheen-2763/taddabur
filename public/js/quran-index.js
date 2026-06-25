@@ -1,158 +1,169 @@
-// public/js/quran-index.js
-
-// ══════════════════════════════════════════════
-// JUZ TOGGLE
-// ══════════════════════════════════════════════
+/*
+ * STATE
+ * openJuz  — which juz number is currently flipped open (null = none)
+ * openRow  — which row's inline panel is visible
+ */
 let openJuz = null;
+let openRow = null;
 
-function toggleJuz(juzNum) {
-    // If same book clicked — close it
+/**
+ * toggleJuz(juzNum, rowIndex)
+ * Called by each book card's onclick.
+ */
+function toggleJuz(juzNum, rowIndex) {
+    // Same book clicked again → close
     if (openJuz === juzNum) {
-        closeJuz(juzNum);
+        closePanel(rowIndex);
         return;
     }
 
-    // Close currently open panel
+    // Different row open → close it silently first
+    if (openRow !== null && openRow !== rowIndex) {
+        _closePanelSilent(openRow);
+    }
+
+    // Deactivate previous book flip
     if (openJuz !== null) {
-        closeJuz(openJuz);
+        document.getElementById(`book-${openJuz}`)?.classList.remove("open");
     }
 
-    // Open the clicked Juz panel
-    openPanel(juzNum);
-}
-
-function openPanel(juzNum) {
-    const panel = document.getElementById("panel-" + juzNum);
-    const book = document.getElementById("book-" + juzNum);
-
-    if (panel) {
-        panel.classList.add("open");
-        setTimeout(() => {
-            panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
-        }, 350);
-    }
-
-    if (book) {
-        book.style.transform = "translateY(-12px) rotate(-2deg)";
-        book.querySelector(".book-cover").style.boxShadow =
-            "0 20px 50px rgba(201,150,58,0.4)";
-    }
-
+    // Flip the new book open
+    document.getElementById(`book-${juzNum}`)?.classList.add("open");
     openJuz = juzNum;
+    openRow = rowIndex;
+
+    // Fill the panel with this juz's surahs
+    _populatePanel(rowIndex, document.getElementById(`book-${juzNum}`));
+
+    // Reveal the panel
+    document.getElementById(`inline-panel-${rowIndex}`)?.classList.add("open");
+
+    // Smooth scroll so the panel comes into view
+    setTimeout(() => {
+        document
+            .getElementById(`inline-panel-${rowIndex}`)
+            ?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }, 80);
 }
 
-function closeJuz(juzNum) {
-    const panel = document.getElementById("panel-" + juzNum);
-    const book = document.getElementById("book-" + juzNum);
+/**
+ * closePanel(rowIndex)
+ * Called by the panel's close button. Public.
+ */
+function closePanel(rowIndex) {
+    _closePanelSilent(rowIndex);
+}
 
-    if (panel) panel.classList.remove("open");
-
-    if (book) {
-        book.style.transform = "";
-        book.querySelector(".book-cover").style.boxShadow = "";
+/**
+ * _closePanelSilent — internal, no scroll
+ */
+function _closePanelSilent(rowIndex) {
+    document
+        .getElementById(`inline-panel-${rowIndex}`)
+        ?.classList.remove("open");
+    if (openJuz !== null) {
+        document.getElementById(`book-${openJuz}`)?.classList.remove("open");
     }
-
     openJuz = null;
+    openRow = null;
 }
 
-// Close panel when clicking outside
-document.addEventListener("click", function (e) {
-    if (openJuz === null) return;
+/**
+ * _populatePanel(rowIndex, bookEl)
+ * Reads surah JSON from data-surahs and builds ornamental tiles.
+ */
+function _populatePanel(rowIndex, bookEl) {
+    const surahs = JSON.parse(bookEl?.dataset?.surahs || "[]");
+    const arabic = bookEl?.dataset?.arabic || "";
+    const juzNum = bookEl?.dataset?.juz || "";
 
-    const clickedBook = e.target.closest(".book-card");
-    const clickedPanel = e.target.closest(".surah-panel");
-    const clickedClose = e.target.closest("[data-close-juz]");
+    // Panel title
+    const titleEl = document.getElementById(`panel-title-${rowIndex}`);
+    if (titleEl) titleEl.textContent = `${arabic} — Juz ${juzNum}`;
 
-    if (!clickedBook && !clickedPanel && !clickedClose) {
-        closeJuz(openJuz);
-    }
-});
+    // Build tiles
+    const grid = document.getElementById(`surah-grid-${rowIndex}`);
+    if (!grid) return;
 
-// ══════════════════════════════════════════════
-// SEARCH
-// ══════════════════════════════════════════════
-function initSearch(surahsData) {
-    const searchInput = document.getElementById("surahSearch");
-    const searchResults = document.getElementById("searchResults");
-    const searchList = document.getElementById("searchList");
-    const shelfGrid = document.getElementById("shelfGrid");
+    grid.innerHTML = surahs
+        .map(
+            (s) => `
+        <a href="/quran/${s.number}" class="panel-tile">
+            <div class="panel-tile-num">${s.number}</div>
+            <div class="panel-tile-arabic">${s.name_arabic}</div>
+            <div class="panel-tile-en">${s.name_transliteration}</div>
+            <div class="panel-tile-meta">${s.ayah_count} Ayahs</div>
+        </a>
+    `,
+        )
+        .join("");
+}
 
-    if (!searchInput) return;
+/* ================================================
+   SEARCH
+   Reads surah data embedded in book card data-attrs.
+   No server call — O(114) in-memory scan.
+================================================ */
+document.addEventListener("DOMContentLoaded", () => {
+    const input = document.getElementById("surahSearch");
+    const resultsWrap = document.getElementById("searchResults");
+    const resultsList = document.getElementById("searchList");
+    if (!input) return;
 
-    searchInput.addEventListener("input", function () {
-        const q = this.value.toLowerCase().trim();
+    // Pre-collect all surahs from embedded JSON once
+    const allSurahs = [];
+    document.querySelectorAll(".book-card").forEach((card) => {
+        const surahs = JSON.parse(card.dataset.surahs || "[]");
+        const juzNum = card.dataset.juz;
+        surahs.forEach((s) => {
+            if (!allSurahs.find((x) => x.number === s.number)) {
+                allSurahs.push({ ...s, juz: juzNum });
+            }
+        });
+    });
 
-        // Clear search — show bookshelf
-        if (q.length < 2) {
-            searchResults.style.display = "none";
-            shelfGrid.style.display = "grid";
+    input.addEventListener("input", function () {
+        const query = this.value.trim().toLowerCase();
+
+        if (!query) {
+            resultsWrap?.classList.add("d-none");
+            if (resultsList) resultsList.innerHTML = "";
             return;
         }
 
-        // Filter surahs
-        const results = surahsData.filter(
-            (s) =>
-                s.name_transliteration.toLowerCase().includes(q) ||
-                s.name_english.toLowerCase().includes(q) ||
-                String(s.number).includes(q),
-        );
+        const matches = allSurahs
+            .filter(
+                (s) =>
+                    s.name_transliteration?.toLowerCase().includes(query) ||
+                    s.name_english?.toLowerCase().includes(query) ||
+                    s.name_arabic?.includes(query) ||
+                    String(s.number).includes(query),
+            )
+            .slice(0, 10);
 
-        // Render results
-        searchList.innerHTML =
-            results.length > 0
-                ? results.map((s) => buildSurahRow(s)).join("")
-                : buildEmptyState();
-
-        searchResults.style.display = "block";
-        shelfGrid.style.display = "none";
-    });
-
-    // Clear search on Escape
-    searchInput.addEventListener("keydown", function (e) {
-        if (e.key === "Escape") {
-            this.value = "";
-            searchResults.style.display = "none";
-            shelfGrid.style.display = "grid";
+        if (resultsList) {
+            resultsList.innerHTML = matches
+                .map(
+                    (s) => `
+                <a href="/quran/${s.number}" class="search-surah-row">
+                    <div class="search-num">${s.number}</div>
+                    <div style="flex:1">
+                        <div class="search-name">${s.name_transliteration}</div>
+                        <div class="search-meta">Juz ${s.juz} · ${s.ayah_count} Ayahs</div>
+                    </div>
+                    <div class="search-arabic">${s.name_arabic}</div>
+                </a>
+            `,
+                )
+                .join("");
         }
+
+        resultsWrap?.classList.toggle("d-none", matches.length === 0);
     });
-}
 
-function buildSurahRow(surah) {
-    const completedIcon = surah.is_completed
-        ? `<span class="surah-row-completed"><i class="bi bi-check-circle-fill"></i></span>`
-        : "";
-
-    return `
-        <a href="${surah.url}" class="surah-row">
-            <div class="surah-row-num">${surah.number}</div>
-            <div class="flex-grow-1">
-                <div class="surah-row-name">${surah.name_transliteration}</div>
-                <div class="surah-row-meta">
-                    ${surah.name_english} ·
-                    ${surah.ayah_count} ayahs ·
-                    ${capitalize(surah.revelation_type)}
-                </div>
-            </div>
-            <div class="surah-row-arabic">${surah.name_arabic}</div>
-            ${completedIcon}
-        </a>
-    `;
-}
-
-function buildEmptyState() {
-    return `
-        <p style="color:rgba(255,255,255,0.4);
-                  text-align:center;
-                  padding:1.5rem;
-                  font-style:italic">
-            No surahs found. Try another name.
-        </p>
-    `;
-}
-
-// ══════════════════════════════════════════════
-// HELPERS
-// ══════════════════════════════════════════════
-function capitalize(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-}
+    document.getElementById("searchClear")?.addEventListener("click", () => {
+        input.value = "";
+        resultsWrap?.classList.add("d-none");
+        if (resultsList) resultsList.innerHTML = "";
+    });
+});

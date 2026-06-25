@@ -1,60 +1,69 @@
-{{-- resources/views/quran/index.blade.php --}}
+<!DOCTYPE html>
+<html lang="en">
 
-@extends('layouts.app')
-@section('title', 'The Holy Quran — Taddabur')
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Al-Quran Interactive Gateway</title>
+    <link rel="stylesheet" href="{{ asset('css/test.css') }}?v={{ time() }}">
+</head>
 
-@push('styles')
-    <link rel="stylesheet" href="{{ asset('css/quran-index.css') }}">
-@endpush
+<body>
 
-@section('content')
+    <div class="portal-container">
+        <div class="sacred-gate">
 
-    @include('quran.partials._hero')
-    @include('quran.partials._search')
-
-    <div class="bookshelf-section">
-
-        <p class="bookshelf-label">✦ The Holy Quran — 30 Juz ✦</p>
-
-        <div class="shelf-grid" id="shelfGrid">
-
-            @foreach ($juzData as $juz)
-                @php
-                    $progress = $juz['progress'] ?? ['total' => 0, 'completed' => 0];
-                @endphp
-
-                <div class="juz-card" onclick="openJuz({{ $juz['juz'] }})">
-
-                    <div class="juz-glow"></div>
-
-                    <div class="juz-arabic">
-                        {{ $juz['title_ar'] }}
-                    </div>
-
-                    <div class="juz-title">
-                        {{ $juz['title_en'] }}
-                    </div>
-
-                    <div class="juz-number">
-                        Juz {{ $juz['juz'] }}
-                    </div>
-
-                    <div class="juz-footer">
-                        {{ $progress['total'] }} Surahs
-                        ({{ $progress['completed'] }} completed)
-                    </div>
-
+            <!-- Left Gate (Folds Left) -->
+            <div class="gate left-gate">
+                <div class="gate-pattern left-pattern">
+                    <div class="gate-title-half">القرآن</div>
                 </div>
-            @endforeach
+            </div>
 
-            <div class="shelf-plank"></div>
+            <!-- Right Gate (Folds Right) -->
+            <div class="gate right-gate">
+                <div class="gate-pattern right-pattern">
+                    <div class="gate-title-half">الكريم</div>
+                </div>
+            </div>
+
+            <!-- The Inner Sanctuary Page (Revealed Behind Gates) -->
+            <div class="sanctuary-core">
+                <div class="divine-noor"></div>
+                <div class="geometric-overlay"></div>
+
+                <h3 class="sanctuary-title">الْفِهْرِسْ <br><span>The Sacred Index</span></h3>
+
+                <div class="mihrab-books-wrapper">
+                    <!-- Mihrab Book 1: 30 Juz -->
+                    <a href="/juz" class="mihrab-book">
+                        <div class="mihrab-cover">
+                            <div class="arch-design"></div>
+                            <span class="arabic">الأجزاء</span>
+                            <span class="english">30 JUZ</span>
+                        </div>
+                        <div class="mihrab-inside">
+                            <span>Enter<br>Index</span>
+                        </div>
+                    </a>
+
+                    <!-- Mihrab Book 2: Surah List -->
+                    <a href="/surah" class="mihrab-book">
+                        <div class="mihrab-cover">
+                            <div class="arch-design"></div>
+                            <span class="arabic">السور</span>
+                            <span class="english">SURAH</span>
+                        </div>
+                        <div class="mihrab-inside">
+                            <span>Enter<br>Index</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
 
         </div>
-
     </div>
 
-@endsection
+</body>
 
-@push('scripts')
-    <script src="{{ asset('js/quran-index.js') }}" defer></script>
-@endpush
+</html>

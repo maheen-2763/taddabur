@@ -1,47 +1,64 @@
 {{-- resources/views/quran/partials/_book_card.blade.php --}}
-{{--
-    Variables expected:
-    $juzNum          → int (1-30)
-    $juz             → array (arabic, name, start, surahs)
-    $juzSurahs       → collection of Surah models
-    $completedInJuz  → int (how many surahs completed)
-    $isJuzCompleted  → bool
---}}
 
-<div class="book-card {{ $isJuzCompleted ? 'completed' : '' }}" id="book-{{ $juzNum }}"
-    onclick="toggleJuz({{ $juzNum }})">
+<div class="book-card {{ $isJuzCompleted ? 'book-completed' : '' }}" id="book-{{ $juz['juz'] }}"
+    onclick="toggleJuz({{ $juz['juz'] }})">
 
-    {{-- Book spine --}}
+    {{-- Spine --}}
     <div class="book-spine"></div>
 
-    {{-- Book cover --}}
+    {{-- Cover --}}
     <div class="book-cover">
 
-        {{-- Completed checkmark --}}
         @if ($isJuzCompleted)
-            <div class="book-completed-check">
-                <i class="bi bi-check" style="font-size:0.65rem"></i>
+            <div class="book-check">
+                <i class="bi bi-check"></i>
             </div>
         @endif
 
-        {{-- Juz number label --}}
-        <div class="book-juz-num">JUZ {{ $juzNum }}</div>
-
-        {{-- Arabic title --}}
-        <div>
-            <div class="book-arabic-title">{{ $juz['arabic'] }}</div>
-            <div class="book-arabic-sub">{{ $juz['name'] }}</div>
+        <div class="book-juz-num">
+            Juz {{ $juzNum }}
         </div>
 
-        {{-- Surah count --}}
-        <div class="book-surah-count">
+        <div class="book-title-group">
+            <div class="book-arabic-name">
+                {{ $juz['arabic'] }}
+            </div>
+
+            <div class="book-arabic-sub">
+                {{ $juz['name'] }}
+            </div>
+        </div>
+
+        <div class="book-count">
+
             {{ count($juzSurahs) }} Surahs
+
             @if ($completedInJuz > 0 && !$isJuzCompleted)
-                · {{ $completedInJuz }} done
-            @elseif($isJuzCompleted)
-                · All done ✓
+                · {{ $completedInJuz }} Completed
             @endif
+
+            @if ($isJuzCompleted)
+                · Complete ✓
+            @endif
+
         </div>
 
     </div>
+
 </div>
+
+
+@push('styles')
+    <style>
+        .book-check i {
+            font-size: 0.65rem;
+        }
+
+        .book-title-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.15rem;
+        }
+    </style>
+@endpush

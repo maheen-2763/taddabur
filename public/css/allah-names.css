@@ -260,7 +260,7 @@
     gap: 0.15rem;
     clip-path: var(--hex-clip);
     backface-visibility: hidden;
-    transform-origin: left center; /* hinge on the left edge */
+    transform-origin: right center; /* hinge on the left edge */
     transform: rotateY(0deg);
 
     background: linear-gradient(

@@ -17,7 +17,7 @@ class QuranIndexService
         $progress = $this->getProgress($userId);
         $progressIds = $progress['ids'];
 
-        $juzData = $this->getJuzTree($progressIds);
+        $juzData = $this->BuildJuzTree($progressIds);
 
         return [
             'surahs'              => $surahs,
@@ -62,9 +62,11 @@ class QuranIndexService
         ];
     }
 
-    private function getJuzTree(array $progressIds)
+    private function buildJuzTree(array $progressIds): \Illuminate\Support\Collection
     {
         $juzNames = JuzNameService::getAll();
+
+        $completedLookup = array_flip($progressIds);
 
         $data = DB::table('juz_surah')
             ->join('surahs', 'surahs.id', '=', 'juz_surah.surah_id')
@@ -82,42 +84,43 @@ class QuranIndexService
             ->orderBy('surahs.number')
             ->get();
 
-        return $data->groupBy('juz')->map(function ($items, $juzNumber) use ($juzNames, $progressIds) {
+        return $data
+            ->groupBy('juz')
+            ->map(function ($items, $juzNumber) use ($juzNames, $completedLookup) {
 
-            $surahs = $items->values();
-
-            $total = $surahs->count();
-
-            $completed = $surahs->filter(function ($s) use ($progressIds) {
-                return in_array($s->id, $progressIds);
-            })->count();
-
-            return [
-                'juz' => (int) $juzNumber,
-
-                'title_ar' => $juzNames[$juzNumber]['ar'] ?? 'الجزء ' . $juzNumber,
-                'title_en' => $juzNames[$juzNumber]['en'] ?? 'Juz ' . $juzNumber,
-
-                'surahs' => $surahs->map(function ($s) {
+                $surahs = $items->map(function ($surah) use ($completedLookup) {
                     return [
-                        'id' => $s->id,
-                        'number' => $s->number,
-                        'name_arabic' => $s->name_arabic,
-                        'name_english' => $s->name_english,
-                        'name_transliteration' => $s->name_transliteration,
-                        'type' => $s->revelation_type,
-                        'ayah_count' => $s->ayah_count,
+                        'id'                  => $surah->id,
+                        'number'              => $surah->number,
+                        'name_arabic'         => $surah->name_arabic,
+                        'name_english'        => $surah->name_english,
+                        'name_transliteration' => $surah->name_transliteration,
+                        'type'                => $surah->revelation_type,
+                        'ayah_count'          => $surah->ayah_count,
+                        'completed'           => isset($completedLookup[$surah->id]),
                     ];
-                })->values()->all(),
+                });
 
-                // ✅ ADD THIS (FIX)
-                'progress' => [
-                    'total' => $total,
-                    'completed' => $completed,
-                    'is_completed' => $total > 0 && $total === $completed,
-                    'percentage' => $total > 0 ? round(($completed / $total) * 100) : 0,
-                ],
-            ];
-        })->values()->all();
+                $total     = $surahs->count();
+                $completed = $surahs->where('completed', true)->count();
+
+                return [
+                    'juz'   => (int) $juzNumber,
+                    'title' => [
+                        'ar' => $juzNames[$juzNumber]['ar'] ?? "الجزء {$juzNumber}",
+                        'en' => $juzNames[$juzNumber]['en'] ?? "Juz {$juzNumber}",
+                    ],
+
+                    'surahs'   => $surahs->values(),
+
+                    'progress' => [
+                        'total'        => $total,
+                        'completed'    => $completed,
+                        'is_completed' => $total > 0 && $completed === $total,
+                        'percentage'   => $total > 0 ? round(($completed / $total) * 100) : 0,
+                    ],
+                ];
+            })
+            ->values();
     }
 }
