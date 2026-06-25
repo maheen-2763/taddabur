@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use App\Models\ListenedAyah;
+use App\Services\Quran\QuranIndexService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 
@@ -28,35 +29,19 @@ class QuranController extends Controller
     public function __construct(
         private QuranService    $quranService,
         private BookmarkService $bookmarkService,
+        private QuranIndexService $quranIndexService,
     ) {}
 
     // ── GET /quran ────────────────────────────────────────
     public function index(): View
     {
-        $surahs       = $this->quranService->getAllSurahs();
-        $meccanCount  = $surahs->where('revelation_type', 'meccan')->count();
-        $medinanCount = $surahs->where('revelation_type', 'medinan')->count();
 
-        $completedSurahIds = [];
-        $completedCount    = 0;
-
-        if (Auth::check()) {
-            $completedSurahIds = SurahProgress::where('user_id', Auth::id())
-                ->where('is_completed', true)
-                ->pluck('surah_id')
-                ->toArray();
-
-            $completedCount = count($completedSurahIds);
-        }
-
-        return view('quran.index', compact(
-            'surahs',
-            'meccanCount',
-            'medinanCount',
-            'completedSurahIds',
-            'completedCount'
-        ));
+        return view(
+            'quran.index',
+            $this->quranIndexService->get(Auth::id())
+        );
     }
+
 
     // ── GET /quran/{surah} ───────────────────────────────
     public function show(Request $request, Surah $surah): View

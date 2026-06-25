@@ -11,6 +11,8 @@ use App\Services\QuranService;
 use App\Services\StoryService;
 use App\Services\SubscriptionService;
 use Illuminate\Support\ServiceProvider;
+use App\Models\StoryChapter;
+use App\Observers\StoryChapterObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -29,6 +31,7 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        StoryChapter::observe(StoryChapterObserver::class);
         \Illuminate\Support\Facades\Route::bind('surah', function ($value) {
             return \App\Models\Surah::where('number', $value)->firstOrFail();
         });

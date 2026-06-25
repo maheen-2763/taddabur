@@ -30,6 +30,7 @@ function loadTafsir(tafsirSlug) {
     const url =
         `/quran/${cfg.surahNumber}/${cfg.ayahId}/tafsir` +
         (tafsirSlug ? `?tafsir=${tafsirSlug}` : "");
+    console.log(url);
 
     fetch(url, {
         headers: {

@@ -1,0 +1,392 @@
+/* Reset & Cosmic Islamic Canvas */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: #030706;
+    background-image:
+        radial-gradient(circle at 50% 20%, #0a201a 0%, transparent 50%),
+        radial-gradient(circle at 50% 80%, #051310 0%, #020504 100%);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    font-family: "Times New Roman", serif;
+}
+
+/* 3D Master Scene Wrapper */
+.portal-container {
+    perspective: 1600px;
+    width: 500px;
+    height: 650px;
+}
+
+/* The Gate Frame Engine */
+.sacred-gate {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transform: rotateX(8deg);
+    transition: transform 2s ease-in-out;
+}
+
+/* Bi-Fold Gates Style */
+.gate {
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(145deg, #0d2b21, #061611);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+    z-index: 10;
+    transition: transform 1.8s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 3px solid #c5a059;
+}
+
+.left-gate {
+    left: 0;
+    transform-origin: left center;
+    border-radius: 20px 0 0 20px;
+    border-right: 1px solid #c5a059;
+}
+
+.right-gate {
+    right: 0;
+    transform-origin: right center;
+    border-radius: 0 20px 20px 0;
+    border-left: 1px solid #c5a059;
+}
+
+/* Ornate Arabic Calligraphy Placements on Cover */
+.gate-pattern {
+    width: 100%;
+    height: 100%;
+    padding: 30px;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.left-pattern {
+    justify-content: flex-end;
+    padding-right: 15px;
+}
+.right-pattern {
+    justify-content: flex-start;
+    padding-left: 15px;
+}
+
+/* Subtle Gold Geometric Lines inside gates */
+.gate-pattern::before {
+    content: "";
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    right: 15px;
+    bottom: 15px;
+    border: 1px dashed rgba(197, 160, 89, 0.3);
+}
+
+.gate-title-half {
+    color: #c5a059;
+    font-size: 2.5rem;
+    text-shadow: 0 0 15px rgba(197, 160, 89, 0.4);
+}
+
+/* --- THE HOVER TRIGGER: GATES OPEN WIDE --- */
+.portal-container:hover .left-gate {
+    transform: rotateY(-140deg);
+}
+.portal-container:hover .right-gate {
+    transform: rotateY(140deg);
+}
+.portal-container:hover .sacred-gate {
+    transform: rotateX(0deg) scale(1.03);
+}
+
+/* --- INNER SANCTUARY CORE --- */
+.sanctuary-core {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #f7f3e8; /* Soft holy parchment */
+    border-radius: 20px;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 50px 30px;
+    overflow: hidden;
+    box-shadow: inset 0 0 40px rgba(13, 43, 33, 0.15);
+}
+
+/* Sacred Geometric Wallpaper Watermark */
+.geometric-overlay {
+    position: absolute;
+    inset: 0;
+    opacity: 0.04;
+    background-image:
+        radial-gradient(#000 2px, transparent 2px),
+        linear-gradient(45deg, #000 25%, transparent 25%),
+        linear-gradient(-45deg, #000 25%, transparent 25%);
+    background-size: 30px 30px;
+    pointer-events: none;
+}
+
+/* --- THE DIVINE NOOR (GLOW) --- */
+.divine-noor {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0px;
+    height: 0px;
+    /* Soft, multi-layered warm light aura */
+    background: radial-gradient(
+        circle,
+        rgba(255, 215, 115, 0.8) 0%,
+        rgba(230, 175, 75, 0.4) 30%,
+        rgba(247, 243, 232, 0) 70%
+    );
+    transform: translate(-50%, -50%);
+    mix-blend-mode: color-burn; /* Intensifies color saturation on the parchment */
+    transition:
+        width 2.5s cubic-bezier(0.1, 0.8, 0.2, 1),
+        height 2.5s cubic-bezier(0.1, 0.8, 0.2, 1);
+    pointer-events: none;
+    z-index: 2;
+}
+.portal-container:hover .divine-noor {
+    width: 700px;
+    height: 700px;
+    animation: noorPulse 4s infinite ease-in-out 2.5s; /* Begins breathing after opening finish */
+}
+
+@keyframes noorPulse {
+    0%,
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.8;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.15);
+        opacity: 0.95;
+        /* Emits a subtle secondary flash */
+        filter: drop-shadow(0 0 20px rgba(255, 220, 130, 0.5));
+    }
+}
+
+.sanctuary-title {
+    text-align: center;
+    color: #0d2b21;
+    font-size: 2rem;
+    line-height: 1.2;
+    z-index: 3;
+}
+.sanctuary-title span {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #c5a059;
+}
+
+/* --- MIHRAB (ARCHED) INDEX BOOKS --- */
+.mihrab-books-wrapper {
+    display: flex;
+    gap: 40px;
+    z-index: 3;
+    perspective: 1000px;
+    opacity: 0;
+    transform: translateY(40px);
+    transition:
+        opacity 1.5s cubic-bezier(0.1, 0.8, 0.3, 1) 0.5s,
+        transform 1.5s cubic-bezier(0.1, 0.8, 0.3, 1) 0.5s;
+    margin-bottom: 30px;
+}
+
+.portal-container:hover .mihrab-books-wrapper {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.mihrab-book {
+    width: 150px;
+    height: 230px;
+    position: relative;
+    transform-style: preserve-3d;
+    text-decoration: none;
+    transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+/* Crafting the Distinctive Arched Top (Mihrab) Shape */
+.mihrab-cover,
+.mihrab-inside {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    /* This clip path creates a majestic Mosque Window/Mihrab Arch shape */
+    clip-path: polygon(0% 100%, 0% 25%, 50% 0%, 100% 25%, 100% 100%);
+    backface-visibility: hidden;
+    transform-origin: left center;
+    transition: transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 10px;
+}
+
+.mihrab-cover {
+    background: linear-gradient(135deg, #11382b, #071b15);
+    color: #c5a059;
+    z-index: 5;
+    border-left: 4px solid #030b09;
+}
+
+/* Golden Inner Arc line work */
+.arch-design {
+    position: absolute;
+    inset: 6px;
+    clip-path: polygon(0% 100%, 0% 25%, 50% 0%, 100% 25%, 100% 100%);
+    border: 1px solid rgba(197, 160, 89, 0.4);
+    pointer-events: none;
+}
+
+.mihrab-cover .arabic {
+    font-size: 1.6rem;
+    margin-top: 20px;
+}
+
+.mihrab-cover .english {
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    opacity: 0.7;
+    margin-top: 5px;
+}
+
+.mihrab-inside {
+    background: #ffffff;
+    color: #11382b;
+    transform: rotateY(0deg);
+    z-index: 4;
+    border: 1px solid #e1d6bf;
+    font-weight: bold;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Arched Mini-Book Open Sequence */
+.mihrab-book:hover .mihrab-cover {
+    transform: rotateY(-145deg);
+}
+
+.mihrab-book:hover {
+    transform: scale(1.08) translateZ(20px);
+}
+
+/* --- THE DIVINE NOOR (DYNAMIC GLOW ENGINE) --- */
+.divine-noor {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0px;
+    height: 0px;
+    /* Soft, multi-layered warm light aura */
+    background: radial-gradient(
+        circle,
+        rgba(255, 215, 115, 0.8) 0%,
+        rgba(230, 175, 75, 0.4) 30%,
+        rgba(247, 243, 232, 0) 70%
+    );
+    transform: translate(-50%, -50%);
+    mix-blend-mode: color-burn; /* Intensifies color saturation on the parchment */
+    transition:
+        width 2.5s cubic-bezier(0.1, 0.8, 0.2, 1),
+        height 2.5s cubic-bezier(0.1, 0.8, 0.2, 1);
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* Activate and pulse the glow when the gateway opens */
+.portal-container:hover .divine-noor {
+    width: 700px;
+    height: 700px;
+    animation: noorPulse 4s infinite ease-in-out 2.5s; /* Begins breathing after opening finish */
+}
+
+/* Breathing animation for the central light source */
+@keyframes noorPulse {
+    0%,
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.8;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.15);
+        opacity: 0.95;
+        /* Emits a subtle secondary flash */
+        filter: drop-shadow(0 0 20px rgba(255, 220, 130, 0.5));
+    }
+}
+
+/* --- GLOWING MIHRAB MINI-BOOKS --- */
+.mihrab-book {
+    width: 150px;
+    height: 230px;
+    position: relative;
+    transform-style: preserve-3d;
+    text-decoration: none;
+    transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Ambient Backlight Rim behind the mini books */
+.mihrab-book::after {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    background: #c5a059;
+    /* Creates a mosque silhouette arch shape matching the cover */
+    clip-path: polygon(0% 100%, 0% 25%, 50% 0%, 100% 25%, 100% 100%);
+    transform: translateZ(-5px); /* Places it perfectly behind the book body */
+    opacity: 0;
+    filter: blur(0px);
+    transition:
+        opacity 0.6s ease,
+        filter 0.6s ease;
+}
+
+/* When the main gate is open, give them a subtle glow */
+.portal-container:hover .mihrab-book::after {
+    opacity: 0.4;
+    filter: blur(4px);
+}
+
+/* Intense gold aura burst when hovering directly over a specific chapter index */
+.mihrab-book:hover::after {
+    opacity: 1;
+    filter: blur(12px);
+    background: radial-gradient(circle, #fff 0%, #c5a059 70%);
+}
+
+/* The Ornate Gold Foil Interior lines glow slightly */
+.arch-design {
+    position: absolute;
+    inset: 6px;
+    clip-path: polygon(0% 100%, 0% 25%, 50% 0%, 100% 25%, 100% 100%);
+    border: 1px solid rgba(197, 160, 89, 0.4);
+    pointer-events: none;
+    transition:
+        border-color 0.5s ease,
+        box-shadow 0.5s ease;
+}
+
+.mihrab-book:hover .arch-design {
+    border-color: rgba(255, 235, 170, 0.9);
+    filter: drop-shadow(0 0 4px rgba(197, 160, 89, 0.6));
+}

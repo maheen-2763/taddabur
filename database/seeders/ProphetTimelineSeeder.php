@@ -12,6 +12,7 @@ class ProphetTimelineSeeder extends Seeder
         $this->seedAdam();
         $this->seedNuh();
         $this->seedIbrahim();
+        $this->seedMusa();
 
         // Add new prophet timeline methods below as we complete each story.
         // Example: $this->seedMusa();
@@ -209,6 +210,76 @@ class ProphetTimelineSeeder extends Seeder
         ]);
 
         $this->command->info('  ✅ Ibrahim timeline seeded.');
+    }
+
+    private function seedMusa(): void
+    {
+        $prophet = Prophet::where('slug', 'musa')->first();
+        if (!$prophet) {
+            $this->command->warn('⚠️  Prophet "musa" not found, skipped.');
+            return;
+        }
+
+        $prophet->update([
+            'timeline' => [
+                [
+                    'title' => 'Born Under Threat of Death',
+                    'description' => 'Musa was born as Pharaoh slaughtered the sons of the Israelites, and his mother set him afloat on the river in trust of Allah.',
+                    'period' => 'Birth',
+                    'order' => 1,
+                ],
+                [
+                    'title' => 'Raised in Pharaoh\'s House',
+                    'description' => 'Allah returned Musa to his mother\'s care, and he grew up within the very household of his people\'s oppressor.',
+                    'period' => 'Upbringing',
+                    'order' => 2,
+                ],
+                [
+                    'title' => 'Flight to Midian',
+                    'description' => 'After a fatal altercation, Musa fled Egypt in fear, and Allah guided him safely to Midian.',
+                    'period' => 'Exile',
+                    'order' => 3,
+                ],
+                [
+                    'title' => 'The Call at Mount Tur',
+                    'description' => 'Allah spoke directly to Musa from the sacred valley, granting him prophethood and the staff and hand as signs.',
+                    'period' => 'Prophethood',
+                    'order' => 4,
+                ],
+                [
+                    'title' => 'Confronting Pharaoh',
+                    'description' => 'Musa and Harun delivered Allah\'s message to Pharaoh, calling him to release the Israelites and worship the One God.',
+                    'period' => 'Confrontation',
+                    'order' => 5,
+                ],
+                [
+                    'title' => 'The Magicians\' Contest',
+                    'description' => 'Pharaoh\'s sorcerers were defeated when Allah caused Musa\'s staff to overcome their illusions, and the magicians believed.',
+                    'period' => 'Sign',
+                    'order' => 6,
+                ],
+                [
+                    'title' => 'The Exodus and the Red Sea',
+                    'description' => 'Allah split the sea for Musa and the believers to cross, and drowned Pharaoh and his army as they pursued.',
+                    'period' => 'Deliverance',
+                    'order' => 7,
+                ],
+                [
+                    'title' => 'Trials in the Wilderness',
+                    'description' => 'Despite Allah\'s provision of manna and quails, the people complained, and among them Qarun\'s arrogance led to his destruction.',
+                    'period' => 'Testing',
+                    'order' => 8,
+                ],
+                [
+                    'title' => 'The Journey with Al-Khidr',
+                    'description' => 'Musa sought knowledge from a righteous servant of Allah, learning patience through three events whose true wisdom was hidden from him.',
+                    'period' => 'Humility',
+                    'order' => 9,
+                ],
+            ],
+        ]);
+
+        $this->command->info('  ✅ Musa timeline seeded.');
     }
 
     // ---------------------------------------------------------------

@@ -1,102 +1,50 @@
 @extends('layouts.app')
 @section('title', 'The Holy Quran — Taddabur')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/quran-index.css') }}?v={{ time() }}">
+@endpush
+
 @section('content')
+    <div class="quran-page">
 
-    {{-- TEMP DEBUG --}}
+        @include('quran.partials.hero', [
+            'surahCount' => 114,
+            'ayahCount' => 6236,
+            'juzCount' => 30,
+            'completedCount' => $completedCount ?? 0,
+        ])
 
-    <div class="container-fluid py-4">
+        @include('quran.partials.search')
+        @include('quran.partials.search-results')
 
-        {{-- Bismillah --}}
-        <div class="text-center mb-4">
-            <p
-                style="font-family:var(--font-arabic);
-                  font-size:2.5rem;
-                  color:var(--gold-dark)">
-                بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
-            </p>
-            <h2 class="heading-font">The Holy Quran</h2>
-            <p class="text-muted">114 Surahs · 6,236 Ayahs · 30 Juz</p>
-            <hr class="divider-gold">
-        </div>
-
-        {{-- Search --}}
-        <div class="row justify-content-center mb-4">
-            <div class="col-md-5">
-                <div class="input-group">
-                    <span class="input-group-text" style="background:var(--cream-dark); border-color:var(--border)">
-                        <i class="bi bi-search text-muted"></i>
-                    </span>
-                    <input type="text" id="surahSearch" class="form-control" placeholder="Search surah..."
-                        style="border-color:var(--border); background:var(--cream-dark)">
+        <div class="quran-bookshelf-wrapper" id="bookshelfWrapper">
+            @foreach ($juzData->chunk(5) as $rowIndex => $row)
+                <div class="juz-row" data-row="{{ $rowIndex }}">
+                    @foreach ($row as $juz)
+                        @include('quran.partials.juz-book', [
+                            'juz' => $juz,
+                            'juzNum' => $juz['juz'],
+                            'row' => $rowIndex,
+                        ])
+                    @endforeach
                 </div>
-            </div>
-        </div>
-        {{-- Add this link next to search box --}}
-        <a href="{{ route('quran.search') }}" class="btn btn-sm mb-2"
-            style="border:1px solid rgba(201,150,58,0.4);
-          color:rgba(201,150,58,0.7);
-          border-radius:50px;
-          font-size:0.8rem">
-            <i class="bi bi-search me-1"></i>
-            Search by meaning
-        </a>
 
-        {{-- Surahs list --}}
-        <div class="row g-2" id="surahGrid">
-            @foreach ($surahs as $surah)
-                <div class="col-12 col-md-6 col-lg-4 surah-item"
-                    data-name="{{ strtolower($surah->name_transliteration . ' ' . $surah->name_english) }}">
-
-                    <a href="{{ route('quran.show', $surah->number) }}"
-                        class="card-islamic p-3 d-flex align-items-center gap-3 text-decoration-none">
-
-                        {{-- Number --}}
-                        <div
-                            style="width:36px; height:36px; border:2px solid var(--gold);
-                            border-radius:50%; display:flex; align-items:center;
-                            justify-content:center; font-size:0.75rem;
-                            font-family:var(--font-heading); color:var(--gold);
-                            flex-shrink:0">
-                            {{ $surah->number }}
+                <div class="inline-panel" id="inline-panel-{{ $rowIndex }}" data-row="{{ $rowIndex }}">
+                    <div class="inline-panel-inner">
+                        <div class="inline-panel-header">
+                            <div class="inline-panel-title" id="panel-title-{{ $rowIndex }}"></div>
+                            <button class="inline-panel-close" onclick="closePanel({{ $rowIndex }})">✕</button>
                         </div>
-
-                        {{-- Info --}}
-                        <div class="flex-grow-1">
-                            <div style="font-family:var(--font-heading); font-size:0.88rem; color:var(--ink)">
-                                {{ $surah->name_transliteration }}
-                            </div>
-                            <div style="font-size:0.72rem; color:var(--muted)">
-                                {{ $surah->name_english }} ·
-                                {{ $surah->ayah_count }} ayahs ·
-                                {{ ucfirst($surah->revelation_type) }}
-                            </div>
-                        </div>
-
-                        {{-- Arabic --}}
-                        <div
-                            style="font-family:var(--font-arabic); font-size:1.3rem;
-                            color:var(--emerald); direction:rtl">
-                            {{ $surah->name_arabic }}
-                        </div>
-
-                    </a>
+                        <div class="panel-tile-grid" id="surah-grid-{{ $rowIndex }}"></div>
+                    </div>
                 </div>
             @endforeach
         </div>
 
     </div>
-
-
 @endsection
 
 @push('scripts')
-    <script>
-        document.getElementById('surahSearch').addEventListener('input', function() {
-            const q = this.value.toLowerCase();
-            document.querySelectorAll('.surah-item').forEach(item => {
-                item.style.display = item.dataset.name.includes(q) ? '' : 'none';
-            });
-        });
-    </script>
+    <script src="{{ asset('js/quran-index.js') }}"></script>
 @endpush

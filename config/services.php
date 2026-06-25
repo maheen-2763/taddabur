@@ -14,6 +14,7 @@ return [
     |
     */
 
+
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),
     ],
@@ -37,6 +38,11 @@ return [
     'razorpay' => [
         'key'    => env('RAZORPAY_KEY'),
         'secret' => env('RAZORPAY_SECRET'),
+    ],
+
+    'sunnah' => [
+        'key' => env('SUNNAH_API_KEY'),
+        'base_url' => env('SUNNAH_API_BASE', 'https://api.sunnah.com/v1'),
     ],
 
 ];

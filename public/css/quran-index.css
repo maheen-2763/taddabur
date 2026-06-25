@@ -1,385 +1,553 @@
-/* public/css/quran-index.css */
-
-/* ══════════════════════════════════════════════
-   PAGE BASE
-══════════════════════════════════════════════ */
-body {
-    background: #0d1f13;
-    background-image: radial-gradient(ellipse at top, #1b3a22 0%, #0d1f13 60%);
-    min-height: 100vh;
+/* ================================================
+   PAGE
+================================================ */
+.quran-page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 6rem;
 }
 
-/* ══════════════════════════════════════════════
-   BISMILLAH HERO
-══════════════════════════════════════════════ */
+/* ================================================
+   BOOKSHELF WRAPPER
+================================================ */
+.quran-bookshelf-wrapper {
+    margin-top: 3rem;
+}
+
+/* ================================================
+   JUZ ROW — 5 columns desktop, responsive
+================================================ */
+.juz-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 0;
+}
+@media (max-width: 1100px) {
+    .juz-row {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+@media (max-width: 820px) {
+    .juz-row {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+@media (max-width: 560px) {
+    .juz-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ================================================
+   BOOK CARD — 3D Flip (A1)
+================================================ */
+.book-card {
+    cursor: pointer;
+    perspective: 900px;
+    position: relative;
+}
+
+/* The flip wrapper — JS adds .open to trigger rotation */
+.flip-inner {
+    position: relative;
+    width: 100%;
+    min-height: 220px;
+    transform-style: preserve-3d;
+    transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.book-card.open .flip-inner {
+    transform: rotateY(-180deg);
+}
+
+/* Both faces share these rules */
+.book-front,
+.book-back {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 3px 14px 14px 3px;
+    border: 1px solid rgba(201, 150, 58, 0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 10px;
+    gap: 5px;
+}
+
+/* ── Front face — emerald cover ── */
+.book-front {
+    background: linear-gradient(158deg, #1b5e3b 0%, #0d3d22 55%, #081e12 100%);
+    box-shadow:
+        -5px 5px 0 #071a0d,
+        -9px 9px 0 #040f08,
+        -11px 11px 14px rgba(0, 0, 0, 0.5),
+        4px 4px 20px rgba(0, 0, 0, 0.3);
+    transition: box-shadow 0.3s;
+}
+
+.book-card:hover .book-front {
+    box-shadow:
+        -7px 7px 0 #071a0d,
+        -12px 12px 0 #040f08,
+        -15px 15px 20px rgba(0, 0, 0, 0.6),
+        5px 8px 28px rgba(0, 0, 0, 0.4);
+}
+
+/* ── Back face — darker, surahs inside ── */
+.book-back {
+    background: linear-gradient(158deg, #0d2e1a 0%, #071a0d 100%);
+    transform: rotateY(180deg);
+    border-color: rgba(201, 150, 58, 0.4);
+    justify-content: flex-start;
+    padding: 12px 10px;
+    gap: 0;
+    overflow: hidden;
+}
+
+/* ── Gold spine ── */
+.book-spine {
+    position: absolute;
+    left: -7px;
+    top: 5px;
+    bottom: 5px;
+    width: 7px;
+    border-radius: 3px 0 0 3px;
+    background: linear-gradient(to right, #7a5520, #c9963a, #9a6f2b);
+}
+
+/* ── Page stack illusion ── */
+.book-pages {
+    position: absolute;
+    right: -4px;
+    top: 6px;
+    bottom: 6px;
+    width: 5px;
+    border-radius: 0 3px 3px 0;
+    background: repeating-linear-gradient(
+        to bottom,
+        #e8dcc8,
+        #e8dcc8 2px,
+        #d0c5b0 2px,
+        #d0c5b0 3px
+    );
+    opacity: 0.65;
+}
+
+/* ── Inner decorative border ── */
+.book-border {
+    position: absolute;
+    inset: 8px;
+    border: 1px solid rgba(201, 150, 58, 0.12);
+    border-radius: 2px 9px 9px 2px;
+    pointer-events: none;
+}
+
+/* ── C3 Cover text: Arabic dominant ── */
+.book-ornament-top,
+.book-ornament-bottom {
+    font-size: 10px;
+    color: rgba(201, 150, 58, 0.45);
+}
+
+.book-arabic-dominant {
+    font-family: var(--font-arabic);
+    font-size: 1.9rem;
+    color: #e8be6d;
+    direction: rtl;
+    text-align: center;
+    line-height: 1.5;
+    margin: 4px 0;
+}
+
+.book-transliteration {
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.32);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.book-juz-badge {
+    font-family: var(--font-heading);
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    color: rgba(201, 150, 58, 0.4);
+    text-transform: uppercase;
+    margin-top: 4px;
+}
+
+/* ── Back face content ── */
+.back-header {
+    width: 100%;
+    text-align: center;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid rgba(201, 150, 58, 0.2);
+}
+
+.back-arabic {
+    font-family: var(--font-arabic);
+    font-size: 1.2rem;
+    color: #e8be6d;
+    direction: rtl;
+}
+
+.back-subtitle {
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+    color: rgba(201, 150, 58, 0.45);
+    text-transform: uppercase;
+    margin-top: 2px;
+}
+
+/* ── B4 Ornamental tile grid on back face ── */
+.back-tile-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    width: 100%;
+}
+
+.back-tile {
+    background: rgba(201, 150, 58, 0.07);
+    border: 1px solid rgba(201, 150, 58, 0.18);
+    border-radius: 7px;
+    padding: 5px 4px;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    cursor: pointer;
+    transition: background 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+
+.back-tile:hover {
+    background: rgba(201, 150, 58, 0.16);
+    border-color: rgba(201, 150, 58, 0.4);
+}
+
+.back-tile::before {
+    content: "✦";
+    position: absolute;
+    top: 2px;
+    left: 3px;
+    font-size: 6px;
+    color: rgba(201, 150, 58, 0.2);
+}
+
+.back-tile-num {
+    font-family: var(--font-heading);
+    font-size: 0.65rem;
+    color: rgba(201, 150, 58, 0.5);
+}
+
+.back-tile-arabic {
+    font-family: var(--font-arabic);
+    font-size: 0.95rem;
+    color: #e8be6d;
+    direction: rtl;
+    line-height: 1.3;
+}
+
+.back-tile-en {
+    font-size: 0.6rem;
+    color: rgba(255, 255, 255, 0.3);
+    margin-top: 1px;
+}
+
+/* ── Active down-arrow indicator ── */
+.book-active-arrow {
+    position: absolute;
+    bottom: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--gold);
+    font-size: 1rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.book-card.open .book-active-arrow {
+    opacity: 1;
+}
+
+/* ================================================
+   INLINE PANEL — slides open below row
+================================================ */
+.inline-panel {
+    max-height: 0;
+    overflow: hidden;
+    transition:
+        max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+        margin 0.3s;
+    margin: 0;
+}
+
+.inline-panel.open {
+    max-height: 500px;
+    margin: 14px 0 20px;
+}
+
+.inline-panel-inner {
+    background: rgba(13, 61, 34, 0.45);
+    border: 1px solid rgba(201, 150, 58, 0.2);
+    border-top: 2px solid var(--gold);
+    border-radius: 0 0 16px 16px;
+    padding: 1.25rem 1.5rem;
+    backdrop-filter: blur(6px);
+}
+
+.inline-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(201, 150, 58, 0.12);
+}
+
+.inline-panel-title {
+    font-family: var(--font-arabic);
+    font-size: 1.25rem;
+    color: var(--gold-light);
+    direction: rtl;
+}
+
+.inline-panel-close {
+    background: transparent;
+    border: 1px solid rgba(201, 150, 58, 0.3);
+    color: var(--gold);
+    border-radius: 8px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: background 0.2s;
+}
+
+.inline-panel-close:hover {
+    background: rgba(201, 150, 58, 0.12);
+}
+
+/* ── B4 Ornamental tile grid inside panel ── */
+.panel-tile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 6px;
+}
+
+.panel-tile {
+    background: rgba(201, 150, 58, 0.06);
+    border: 1px solid rgba(201, 150, 58, 0.18);
+    border-radius: 10px;
+    padding: 10px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    transition:
+        background 0.2s,
+        transform 0.2s,
+        border-color 0.2s;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.panel-tile:hover {
+    background: rgba(201, 150, 58, 0.14);
+    border-color: rgba(201, 150, 58, 0.4);
+    transform: translateY(-2px);
+}
+
+.panel-tile::before {
+    content: "✦";
+    position: absolute;
+    top: 3px;
+    left: 5px;
+    font-size: 7px;
+    color: rgba(201, 150, 58, 0.2);
+}
+
+.panel-tile-num {
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    color: rgba(201, 150, 58, 0.5);
+}
+
+.panel-tile-arabic {
+    font-family: var(--font-arabic);
+    font-size: 1.15rem;
+    color: #e8be6d;
+    direction: rtl;
+    line-height: 1.4;
+    margin: 2px 0;
+}
+
+.panel-tile-en {
+    font-size: 0.68rem;
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.panel-tile-meta {
+    font-size: 0.62rem;
+    color: rgba(255, 255, 255, 0.22);
+    margin-top: 2px;
+}
+
+/* ================================================
+   HERO  (quran.partials.hero)
+================================================ */
 .quran-hero {
     text-align: center;
-    padding: 3.5rem 1rem 2rem;
+    padding: 3rem 1rem 2rem;
 }
 
 .bismillah-grand {
     font-family: var(--font-arabic);
-    font-size: clamp(2.2rem, 6vw, 4rem);
-    color: var(--gold-light);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    color: var(--gold);
+    direction: rtl;
     line-height: 1.8;
-    text-shadow: 0 0 40px rgba(201, 150, 58, 0.4);
     margin-bottom: 0.5rem;
 }
 
 .bismillah-sub {
-    color: rgba(255, 255, 255, 0.5);
     font-size: 0.85rem;
-    font-style: italic;
-    margin-bottom: 2rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    margin-top: 2rem;
 }
 
 .quran-stats {
     display: flex;
     justify-content: center;
     gap: 2.5rem;
-    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.q-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
 }
 
 .q-stat-num {
     font-family: var(--font-heading);
-    font-size: 1.6rem;
+    font-size: 1.75rem;
+    font-weight: 700;
     color: var(--gold);
-    display: block;
-    line-height: 1;
 }
 
 .q-stat-lbl {
-    font-size: 0.7rem;
-    color: rgba(255, 255, 255, 0.4);
-    display: block;
-    margin-top: 0.2rem;
-    letter-spacing: 0.06em;
+    font-size: 0.72rem;
     text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
 }
 
-/* ══════════════════════════════════════════════
-   SEARCH BAR
-══════════════════════════════════════════════ */
+/* ================================================
+   SEARCH
+================================================ */
 .quran-search-wrap {
-    max-width: 400px;
-    margin: 0 auto 2.5rem;
+    max-width: 520px;
+    margin: 1.5rem auto 0;
     position: relative;
 }
 
-.quran-search-wrap input {
+.quran-search-input {
     width: 100%;
-    background: rgba(255, 255, 255, 0.07);
-    border: 1px solid rgba(201, 150, 58, 0.3);
+    padding: 0.75rem 3rem 0.75rem 1.25rem;
     border-radius: 50px;
-    padding: 0.6rem 1.25rem 0.6rem 2.75rem;
-    color: white;
-    font-size: 0.88rem;
+    background: rgba(13, 61, 34, 0.3);
+    border: 1px solid rgba(201, 150, 58, 0.3);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
     outline: none;
-    transition: border 0.2s;
+    transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
 }
 
-.quran-search-wrap input::placeholder {
-    color: rgba(255, 255, 255, 0.3);
-}
-.quran-search-wrap input:focus {
+.quran-search-input:focus {
     border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(201, 150, 58, 0.1);
 }
 
-.quran-search-wrap i {
+.quran-search-icon {
     position: absolute;
-    left: 1rem;
+    right: 1rem;
     top: 50%;
     transform: translateY(-50%);
-    color: rgba(201, 150, 58, 0.6);
-    font-size: 0.85rem;
-}
-
-/* ══════════════════════════════════════════════
-   BOOKSHELF
-══════════════════════════════════════════════ */
-.bookshelf-section {
-    padding: 0 1rem 4rem;
-}
-
-.bookshelf-label {
-    text-align: center;
-    font-family: var(--font-heading);
-    font-size: 0.75rem;
-    letter-spacing: 0.15em;
-    color: rgba(201, 150, 58, 0.5);
-    text-transform: uppercase;
-    margin-bottom: 2rem;
-}
-
-.shelf-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    gap: 1.5rem 1rem;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-/* ══════════════════════════════════════════════
-   GOLDEN BOOK CARD
-══════════════════════════════════════════════ */
-.book-card {
+    color: var(--gold);
+    font-size: 1rem;
     cursor: pointer;
-    position: relative;
-    transition: transform 0.3s ease;
 }
 
-.book-card:hover {
-    transform: translateY(-8px) rotate(-1deg);
-}
-.book-card:hover .book-cover {
-    box-shadow: 0 20px 50px rgba(201, 150, 58, 0.35);
-}
-.book-card:hover .book-spine {
-    width: 18px;
-}
-
-.book-spine {
-    position: absolute;
-    left: 0;
-    top: 4px;
-    bottom: 4px;
-    width: 14px;
-    background: linear-gradient(180deg, #8b6914, #c9963a, #8b6914);
-    border-radius: 2px 0 0 2px;
-    transition: width 0.3s;
-    z-index: 1;
-    box-shadow: inset -2px 0 4px rgba(0, 0, 0, 0.3);
-}
-
-.book-cover {
-    margin-left: 10px;
-    background: linear-gradient(160deg, #1a4a2a 0%, #0f2d18 50%, #1a4a2a 100%);
-    border: 1px solid rgba(201, 150, 58, 0.4);
-    border-radius: 0 6px 6px 0;
-    padding: 1.25rem 0.75rem 1rem;
-    text-align: center;
-    min-height: 160px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    position: relative;
-    overflow: hidden;
-    box-shadow:
-        4px 4px 20px rgba(0, 0, 0, 0.5),
-        inset 0 1px 0 rgba(201, 150, 58, 0.2);
-    transition: box-shadow 0.3s;
-}
-
-.book-cover::before {
-    content: "";
-    position: absolute;
-    inset: 6px;
+.search-results-panel {
+    max-width: 520px;
+    margin: 0.75rem auto 0;
+    border-radius: 14px;
+    background: var(--cream-dark);
     border: 1px solid rgba(201, 150, 58, 0.2);
-    border-radius: 3px;
-    pointer-events: none;
+    padding: 1rem;
 }
 
-.book-cover::after {
-    content: "✦";
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    color: rgba(201, 150, 58, 0.3);
-    font-size: 0.6rem;
-}
-
-.book-juz-num {
-    font-family: var(--font-heading);
-    font-size: 0.65rem;
-    letter-spacing: 0.12em;
-    color: rgba(201, 150, 58, 0.6);
-    text-transform: uppercase;
-}
-
-.book-arabic-title {
-    font-family: var(--font-arabic);
-    font-size: 1.3rem;
-    color: var(--gold-light);
-    line-height: 1.6;
-    direction: rtl;
-    text-shadow: 0 0 20px rgba(201, 150, 58, 0.3);
-}
-
-.book-arabic-sub {
-    font-family: var(--font-arabic);
-    font-size: 0.85rem;
-    color: rgba(201, 150, 58, 0.5);
-    direction: rtl;
-}
-
-.book-surah-count {
-    font-size: 0.65rem;
-    color: rgba(255, 255, 255, 0.3);
-    margin-top: 0.25rem;
-}
-
-/* Completed book */
-.book-card.completed .book-cover {
-    background: linear-gradient(160deg, #1a4a35 0%, #0f3020 50%, #1a4a35 100%);
-    border-color: rgba(45, 138, 89, 0.5);
-}
-
-.book-card.completed .book-spine {
-    background: linear-gradient(180deg, #1b5e3b, #2d8a59, #1b5e3b);
-}
-
-.book-completed-check {
-    position: absolute;
-    top: 8px;
-    left: 8px;
-    width: 18px;
-    height: 18px;
-    background: var(--emerald);
-    border-radius: 50%;
+/* search result items reuse .panel-tile but flex row */
+.search-surah-row {
     display: flex;
     align-items: center;
-    justify-content: center;
-    font-size: 0.6rem;
-    color: white;
-}
-
-/* ══════════════════════════════════════════════
-   SURAH PANEL
-══════════════════════════════════════════════ */
-.surah-panel {
-    max-height: 0;
-    overflow: hidden;
-    transition:
-        max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-        opacity 0.3s ease;
-    opacity: 0;
-    grid-column: 1 / -1;
-}
-
-.surah-panel.open {
-    max-height: 900px;
-    opacity: 1;
-}
-
-.surah-panel-inner {
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(201, 150, 58, 0.2);
-    border-radius: var(--radius-lg);
-    padding: 1.5rem;
-    margin: 0.5rem 0 1rem;
-}
-
-.surah-panel-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1.25rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid rgba(201, 150, 58, 0.15);
-}
-
-.surah-panel-title {
-    font-family: var(--font-heading);
-    color: var(--gold-light);
-    font-size: 0.9rem;
-    letter-spacing: 0.05em;
-}
-
-/* ══════════════════════════════════════════════
-   SURAH ROWS INSIDE PANEL
-══════════════════════════════════════════════ */
-.surah-row {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 0.6rem 0.75rem;
-    border-radius: var(--radius);
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    background: rgba(201, 150, 58, 0.05);
+    border: 1px solid rgba(201, 150, 58, 0.15);
     text-decoration: none;
-    transition: all 0.2s;
-    border: 1px solid transparent;
+    margin-bottom: 5px;
+    transition: background 0.2s;
 }
 
-.surah-row:hover {
-    background: rgba(201, 150, 58, 0.08);
-    border-color: rgba(201, 150, 58, 0.2);
+.search-surah-row:hover {
+    background: rgba(201, 150, 58, 0.12);
 }
 
-.surah-row-num {
+.search-num {
     width: 30px;
     height: 30px;
-    border: 1px solid rgba(201, 150, 58, 0.4);
     border-radius: 50%;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-size: 0.75rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.7rem;
-    font-family: var(--font-heading);
-    color: var(--gold);
     flex-shrink: 0;
-}
-
-.surah-row-name {
     font-family: var(--font-heading);
+}
+
+.search-name {
     font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.85);
-    flex-grow: 1;
+    color: var(--ink);
 }
-
-.surah-row-meta {
-    font-size: 0.72rem;
-    color: rgba(255, 255, 255, 0.3);
+.search-meta {
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-top: 2px;
 }
-
-.surah-row-arabic {
+.search-arabic {
     font-family: var(--font-arabic);
     font-size: 1.1rem;
-    color: var(--gold);
+    color: var(--gold-light);
     direction: rtl;
-}
-
-.surah-row-completed {
-    color: var(--emerald-light);
-    font-size: 0.75rem;
-}
-
-/* ══════════════════════════════════════════════
-   SEARCH RESULTS PANEL
-══════════════════════════════════════════════ */
-.search-results-panel {
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(201, 150, 58, 0.2);
-    border-radius: var(--radius-lg);
-    padding: 1.25rem;
-    max-width: 900px;
-    margin: 0 auto 2rem;
-}
-
-/* ══════════════════════════════════════════════
-   SHELF PLANK
-══════════════════════════════════════════════ */
-.shelf-plank {
-    grid-column: 1 / -1;
-    height: 8px;
-    background: linear-gradient(180deg, #3d2b0f, #1a1208);
-    border-radius: 2px;
-    margin-top: 0.25rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-}
-
-/* ══════════════════════════════════════════════
-   RESPONSIVE
-══════════════════════════════════════════════ */
-@media (max-width: 576px) {
-    .shelf-grid {
-        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-        gap: 1rem 0.75rem;
-    }
-
-    .book-arabic-title {
-        font-size: 1.1rem;
-    }
-    .book-cover {
-        min-height: 130px;
-    }
+    margin-left: auto;
 }
