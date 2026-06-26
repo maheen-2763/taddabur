@@ -228,7 +228,6 @@ function playAudio(surah, ayahNumber, ayahId, btn) {
     const audioEl = document.getElementById("audioElement");
     const reciter = getSelectedReciter();
 
-    // Toggle pause if same ayah
     if (currentAyahId === ayahId && !audioEl.paused) {
         audioEl.pause();
         if (btn) {
@@ -238,9 +237,6 @@ function playAudio(surah, ayahNumber, ayahId, btn) {
         return;
     }
 
-    // Save reading progress
-
-    // Reset previous state
     clearWordHighlights();
 
     if (currentAudioBtn) {
@@ -252,7 +248,6 @@ function playAudio(surah, ayahNumber, ayahId, btn) {
         .querySelectorAll(".ayah-card.playing-now")
         .forEach((c) => c.classList.remove("playing-now"));
 
-    // Set new state
     const card = document.querySelector(`[data-ayah-id="${ayahId}"]`);
     if (card) card.classList.add("playing-now");
 
@@ -262,12 +257,25 @@ function playAudio(surah, ayahNumber, ayahId, btn) {
         btn.classList.add("active");
     }
 
-    // Fetch audio URL
-    fetch(`/quran/${surah}/${ayahId}/audio?reciter=${reciter}`, {
-        headers: { Accept: "application/json", "X-CSRF-TOKEN": CSRF },
-    })
+    // Fetch audio URL AND word timings in parallel
+    const audioFetch = fetch(
+        `/quran/${surah}/${ayahId}/audio?reciter=${reciter}`,
+        {
+            headers: { Accept: "application/json", "X-CSRF-TOKEN": CSRF },
+        },
+    ).then((r) => r.json());
+
+    const timingsFetch = fetch(
+        `/ayah/${surah}/${ayahNumber}/timings/${reciter}`,
+        {
+            headers: { Accept: "application/json" },
+        },
+    )
         .then((r) => r.json())
-        .then((data) => {
+        .catch(() => ({ timings: null })); // never let a timing failure block audio playback
+
+    Promise.all([audioFetch, timingsFetch])
+        .then(([data, timingData]) => {
             if (data.error) {
                 showFlash("Audio not available for this ayah.", "error");
                 if (btn) {
@@ -278,9 +286,11 @@ function playAudio(surah, ayahNumber, ayahId, btn) {
             }
 
             currentAyahId = ayahId;
-
-            // ✅ Wrap words JUST before playing — lazy loading
             currentWordCount = wrapWordsForHighlight(ayahId);
+
+            // ✅ Store timings on window.QURAN_CONFIG — the actual global this app uses
+            window.QURAN_CONFIG = window.QURAN_CONFIG || {};
+            window.QURAN_CONFIG.wordTimings = timingData.timings || null;
 
             document.getElementById("audioLabel").textContent =
                 `${data.reciter} — ${data.surah_name} ${surah}:${ayahNumber}`;
@@ -394,14 +404,50 @@ function seekAudio(event) {
         ((event.clientX - rect.left) / rect.width) * audioEl.duration;
 }
 
+function getWeightedWordIndex(audioEl, wordCount) {
+    const container = document.getElementById(`arabic-${currentAyahId}`);
+    let weights = container.dataset.weights
+        ? JSON.parse(container.dataset.weights)
+        : null;
+
+    if (!weights) {
+        const words = [...container.querySelectorAll(".arabic-word")].map(
+            (w) => w.textContent,
+        );
+        weights = getWordWeights(words);
+        container.dataset.weights = JSON.stringify(weights);
+    }
+
+    const totalWeight = weights.reduce((a, b) => a + b, 0);
+    const progress = audioEl.currentTime / (audioEl.duration || 1);
+
+    let running = 0;
+    for (let i = 0; i < weights.length; i++) {
+        running += weights[i];
+        if (progress <= running / totalWeight) return i;
+    }
+    return wordCount - 1;
+}
+
 // ════════════════════════════════════════════
 // WORD HIGHLIGHT
 // ════════════════════════════════════════════
+function getWordWeights(words) {
+    // Weight by Arabic letter count (ignoring diacritics)
+    return words.map((word) => {
+        const letterCount = word.replace(/[\u064B-\u065F\u0670]/g, "").length;
+        return Math.max(letterCount, 1); // avoid zero-weight words
+    });
+}
+
 function startWordHighlight() {
     if (!currentAyahId || currentWordCount === 0) return;
 
     const audioEl = document.getElementById("audioElement");
     clearInterval(wordHighlightTimer);
+
+    // ✅ Correct global — matches what playAudio() now sets
+    const timings = window.QURAN_CONFIG?.wordTimings;
 
     wordHighlightTimer = setInterval(() => {
         if (audioEl.paused || audioEl.ended) {
@@ -409,11 +455,21 @@ function startWordHighlight() {
             return;
         }
 
-        const progress = audioEl.currentTime / (audioEl.duration || 1);
-        const wordIndex = Math.min(
-            Math.floor(progress * currentWordCount),
-            currentWordCount - 1,
-        );
+        const currentMs = audioEl.currentTime * 1000;
+
+        let wordIndex;
+        if (timings && timings.length > 0) {
+            const match = timings.find(
+                (t) => currentMs >= t.start_ms && currentMs < t.end_ms,
+            );
+            wordIndex = match
+                ? match.word_index
+                : currentMs < timings[0].start_ms
+                  ? 0
+                  : timings[timings.length - 1].word_index;
+        } else {
+            wordIndex = getWeightedWordIndex(audioEl, currentWordCount);
+        }
 
         document
             .querySelectorAll(`#arabic-${currentAyahId} .arabic-word`)

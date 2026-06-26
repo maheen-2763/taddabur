@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Models\Surah;
+use App\Http\Controllers\WordTimingController;
 
 // Used by admin daily content form
 Route::get('/surahs/{surah}/ayahs', function (Surah $surah) {
@@ -10,3 +11,5 @@ Route::get('/surahs/{surah}/ayahs', function (Surah $surah) {
         ->orderBy('number')
         ->get();
 });
+
+// routes/web.php or api.php

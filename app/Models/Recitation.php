@@ -53,4 +53,22 @@ class Recitation extends Model
             $this->audio_url_pattern
         );
     }
+
+
+    protected $appends = ['timing_accuracy']; // <-- this line is required
+
+    const REAL_TIMING_RECITERS = [
+        'mishary-rashid',
+        'al-shuraim',
+        'al-minshawi',
+        'ar-rifai',
+        'abdul-basit',
+        'al-husary',
+    ];
+
+
+    public function getHasVerifiedTimingAttribute(): bool
+    {
+        return in_array($this->slug, self::REAL_TIMING_RECITERS);
+    }
 }
