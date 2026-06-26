@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Schedule;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ReflectionController;
+use App\Http\Controllers\WordTimingController;
 
 
 // Re-import any missing translations weekly (catches new additions)
@@ -38,7 +39,7 @@ Route::get('/', [HomeController::class, 'index'])
 // Public Quran browsing (reading only, no tafsir/audio)
 Route::get('/quran', [QuranController::class, 'index'])->name('quran.index');
 
-
+Route::get('/ayah/{surahNumber}/{ayahNumber}/timings/{reciter}', [WordTimingController::class, 'show']);
 
 Route::get('/allah-names', [App\Http\Controllers\AllahNameController::class, 'index'])
     ->name('allah-names.index');
@@ -108,6 +109,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('/{surah}/{ayah}/translation', [QuranController::class, 'translation'])
             ->name('translation');
+
+
 
 
         Route::post('/progress', [QuranController::class, 'saveProgress'])

@@ -135,11 +135,10 @@ class RecitationSeeder extends Seeder
 
         ];
 
-        foreach ($recitations as $data) {
-            // ✅ updateOrCreate — never destroys existing data
+        foreach ($recitations as $reciterData) {
             Recitation::updateOrCreate(
-                ['slug' => $data['slug']],
-                $data
+                ['slug' => $reciterData['slug']],
+                $reciterData // don't manually set timing_accuracy here, exclude it from being touched
             );
         }
 
