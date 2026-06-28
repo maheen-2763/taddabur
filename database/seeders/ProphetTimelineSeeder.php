@@ -13,6 +13,7 @@ class ProphetTimelineSeeder extends Seeder
         $this->seedNuh();
         $this->seedIbrahim();
         $this->seedMusa();
+        $this->seedYusuf();
 
         // Add new prophet timeline methods below as we complete each story.
         // Example: $this->seedMusa();
@@ -280,6 +281,125 @@ class ProphetTimelineSeeder extends Seeder
         ]);
 
         $this->command->info('  ✅ Musa timeline seeded.');
+    }
+
+
+    private function seedYusuf(): void
+    {
+        $prophet = Prophet::where('slug', 'yusuf')->first();
+        if (!$prophet) {
+            $this->command->warn('⚠️  Prophet "yusuf" not found, skipped.');
+            return;
+        }
+
+        $prophet->update([
+            'timeline' => [
+                [
+                    'title' => 'The Dream of Eleven Stars',
+                    'description' => 'Young Yusuf saw a vision of eleven stars, the sun, and the moon prostrating to him.',
+                    'period' => 'Divine Sign',
+                    'order' => 1,
+                ],
+                [
+                    'title' => 'Thrown into the Well',
+                    'description' => 'His jealous brothers cast him into a well, abandoning him to despair.',
+                    'period' => 'Betrayal',
+                    'order' => 2,
+                ],
+                [
+                    'title' => 'Sold into Slavery',
+                    'description' => 'A caravan found him and sold him as a slave in Egypt for a small price.',
+                    'period' => 'Captivity',
+                    'order' => 3,
+                ],
+                [
+                    'title' => 'In the House of al-Azeez',
+                    'description' => 'Yusuf served the Egyptian official with honesty and excellence, earning complete trust.',
+                    'period' => 'Faithfulness',
+                    'order' => 4,
+                ],
+                [
+                    'title' => 'False Accusation',
+                    'description' => 'The wife of al-Azeez falsely accused him of seduction when he refused her advances.',
+                    'period' => 'Trial of Innocence',
+                    'order' => 5,
+                ],
+                [
+                    'title' => 'Years in Prison',
+                    'description' => 'Imprisoned for a crime he did not commit, Yusuf remained patient and steadfast in faith.',
+                    'period' => 'Patience',
+                    'order' => 6,
+                ],
+                [
+                    'title' => 'The King\'s Dream Interpreted',
+                    'description' => 'Released from prison to interpret the king\'s dream of seven fat and seven lean cows.',
+                    'period' => 'Recognition',
+                    'order' => 7,
+                ],
+                [
+                    'title' => 'Appointed Over the Treasures',
+                    'description' => 'The king honored him and placed him in charge of Egypt\'s storehouses.',
+                    'period' => 'Authority',
+                    'order' => 8,
+                ],
+                [
+                    'title' => 'His Brothers Arrive in Egypt',
+                    'description' => 'During the famine, his brothers came to buy grain, not recognizing him.',
+                    'period' => 'Recognition Deferred',
+                    'order' => 9,
+                ],
+                [
+                    'title' => 'The Planted Cup Test',
+                    'description' => 'He tested his brothers by secretly placing a golden cup in Benjamin\'s saddlebag.',
+                    'period' => 'Divine Trial',
+                    'order' => 10,
+                ],
+                [
+                    'title' => 'Benjamin Held in Egypt',
+                    'description' => 'His youngest brother became his companion while the others despaired.',
+                    'period' => 'Sorrow and Hope',
+                    'order' => 11,
+                ],
+                [
+                    'title' => 'Yusuf Reveals Himself',
+                    'description' => 'He declared his identity to his brothers: "I am Joseph, and this is my brother."',
+                    'period' => 'The Reveal',
+                    'order' => 12,
+                ],
+                [
+                    'title' => 'Complete Forgiveness',
+                    'description' => 'He forgave his brothers entirely, saying "No blame will there be upon you today."',
+                    'period' => 'Mercy',
+                    'order' => 13,
+                ],
+                [
+                    'title' => 'Yaqub\'s Sight Restored',
+                    'description' => 'His father\'s eyes, white with grief for decades, regained sight when Yusuf\'s shirt touched them.',
+                    'period' => 'Divine Healing',
+                    'order' => 14,
+                ],
+                [
+                    'title' => 'The Family Reunited in Egypt',
+                    'description' => 'His entire family — parents, brothers, and their households — came to live under his care.',
+                    'period' => 'Reunion',
+                    'order' => 15,
+                ],
+                [
+                    'title' => 'The Dream Fulfilled',
+                    'description' => 'His parents and siblings bowed before him, exactly as his dream from childhood had foretold.',
+                    'period' => 'Divine Promise Realized',
+                    'order' => 16,
+                ],
+                [
+                    'title' => 'Dua for the Hereafter',
+                    'description' => 'At the height of his worldly honor, he prayed to die as a Muslim and be joined with the righteous.',
+                    'period' => 'Spiritual Completion',
+                    'order' => 17,
+                ],
+            ],
+        ]);
+
+        $this->command->info('  ✅ Yusuf timeline seeded.');
     }
 
     // ---------------------------------------------------------------

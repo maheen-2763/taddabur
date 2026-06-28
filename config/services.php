@@ -45,4 +45,11 @@ return [
         'base_url' => env('SUNNAH_API_BASE', 'https://api.sunnah.com/v1'),
     ],
 
+    'quran_foundation' => [
+        'client_id'     => env('QF_CLIENT_ID'),
+        'client_secret' => env('QF_CLIENT_SECRET'),
+        'auth_base'     => env('QF_AUTH_BASE', 'https://prelive-oauth2.quran.foundation'),
+        'content_base'  => env('QF_CONTENT_BASE', 'https://apis-prelive.quran.foundation'),
+    ],
+
 ];
