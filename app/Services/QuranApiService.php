@@ -122,21 +122,36 @@ class QuranApiService
     // NOT the slug. Slugs return 404 even though /resources/tafsirs
     // itself accepts and returns slugs for display purposes.
     // -------------------------------------------------------
+    /**
+     * FETCH TAFSIR FOR ONE SURAH (Quran Foundation — auth required)
+     * Uses /verses/by_chapter endpoint with tafsirs param (like translations).
+     */
     public function fetchTafsirForSurah(int $surahNumber, string $tafsirResourceId): array
     {
-        $url = "{$this->contentBase}/content/api/v4/tafsirs/{$tafsirResourceId}";
+        // Use /verses/by_chapter endpoint with tafsirs parameter
+        $url = "{$this->contentBase}/content/api/v4/verses/by_chapter/{$surahNumber}";
 
         $response = $this->getAuthenticated($url, [
-            'chapter_number' => $surahNumber,
+            'tafsirs'  => $tafsirResourceId,
+            'per_page' => 300,
         ]);
 
-        if (!$response || !isset($response['tafsirs'])) {
+        if (!$response || !isset($response['verses'])) {
             return [];
         }
 
-        return $response['tafsirs'];
-    }
+        // Extract tafsirs from each verse
+        $tafsirs = [];
+        foreach ($response['verses'] as $verse) {
+            if (!empty($verse['tafsirs'])) {
+                foreach ($verse['tafsirs'] as $tafsir) {
+                    $tafsirs[] = $tafsir;
+                }
+            }
+        }
 
+        return $tafsirs;
+    }
     // -------------------------------------------------------
     // FETCH SIMPLE ARABIC (alquran.cloud — no auth needed)
     // -------------------------------------------------------
