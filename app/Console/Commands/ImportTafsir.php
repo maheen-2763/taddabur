@@ -174,13 +174,14 @@ class ImportTafsir extends Command
         }
 
         $withBreaks = preg_replace(
-            ['/<\/p>/i', '/<br\s*\/?>/i', '/<\/h[1-6]>/i'],
-            ["\n\n", "\n", "\n\n"],
+            ['/<\/p>/i', '/<br\s*\/?>/i', '/<\/h[1-6]>/i', '/<\/div>/i', '/<div[^>]*>/i'],
+            ["\n\n", "\n", "\n\n", "\n\n", "\n\n"],
             $html
         );
 
         $plain = strip_tags($withBreaks);
         $plain = preg_replace("/\n{3,}/", "\n\n", $plain);
+        $plain = preg_replace('/[ \t]+/', ' ', $plain); // collapse repeated spaces (qpc-hafs spans etc.)
 
         return trim($plain);
     }
