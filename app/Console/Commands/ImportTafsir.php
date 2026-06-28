@@ -9,11 +9,12 @@ use App\Models\Surah;
 use App\Models\Tafsir;
 use App\Services\QuranApiService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class ImportTafsir extends Command
 {
     protected $signature = 'quran:import-tafsir
-                            {--tafsir= : Tafsir slug (e.g. ibn-kathir-en)}
+                            {--tafsir= : Tafsir slug from tafsirs table (e.g. ibn-kathir-en, NOT the API source key)}
                             {--all : Import all active tafsirs}
                             {--surah= : Only import for specific surah}';
 
@@ -30,7 +31,6 @@ class ImportTafsir extends Command
         $this->info('📚 Quran Tafsir Import');
         $this->info('=======================');
 
-        // Determine which tafsirs to import
         if ($this->option('all')) {
             $tafsirs = Tafsir::where('is_active', true)->whereNotNull('source')->get();
         } elseif ($this->option('tafsir')) {
@@ -50,6 +50,9 @@ class ImportTafsir extends Command
             ? [(int) $this->option('surah')]
             : range(1, 114);
 
+        // Track problem surahs across all tafsirs for a final accuracy report
+        $emptyResponses = [];
+
         foreach ($tafsirs as $tafsir) {
             $this->info('');
             $this->info("Importing: {$tafsir->name} by {$tafsir->scholar}");
@@ -59,6 +62,7 @@ class ImportTafsir extends Command
             $bar->start();
 
             $totalImported = 0;
+            $totalSkippedEmpty = 0;
 
             foreach ($surahNumbers as $surahNumber) {
                 $bar->setMessage("Surah {$surahNumber}...");
@@ -69,7 +73,6 @@ class ImportTafsir extends Command
                     continue;
                 }
 
-                // Skip if already stored
                 $stored = AyahTafsir::whereHas('ayah', fn($q) => $q->where('surah_id', $surah->id))
                     ->where('tafsir_id', $tafsir->id)
                     ->count();
@@ -82,8 +85,20 @@ class ImportTafsir extends Command
                 try {
                     $tafsirData = $this->api->fetchTafsirForSurah($surahNumber, $tafsir->source);
 
+                    // FIX #1: Empty API response is NOT an exception — flag it instead of
+                    // silently moving on. A bad source slug returns [] quietly, not an error.
+                    if (empty($tafsirData)) {
+                        $emptyResponses[] = "{$tafsir->slug} — Surah {$surahNumber}";
+                        Log::warning("Empty tafsir response: source='{$tafsir->source}' surah={$surahNumber}");
+                        $bar->advance();
+                        continue;
+                    }
+
                     foreach ($tafsirData as $item) {
-                        // Parse verse_key "2:255" → ayah number 255 in surah 2
+                        if (empty($item['verse_key'])) {
+                            continue;
+                        }
+
                         [$sNum, $aNum] = explode(':', $item['verse_key']);
 
                         $ayah = Ayah::where('surah_id', $surah->id)
@@ -92,10 +107,15 @@ class ImportTafsir extends Command
 
                         if (!$ayah) continue;
 
-                        // Tafsir text often contains HTML — strip for clean storage
-                        $cleanText = strip_tags($item['text'] ?? '');
+                        // FIX #2: Preserve paragraph structure before stripping tags,
+                        // so multi-paragraph tafsir (e.g. Ibn Kathir) doesn't collapse
+                        // into one unreadable block of text.
+                        $cleanText = $this->htmlToPlainText($item['text'] ?? '');
 
-                        if (empty(trim($cleanText))) continue;
+                        if ($cleanText === '') {
+                            $totalSkippedEmpty++;
+                            continue;
+                        }
 
                         AyahTafsir::updateOrCreate(
                             [
@@ -110,7 +130,7 @@ class ImportTafsir extends Command
 
                     $this->api->pause();
                 } catch (\Exception $e) {
-                    \Illuminate\Support\Facades\Log::error(
+                    Log::error(
                         "Tafsir import failed for {$tafsir->slug} surah {$surahNumber}: " . $e->getMessage()
                     );
                 }
@@ -121,11 +141,47 @@ class ImportTafsir extends Command
             $bar->finish();
             $this->newLine(2);
             $this->info("  ✅ Tafsir records imported: {$totalImported}");
+            if ($totalSkippedEmpty > 0) {
+                $this->warn("  ⚠️ Skipped (empty text from API): {$totalSkippedEmpty}");
+            }
+        }
+
+        // FIX #1 continued: surface every empty-response surah at the end,
+        // so a bad source slug can't pass silently as "0 errors".
+        if (!empty($emptyResponses)) {
+            $this->newLine();
+            $this->warn('⚠️ ACCURACY WARNING — API returned 0 items for:');
+            foreach ($emptyResponses as $entry) {
+                $this->warn("   - {$entry}");
+            }
+            $this->warn('   Check the tafsir "source" slug in the database — it may be wrong.');
         }
 
         $this->newLine();
         $this->info("Total tafsir records in DB: " . number_format(AyahTafsir::count()));
 
         return self::SUCCESS;
+    }
+
+    /**
+     * Convert tafsir HTML to plain text while preserving paragraph breaks,
+     * instead of strip_tags() collapsing everything into one line.
+     */
+    private function htmlToPlainText(string $html): string
+    {
+        if (trim($html) === '') {
+            return '';
+        }
+
+        $withBreaks = preg_replace(
+            ['/<\/p>/i', '/<br\s*\/?>/i', '/<\/h[1-6]>/i'],
+            ["\n\n", "\n", "\n\n"],
+            $html
+        );
+
+        $plain = strip_tags($withBreaks);
+        $plain = preg_replace("/\n{3,}/", "\n\n", $plain);
+
+        return trim($plain);
     }
 }

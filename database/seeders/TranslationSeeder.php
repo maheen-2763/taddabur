@@ -36,23 +36,12 @@ class TranslationSeeder extends Seeder
                 'sort_order'    => 1,
             ],
             [
-                'name'          => 'The Clear Quran',
-                'author'        => 'Dr. Mustafa Khattab',
-                'language_code' => 'en',
-                'language_name' => 'English',
-                'slug'          => 'the-clear-quran',
-                'source'        => '131',
-                'is_free'       => false,
-                'is_active'     => true,
-                'sort_order'    => 2,
-            ],
-            [
                 'name'          => 'Pickthall',
                 'author'        => 'Mohammed Marmaduke Pickthall',
                 'language_code' => 'en',
                 'language_name' => 'English',
                 'slug'          => 'pickthall',
-                'source'        => '95',
+                'source'        => '19',
                 'is_free'       => false,
                 'is_active'     => true,
                 'sort_order'    => 3,
@@ -63,7 +52,7 @@ class TranslationSeeder extends Seeder
                 'language_code' => 'en',
                 'language_name' => 'English',
                 'slug'          => 'yusuf-ali',
-                'source'        => '85',
+                'source'        => '22',
                 'is_free'       => false,
                 'is_active'     => true,
                 'sort_order'    => 4,
@@ -87,23 +76,10 @@ class TranslationSeeder extends Seeder
                 'language_code' => 'ur',
                 'language_name' => 'Urdu',
                 'slug'          => 'jalandhari-ur',
-                'source'        => '82',
+                'source'        => '234',
                 'is_free'       => false,
                 'is_active'     => true,
                 'sort_order'    => 6,
-            ],
-
-            // ── ARABIC ───────────────────────────────────
-            [
-                'name'          => 'King Fahad Complex',
-                'author'        => 'King Fahad Complex',
-                'language_code' => 'ar',
-                'language_name' => 'Arabic',
-                'slug'          => 'king-fahad-ar',
-                'source'        => '97',
-                'is_free'       => false,
-                'is_active'     => true,
-                'sort_order'    => 7,
             ],
 
         ];
@@ -115,6 +91,9 @@ class TranslationSeeder extends Seeder
                 $data                        // Update or create with this data
             );
         }
+
+        $activeSlugs = collect($translations)->pluck('slug');
+        Translation::whereNotIn('slug', $activeSlugs)->update(['is_active' => false]);
 
         $this->command->info('✅ Translations seeded safely.');
         $this->command->info('   Run: php artisan quran:import-translations --all');
