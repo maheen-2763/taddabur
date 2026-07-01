@@ -38,6 +38,14 @@
                         <i class="bi bi-stars me-1"></i>Prophets
                     </a>
                 </li>
+
+                <li class="nav-item">
+                    <a class="nav-link-islamic nav-link {{ request()->routeIs('scholars.*') ? 'active' : '' }}"
+                        href="{{ route('scholars.index') }}">
+                        <i class="bi bi-stars me-1"></i>Four Imams
+                    </a>
+                </li>
+
                 <li class="nav-item">
                     <a class="nav-link-islamic nav-link {{ request()->routeIs('pricing') ? 'active' : '' }}"
                         href="{{ route('pricing') }}">

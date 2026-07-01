@@ -1,5 +1,4 @@
 <?php
-// app/Console/Commands/ImportTafsir.php
 
 namespace App\Console\Commands;
 
@@ -14,11 +13,12 @@ use Illuminate\Support\Facades\Log;
 class ImportTafsir extends Command
 {
     protected $signature = 'quran:import-tafsir
-                            {--tafsir= : Tafsir slug from tafsirs table (e.g. ibn-kathir-en, NOT the API source key)}
+                            {--tafsir= : Tafsir slug from tafsirs table}
                             {--all : Import all active tafsirs}
                             {--surah= : Only import for specific surah}';
 
-    protected $description = 'Import Quran tafsir from Quran.com API';
+
+    protected $description = 'Import Quran tafsir from Quran Foundation API';
 
     public function __construct(private QuranApiService $api)
     {
@@ -31,29 +31,24 @@ class ImportTafsir extends Command
         $this->info('📚 Quran Tafsir Import');
         $this->info('=======================');
 
-        if ($this->option('all')) {
-            $tafsirs = Tafsir::where('is_active', true)->whereNotNull('source')->get();
-        } elseif ($this->option('tafsir')) {
-            $tafsirs = Tafsir::where('slug', $this->option('tafsir'))->get();
-
-            if ($tafsirs->isEmpty()) {
-                $this->error("Tafsir '{$this->option('tafsir')}' not found.");
-                Tafsir::all()->each(fn($t) => $this->line("  {$t->slug} — {$t->name}"));
-                return self::FAILURE;
-            }
-        } else {
-            $this->error('Please specify --tafsir=slug or --all');
-            return self::FAILURE;
-        }
+        $tafsirs = $this->resolveTafsirs();
+        if ($tafsirs === null) return self::FAILURE;
 
         $surahNumbers = $this->option('surah')
             ? [(int) $this->option('surah')]
             : range(1, 114);
 
-        // Track problem surahs across all tafsirs for a final accuracy report
         $emptyResponses = [];
 
+
         foreach ($tafsirs as $tafsir) {
+            // BUG #1 FIX: source must be numeric resource ID, not slug
+            if (!is_numeric($tafsir->source)) {
+                $this->error("  ❌ Tafsir '{$tafsir->slug}' has non-numeric source: '{$tafsir->source}' — skipping. Fix the source column in DB.");
+                Log::error("ImportTafsir: non-numeric source for tafsir '{$tafsir->slug}': '{$tafsir->source}'");
+                continue;
+            }
+
             $this->info('');
             $this->info("Importing: {$tafsir->name} by {$tafsir->scholar}");
 
@@ -61,8 +56,9 @@ class ImportTafsir extends Command
             $bar->setFormat(" %current%/%max% [%bar%] %percent:3s%% — %message%");
             $bar->start();
 
-            $totalImported = 0;
+            $totalImported    = 0;
             $totalSkippedEmpty = 0;
+            $totalAlreadyDone = 0; // yeh line naya add karo
 
             foreach ($surahNumbers as $surahNumber) {
                 $bar->setMessage("Surah {$surahNumber}...");
@@ -78,15 +74,14 @@ class ImportTafsir extends Command
                     ->count();
 
                 if ($stored === $surah->ayah_count) {
+                    $totalAlreadyDone++;
                     $bar->advance();
                     continue;
                 }
 
                 try {
-                    $tafsirData = $this->api->fetchTafsirForSurah($surahNumber, $tafsir->source);
+                    $tafsirData = $this->api->fetchTafsirForSurah($surahNumber, (int) $tafsir->source);
 
-                    // FIX #1: Empty API response is NOT an exception — flag it instead of
-                    // silently moving on. A bad source slug returns [] quietly, not an error.
                     if (empty($tafsirData)) {
                         $emptyResponses[] = "{$tafsir->slug} — Surah {$surahNumber}";
                         Log::warning("Empty tafsir response: source='{$tafsir->source}' surah={$surahNumber}");
@@ -95,11 +90,12 @@ class ImportTafsir extends Command
                     }
 
                     foreach ($tafsirData as $item) {
-                        if (empty($item['verse_key'])) {
+                        // BUG #2 FIX: validate verse_key format before explode
+                        if (empty($item['verse_key']) || !str_contains($item['verse_key'], ':')) {
                             continue;
                         }
 
-                        [$sNum, $aNum] = explode(':', $item['verse_key']);
+                        [, $aNum] = explode(':', $item['verse_key']);
 
                         $ayah = Ayah::where('surah_id', $surah->id)
                             ->where('number', (int) $aNum)
@@ -107,10 +103,7 @@ class ImportTafsir extends Command
 
                         if (!$ayah) continue;
 
-                        // FIX #2: Preserve paragraph structure before stripping tags,
-                        // so multi-paragraph tafsir (e.g. Ibn Kathir) doesn't collapse
-                        // into one unreadable block of text.
-                        $cleanText = $this->htmlToPlainText($item['text'] ?? '');
+                        $cleanText = $this->htmlToPlainText($item['tafsirs'][0]['text'] ?? '');
 
                         if ($cleanText === '') {
                             $totalSkippedEmpty++;
@@ -118,21 +111,18 @@ class ImportTafsir extends Command
                         }
 
                         AyahTafsir::updateOrCreate(
-                            [
-                                'ayah_id'   => $ayah->id,
-                                'tafsir_id' => $tafsir->id,
-                            ],
-                            ['text' => $cleanText]
+                            ['ayah_id'   => $ayah->id, 'tafsir_id' => $tafsir->id],
+                            ['text'      => $cleanText],
+                            ['api_source_version' => 'qf_oauth2_v1'],
                         );
 
                         $totalImported++;
                     }
-
-                    $this->api->pause();
                 } catch (\Exception $e) {
-                    Log::error(
-                        "Tafsir import failed for {$tafsir->slug} surah {$surahNumber}: " . $e->getMessage()
-                    );
+                    Log::error("Tafsir import failed for {$tafsir->slug} surah {$surahNumber}: " . $e->getMessage());
+                } finally {
+                    // BUG #3 FIX: pause() always runs — success ya fail dono cases mein
+                    $this->api->pause();
                 }
 
                 $bar->advance();
@@ -140,38 +130,55 @@ class ImportTafsir extends Command
 
             $bar->finish();
             $this->newLine(2);
-            $this->info("  ✅ Tafsir records imported: {$totalImported}");
+            $this->info("  ✅ Imported: {$totalImported}");
+
             if ($totalSkippedEmpty > 0) {
-                $this->warn("  ⚠️ Skipped (empty text from API): {$totalSkippedEmpty}");
+                $this->warn("  ⚠️  Skipped (empty text): {$totalSkippedEmpty}");
             }
+            $this->info("  ⏭️  Already complete (skipped): {$totalAlreadyDone} surahs");
         }
 
-        // FIX #1 continued: surface every empty-response surah at the end,
-        // so a bad source slug can't pass silently as "0 errors".
+        // Accuracy warning report
         if (!empty($emptyResponses)) {
             $this->newLine();
-            $this->warn('⚠️ ACCURACY WARNING — API returned 0 items for:');
+            $this->warn('⚠️  ACCURACY WARNING — API returned 0 items for:');
             foreach ($emptyResponses as $entry) {
                 $this->warn("   - {$entry}");
             }
-            $this->warn('   Check the tafsir "source" slug in the database — it may be wrong.');
+            $this->warn('   Check tafsir "source" column in DB — numeric resource ID hona chahiye.');
         }
 
         $this->newLine();
-        $this->info("Total tafsir records in DB: " . number_format(AyahTafsir::count()));
+        $this->info('Total tafsir records in DB: ' . number_format(AyahTafsir::count()));
 
         return self::SUCCESS;
     }
 
-    /**
-     * Convert tafsir HTML to plain text while preserving paragraph breaks,
-     * instead of strip_tags() collapsing everything into one line.
-     */
+    private function resolveTafsirs()
+    {
+        if ($this->option('all')) {
+            return Tafsir::where('is_active', true)->whereNotNull('source')->get();
+        }
+
+        if ($this->option('tafsir')) {
+            $tafsirs = Tafsir::where('slug', $this->option('tafsir'))->get();
+
+            if ($tafsirs->isEmpty()) {
+                $this->error("Tafsir '{$this->option('tafsir')}' not found. Available slugs:");
+                Tafsir::all()->each(fn($t) => $this->line("  {$t->slug} — {$t->name}"));
+                return null;
+            }
+
+            return $tafsirs;
+        }
+
+        $this->error('Please specify --tafsir=slug or --all');
+        return null;
+    }
+
     private function htmlToPlainText(string $html): string
     {
-        if (trim($html) === '') {
-            return '';
-        }
+        if (trim($html) === '') return '';
 
         $withBreaks = preg_replace(
             ['/<\/p>/i', '/<br\s*\/?>/i', '/<\/h[1-6]>/i', '/<\/div>/i', '/<div[^>]*>/i'],
@@ -181,7 +188,7 @@ class ImportTafsir extends Command
 
         $plain = strip_tags($withBreaks);
         $plain = preg_replace("/\n{3,}/", "\n\n", $plain);
-        $plain = preg_replace('/[ \t]+/', ' ', $plain); // collapse repeated spaces (qpc-hafs spans etc.)
+        $plain = preg_replace('/[ \t]+/', ' ', $plain);
 
         return trim($plain);
     }

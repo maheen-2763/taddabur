@@ -1,0 +1,490 @@
+/* ================================================
+   SCHOLARS MODULE — Taddabur App
+   Extends: layouts/app.blade.php variables
+   Used in: scholars/index.blade.php, scholars/show.blade.php
+================================================ */
+
+/* ================================================
+   INDEX PAGE — Scholar Cards
+================================================ */
+
+.scholar-card {
+    background: var(--cream-dark);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    transition:
+        transform 0.2s,
+        box-shadow 0.2s;
+    overflow: hidden;
+    position: relative;
+}
+
+.scholar-card::before {
+    content: "";
+    display: block;
+    height: 4px;
+    width: 100%;
+    background: linear-gradient(90deg, var(--emerald), var(--gold));
+}
+
+.scholar-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.1);
+}
+
+.scholar-card .madhab-badge {
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.8rem;
+    border-radius: 999px;
+    background: rgba(27, 94, 59, 0.1);
+    color: var(--emerald);
+    border: 1px solid rgba(27, 94, 59, 0.2);
+}
+
+.scholar-card .period-badge {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    padding: 0.3rem 0.8rem;
+    border-radius: 999px;
+    background: rgba(201, 150, 58, 0.1);
+    color: var(--gold-dark);
+    border: 1px solid rgba(201, 150, 58, 0.2);
+}
+
+.scholar-card h5 {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    color: var(--ink);
+    margin-bottom: 0.25rem;
+}
+
+.scholar-card .arabic-sm {
+    font-family: var(--font-arabic);
+    font-size: 1.3rem;
+    direction: rtl;
+    color: var(--emerald);
+    line-height: 2;
+}
+
+/* ================================================
+   SHOW PAGE — Hero Section
+================================================ */
+
+.scholar-hero {
+    background: linear-gradient(
+        135deg,
+        var(--emerald-dark) 0%,
+        var(--emerald) 60%,
+        rgba(201, 150, 58, 0.15) 100%
+    );
+    border-radius: var(--radius-lg);
+    padding: 3.5rem 2rem;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--gold-dark);
+}
+
+/* Subtle geometric background */
+.scholar-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(
+        circle at 80% 20%,
+        rgba(201, 150, 58, 0.08) 0%,
+        transparent 60%
+    );
+    pointer-events: none;
+}
+
+.scholar-hero h1 {
+    font-family: var(--font-heading);
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    color: #fff;
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.04em;
+}
+
+.scholar-hero .arabic {
+    font-family: var(--font-arabic);
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+    direction: rtl;
+    color: var(--gold-light);
+    line-height: 2;
+}
+
+.scholar-hero .hero-badges {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 1.25rem;
+}
+
+.scholar-hero .badge-madhab {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    background: var(--gold);
+    color: var(--ink);
+    padding: 0.4rem 1.2rem;
+    border-radius: 999px;
+}
+
+.scholar-hero .badge-period {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    padding: 0.4rem 1.2rem;
+    border-radius: 999px;
+}
+
+/* ================================================
+   SHOW PAGE — Tab Navigation
+================================================ */
+
+.nav-tabs-islamic {
+    border-bottom: 2px solid var(--border);
+    gap: 0.25rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.nav-tabs-islamic::-webkit-scrollbar {
+    display: none;
+}
+
+.nav-tabs-islamic .nav-link {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    padding: 0.75rem 1.1rem;
+    white-space: nowrap;
+    margin-bottom: -2px;
+    transition:
+        color 0.2s,
+        border-color 0.2s;
+    background: transparent;
+}
+
+.nav-tabs-islamic .nav-link:hover {
+    color: var(--emerald);
+    border-bottom-color: var(--emerald-light);
+}
+
+.nav-tabs-islamic .nav-link.active {
+    color: var(--gold-dark);
+    border-bottom: 2px solid var(--gold);
+    background: transparent;
+    font-weight: 600;
+}
+
+/* ================================================
+   SHOW PAGE — Content Panels
+================================================ */
+
+.scholar-panel {
+    background: var(--cream-dark);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+}
+
+.scholar-panel h5 {
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    margin-bottom: 1rem;
+}
+
+.scholar-panel p {
+    font-family: var(--font-body);
+    color: var(--ink-soft);
+    line-height: 1.9;
+    margin-bottom: 0;
+}
+
+/* ================================================
+   TEACHINGS — Cards
+================================================ */
+
+.teaching-card {
+    background: var(--cream-dark);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--emerald);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.teaching-card h6 {
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    color: var(--emerald);
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.03em;
+}
+
+.teaching-card p {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+    line-height: 1.8;
+    margin-bottom: 0;
+}
+
+/* ================================================
+   QUOTES — Cards
+================================================ */
+
+.quote-card {
+    background: var(--cream-dark);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.75rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.quote-card::before {
+    content: "\201C";
+    position: absolute;
+    top: -0.5rem;
+    left: 1.25rem;
+    font-family: Georgia, serif;
+    font-size: 4rem;
+    color: var(--gold);
+    opacity: 0.2;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.quote-card .arabic {
+    font-family: var(--font-arabic);
+    font-size: 1.5rem;
+    direction: rtl;
+    text-align: right;
+    color: var(--ink);
+    line-height: 2.2;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.quote-card .quote-english {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    font-style: italic;
+    color: var(--ink-soft);
+    line-height: 1.8;
+    margin-bottom: 0.5rem;
+}
+
+.quote-card .quote-source {
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    color: var(--muted);
+}
+
+.quote-card .quote-source::before {
+    content: "— ";
+    color: var(--gold);
+}
+
+/* ================================================
+   STUDENTS — List
+================================================ */
+
+.student-item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1.25rem;
+    background: var(--cream-dark);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 0.75rem;
+    transition: border-color 0.2s;
+}
+
+.student-item:hover {
+    border-color: var(--emerald-light);
+}
+
+.student-avatar {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    background: linear-gradient(135deg, var(--emerald-dark), var(--emerald));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold-light);
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.student-item h6 {
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    color: var(--ink);
+    margin-bottom: 0.2rem;
+}
+
+.student-item .arabic-sm {
+    font-family: var(--font-arabic);
+    font-size: 1rem;
+    direction: rtl;
+    color: var(--emerald);
+    line-height: 1.8;
+}
+
+.student-item small {
+    color: var(--muted);
+    font-size: 0.82rem;
+    line-height: 1.6;
+}
+
+/* ================================================
+   WORKS — List
+================================================ */
+
+.work-item {
+    padding: 1.25rem;
+    background: var(--cream-dark);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 0.75rem;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.work-icon {
+    font-size: 1.4rem;
+    color: var(--gold);
+    min-width: 28px;
+    margin-top: 2px;
+}
+
+.work-item h6 {
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    color: var(--ink);
+    margin-bottom: 0.2rem;
+}
+
+.work-item .arabic-title {
+    font-family: var(--font-arabic);
+    font-size: 1rem;
+    direction: rtl;
+    color: var(--gold-dark);
+    line-height: 1.8;
+}
+
+.work-item small {
+    color: var(--muted);
+    font-size: 0.82rem;
+    line-height: 1.6;
+}
+
+/* ================================================
+   TRIALS — Card
+================================================ */
+
+.trials-card {
+    background: var(--cream-dark);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--gold);
+    border-radius: var(--radius);
+    padding: 2rem;
+}
+
+.trials-card .trials-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.trials-card .trials-header i {
+    color: var(--gold);
+    font-size: 1.3rem;
+}
+
+.trials-card .trials-header h5 {
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    margin-bottom: 0;
+}
+
+.trials-card p {
+    font-family: var(--font-body);
+    color: var(--ink-soft);
+    line-height: 1.9;
+    margin-bottom: 0;
+}
+
+/* ================================================
+   DARK MODE OVERRIDES
+================================================ */
+
+[data-bs-theme="dark"] .scholar-card,
+[data-bs-theme="dark"] .scholar-panel,
+[data-bs-theme="dark"] .teaching-card,
+[data-bs-theme="dark"] .quote-card,
+[data-bs-theme="dark"] .student-item,
+[data-bs-theme="dark"] .work-item,
+[data-bs-theme="dark"] .trials-card {
+    background: var(--cream-dark);
+    border-color: var(--border);
+}
+
+[data-bs-theme="dark"] .scholar-card .madhab-badge {
+    background: rgba(45, 138, 89, 0.15);
+    color: #5ac98a;
+    border-color: rgba(45, 138, 89, 0.3);
+}
+
+[data-bs-theme="dark"] .scholar-card .period-badge {
+    background: rgba(201, 150, 58, 0.12);
+    color: var(--gold-light);
+    border-color: rgba(201, 150, 58, 0.25);
+}
+
+/* ================================================
+   RESPONSIVE
+================================================ */
+
+@media (max-width: 768px) {
+    .scholar-hero {
+        padding: 2rem 1.25rem;
+    }
+
+    .scholar-panel {
+        padding: 1.25rem;
+    }
+
+    .quote-card .arabic {
+        font-size: 1.3rem;
+    }
+}

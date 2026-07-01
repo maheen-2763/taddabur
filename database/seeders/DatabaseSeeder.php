@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             ProphetTimelineSeeder::class, // Timeline of Prophets
             JuzSeeder::class,           // All 30 Juzs
             JuzSurahSeeder::class,      // Mapping of which Surahs are in which Juzs
+            ScholarSeeder::class,       // All Four Imams.
         ]);
     }
 }

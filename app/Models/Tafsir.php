@@ -49,4 +49,10 @@ class Tafsir extends Model
     {
         return $query->where('language_code', $languageCode);
     }
+
+    // Model mein
+    public function getIsVerifiedAttribute()
+    {
+        return $this->tafsir_text !== null && $this->source_verified_at !== null;
+    }
 }

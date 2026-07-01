@@ -14,6 +14,7 @@ use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ReflectionController;
 use App\Http\Controllers\WordTimingController;
+use App\Http\Controllers\ScholarController;
 
 
 // Re-import any missing translations weekly (catches new additions)
@@ -45,6 +46,7 @@ Route::get('/allah-names', [App\Http\Controllers\AllahNameController::class, 'in
     ->name('allah-names.index');
 
 
+
 // ✅ ADD THIS — search must come BEFORE /{surah}
 Route::get('/quran/search', [QuranController::class, 'search'])
     ->name('quran.search');
@@ -72,6 +74,9 @@ Route::get(
 // Prophets listing
 Route::get('/prophets', [StoryController::class, 'prophets'])->name('prophets.index');
 Route::get('/prophets/{prophet:slug}', [StoryController::class, 'prophetStories'])->name('prophets.show');
+
+Route::get('/scholars',          [ScholarController::class, 'index'])->name('scholars.index');
+Route::get('/scholars/{scholar:slug}', [ScholarController::class, 'show'])->name('scholars.show');
 
 
 // Pricing page
@@ -187,7 +192,6 @@ Route::get('/test-name', function () {
     return view('test');
 });
 
-
 // ============================================================
 // ADMIN ROUTES
 // ============================================================
@@ -247,7 +251,8 @@ Route::middleware(['auth', 'admin'])
         Route::patch('/prophets/{prophet}', [App\Http\Controllers\Admin\ProphetController::class, 'update'])
             ->name('prophets.update');
 
-
+        Route::get('/', [ScholarController::class, 'index'])->name('scholars.index');
+        Route::get('/{scholar:slug}', [ScholarController::class, 'show'])->name('scholars.show');
 
         Route::resource(
             'daily-reflections',

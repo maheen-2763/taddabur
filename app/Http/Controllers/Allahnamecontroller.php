@@ -9,6 +9,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AllahName;
 use Illuminate\View\View;
+use Illuminate\Http\Request;
 
 class AllahNameController extends Controller
 {

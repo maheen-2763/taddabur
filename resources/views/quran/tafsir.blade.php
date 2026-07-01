@@ -70,6 +70,8 @@
 
         </div>
 
+
+
         {{-- Tafsir Selector --}}
         <div class="tafsir-selector-wrap">
             <span class="tafsir-selector-label">Select Tafsir</span>
@@ -101,6 +103,11 @@
                 <div class="tafsir-scholar-arabic" id="tafsirScholarArabic">
                     {{ $selectedTafsir?->name_arabic ?? '' }}
                 </div>
+            </div>
+
+            <div id="tafsirFallbackNote" class="tafsir-fallback-note d-none">
+                <i class="bi bi-info-circle"></i>
+                <span id="tafsirFallbackNoteText"></span>
             </div>
 
             {{-- Tafsir text — loaded via JS --}}

@@ -465,7 +465,7 @@
                 <span class="sidebar-badge">Soon</span>
             </a> --}}
             <a href="{{ route('admin.daily-reflections.index') }}"
-                class="sidebar-link {{ request()->routeIs('admin.daily-content.*') ? 'active' : '' }}">
+                class="sidebar-link {{ request()->routeIs('admin.daily-reflections.*') ? 'active' : '' }}">
                 <i class="bi bi-calendar-check"></i> Daily Content
             </a>
 

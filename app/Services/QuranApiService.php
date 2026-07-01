@@ -22,7 +22,7 @@ class QuranApiService
     private string $clientId;
     private string $clientSecret;
 
-    private int $delayBetweenRequests = 1;
+    private int $delayBetweenRequests = 2;
 
     public function __construct()
     {
@@ -100,7 +100,7 @@ class QuranApiService
     // -------------------------------------------------------
     // FETCH TRANSLATION FOR ONE SURAH (Quran Foundation — auth required)
     // -------------------------------------------------------
-    public function fetchTranslationForSurah(int $surahNumber, string $translationId): array
+    public function fetchTranslationForSurah(int $surahNumber, int $translationId): array
     {
         $url = "{$this->contentBase}/content/api/v4/verses/by_chapter/{$surahNumber}";
 
@@ -126,9 +126,8 @@ class QuranApiService
      * FETCH TAFSIR FOR ONE SURAH (Quran Foundation — auth required)
      * Uses /verses/by_chapter endpoint with tafsirs param (like translations).
      */
-    public function fetchTafsirForSurah(int $surahNumber, string $tafsirResourceId): array
+    public function fetchTafsirForSurah(int $surahNumber, int $tafsirResourceId): array
     {
-        // Use /verses/by_chapter endpoint with tafsirs parameter
         $url = "{$this->contentBase}/content/api/v4/verses/by_chapter/{$surahNumber}";
 
         $response = $this->getAuthenticated($url, [
@@ -136,21 +135,13 @@ class QuranApiService
             'per_page' => 300,
         ]);
 
+
         if (!$response || !isset($response['verses'])) {
+            Log::warning("Empty/failed tafsir response for surah {$surahNumber}, tafsir {$tafsirResourceId}");
             return [];
         }
 
-        // Extract tafsirs from each verse
-        $tafsirs = [];
-        foreach ($response['verses'] as $verse) {
-            if (!empty($verse['tafsirs'])) {
-                foreach ($verse['tafsirs'] as $tafsir) {
-                    $tafsirs[] = $tafsir;
-                }
-            }
-        }
-
-        return $tafsirs;
+        return $response['verses'];
     }
     // -------------------------------------------------------
     // FETCH SIMPLE ARABIC (alquran.cloud — no auth needed)

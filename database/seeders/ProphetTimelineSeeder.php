@@ -14,6 +14,9 @@ class ProphetTimelineSeeder extends Seeder
         $this->seedIbrahim();
         $this->seedMusa();
         $this->seedYusuf();
+        $this->seedIdris();
+        $this->seedHud();
+        $this->seedSalih();
 
         // Add new prophet timeline methods below as we complete each story.
         // Example: $this->seedMusa();
@@ -400,6 +403,129 @@ class ProphetTimelineSeeder extends Seeder
         ]);
 
         $this->command->info('  ✅ Yusuf timeline seeded.');
+    }
+
+    private function seedIdris(): void
+    {
+        Prophet::updateOrCreate(
+            ['slug' => 'idris'],
+            [
+                'timeline' => [
+                    [
+                        'title' => 'A Man of Truth and Prophethood',
+                        'description' => 'Allah described Idris as a truthful man and a prophet.',
+                        'period' => 'Truthfulness',
+                        'order' => 1,
+                    ],
+                    [
+                        'title' => 'Raised to a High Station',
+                        'description' => 'Allah raised Idris to a high and honored station.',
+                        'period' => 'Honor',
+                        'order' => 2,
+                    ],
+                ],
+            ]
+        );
+
+        $this->command->info('  ✅ Idris timeline seeded.');
+    }
+
+    private function seedHud(): void
+    {
+        Prophet::updateOrCreate(
+            ['slug' => 'hud'],
+            [
+                'timeline' => [
+                    [
+                        'title' => 'His Call to Worship Allah Alone',
+                        'description' => "Hud called his people, the 'Ad, to leave idols and worship Allah alone.",
+                        'period' => 'Call',
+                        'order' => 1,
+                    ],
+                    [
+                        'title' => "The People's Arrogance and Rejection",
+                        'description' => "The 'Ad were proud of their strength and rejected Hud's warning.",
+                        'period' => 'Rejection',
+                        'order' => 2,
+                    ],
+                    [
+                        'title' => "The Destruction of 'Ad and Hud's Rescue",
+                        'description' => "Allah destroyed the 'Ad and saved Hud and the believers with him.",
+                        'period' => 'Punishment',
+                        'order' => 3,
+                    ],
+                    [
+                        'title' => 'A Punishing Wind as a Sign',
+                        'description' => 'A fierce, relentless wind struck the people as a lasting sign for those who reflect.',
+                        'period' => 'Warning',
+                        'order' => 4,
+                    ],
+                ],
+            ]
+        );
+
+        $this->command->info('  ✅ Hud timeline seeded.');
+    }
+
+    private function seedSalih(): void
+    {
+        Prophet::updateOrCreate(
+            ['slug' => 'salih'],
+            [
+                'timeline' => [
+                    [
+                        'title' => 'The Call to Thamud',
+                        'description' => 'Salih called his people, Thamud, to worship Allah alone and leave their idols.',
+                        'period' => 'Call',
+                        'order' => 1,
+                    ],
+                    [
+                        'title' => 'The Sign of the She-Camel',
+                        'description' => 'Allah sent a she-camel as a clear sign, with a warning not to harm her.',
+                        'period' => 'Divine Sign',
+                        'order' => 2,
+                    ],
+                    [
+                        'title' => "The Elite's Arrogant Rejection",
+                        'description' => "While some believed, the proud leaders of Thamud mocked and rejected Salih.",
+                        'period' => 'Rejection',
+                        'order' => 3,
+                    ],
+                    [
+                        'title' => 'A Plot to Kill Salih',
+                        'description' => 'A group of men conspired secretly to kill Salih and silence his message.',
+                        'period' => 'Conspiracy',
+                        'order' => 4,
+                    ],
+                    [
+                        'title' => 'The She-Camel Killed',
+                        'description' => "Thamud broke their promise and hamstrung the she-camel, defying Allah's warning.",
+                        'period' => 'Defiance',
+                        'order' => 5,
+                    ],
+                    [
+                        'title' => 'Three Days to Repent',
+                        'description' => 'Salih warned them they had three days before the punishment would arrive.',
+                        'period' => 'Final Warning',
+                        'order' => 6,
+                    ],
+                    [
+                        'title' => 'The Destruction of Thamud',
+                        'description' => 'A mighty blast overtook them, and by morning they lay lifeless in their homes.',
+                        'period' => 'Punishment',
+                        'order' => 7,
+                    ],
+                    [
+                        'title' => "Salih's Sorrow for His People",
+                        'description' => 'Salih turned away from them in grief, having delivered the truth they refused to accept.',
+                        'period' => 'Aftermath',
+                        'order' => 8,
+                    ],
+                ],
+            ]
+        );
+
+        $this->command->info('  ✅ Salih timeline seeded.');
     }
 
     // ---------------------------------------------------------------

@@ -14,10 +14,10 @@ use App\Models\Tafsir;
 use App\Models\Translation;
 use App\Services\BookmarkService;
 use App\Services\QuranService;
+use App\Services\QuranApiService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use App\Models\ListenedAyah;
 use App\Services\Quran\QuranIndexService;
@@ -27,30 +27,23 @@ use Illuminate\Http\RedirectResponse;
 class QuranController extends Controller
 {
     public function __construct(
-        private QuranService    $quranService,
-        private BookmarkService $bookmarkService,
+        private QuranService      $quranService,
+        private BookmarkService   $bookmarkService,
         private QuranIndexService $quranIndexService,
+        private QuranApiService   $api,
     ) {}
 
     // ── GET /quran ────────────────────────────────────────
     public function index(): View
     {
-
-        return view(
-            'quran.index',
-            $this->quranIndexService->get(Auth::id())
-        );
+        return view('quran.index', $this->quranIndexService->get(Auth::id()));
     }
-
 
     // ── GET /quran/{surah} ───────────────────────────────
     public function show(Request $request, Surah $surah): View
     {
         $user            = Auth::user();
-        $translationSlug = $request->get(
-            'translation',
-            $user?->preferred_translation ?? 'sahih-international'
-        );
+        $translationSlug = $request->get('translation', $user?->preferred_translation ?? 'sahih-international');
 
         $data = $this->quranService->getSurahForReading($surah, $user, $translationSlug);
 
@@ -58,7 +51,6 @@ class QuranController extends Controller
             ? $this->quranService->getReadAyahsCount($user, $surah)
             : 0;
 
-        // After $this->quranService->getSurahForReading(...) is called
         $data['userNotes'] = $user
             ? Note::where('user_id', $user->id)
             ->whereIn('ayah_id', $data['ayahs']->pluck('id'))
@@ -73,17 +65,11 @@ class QuranController extends Controller
             ->toArray()
             : [];
 
-        // ✅ Plan info passed to view
-        $data['isPremium']      = $this->quranService->userIsPremium($user);
+        $data['isPremium']       = $this->quranService->userIsPremium($user);
         $data['canAccessTafsir'] = $this->quranService->userCanAccessTafsir($user);
-        $data['upgradeUrl']     = route('subscription.upgrade');
+        $data['upgradeUrl']      = route('subscription.upgrade');
+        $data['quranProgress']   = $user ? $this->quranService->getQuranProgress($user) : null;
 
-        // ✅ Reading progress
-        $data['quranProgress']  = $user
-            ? $this->quranService->getQuranProgress($user)
-            : null;
-
-        // ✅ Consistent variable name — $isSurahCompleted
         $data['isSurahCompleted'] = $user
             ? SurahProgress::where('user_id', $user->id)
             ->where('surah_id', $surah->id)
@@ -97,7 +83,6 @@ class QuranController extends Controller
     // ── GET /quran/{surah}/{ayah}/tafsir (AJAX) ──────────
     public function tafsir(Request $request, Surah $surah, Ayah $ayah): JsonResponse
     {
-        // ✅ Server-side plan check — cannot bypass via direct URL
         if (!$this->quranService->userCanAccessTafsir(Auth::user())) {
             return response()->json([
                 'error'       => 'upgrade_required',
@@ -107,12 +92,8 @@ class QuranController extends Controller
         }
 
         $tafsirSlug = $request->get('tafsir', Auth::user()?->preferred_tafsir ?? 'ibn-kathir-en');
-        $tafsir     = Tafsir::where('slug', $tafsirSlug)->first();
-
-        // Fallback to first available tafsir
-        if (!$tafsir) {
-            $tafsir = Tafsir::where('is_active', true)->first();
-        }
+        $tafsir     = Tafsir::where('slug', $tafsirSlug)->first()
+            ?? Tafsir::where('is_active', true)->first();
 
         if (!$tafsir) {
             return response()->json(['error' => 'No tafsir available.'], 404);
@@ -122,13 +103,16 @@ class QuranController extends Controller
             ->where('tafsir_id', $tafsir->id)
             ->first();
 
-        // Not cached — fetch from API
         if (!$ayahTafsir) {
-            $ayahTafsir = $this->fetchAndStoreTafsir($ayah, $tafsir);
+            $ayahTafsir = $this->fetchSingleAyahTafsir($surah, $ayah, $tafsir);
         }
 
+        $isFallback = false;
         if (!$ayahTafsir) {
-            return response()->json(['error' => 'Tafsir not available for this ayah.'], 404);
+            $ayahTafsir = AyahTafsir::whereIn('ayah_id', $surah->ayahs()->pluck('id'))
+                ->where('tafsir_id', $tafsir->id)
+                ->first();
+            $isFallback = true;
         }
 
         return response()->json([
@@ -137,13 +121,13 @@ class QuranController extends Controller
             'tafsir_name'    => $tafsir->name,
             'scholar'        => $tafsir->scholar,
             'text'           => $ayahTafsir->text,
+            'note' => $isFallback ? 'this tafsir covers whole surah combined.' : null,
         ]);
     }
 
     // ── GET /quran/{surah}/{ayah}/tafsir-page ────────────
     public function tafsirPage(Surah $surah, Ayah $ayah): View | RedirectResponse
     {
-        // Plan check
         if (!$this->quranService->userCanAccessTafsir(Auth::user())) {
             return redirect()->route('subscription.upgrade')
                 ->with('message', 'Tafsir requires an upgrade.');
@@ -156,37 +140,19 @@ class QuranController extends Controller
             $user
         );
 
-        // Load translation for this ayah
         $ayah->load([
-            'translations' => fn($q) => $q
-                ->where('translation_id', $translation?->id)
+            'translations' => fn($q) => $q->where('translation_id', $translation?->id)
         ]);
 
-        // Default tafsir
         $selectedTafsir = Tafsir::where('slug', QuranService::DEFAULT_TAFSIR)
             ->where('is_active', true)
             ->first() ?? $tafsirs->first();
 
-        // Adjacent ayahs for prev/next navigation
-        $prevAyah = Ayah::where('surah_id', $surah->id)
-            ->where('number', $ayah->number - 1)
-            ->first();
+        $prevAyah = Ayah::where('surah_id', $surah->id)->where('number', $ayah->number - 1)->first();
+        $nextAyah = Ayah::where('surah_id', $surah->id)->where('number', $ayah->number + 1)->first();
 
-        $nextAyah = Ayah::where('surah_id', $surah->id)
-            ->where('number', $ayah->number + 1)
-            ->first();
-
-        return view('quran.tafsir', compact(
-            'surah',
-            'ayah',
-            'tafsirs',
-            'selectedTafsir',
-            'prevAyah',
-            'nextAyah'
-        ));
+        return view('quran.tafsir', compact('surah', 'ayah', 'tafsirs', 'selectedTafsir', 'prevAyah', 'nextAyah'));
     }
-
-
 
     // ── GET /quran/{surah}/{ayah}/translation (AJAX) ─────
     public function translation(Request $request, Surah $surah, Ayah $ayah): JsonResponse
@@ -195,15 +161,8 @@ class QuranController extends Controller
 
         $translation = Translation::where('slug', $translationSlug)
             ->where('is_active', true)
-            ->first();
+            ->first() ?? Translation::where('slug', 'sahih-international')->first();
 
-        // ✅ Fallback to Sahih International if not found
-        if (!$translation) {
-            $translation = Translation::where('slug', 'sahih-international')
-                ->first();
-        }
-
-        // Plan check
         if (!$this->quranService->userCanAccessTranslation(Auth::user(), $translation)) {
             return response()->json([
                 'error'       => 'upgrade_required',
@@ -212,17 +171,14 @@ class QuranController extends Controller
             ], 403);
         }
 
-        // Check if translation data exists
         $ayahTranslation = AyahTranslation::where('ayah_id', $ayah->id)
             ->where('translation_id', $translation->id)
             ->first();
 
-        // ✅ If no data → try to fetch from API
         if (!$ayahTranslation) {
-            $ayahTranslation = $this->fetchAndStoreTranslation($ayah, $translation);
+            $ayahTranslation = $this->fetchSingleAyahTranslation($surah, $ayah, $translation);
         }
 
-        // ✅ Still no data → fallback to Sahih International
         if (!$ayahTranslation) {
             $sahih           = Translation::where('slug', 'sahih-international')->first();
             $ayahTranslation = AyahTranslation::where('ayah_id', $ayah->id)
@@ -251,25 +207,15 @@ class QuranController extends Controller
     public function audio(Request $request, Surah $surah, Ayah $ayah): JsonResponse
     {
         $requestedReciter = $request->get('reciter', 'mishary-rashid');
-        $recitation       = Recitation::where('slug', $requestedReciter)
-            ->where('is_active', true)
-            ->first();
+        $recitation       = Recitation::where('slug', $requestedReciter)->where('is_active', true)->first();
 
-        // ✅ Server-side plan check
-        // Free users can only use free reciters
-        if ($recitation && !$recitation->is_free) {
-            if (!$this->quranService->userIsPremium(Auth::user())) {
-                // Silently fall back to free reciter
-                $requestedReciter = 'mishary-rashid';
-                $recitation = Recitation::where('slug', $requestedReciter)->first();
-            }
+        if ($recitation && !$recitation->is_free && !$this->quranService->userIsPremium(Auth::user())) {
+            $requestedReciter = 'mishary-rashid';
+            $recitation = Recitation::where('slug', $requestedReciter)->first();
         }
 
-        // Fallback to free reciter if not found
         if (!$recitation) {
-            $recitation = Recitation::where('is_free', true)
-                ->where('is_active', true)
-                ->first();
+            $recitation = Recitation::where('is_free', true)->where('is_active', true)->first();
         }
 
         if (!$recitation) {
@@ -316,8 +262,6 @@ class QuranController extends Controller
 
         $readCount  = $this->quranService->getReadAyahsCount($user, $ayah->surah);
         $totalAyahs = $ayah->surah->ayah_count;
-
-        // ✅ Check if EXPLICIT reading is now 100% complete
         $newlyCompleted = false;
 
         if ($readCount >= $totalAyahs) {
@@ -336,10 +280,10 @@ class QuranController extends Controller
 
         return response()->json([
             'status'          => 'saved',
-            'ayah_number'      => $ayah->number,
-            'read_count'       => $readCount,
-            'total_ayahs'      => $totalAyahs,
-            'newly_completed'  => $newlyCompleted,
+            'ayah_number'     => $ayah->number,
+            'read_count'      => $readCount,
+            'total_ayahs'     => $totalAyahs,
+            'newly_completed' => $newlyCompleted,
         ]);
     }
 
@@ -347,96 +291,24 @@ class QuranController extends Controller
     public function markSurahComplete(Surah $surah): JsonResponse
     {
         if (!Auth::check()) {
-            return response()->json([
-                'error' => 'Unauthenticated.'
-            ], 401);
+            return response()->json(['error' => 'Unauthenticated.'], 401);
         }
 
-        $progress = SurahProgress::where([
-            'user_id' => Auth::id(),
-            'surah_id' => $surah->id,
-        ])->first();
+        $progress = SurahProgress::where(['user_id' => Auth::id(), 'surah_id' => $surah->id])->first();
 
         if ($progress?->is_completed) {
-            return response()->json([
-                'status' => 'already_completed'
-            ]);
+            return response()->json(['status' => 'already_completed']);
         }
 
         SurahProgress::updateOrCreate(
-            [
-                'user_id' => Auth::id(),
-                'surah_id' => $surah->id,
-            ],
-            [
-                'is_completed' => true,
-                'completed_at' => now(),
-            ]
+            ['user_id' => Auth::id(), 'surah_id' => $surah->id],
+            ['is_completed' => true, 'completed_at' => now()]
         );
 
-        return response()->json([
-            'status' => 'completed'
-        ]);
+        return response()->json(['status' => 'completed']);
     }
 
-    // ── PRIVATE HELPERS ───────────────────────────────────
-
-    private function fetchAndStoreTafsir(Ayah $ayah, Tafsir $tafsir): ?AyahTafsir
-    {
-        try {
-            $url      = "https://api.quran.com/api/v4/tafsirs/{$tafsir->source}/by_ayah/{$ayah->number_in_quran}";
-            $response = Http::timeout(10)->get($url);
-
-            if (!$response->successful()) return null;
-
-            $text = $response->json()['tafsir']['text'] ?? null;
-            if (!$text) return null;
-
-            // Strip HTML tags and footnotes
-            $text = preg_replace('/<sup[^>]*>.*?<\/sup>/i', '', $text);
-            $text = strip_tags($text);
-            $text = trim(preg_replace('/\s+/', ' ', $text));
-
-            return AyahTafsir::create([
-                'ayah_id'   => $ayah->id,
-                'tafsir_id' => $tafsir->id,
-                'text'      => $text,
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Tafsir fetch failed: ' . $e->getMessage());
-            return null;
-        }
-    }
-
-    private function fetchAndStoreTranslation(Ayah $ayah, Translation $translation): ?AyahTranslation
-    {
-        try {
-            $verseKey = "{$ayah->surah->number}:{$ayah->number}";
-            $url      = "https://api.quran.com/api/v4/quran/translations/{$translation->source}?verse_key={$verseKey}";
-            $response = Http::timeout(10)->get($url);
-
-            if (!$response->successful()) return null;
-
-            $text = $response->json()['translations'][0]['text'] ?? null;
-            if (!$text) return null;
-
-            // Clean footnotes
-            $text = preg_replace('/<sup[^>]*>.*?<\/sup>/i', '', $text);
-            $text = strip_tags($text);
-            $text = trim(preg_replace('/\s+/', ' ', $text));
-
-            return AyahTranslation::create([
-                'ayah_id'        => $ayah->id,
-                'translation_id' => $translation->id,
-                'text'           => $text,
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Translation fetch failed: ' . $e->getMessage());
-            return null;
-        }
-    }
-
-    // POST /quran/audio-completed
+    // ── POST /quran/audio-completed ───────────────────────
     public function audioCompleted(Request $request): JsonResponse
     {
         $request->validate(['ayah_id' => 'required|exists:ayahs,id']);
@@ -444,31 +316,19 @@ class QuranController extends Controller
         $ayah = Ayah::findOrFail($request->ayah_id);
         $user = Auth::user();
 
-        // ✅ Record this ayah as listened — unique per user+ayah
-        // firstOrCreate means listening to ayah 3 twice
-        // still only counts ONCE — exactly what you asked for
         ListenedAyah::firstOrCreate(
             ['user_id' => $user->id, 'ayah_id' => $ayah->id],
             ['surah_id' => $ayah->surah_id]
         );
 
-        // ✅ Count UNIQUE ayahs listened for this surah — ever,
-        // across ALL sessions, not just this page visit
-        $listenedCount = ListenedAyah::where('user_id', $user->id)
-            ->where('surah_id', $ayah->surah_id)
-            ->count();
-
-        $totalAyahs       = Ayah::where('surah_id', $ayah->surah_id)->count();
-        $isFullyListened  = $listenedCount >= $totalAyahs;
-        $newlyCompleted   = false;
+        $listenedCount   = ListenedAyah::where('user_id', $user->id)->where('surah_id', $ayah->surah_id)->count();
+        $totalAyahs      = Ayah::where('surah_id', $ayah->surah_id)->count();
+        $isFullyListened = $listenedCount >= $totalAyahs;
+        $newlyCompleted  = false;
 
         if ($isFullyListened) {
-            $progress = SurahProgress::where('user_id', $user->id)
-                ->where('surah_id', $ayah->surah_id)
-                ->first();
+            $progress = SurahProgress::where('user_id', $user->id)->where('surah_id', $ayah->surah_id)->first();
 
-            // ✅ Only mark complete + flag "newly" if not already done
-            // This stops the modal showing again on re-listens
             if (!$progress?->is_completed) {
                 SurahProgress::updateOrCreate(
                     ['user_id' => $user->id, 'surah_id' => $ayah->surah_id],
@@ -486,7 +346,7 @@ class QuranController extends Controller
         ]);
     }
 
-
+    // ── GET /quran/sajdas ──────────────────────────────────
     public function sajdas(): View
     {
         $sajdaAyahs = Ayah::where('sajda', true)
@@ -500,7 +360,7 @@ class QuranController extends Controller
         return view('quran.sajdas', compact('sajdaAyahs'));
     }
 
-    // GET /quran/my-progress
+    // ── GET /quran/my-progress ─────────────────────────────
     public function myProgress(): View
     {
         $progress       = $this->quranService->getAllSurahsProgress(Auth::user());
@@ -509,5 +369,136 @@ class QuranController extends Controller
         $totalCompleted = $progress->where('is_completed', true)->count();
 
         return view('quran.my-progress', compact('progress', 'totalAyahs', 'totalRead', 'totalCompleted'));
+    }
+
+    // ── PRIVATE HELPERS ───────────────────────────────────
+
+    private function fetchSingleAyahTafsir(Surah $surah, Ayah $ayah, Tafsir $tafsir): ?AyahTafsir
+    {
+        if (!is_numeric($tafsir->source)) {
+            Log::error("Non-numeric tafsir source: {$tafsir->source}");
+            return null;
+        }
+
+        try {
+            $verses = $this->api->fetchTafsirForSurah($surah->number, (int) $tafsir->source);
+
+            if (empty($verses)) {
+                Log::warning("Empty tafsir fetch: surah={$surah->number}, tafsir={$tafsir->source}");
+                return null;
+            }
+
+            $saved = null;
+
+            foreach ($verses as $item) {
+                if (empty($item['verse_key']) || !str_contains($item['verse_key'], ':')) {
+                    continue;
+                }
+
+                [, $aNum] = explode(':', $item['verse_key']);
+
+                $targetAyah = Ayah::where('surah_id', $surah->id)
+                    ->where('number', (int) $aNum)
+                    ->first();
+
+                if (!$targetAyah) {
+                    continue;
+                }
+
+                $text = $this->cleanText($item['tafsirs'][0]['text'] ?? '');
+                if ($text === '') {
+                    continue;
+                }
+
+                $record = AyahTafsir::updateOrCreate(
+                    ['ayah_id' => $targetAyah->id, 'tafsir_id' => $tafsir->id],
+                    ['text' => $text, 'api_source_version' => 'qf_oauth2_v1']
+                );
+
+                if ($targetAyah->id === $ayah->id) {
+                    $saved = $record;
+                }
+            }
+
+            return $saved;
+        } catch (\Exception $e) {
+            Log::error("Tafsir on-demand fetch failed: surah={$surah->number}, tafsir={$tafsir->id} — " . $e->getMessage());
+            return null;
+        } finally {
+            $this->api->pause();
+        }
+    }
+
+    private function fetchSingleAyahTranslation(Surah $surah, Ayah $ayah, Translation $translation): ?AyahTranslation
+    {
+        if (!is_numeric($translation->source)) {
+            Log::error("Non-numeric translation source: {$translation->source}");
+            return null;
+        }
+
+        try {
+            $verses = $this->api->fetchTranslationForSurah($surah->number, (int) $translation->source);
+
+            if (empty($verses)) {
+                Log::warning("Empty translation fetch: surah={$surah->number}, translation={$translation->source}");
+                return null;
+            }
+
+            $saved = null;
+
+            foreach ($verses as $item) {
+                if (empty($item['verse_key']) || !str_contains($item['verse_key'], ':')) {
+                    continue;
+                }
+
+                [, $aNum] = explode(':', $item['verse_key']);
+
+                $targetAyah = Ayah::where('surah_id', $surah->id)
+                    ->where('number', (int) $aNum)
+                    ->first();
+
+                if (!$targetAyah) {
+                    continue;
+                }
+
+                $text = $this->cleanText($item['text'] ?? '');
+                if ($text === '') {
+                    continue;
+                }
+
+                $record = AyahTranslation::updateOrCreate(
+                    ['ayah_id' => $targetAyah->id, 'translation_id' => $translation->id],
+                    ['text' => $text]
+                );
+
+                if ($targetAyah->id === $ayah->id) {
+                    $saved = $record;
+                }
+            }
+
+            return $saved;
+        } catch (\Exception $e) {
+            Log::error("Translation on-demand fetch failed: surah={$surah->number}, translation={$translation->id} — " . $e->getMessage());
+            return null;
+        } finally {
+            $this->api->pause();
+        }
+    }
+
+    private function cleanText(string $html): string
+    {
+        if (trim($html) === '') return '';
+
+        $withBreaks = preg_replace(
+            ['/<\/p>/i', '/<br\s*\/?>/i', '/<\/h[1-6]>/i', '/<\/div>/i', '/<div[^>]*>/i'],
+            ["\n\n", "\n", "\n\n", "\n\n", "\n\n"],
+            $html
+        );
+
+        $plain = strip_tags($withBreaks);
+        $plain = preg_replace("/\n{3,}/", "\n\n", $plain);
+        $plain = preg_replace('/[ \t]+/', ' ', $plain);
+
+        return trim($plain);
     }
 }

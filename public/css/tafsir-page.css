@@ -311,3 +311,16 @@
         justify-content: center;
     }
 }
+
+.tafsir-fallback-note {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #fff8e6;
+    border-left: 3px solid var(--gold-dark);
+    padding: 8px 12px;
+    margin-bottom: 12px;
+    font-size: 0.8rem;
+    color: var(--muted);
+    border-radius: 4px;
+}

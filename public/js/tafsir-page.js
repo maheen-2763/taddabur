@@ -68,6 +68,21 @@ function loadTafsir(tafsirSlug) {
             if (period) period.textContent = data.scholar || "";
 
             // Format tafsir text into paragraphs
+
+            const noteEl = document.getElementById("tafsirFallbackNote");
+            const noteTextEl = document.getElementById(
+                "tafsirFallbackNoteText",
+            );
+
+            if (noteEl && noteTextEl) {
+                if (data.note) {
+                    noteTextEl.textContent = data.note;
+                    noteEl.classList.remove("d-none");
+                } else {
+                    noteEl.classList.add("d-none");
+                }
+            }
+
             const formatted = formatTafsirText(data.text);
             body.innerHTML = `<div class="tafsir-body">${formatted}</div>`;
         })

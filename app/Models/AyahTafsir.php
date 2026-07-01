@@ -15,6 +15,7 @@ class AyahTafsir extends Model
         'ayah_id',
         'tafsir_id',
         'text',
+        'api_source_version'
     ];
 
     // -------------------------------------------------------
