@@ -48,7 +48,7 @@
 .dashboard-wrap .d-card-title {
     font-family: var(--font-heading);
     font-size: 1rem;
-    color: var(--emerald-dark);
+    color: var(--emerald-light);
     margin-bottom: 1.25rem;
     display: flex;
     align-items: center;
@@ -91,7 +91,7 @@
 .d-greeting-name {
     font-family: var(--font-heading);
     font-size: 1.6rem;
-    color: var(--emerald-dark);
+    color: var(--emerald-light);
     margin-bottom: 1rem;
 }
 
@@ -110,7 +110,7 @@
 
 .d-greeting-ayah-wrap .arabic {
     font-size: 1.5rem;
-    color: var(--emerald-dark);
+    color: var(--emerald-light);
     margin-bottom: 0.4rem;
 }
 
@@ -335,7 +335,7 @@
 .d-stat-number {
     font-family: var(--font-heading);
     font-size: 1.6rem;
-    color: var(--emerald-dark);
+    color: var(--emerald-light);
     line-height: 1.2;
 }
 
@@ -369,7 +369,7 @@
 .d-journey-percent {
     text-align: center;
     font-size: 0.75rem;
-    color: var(--emerald);
+    color: var(--emerald-light);
     margin-top: 0.4rem;
     font-weight: 500;
 }
@@ -442,7 +442,7 @@
 .d-achievement-title {
     font-family: var(--font-heading);
     font-size: 1.05rem;
-    color: var(--emerald-dark);
+    color: var(--emerald-light);
     margin: 0.75rem 0 0.4rem;
 }
 
@@ -469,7 +469,7 @@
 
 .d-achievement-remaining {
     font-size: 0.75rem;
-    color: var(--emerald);
+    color: var(--emerald-light);
     margin-top: 0.5rem;
 }
 

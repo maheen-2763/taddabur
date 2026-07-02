@@ -41,7 +41,7 @@
                             <div class="d-progress mb-1">
                                 <div class="d-progress-fill" style="width: {{ $progressPercent }}%"></div>
                             </div>
-                            <small class="d-stat-label" style="color:var(--emerald)">
+                            <small class="d-stat-label" style="color:var(--emerald-light)">
                                 {{ $progressPercent }}% Complete
                             </small>
                         </div>

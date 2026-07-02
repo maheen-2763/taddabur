@@ -143,7 +143,7 @@
     font-family: var(--quran-font);
     font-size: 0.88rem;
     direction: rtl;
-    color: var(--emerald);
+    color: var(--emerald-light);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -175,7 +175,7 @@
 .surah-name-arabic {
     font-family: var(--quran-font);
     font-size: clamp(2.2rem, 6vw, 3.5rem);
-    color: var(--emerald-dark);
+    color: var(--emerald);
     line-height: 1.6;
     direction: rtl;
     display: block;
@@ -785,4 +785,8 @@
     color: white;
     opacity: 0.9;
     cursor: default;
+}
+
+.ayah-arabic-text {
+    font-size: var(--arabic-font-size, clamp(1.45rem, 3vw, 2rem));
 }

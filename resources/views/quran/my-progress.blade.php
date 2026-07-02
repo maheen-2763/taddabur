@@ -27,7 +27,7 @@
                 </div>
                 <div class="progress-stat-box">
                     <span class="progress-stat-num">{{ round(($totalRead / $totalAyahs) * 100, 1) }}%</span>
-                    <span class="progress-stat-label">Of Quran</span>
+                    <span class="progress-stat-label">Of Quran Read</span>
                 </div>
                 <div class="progress-stat-box">
                     <span class="progress-stat-num">{{ $totalCompleted }}</span>

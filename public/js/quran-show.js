@@ -1035,4 +1035,43 @@ function updateNoteButtonState(ayahId, hasNote) {
     }
 }
 
+const FONT_SIZES = ["1.2rem", "1.6rem", "2rem", "2.4rem", "2.8rem"];
+
+// ✅ LOAD — page open hote hi saved size apply karo
+document.addEventListener("DOMContentLoaded", function () {
+    const savedIndex = window.QURAN_CONFIG.savedFontSizeIndex ?? 2;
+    document.documentElement.style.setProperty(
+        "--arabic-font-size",
+        FONT_SIZES[savedIndex],
+    );
+    localStorage.setItem("fontSizeIndex", savedIndex);
+});
+
+// ✅ SAVE — button click pe update karo
+function changeFontSize(action) {
+    let current = parseInt(localStorage.getItem("fontSizeIndex") ?? 2);
+
+    if (action === "increase" && current < FONT_SIZES.length - 1) current++;
+    if (action === "decrease" && current > 0) current--;
+
+    document.documentElement.style.setProperty(
+        "--arabic-font-size",
+        FONT_SIZES[current],
+    );
+    localStorage.setItem("fontSizeIndex", current);
+
+    if (window.QURAN_CONFIG.isLoggedIn) {
+        fetch("/api/preferences/font-size", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": document.querySelector(
+                    'meta[name="csrf-token"]',
+                ).content,
+            },
+            body: JSON.stringify({ size_index: current }),
+        });
+    }
+}
+
 // ← JS FILE ENDS HERE. Nothing after this.

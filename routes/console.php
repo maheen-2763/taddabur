@@ -11,3 +11,6 @@ Artisan::command('inspire', function () {
 
 Schedule::command('reflection:send')
     ->dailyAt('05:00');
+
+
+Schedule::command('quran:verify-translations')->weekly();

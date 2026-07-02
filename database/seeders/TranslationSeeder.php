@@ -30,7 +30,7 @@ class TranslationSeeder extends Seeder
                 'language_code' => 'en',
                 'language_name' => 'English',
                 'slug'          => 'sahih-international',
-                'source'        => '20',   // quran.com translation ID
+                'source'        => '20',   // verified against API 2026-07-01
                 'is_free'       => true,   // Free for all users
                 'is_active'     => true,
                 'sort_order'    => 1,
@@ -41,7 +41,7 @@ class TranslationSeeder extends Seeder
                 'language_code' => 'en',
                 'language_name' => 'English',
                 'slug'          => 'pickthall',
-                'source'        => '19',
+                'source'        => '19',    // verified against API 2026-07-01
                 'is_free'       => false,
                 'is_active'     => true,
                 'sort_order'    => 3,
@@ -52,7 +52,7 @@ class TranslationSeeder extends Seeder
                 'language_code' => 'en',
                 'language_name' => 'English',
                 'slug'          => 'yusuf-ali',
-                'source'        => '22',
+                'source'        => '22',    // verified against API 2026-07-01
                 'is_free'       => false,
                 'is_active'     => true,
                 'sort_order'    => 4,
@@ -63,7 +63,7 @@ class TranslationSeeder extends Seeder
                 'language_code' => 'en',
                 'language_name' => 'English',
                 'slug'          => 'en-taqi-usmani',
-                'source'        => '84',
+                'source'        => '84',    // verified against API 2026-07-01
                 'is_free'       => false,
                 'is_active'     => true,
                 'sort_order'    => 5,
@@ -76,7 +76,7 @@ class TranslationSeeder extends Seeder
                 'language_code' => 'ur',
                 'language_name' => 'Urdu',
                 'slug'          => 'jalandhari-ur',
-                'source'        => '234',
+                'source'        => '234',   // verified against API 2026-07-01
                 'is_free'       => false,
                 'is_active'     => true,
                 'sort_order'    => 6,

@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ReflectionController;
 use App\Http\Controllers\WordTimingController;
 use App\Http\Controllers\ScholarController;
+use App\Http\Controllers\PreferenceController;
 
 
 // Re-import any missing translations weekly (catches new additions)
@@ -93,6 +94,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/my-progress', [QuranController::class, 'myProgress'])
         ->name('quran.my-progress');
+
+    Route::post('/api/userpreferences/font-size', [PreferenceController::class, 'updateFontSize'])
+        ->middleware('auth')
+        ->name('preferences.font-size');
 
     // --------------------------------------------------------
     // QURAN ROUTES

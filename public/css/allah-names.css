@@ -45,6 +45,7 @@
 .honeycomb-header {
     text-align: center;
     padding: 2rem 1rem 1.5rem;
+    color: var(--gold-light);
 }
 
 /* ════════════════════════════════════════════
@@ -285,14 +286,14 @@
 .hex-number {
     font-family: var(--font-heading);
     font-size: 0.6rem;
-    color: var(--gold-dark);
+    color: var(--gold-light);
     opacity: 0.75;
 }
 
 .hex-cover-arabic {
     font-family: "Amiri", "Scheherazade New", serif;
     font-size: 1rem;
-    color: var(--emerald-dark);
+    color: var(--emerald);
     direction: rtl;
     unicode-bidi: isolate;
     text-align: center;

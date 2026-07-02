@@ -57,6 +57,16 @@
             opacity: 0.85;
         }
 
+        /* ── Meta chips ── */
+        .meta-chip {
+            background: rgba(27, 94, 59, 0.08);
+            color: var(--emerald);
+            border-radius: 50px;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
         /* ── Story card ── */
         .story-card-inner {
             border-radius: var(--radius);
@@ -311,16 +321,17 @@
                             {{-- Meta chips --}}
                             <div class="d-flex gap-2 flex-wrap mb-3">
                                 @if ($story->difficulty)
-                                    <span class="badge bg-light text-muted border" style="font-size:0.72rem">
+                                    <span class="meta-chip">
                                         {{ ucfirst($story->difficulty) }}
                                     </span>
                                 @endif
-                                <span class="badge bg-light text-muted border" style="font-size:0.72rem">
+                                <span class="meta-chip">
                                     <i class="bi bi-journal-text me-1"></i>
-                                    {{ $story->chapters_count }} {{ Str::plural('Chapter', $story->chapters_count) }}
+                                    {{ $story->chapters->count() }}
+                                    {{ Str::plural('Chapter', $story->chapters->count()) }}
                                 </span>
                                 @if ($story->read_time_minutes)
-                                    <span class="badge bg-light text-muted border" style="font-size:0.72rem">
+                                    <span class="meta-chip">
                                         <i class="bi bi-clock me-1"></i>{{ $story->read_time_minutes }} min
                                     </span>
                                 @endif

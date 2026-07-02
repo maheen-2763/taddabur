@@ -67,7 +67,12 @@
 
                 {{-- Right: All dropdowns same class --}}
                 <div class="d-flex align-items-center gap-2 flex-wrap">
-
+                    <div class="font-size-control d-flex gap-1">
+                        <button onclick="changeFontSize('decrease')" class="btn btn-sm"
+                            style="border:1px solid var(--border)">A-</button>
+                        <button onclick="changeFontSize('increase')" class="btn btn-sm"
+                            style="border:1px solid var(--border)">A+</button>
+                    </div>
                     {{-- Search --}}
                     <a href="{{ route('quran.search') }}" class="btn btn-sm" style="border:1px solid var(--border)"
                         title="Search Quran">
@@ -481,30 +486,7 @@
                 @endforeach
             </div>
 
-            {{-- Note Banner — personal reflection editor --}}
-            @auth
-                <div class="note-banner" id="note-{{ $ayah->id }}">
-                    <div class="note-inner">
-                        <div class="note-head">
-                            <strong>Your Note</strong>
-                            <button class="note-close" onclick="closeNoteEditor({{ $ayah->id }})">&times;</button>
-                        </div>
-                        <input type="text" class="note-title-input" id="note-title-{{ $ayah->id }}"
-                            placeholder="Optional title..." maxlength="255">
-                        <textarea class="note-content-input" id="note-content-{{ $ayah->id }}" rows="3"
-                            placeholder="Write your reflection on this ayah..."></textarea>
-                        <div class="note-actions">
-                            <button class="note-delete-btn" id="note-delete-{{ $ayah->id }}"
-                                onclick="deleteNote({{ $ayah->id }})" style="display:none">
-                                Delete
-                            </button>
-                            <button class="note-save-btn" onclick="saveNote({{ $ayah->id }}, {{ $surah->number }})">
-                                Save Note
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            @endauth
+
 
             {{-- Bottom Navigation --}}
             <div class="d-flex justify-content-between mt-5 pt-3" style="border-top:1px solid var(--border)">
@@ -639,6 +621,7 @@
             upgradeUrl: '{{ route('subscription.upgrade') }}',
             freeTranslationSlug: '{{ $translations->where('is_free', true)->first()?->slug ?? 'sahih-international' }}',
             lastAyahNumber: {{ $lastAyahNumber ?? 'null' }},
+            savedFontSizeIndex: {{ auth()->user()?->user_preferences?->quran_font_size_index ?? 2 }}
         };
         window.USER_NOTES = @json($userNotesForJs);
     </script>

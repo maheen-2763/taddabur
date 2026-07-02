@@ -17,7 +17,7 @@
 .progress-header .title {
     font-family: var(--font-heading);
     font-size: 1.3rem;
-    color: var(--emerald-dark);
+    color: var(--emerald-light);
     margin-bottom: 1.25rem;
 }
 
@@ -38,7 +38,7 @@
 .progress-stat-num {
     font-family: var(--font-heading);
     font-size: 1.5rem;
-    color: var(--emerald-dark);
+    color: var(--emerald-light);
     display: block;
 }
 

@@ -4,9 +4,9 @@
 @push('styles')
     <style>
         /* ════════════════════════════════════════
-                                               UNIVERSAL RESPONSIVE LAYOUT
-                                               Single grid system that adapts at one breakpoint
-                                            ═══════════════════════════════════════════ */
+                                                                                       UNIVERSAL RESPONSIVE LAYOUT
+                                                                                       Single grid system that adapts at one breakpoint
+                                                                                    ═══════════════════════════════════════════ */
         .story-layout {
             display: grid;
             grid-template-columns: 280px minmax(0, 1fr);
@@ -72,7 +72,7 @@
             height: 22px;
             border-radius: 50%;
             background: rgba(27, 94, 59, 0.08);
-            color: var(--emerald);
+            color: var(--emerald-light);
             font-size: 0.68rem;
             font-weight: 600;
             display: flex;
@@ -146,7 +146,7 @@
             direction: rtl;
             text-align: right;
             line-height: 2;
-            color: var(--emerald-dark);
+            color: var(--emerald-light);
             margin-bottom: 0.6rem;
         }
 
@@ -163,7 +163,7 @@
             border-radius: 50px;
             padding: 0.22rem 0.7rem;
             font-size: 0.76rem;
-            color: var(--emerald);
+            color: var(--emerald-light);
             text-decoration: none;
             transition: all 0.18s;
             display: inline-flex;
