@@ -55,6 +55,10 @@ class User extends Authenticatable implements MustVerifyEmail
     |--------------------------------------------------------------------------
     */
 
+    public function userPreferences()
+    {
+        return $this->hasOne(UserPreference::class);
+    }
     public function subscription(): HasOne
     {
         return $this->hasOne(Subscription::class)

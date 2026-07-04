@@ -195,6 +195,7 @@
                     </div>
                 @endforeach
             </div>
+            <div id="sidebar-sentinel"></div>
 
         </aside>
 
@@ -372,14 +373,13 @@
                                             <i class="bi bi-bookmark"></i> Bookmark
                                         </button>
                                     @endauth
-
-                                    {{-- Tafsir → Opens dedicated page --}}
+                                    {{-- Tafsir → Opens side panel --}}
                                     @auth
                                         @if ($isPremium)
-                                            <a href="{{ route('quran.tafsir', [$surah->number, $ayah->id]) }}"
-                                                class="ayah-btn">
+                                            <button class="ayah-btn"
+                                                onclick="openTafsirPanel({{ $surah->number }}, {{ $ayah->id }})">
                                                 <i class="bi bi-book"></i> Tafsir
-                                            </a>
+                                            </button>
                                         @else
                                             <button class="ayah-btn position-relative" onclick="redirectToUpgrade('Tafsir')">
                                                 <i class="bi bi-book"></i> Tafsir
@@ -391,6 +391,7 @@
                                             <i class="bi bi-book"></i> Tafsir
                                         </a>
                                     @endauth
+
 
                                     {{-- Audio --}}
                                     @auth
@@ -451,7 +452,6 @@
                                             </button>
                                         @endif
                                     @endauth
-
                                 </div>
                                 {{-- Note Banner — personal reflection editor --}}
                                 @auth
@@ -607,10 +607,34 @@
     {{-- Mobile overlay --}}
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()">
     </div>
+
+    {{-- ✅ Tafsir Side Panel --}}
+    <div id="tafsirPanel" class="tafsir-side-panel">
+        <div class="tafsir-panel-header-info">
+            <span class="tafsir-ayah-badge" id="tafsirAyahBadge">—</span>
+            <p class="tafsir-arabic-preview" id="tafsirArabicPreview"></p>
+            <p class="tafsir-translation-preview" id="tafsirTranslationPreview"></p>
+        </div>
+        <div class="tafsir-select-wrap">
+            <label class="tafsir-select-label">SELECT TAFSIR</label>
+            <select id="tafsirPanelPicker" class="tafsir-select" onchange="switchPanelTafsir()">
+                @foreach ($tafsirs as $t)
+                    <option value="{{ $t->slug }}"
+                        {{ $t->slug === \App\Services\QuranService::DEFAULT_TAFSIR ? 'selected' : '' }}>
+                        {{ $t->name }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+        <div class="tafsir-content-card">
+            <h6 class="tafsir-content-title" id="tafsirContentTitle"></h6>
+            <div class="tafsir-content-body" id="tafsirPanelBody">Loading...</div>
+        </div>
+    </div>
+    <div id="tafsirOverlay" onclick="closeTafsirPanel()"></div>
 @endsection
 
 @push('scripts')
-    {{-- ✅ Pass all PHP data to JS in one clean object --}}
     <script>
         window.QURAN_CONFIG = {
             surahNumber: {{ $surah->number }},
@@ -621,7 +645,7 @@
             upgradeUrl: '{{ route('subscription.upgrade') }}',
             freeTranslationSlug: '{{ $translations->where('is_free', true)->first()?->slug ?? 'sahih-international' }}',
             lastAyahNumber: {{ $lastAyahNumber ?? 'null' }},
-            savedFontSizeIndex: {{ auth()->user()?->user_preferences?->quran_font_size_index ?? 2 }}
+            savedFontSizeIndex: {{ auth()->user()?->userPreferences?->quran_font_size_index ?? 2 }}
         };
         window.USER_NOTES = @json($userNotesForJs);
     </script>

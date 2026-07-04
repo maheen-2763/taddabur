@@ -104,21 +104,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // --------------------------------------------------------
     Route::prefix('quran')->name('quran.')->group(function () {
 
-        Route::get('/{surah}', [QuranController::class, 'show'])
-            ->name('show');
+        Route::get('/surah/{surahNumber}/ayahs', [QuranController::class, 'loadAyahs'])
+            ->name('ayahs');
 
-
-
-        // ✅ Removed middleware — controller handles plan check
         Route::get('/{surah}/{ayah}/tafsir', [QuranController::class, 'tafsir'])
             ->name('tafsir');
 
-        // ✅ Removed middleware — controller handles plan check
+        Route::get('/{surah}/{ayah}/tafsir-data', [QuranController::class, 'tafsirData'])
+            ->name('tafsir-data');
+
         Route::get('/{surah}/{ayah}/audio', [QuranController::class, 'audio'])
             ->name('audio');
 
         Route::get('/{surah}/{ayah}/translation', [QuranController::class, 'translation'])
             ->name('translation');
+
+        Route::get('/{surah}', [QuranController::class, 'show'])
+            ->name('show');
 
 
 

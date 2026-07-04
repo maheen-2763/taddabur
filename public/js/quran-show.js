@@ -196,6 +196,64 @@ function changeActiveTafsir(slug) {
     window.selectedTafsir = slug;
 }
 
+let currentTafsirSurah = null;
+let currentTafsirAyahId = null;
+
+function openTafsirPanel(surah, ayahId) {
+    currentTafsirSurah = surah;
+    currentTafsirAyahId = ayahId;
+
+    document.getElementById("tafsirPanel").classList.add("open");
+    document.getElementById("tafsirOverlay").classList.add("visible");
+    document.body.style.overflow = "hidden";
+
+    fetchTafsirData();
+}
+
+function switchPanelTafsir() {
+    fetchTafsirData();
+}
+
+function fetchTafsirData() {
+    const slug = document.getElementById("tafsirPanelPicker").value;
+    document.getElementById("tafsirPanelBody").innerHTML = "Loading...";
+
+    fetch(
+        `/quran/${currentTafsirSurah}/${currentTafsirAyahId}/tafsir-data?source=${slug}`,
+        {
+            headers: { Accept: "application/json" },
+        },
+    )
+        .then((r) => r.json())
+        .then((data) => {
+            if (data.error === "premium_required") {
+                redirectToUpgrade("Tafsir");
+                closeTafsirPanel();
+                return;
+            }
+            // ✅ Ab saari header info bhi update hogi
+            document.getElementById("tafsirAyahBadge").textContent =
+                `${data.surah_name} · ${data.surah_number}:${data.ayah_number}`;
+            document.getElementById("tafsirArabicPreview").textContent =
+                data.arabic;
+            document.getElementById("tafsirTranslationPreview").textContent =
+                data.translation;
+            document.getElementById("tafsirContentTitle").textContent =
+                data.tafsir_name;
+            document.getElementById("tafsirPanelBody").innerHTML = data.text;
+        })
+        .catch(() => {
+            document.getElementById("tafsirPanelBody").innerHTML =
+                "<p style='color:#999'>Tafsir was not found. Try again.</p>";
+        });
+}
+
+function closeTafsirPanel() {
+    document.getElementById("tafsirPanel").classList.remove("open");
+    document.getElementById("tafsirOverlay").classList.remove("visible");
+    document.body.style.overflow = "";
+}
+
 // ════════════════════════════════════════════
 // TRANSLATION
 // ════════════════════════════════════════════
@@ -525,6 +583,10 @@ function wrapWordsForHighlight(ayahId) {
 
     arabicText = arabicText.trim();
     if (!arabicText) return 0;
+
+    // ✅ FIX: waqf marks (ۛ ۖ ۗ ۘ ۙ ۚ) ko pichले word se jodo
+    //         taaki wo alag "word" na banein, sirf visual mark rahe
+    arabicText = arabicText.replace(/\s+([ۛۖۗۘۙۚ])/gu, "$1");
 
     // Split text into words and wrap each one
     const words = arabicText.split(/\s+/).filter((w) => w.trim());
@@ -1061,7 +1123,7 @@ function changeFontSize(action) {
     localStorage.setItem("fontSizeIndex", current);
 
     if (window.QURAN_CONFIG.isLoggedIn) {
-        fetch("/api/preferences/font-size", {
+        fetch("/api/userpreferences/font-size", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -1074,4 +1136,69 @@ function changeFontSize(action) {
     }
 }
 
+let currentPage = 1;
+let isLoading = false;
+let hasMore = true;
+
+const sidebarEl = document.querySelector(".quran-sidebar");
+if (!sidebarEl) {
+    console.warn(
+        "Sidebar scroll container nahi mila — lazy load kaam nahi karega",
+    );
+}
+
+const observer = new IntersectionObserver(
+    (entries) => {
+        if (entries[0].isIntersecting && !isLoading && hasMore) {
+            loadMoreAyahs();
+        }
+    },
+    { root: sidebarEl },
+);
+
+observer.observe(document.querySelector("#sidebar-sentinel"));
+
+function loadMoreAyahs() {
+    isLoading = true;
+    currentPage++;
+
+    fetch(
+        `/quran/surah/${window.QURAN_CONFIG.surahNumber}/ayahs?page=${currentPage}`,
+    )
+        .then((res) => res.json())
+        .then((data) => {
+            appendAyahsToSidebar(data.ayahs);
+            hasMore = data.has_more;
+            isLoading = false;
+        })
+        .catch((err) => {
+            console.error("Ayahs didn't loaded:", err);
+            isLoading = false; // 👈 ye zaroori hai — warna sidebar hamesha ke liye ruk jayega
+            currentPage--; // taaki dobara try karne pe sahi page se try ho
+        });
+}
+
+function appendAyahsToSidebar(ayahs) {
+    const list = document.querySelector("#sidebarList");
+    ayahs.forEach((ayah) => {
+        const div = document.createElement("div");
+        div.className = "sidebar-item";
+        div.id = `sidebar-${ayah.number}`;
+        div.setAttribute("onclick", `jumpFromSidebar(${ayah.number})`);
+        div.innerHTML = `
+            <span class="sidebar-item-num">${ayah.number}</span>
+            <span class="sidebar-item-text">${ayah.text_arabic.substring(0, 15)}</span>
+        `;
+        list.appendChild(div);
+    });
+}
+
+function showFontSizeToast(size) {
+    const toast = document.createElement("div");
+    toast.className = "font-size-toast";
+    toast.textContent = `Font size: ${size}`;
+    document.body.appendChild(toast);
+
+    setTimeout(() => toast.remove(), 1500); // 1.5 second baad gayab
+}
 // ← JS FILE ENDS HERE. Nothing after this.

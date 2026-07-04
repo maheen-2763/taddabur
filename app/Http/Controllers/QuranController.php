@@ -126,32 +126,35 @@ class QuranController extends Controller
     }
 
     // ── GET /quran/{surah}/{ayah}/tafsir-page ────────────
-    public function tafsirPage(Surah $surah, Ayah $ayah): View | RedirectResponse
+    public function tafsirData(Request $request, Surah $surah, Ayah $ayah)
     {
         if (!$this->quranService->userCanAccessTafsir(Auth::user())) {
-            return redirect()->route('subscription.upgrade')
-                ->with('message', 'Tafsir requires an upgrade.');
+            return response()->json(['error' => 'premium_required'], 403);
         }
 
-        $user        = Auth::user();
-        $tafsirs     = $this->quranService->getAllTafsirs();
-        $translation = $this->quranService->resolveTranslation(
-            $user?->preferred_translation ?? QuranService::DEFAULT_TRANSLATION,
-            $user
-        );
+        $slug = $request->get('source', QuranService::DEFAULT_TAFSIR);
+        $selectedTafsir = Tafsir::where('slug', $slug)->where('is_active', true)->first();
+        $ayahTafsir = $ayah->tafsirs()->where('tafsir_id', $selectedTafsir?->id)->first();
 
-        $ayah->load([
-            'translations' => fn($q) => $q->where('translation_id', $translation?->id)
+        // ✅ Bismillah strip — reader jaisa hi rule
+        $arabicText = $ayah->text_arabic;
+        $showBismillahTop = !in_array($surah->number, [1, 9]);
+
+        if ($showBismillahTop && $ayah->number === 1) {
+            $arabicText = \App\Helpers\ArabicHelper::stripBismillah($arabicText);
+        }
+
+
+        return response()->json([
+            'surah_name' => $surah->name_transliteration,
+            'surah_number' => $surah->number,
+            'ayah_number' => $ayah->number,
+            'arabic' => $arabicText,
+            'translation' => $ayah->translations->first()?->text,
+            'tafsir_name' => $selectedTafsir?->name,
+            'author' => $selectedTafsir?->name,
+            'text' => $ayahTafsir?->text ?? 'Tafsir not available.',
         ]);
-
-        $selectedTafsir = Tafsir::where('slug', QuranService::DEFAULT_TAFSIR)
-            ->where('is_active', true)
-            ->first() ?? $tafsirs->first();
-
-        $prevAyah = Ayah::where('surah_id', $surah->id)->where('number', $ayah->number - 1)->first();
-        $nextAyah = Ayah::where('surah_id', $surah->id)->where('number', $ayah->number + 1)->first();
-
-        return view('quran.tafsir', compact('surah', 'ayah', 'tafsirs', 'selectedTafsir', 'prevAyah', 'nextAyah'));
     }
 
     // ── GET /quran/{surah}/{ayah}/translation (AJAX) ─────
@@ -500,5 +503,18 @@ class QuranController extends Controller
         $plain = preg_replace('/[ \t]+/', ' ', $plain);
 
         return trim($plain);
+    }
+    public function loadAyahs(Request $request, $surahNumber)
+    {
+        $ayahs = Ayah::where('surah_id', $surahNumber)  // ✅ sahi column
+            ->orderBy('number')
+            ->skip(($request->get('page', 1) - 1) * 30)
+            ->take(30)
+            ->get(['number', 'text_arabic']);
+
+        return response()->json([
+            'ayahs' => $ayahs,
+            'has_more' => $ayahs->count() === 30,
+        ]);
     }
 }

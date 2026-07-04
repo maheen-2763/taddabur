@@ -13,6 +13,7 @@ use App\Services\SubscriptionService;
 use Illuminate\Support\ServiceProvider;
 use App\Models\StoryChapter;
 use App\Observers\StoryChapterObserver;
+use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -35,5 +36,7 @@ class AppServiceProvider extends ServiceProvider
         \Illuminate\Support\Facades\Route::bind('surah', function ($value) {
             return \App\Models\Surah::where('number', $value)->firstOrFail();
         });
+
+        Paginator::useBootstrapFive();
     }
 }
