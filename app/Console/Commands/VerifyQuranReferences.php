@@ -124,21 +124,14 @@ class VerifyQuranReferences extends Command
      */
     private function normalizeArabic(string $text): string
     {
-        // Remove HTML tags first (in case we're normalizing chapter content)
         $text = strip_tags($text);
-
-        // Strip Arabic diacritics (tashkeel) — Unicode ranges for combining marks
         $text = preg_replace('/[\x{0610}-\x{061A}\x{064B}-\x{065F}\x{0670}\x{06D6}-\x{06DC}\x{06DF}-\x{06E8}\x{06EA}-\x{06ED}]/u', '', $text);
-
-        // Strip tatweel (the elongation character ـ)
         $text = preg_replace('/\x{0640}/u', '', $text);
 
-        // Normalize alef variants to bare alef for looser matching
-        $text = preg_replace('/[\x{0622}\x{0623}\x{0625}]/u', "\x{0627}", $text);
+        // Yahan fix: Alef Wasla (ٱ) bhi normal Alef mein convert karo
+        $text = preg_replace('/[\x{0622}\x{0623}\x{0625}\x{0671}]/u', "\x{0627}", $text);
 
-        // Collapse all whitespace
         $text = preg_replace('/\s+/u', ' ', $text);
-
         return trim($text);
     }
 }
