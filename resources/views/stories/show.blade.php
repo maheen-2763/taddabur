@@ -365,9 +365,8 @@
                 @if ($progress)
                     @php
                         $lastChapter = $story->chapters->firstWhere('id', $progress->last_chapter_id);
-                        $progressPct = $lastChapter
-                            ? round(($lastChapter->order / $story->chapters->count()) * 100)
-                            : 0;
+                        $completedCount = count($completedChapterIds ?? []);
+                        $progressPct = $totalChapters > 0 ? round(($completedCount / $totalChapters) * 100) : 0;
                     @endphp
                     <div class="card-islamic p-4 mb-4">
                         <div class="d-flex justify-content-between align-items-center mb-2">
@@ -375,9 +374,15 @@
                                 style="font-size:0.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em">
                                 Your Progress
                             </h6>
-                            <span style="font-size:0.8rem; color:var(--emerald); font-weight:600">
-                                {{ $progressPct }}%
-                            </span>
+                            @if ($isStoryCompleted)
+                                <span class="meta-chip-gold" style="font-size:0.75rem">
+                                    <i class="bi bi-check-circle-fill me-1"></i>Completed
+                                </span>
+                            @else
+                                <span style="font-size:0.8rem; color:var(--emerald); font-weight:600">
+                                    {{ $progressPct }}%
+                                </span>
+                            @endif
                         </div>
                         <div class="progress-bar-islamic mb-3">
                             <div class="progress-bar-islamic-fill" style="width:{{ $progressPct }}%"></div>
@@ -448,49 +453,60 @@
                     {{-- Start / Continue CTA --}}
                     <div class="sidebar-cta">
                         <div class="sidebar-cta-header">
-                            @if ($progress && $progress->last_chapter_id)
+                            @if ($isStoryCompleted)
                                 <div
-                                    style="font-family:'Amiri',serif;
-                                        font-size:2rem;
-                                        color:rgba(255,255,255,0.7);
-                                        margin-bottom:0.5rem;
-                                        position:relative; z-index:1">
+                                    style="font-family:'Amiri',serif; font-size:2rem; color:rgba(255,255,255,0.7); margin-bottom:0.5rem; position:relative; z-index:1">
+                                    الْحَمْدُ لِلَّٰه
+                                </div>
+                                <h6 class="heading-font mb-1" style="color:white; margin:0; position:relative; z-index:1">
+                                    Story Completed
+                                </h6>
+                                <p
+                                    style="color:rgba(255,255,255,0.6); font-size:0.8rem; margin:0; position:relative; z-index:1">
+                                    You've finished this story, Alhamdulillah
+                                </p>
+                            @elseif ($progress && $progress->last_chapter_id)
+                                <div
+                                    style="font-family:'Amiri',serif; font-size:2rem; color:rgba(255,255,255,0.7); margin-bottom:0.5rem; position:relative; z-index:1">
                                     اقْرَأْ
                                 </div>
                                 <h6 class="heading-font mb-1" style="color:white; margin:0; position:relative; z-index:1">
                                     Continue Reading
                                 </h6>
                                 <p
-                                    style="color:rgba(255,255,255,0.6);
-                                      font-size:0.8rem;
-                                      margin:0;
-                                      position:relative; z-index:1">
+                                    style="color:rgba(255,255,255,0.6); font-size:0.8rem; margin:0; position:relative; z-index:1">
                                     Pick up where you left off
                                 </p>
                             @else
                                 <div
-                                    style="font-family:'Amiri',serif;
-                                        font-size:2rem;
-                                        color:rgba(255,255,255,0.7);
-                                        margin-bottom:0.5rem;
-                                        position:relative; z-index:1">
+                                    style="font-family:'Amiri',serif; font-size:2rem; color:rgba(255,255,255,0.7); margin-bottom:0.5rem; position:relative; z-index:1">
                                     بِسْمِ اللَّه
                                 </div>
                                 <h6 class="heading-font mb-1" style="color:white; margin:0; position:relative; z-index:1">
                                     Begin This Story
                                 </h6>
                                 <p
-                                    style="color:rgba(255,255,255,0.6);
-                                      font-size:0.8rem;
-                                      margin:0.25rem 0 0;
-                                      position:relative; z-index:1">
+                                    style="color:rgba(255,255,255,0.6); font-size:0.8rem; margin:0.25rem 0 0; position:relative; z-index:1">
                                     {{ $story->chapters->count() }} chapters await you
                                 </p>
                             @endif
                         </div>
 
                         <div class="sidebar-cta-body">
-                            @if ($progress && $progress->last_chapter_id)
+                            @if ($isStoryCompleted)
+                                <a href="{{ route('stories.chapter', [$story->slug, $story->chapters->first()->slug]) }}"
+                                    class="btn-emerald btn w-100 mb-2">
+                                    <i class="bi bi-arrow-repeat me-1"></i>Read Again
+                                </a>
+                                <form action="{{ route('stories.reset', $story->slug) }}" method="POST"
+                                    onsubmit="return confirm('This will reset your progress for this story. Are you sure?');">
+                                    @csrf
+                                    <button type="submit" class="btn btn-outline-secondary w-100"
+                                        style="font-size:0.85rem">
+                                        Reset Progress
+                                    </button>
+                                </form>
+                            @elseif ($progress && $progress->last_chapter_id)
                                 @php $continueChapter = $story->chapters->firstWhere('id', $progress->last_chapter_id); @endphp
                                 @if ($continueChapter)
                                     <a href="{{ route('stories.chapter', [$story->slug, $continueChapter->slug]) }}"
@@ -498,10 +514,14 @@
                                         <i class="bi bi-play-fill me-1"></i>Continue
                                     </a>
                                 @endif
-                                <a href="{{ route('stories.chapter', [$story->slug, $story->chapters->first()->slug]) }}"
-                                    class="btn btn-outline-secondary w-100" style="font-size:0.85rem">
-                                    Start from Beginning
-                                </a>
+                                <form action="{{ route('stories.reset', $story->slug) }}" method="POST"
+                                    onsubmit="return confirm('This will reset your progress and start you back at Chapter 1. Are you sure?');">
+                                    @csrf
+                                    <button type="submit" class="btn btn-outline-secondary w-100"
+                                        style="font-size:0.85rem">
+                                        Start from Beginning
+                                    </button>
+                                </form>
                             @else
                                 <a href="{{ route('stories.chapter', [$story->slug, $story->chapters->first()->slug]) }}"
                                     class="btn-emerald btn w-100">

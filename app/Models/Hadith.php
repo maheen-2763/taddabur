@@ -9,10 +9,10 @@ class Hadith extends Model
     protected $fillable = ['collection_id', 'chapter_id', 'number', 'arabic', 'english', 'narrator_chain', 'grade', 'grade_source'];
     public function collection()
     {
-        return $this->belongsTo(HadithCollection::class);
+        return $this->belongsTo(HadithCollection::class, 'collection_id');
     }
     public function chapter()
     {
-        return $this->belongsTo(HadithChapter::class);
+        return $this->belongsTo(HadithChapter::class, 'chapter_id');
     }
 }

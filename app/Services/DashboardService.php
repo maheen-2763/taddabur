@@ -31,6 +31,11 @@ class DashboardService
             );
         }
         $storyProgress  = $this->storyService->getInProgressStories($user);
+
+        // ✅ New line — attach real completion data to each story in progress
+        $storiesInProgress = $storyProgress->pluck('story')->filter();
+        $this->storyService->attachUserProgress($storiesInProgress, $user);
+
         $totalAyahsRead = $this->getTotalAyahsRead($user);
 
         return [

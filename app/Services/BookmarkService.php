@@ -8,6 +8,7 @@ use App\Models\Bookmark;
 use App\Models\StoryChapter;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use App\Models\Hadith;
 
 class BookmarkService
 {
@@ -58,20 +59,6 @@ class BookmarkService
             ])
             ->latest()
             ->paginate($perPage);
-
-        // Load nested relations AFTER we know which type each bookmark is
-
-        $bookmarks->each(function ($bookmark) {
-            if ($bookmark->bookmarkable instanceof \App\Models\Ayah) {
-                $bookmark->bookmarkable->load('surah', 'translations');
-            }
-
-            if ($bookmark->bookmarkable instanceof \App\Models\StoryChapter) {
-                $bookmark->bookmarkable->load('story');
-            }
-        });
-
-        return $bookmarks;
     }
 
     // -------------------------------------------------------
@@ -111,6 +98,7 @@ class BookmarkService
         return match ($type) {
             'ayah'    => Ayah::class,
             'chapter' => StoryChapter::class,
+            'hadith'  => Hadith::class,
             default   => throw new \InvalidArgumentException("Unknown bookmark type: {$type}")
         };
     }

@@ -26,7 +26,7 @@ class BookmarkController extends Controller
     public function store(Request $request): JsonResponse
     {
         $request->validate([
-            'type'  => 'required|in:ayah,chapter',
+            'type'  => 'required|in:ayah,chapter,hadith',
             'id'    => 'required|integer',
             'label' => 'nullable|string|max:100',
         ]);

@@ -404,6 +404,32 @@
                                             @endif
                                         </div>
 
+                                        {{-- ✅ NEW: Progress indicator --}}
+                                        @auth
+                                            @if (isset($story->user_progress) && $story->user_progress['started'])
+                                                <div class="mb-2">
+                                                    <div class="d-flex justify-content-between mb-1">
+                                                        <span style="font-size:0.7rem; color:var(--emerald); font-weight:600">
+                                                            {{ $story->user_progress['completed'] }}/{{ $story->user_progress['total'] }}
+                                                            chapters
+                                                        </span>
+                                                        <span style="font-size:0.7rem; color:var(--emerald)">
+                                                            {{ $story->user_progress['percentage'] }}%
+                                                        </span>
+                                                    </div>
+                                                    <div class="progress-bar-islamic">
+                                                        <div class="progress-bar-islamic-fill"
+                                                            style="width:{{ $story->user_progress['percentage'] }}%"></div>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        @else
+                                            <p
+                                                style="font-size:0.7rem; color:var(--muted); font-style:italic; margin-bottom:0.5rem">
+                                                <i class="bi bi-box-arrow-in-right me-1"></i>Sign in to track progress
+                                            </p>
+                                        @endauth
+
                                         {{-- Summary --}}
                                         @if ($story->summary)
                                             <p class="story-card-summary">

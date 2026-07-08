@@ -4,15 +4,17 @@
 @push('styles')
     <style>
         /* ════════════════════════════════════════
-                                                                                       UNIVERSAL RESPONSIVE LAYOUT
-                                                                                       Single grid system that adapts at one breakpoint
-                                                                                    ═══════════════════════════════════════════ */
+                                                                                                                                                           UNIVERSAL RESPONSIVE LAYOUT
+                                                                                                                                                           Single grid system that adapts at one breakpoint
+                                                                                                                                                        ═══════════════════════════════════════════ */
         .story-layout {
             display: grid;
             grid-template-columns: 280px minmax(0, 1fr);
             gap: 2rem;
             align-items: start;
         }
+
+
 
         @media (max-width: 900px) {
             .story-layout {
@@ -83,6 +85,11 @@
 
         .chapter-nav-item.active .chapter-nav-num {
             background: var(--gold);
+            color: white;
+        }
+
+        .chapter-nav-num.completed {
+            background: var(--emerald-light);
             color: white;
         }
 
@@ -224,14 +231,14 @@
         {{-- Progress bar --}}
         <div class="progress-bar-islamic mb-2">
             <div class="progress-bar-islamic-fill" id="progressFill"
-                style="width:{{ round(($chapter->order / $allChapters->count()) * 100) }}%">
+                style="width:{{ $totalChapters > 0 ? round(($completedChaptersCount / $totalChapters) * 100) : 0 }}%">
             </div>
         </div>
         <div class="d-flex justify-content-between mb-4">
             <span class="text-muted" style="font-size:0.8rem">{{ $story->title }}</span>
             <span class="text-muted" style="font-size:0.78rem">
                 Chapter {{ $chapter->order }} of {{ $allChapters->count() }} ·
-                {{ round(($chapter->order / $allChapters->count()) * 100) }}%
+                {{ $totalChapters > 0 ? round(($completedChaptersCount / $totalChapters) * 100) : 0 }}% completed
             </span>
         </div>
 
@@ -241,7 +248,7 @@
                 @foreach ($allChapters as $ch)
                     <option value="{{ route('stories.chapter', [$story->slug, $ch->slug]) }}"
                         {{ $ch->id === $chapter->id ? 'selected' : '' }}>
-                        {{ $ch->order }}. {{ $ch->title }}
+                        {{ in_array($ch->id, $completedChapterIds ?? []) ? '✓' : $ch->order }}. {{ $ch->title }}
                     </option>
                 @endforeach
             </select>
@@ -259,8 +266,19 @@
                     @foreach ($allChapters as $ch)
                         <a href="{{ route('stories.chapter', [$story->slug, $ch->slug]) }}"
                             class="chapter-nav-item {{ $ch->id === $chapter->id ? 'active' : '' }}">
-                            <span class="chapter-nav-num">{{ $ch->order }}</span>
+                            <span
+                                class="chapter-nav-num {{ in_array($ch->id, $completedChapterIds ?? []) ? 'completed' : '' }}">
+                                @if (in_array($ch->id, $completedChapterIds ?? []))
+                                    <i class="bi bi-check-lg" style="font-size:0.75rem"></i>
+                                @else
+                                    {{ $ch->order }}
+                                @endif
+                            </span>
                             {{ $ch->title }}
+                            @if (in_array($ch->id, $completedChapterIds ?? []))
+                                <i class="bi bi-check-circle-fill ms-auto"
+                                    style="font-size:0.7rem; color:var(--emerald-light); flex-shrink:0"></i>
+                            @endif
                         </a>
                     @endforeach
 
@@ -396,7 +414,7 @@
                 </div>
 
                 {{-- Story completed --}}
-                @unless ($nextChapter)
+                @if ($isStoryCompleted)
                     <div class="completion-card">
                         <div
                             style="font-family:'Amiri',serif; font-size:1.8rem; color:rgba(255,255,255,0.8); position:relative; z-index:1">
@@ -413,7 +431,7 @@
                             Explore More Stories
                         </a>
                     </div>
-                @endunless
+                @endif
 
             </article>
         </div>
@@ -421,6 +439,8 @@
 
     @push('scripts')
         <script>
+            const storiesIndexUrl = "{{ route('stories.index') }}";
+
             function markComplete(storySlug, chapterSlug) {
                 fetch(`/stories/${storySlug}/chapters/${chapterSlug}/complete`, {
                         method: 'POST',
@@ -441,7 +461,35 @@
                         if (fill) fill.style.width = data.percentage + '%';
 
                         showCompletionToast();
+
+                        if (data.isStoryCompleted) {
+                            showStoryCompletedBanner();
+                        }
                     });
+            }
+
+            function showStoryCompletedBanner() {
+                if (document.querySelector('.completion-card')) return;
+
+                const article = document.querySelector('article');
+                const banner = document.createElement('div');
+                banner.className = 'completion-card';
+                banner.innerHTML = `
+                <div style="font-family:'Amiri',serif; font-size:1.8rem; color:rgba(255,255,255,0.8); position:relative; z-index:1">
+                    الْحَمْدُ لِلَّٰهِ
+                </div>
+                <h5 class="heading-font mt-2 mb-1" style="color:white; position:relative; z-index:1">
+                    Story Completed
+                </h5>
+                <p style="color:rgba(255,255,255,0.7); font-size:0.88rem; position:relative; z-index:1">
+                    You have completed this story.
+                </p>
+                <a href="${storiesIndexUrl}" class="btn"
+                    style="background:var(--gold); color:#1A1A2E; position:relative; z-index:1; font-weight:600">
+                    Explore More Stories
+                </a>
+            `;
+                article.appendChild(banner);
             }
 
             function showCompletionToast() {
@@ -456,7 +504,7 @@
         `;
                 toast.style.cssText = `
             position: fixed;
-            bottom: 28px;
+            bottom: 25px;
             left: 50%;
             transform: translateX(-50%);
             background: linear-gradient(135deg, var(--emerald-dark), var(--emerald));

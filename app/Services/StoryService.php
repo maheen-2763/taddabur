@@ -113,13 +113,17 @@ class StoryService
     // CALCULATE STORY COMPLETION PERCENTAGE
     // Used by the "Mark as Read" AJAX response
     // -------------------------------------------------------
-    public function getCompletionPercentage(Story $story, StoryChapter $chapter): int
+    public function getCompletionPercentage(User $user, Story $story): int
     {
         $totalChapters = $story->chapters()->count();
 
         if ($totalChapters === 0) return 0;
 
-        return (int) round(($chapter->order / $totalChapters) * 100);
+        $completedCount = ChapterCompletion::where('user_id', $user->id)
+            ->where('story_id', $story->id)
+            ->count();
+
+        return (int) round(($completedCount / $totalChapters) * 100);
     }
 
     // -------------------------------------------------------
@@ -127,7 +131,9 @@ class StoryService
     // -------------------------------------------------------
     public function getAllProphets(): Collection
     {
-        return Prophet::withCount('stories')
+        return Prophet::withCount(['stories' => function ($q) {
+            $q->published();
+        }])
             ->orderBy('order')
             ->get();
     }
@@ -150,12 +156,19 @@ class StoryService
     // -------------------------------------------------------
     public function getInProgressStories(User $user, int $limit = 3): Collection
     {
-        return ReadingProgress::where('user_id', $user->id)
+        $progressRecords = ReadingProgress::where('user_id', $user->id)
             ->whereHas('story')
             ->with(['story', 'lastChapter'])
             ->latest()
             ->take($limit)
             ->get();
+
+        // Attach real completion numbers so "Continue Learning" shows
+        // actual progress instead of always falling back to 0
+        $stories = $progressRecords->pluck('story')->filter();
+        $this->attachUserProgress($stories, $user);
+
+        return $progressRecords;
     }
 
     // -------------------------------------------------------
@@ -209,5 +222,92 @@ class StoryService
         return ChapterCompletion::where('user_id', $user->id)
             ->where('story_chapter_id', $chapter->id)
             ->exists();
+    }
+
+
+    public function attachUserProgress($stories, ?User $user): void
+    {
+        if (!$user) {
+            return;
+        }
+
+        $storyIds = $stories->pluck('id');
+
+        // Total chapters per story
+        $chapterCounts = Story::whereIn('id', $storyIds)
+            ->withCount('chapters')
+            ->get()
+            ->pluck('chapters_count', 'id');
+
+        // Completed chapters per story, for this user only
+        $completedCounts = ChapterCompletion::where('user_id', $user->id)
+            ->whereIn('story_id', $storyIds)
+            ->selectRaw('story_id, count(*) as cnt')
+            ->groupBy('story_id')
+            ->pluck('cnt', 'story_id');
+
+        foreach ($stories as $story) {
+            $total = $chapterCounts[$story->id] ?? 0;
+            $completed = $completedCounts[$story->id] ?? 0;
+
+            $story->user_progress = [
+                'completed'  => $completed,
+                'total'      => $total,
+                'percentage' => $total > 0 ? (int) round(($completed / $total) * 100) : 0,
+                'started'    => $completed > 0,
+            ];
+        }
+    }
+
+    public function resetStoryProgress(User $user, Story $story): void
+    {
+        ChapterCompletion::where('user_id', $user->id)
+            ->where('story_id', $story->id)
+            ->delete();
+
+        ReadingProgress::where('user_id', $user->id)
+            ->where('story_id', $story->id)
+            ->delete();
+    }
+
+
+
+
+    /**
+     * Get a prophet's stories in order, with progress + lock status attached.
+     * Built for Muhammad ﷺ's 6-part journey, but works for any prophet
+     * with more than one Story record.
+     */
+    public function getProphetJourney(Prophet $prophet, ?User $user): Collection
+    {
+        $stories = Story::where('prophet_id', $prophet->id)
+            ->published()
+            ->orderBy('sort_order')
+            ->get();
+
+        // Reuses your existing progress logic — same numbers as everywhere else in the app
+        $this->attachUserProgress($stories, $user);
+
+        $previousComplete = true; // Part 1 is always unlocked
+
+        foreach ($stories as $story) {
+            // Guests (not logged in) don't get user_progress attached at all —
+            // give them a safe default so the view doesn't break
+            if (!isset($story->user_progress)) {
+                $story->user_progress = [
+                    'completed'  => 0,
+                    'total'      => 0,
+                    'percentage' => 0,
+                    'started'    => false,
+                ];
+            }
+
+            $story->is_locked = !$previousComplete;
+
+            // This story's result decides if the NEXT one unlocks
+            $previousComplete = $story->user_progress['percentage'] === 100;
+        }
+
+        return $stories;
     }
 }

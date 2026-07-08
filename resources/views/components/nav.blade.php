@@ -45,6 +45,12 @@
                         <i class="bi bi-stars me-1"></i>Four Imams
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link-islamic nav-link {{ request()->routeIs('hadith.*') ? 'active' : '' }}"
+                        href="{{ route('hadith.index') }}">
+                        <i class="bi bi-stars me-1"></i>Hadith
+                    </a>
+                </li>
 
                 <li class="nav-item">
                     <a class="nav-link-islamic nav-link {{ request()->routeIs('pricing') ? 'active' : '' }}"

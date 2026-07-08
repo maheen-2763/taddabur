@@ -24,13 +24,4 @@ class HadithApiService
         $response = Http::get(self::BASE_URL . "/editions.json");
         return $response->successful() ? $response->json() : null;
     }
-
-
-    public function getInfo(): ?array
-    {
-        return \Illuminate\Support\Facades\Cache::rememberForever('hadith_api_info', function () {
-            $response = Http::timeout(60)->get(self::BASE_URL . '/info.json');
-            return $response->successful() ? $response->json() : null;
-        });
-    }
 }

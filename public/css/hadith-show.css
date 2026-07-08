@@ -1,0 +1,76 @@
+.hadith-card {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    position: relative;
+}
+.hadith-number-badge {
+    display: inline-block;
+    background: var(--emerald);
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 28px;
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+}
+.hadith-arabic {
+    font-family: "Scheherazade New", "Amiri", serif;
+    font-size: 1.3rem;
+    color: var(--emerald);
+    line-height: 2;
+    margin-bottom: 0.75rem;
+}
+.hadith-english {
+    color: #333;
+    font-size: 0.92rem;
+}
+.grade-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.72rem;
+    margin-top: 0.5rem;
+}
+.grade-sahih {
+    background: rgba(27, 94, 59, 0.1);
+    color: var(--emerald);
+}
+.grade-hasan {
+    background: rgba(212, 175, 55, 0.15);
+    color: #8a6d1a;
+}
+.grade-daif {
+    background: rgba(139, 0, 0, 0.08);
+    color: #8b0000;
+}
+
+/* Collection Card — hover lift + icon */
+.hadith-collection-card {
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+    border-left: 3px solid var(--gold);
+}
+.hadith-collection-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Chapter row — gold number badge instead of plain text */
+.chapter-number-badge {
+    background: rgba(212, 175, 55, 0.12);
+    color: var(--gold-dark);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    margin-right: 0.5rem;
+}

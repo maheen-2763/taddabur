@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Models\Hadith;
 
 class NoteController extends Controller
 {
@@ -37,6 +38,7 @@ class NoteController extends Controller
         $validated = $request->validate([
             'ayah_id'    => ['nullable', 'exists:ayahs,id'],
             'story_id'   => ['nullable', 'exists:stories,id'],
+            'hadith_id'  => ['nullable', 'exists:hadiths,id'],
             'title'      => ['nullable', 'string', 'max:255'], // ✅ relaxed
             'content'    => ['required', 'string'],
             'color'      => ['nullable', 'string', 'max:20'],
@@ -84,6 +86,7 @@ class NoteController extends Controller
         $validated = $request->validate([
             'ayah_id'    => ['nullable', 'exists:ayahs,id'],
             'story_id'   => ['nullable', 'exists:stories,id'],
+            'hadith_id'  => ['nullable', 'exists:hadiths,id'],
             'title'      => ['nullable', 'string', 'max:255'],
             'content'    => ['required', 'string'],
             'color'      => ['nullable', 'string', 'max:20'],
@@ -92,7 +95,7 @@ class NoteController extends Controller
 
         if (empty($validated['title'])) {
             $validated['title'] = $note->title
-                ?: $this->defaultTitleFor($validated + ['ayah_id' => $note->ayah_id]);
+                ?: $this->defaultTitleFor($validated + ['ayah_id' => $note->ayah_id, 'hadith_id' => $note->hadith_id]);
         }
 
         $note->update($validated);
@@ -132,6 +135,13 @@ class NoteController extends Controller
             $ayah = Ayah::with('surah')->find($data['ayah_id']);
             if ($ayah?->surah) {
                 return "{$ayah->surah->name_transliteration} {$ayah->surah->number}:{$ayah->number}";
+            }
+        }
+
+        if (!empty($data['hadith_id'])) {
+            $hadith = Hadith::with('collection')->find($data['hadith_id']);
+            if ($hadith?->collection) {
+                return "{$hadith->collection->name} #{$hadith->number}";
             }
         }
 

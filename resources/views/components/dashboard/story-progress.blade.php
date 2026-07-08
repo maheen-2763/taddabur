@@ -9,9 +9,9 @@
             @continue(!$progress->story)
 
             @php
-                $totalChapters = $progress->story->chapters->count();
-                $currentChapter = $progress->lastChapter?->order ?? 1;
-                $progressPercent = $totalChapters ? round(($currentChapter / $totalChapters) * 100) : 0;
+                $totalChapters = $progress->story->user_progress['total'] ?? $progress->story->chapters->count();
+                $completedChapters = $progress->story->user_progress['completed'] ?? 0;
+                $progressPercent = $progress->story->user_progress['percentage'] ?? 0;
 
                 $categoryIcons = [
                     'prophet' => '🕌',
@@ -33,7 +33,7 @@
                         <small class="d-story-meta">{{ ucfirst($progress->story->category) }}</small>
                         <small class="d-story-meta">Last chapter: {{ $progress->lastChapter?->title }}</small>
                         <small class="d-story-meta">
-                            Chapter {{ $currentChapter }} of {{ $totalChapters }} ·
+                            {{ $completedChapters }} of {{ $totalChapters }} chapters completed ·
                             {{ $progress->updated_at?->diffForHumans() }}
                         </small>
 

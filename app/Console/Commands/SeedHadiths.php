@@ -23,25 +23,29 @@ class SeedHadiths extends Command
             return 1;
         }
 
-        $info = $api->getInfo();
-        $sections = $info[$slug]['metadata']['sections'] ?? [];
-        $sectionDetails = $info[$slug]['metadata']['section_details'] ?? [];
+        $arabicData = $api->getEdition("ara-{$slug}");
+        $englishData = $api->getEdition("eng-{$slug}");
+
+        if (!$arabicData || !$englishData) {
+            $this->error("API se data nahi mila.");
+            return 1;
+        }
+
+        // ✅ metadata edition file ke andar hi hai — info.json ki zaroorat nahi
+        $sections = $arabicData['metadata']['sections'] ?? [];
+        $sectionDetails = $arabicData['metadata']['section_details'] ?? [];
 
         // ✅ Chapters pehले seed karo
         $chapterModels = [];
         foreach ($sectionDetails as $num => $range) {
-            if ($num == 0) continue; // section 0 khali hoती hai, skip
+            if ($num == 0) continue; // section 0 khali hoती hai
             $chapterModels[$num] = HadithChapter::updateOrCreate(
                 ['collection_id' => $collection->id, 'number' => $num],
                 ['title' => $sections[$num] ?? 'Untitled']
             );
         }
 
-        // ✅ Ab hadiths seed karo, chapter assign karte hue
-        $arabicData = $api->getEdition("ara-{$slug}");
-        $englishData = $api->getEdition("eng-{$slug}");
         $englishByNumber = collect($englishData['hadiths'])->keyBy('hadithnumber');
-
         $bar = $this->output->createProgressBar(count($arabicData['hadiths']));
 
         foreach ($arabicData['hadiths'] as $arabicHadith) {
@@ -49,9 +53,9 @@ class SeedHadiths extends Command
             $englishHadith = $englishByNumber->get($number);
             $grade = $arabicHadith['grades'][0] ?? null;
 
-            // ✅ Ye number kis chapter range mein aata hai, dhundo
             $chapterId = null;
             foreach ($sectionDetails as $num => $range) {
+                if ($num == 0) continue;
                 if ($number >= $range['hadithnumber_first'] && $number <= $range['hadithnumber_last']) {
                     $chapterId = $chapterModels[$num]->id ?? null;
                     break;
@@ -66,6 +70,7 @@ class SeedHadiths extends Command
                     'english' => $englishHadith['text'] ?? null,
                     'grade' => $grade['grade'] ?? null,
                     'grade_source' => $grade['name'] ?? null,
+                    'total_hadith' => Hadith::where('collection_id', $collection->id)->count()
                 ]
             );
             $bar->advance();

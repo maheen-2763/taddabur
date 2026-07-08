@@ -277,7 +277,94 @@
                     <i class="bi bi-arrow-left me-1"></i>All Prophets
                 </a>
             </div>
+        @elseif ($stories->count() > 1)
+            {{-- ─────────────────────────────────────────
+                 MULTI-PART PROPHET (currently only Muhammad ﷺ)
+                 Show ONE Journey card instead of looping every part.
+                 Uses $stories (already filtered by published +
+                 premium status) — NOT $prophet->stories()->count(),
+                 which would wrongly include unpublished/hidden parts.
+            ───────────────────────────────────────────── --}}
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h3 class="heading-font mb-0">
+                    The Life of {{ $prophet->name_transliteration }}
+                </h3>
+                <span class="text-muted small">{{ $stories->count() }} parts</span>
+            </div>
+
+            @php
+                $firstPart = $stories->first();
+            @endphp
+
+            <div class="row row-cols-1 g-4">
+                <div class="col">
+                    <div class="story-card-inner">
+
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="heading-font mb-0" style="font-size:1rem">
+                                The Complete Life of {{ $prophet->name_transliteration }}
+                            </h5>
+                            @if ($firstPart->is_free)
+                                <span class="badge bg-success ms-2 flex-shrink-0" style="font-size:0.7rem">
+                                    Free
+                                </span>
+                            @else
+                                <span class="badge ms-2 flex-shrink-0"
+                                    style="background:var(--gold); color:#1A1A2E; font-size:0.7rem">
+                                    <i class="bi bi-stars me-1"></i>Premium
+                                </span>
+                            @endif
+                        </div>
+
+                        <p class="text-muted mb-3" style="font-size:0.85rem; line-height:1.65">
+                            A {{ $stories->count() }}-part journey through his blessed life — from
+                            the first revelation to his final years. Complete each part to unlock the next.
+                        </p>
+
+                        <div class="d-flex gap-2 flex-wrap mb-3">
+                            <span class="meta-chip">
+                                <i class="bi bi-journal-text me-1"></i>
+                                {{ $stories->count() }} Parts
+                            </span>
+                        </div>
+
+                        {{-- Same access rules as a normal story card --}}
+                        @if ($firstPart->is_free)
+                            <a href="{{ route('prophets.journey', $prophet->slug) }}" class="btn-emerald btn btn-sm">
+                                Begin the Journey <i class="bi bi-arrow-right ms-1"></i>
+                            </a>
+                        @else
+                            @auth
+                                @if (auth()->user()->isPremium())
+                                    <a href="{{ route('prophets.journey', $prophet->slug) }}" class="btn-emerald btn btn-sm">
+                                        Begin the Journey <i class="bi bi-arrow-right ms-1"></i>
+                                    </a>
+                                @else
+                                    <a href="{{ route('subscription.upgrade') }}" class="btn-gold btn btn-sm">
+                                        <i class="bi bi-lock me-1"></i>Upgrade to Read
+                                    </a>
+                                @endif
+                            @else
+                                <a href="{{ route('login') }}" class="btn-emerald btn btn-sm">
+                                    Sign in to Read
+                                </a>
+                            @endauth
+                        @endif
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-5">
+                <a href="{{ route('prophets.index') }}" class="text-decoration-none" style="color:var(--emerald)">
+                    <i class="bi bi-arrow-left me-1"></i>All Prophets
+                </a>
+            </div>
         @else
+            {{-- ─────────────────────────────────────────
+                 NORMAL PROPHET — single Story record
+                 (24 of the 25 prophets, everything unchanged)
+            ───────────────────────────────────────────── --}}
             <div class="d-flex align-items-center justify-content-between mb-4">
                 <h3 class="heading-font mb-0">
                     Stories of {{ $prophet->name_transliteration }}
@@ -337,7 +424,7 @@
                                 @endif
                             </div>
 
-                            {{-- CTA --}}
+                            {{-- CTA — single-story branch only, no journey logic needed here --}}
                             @if ($story->is_free)
                                 <a href="{{ route('stories.show', $story->slug) }}" class="btn-emerald btn btn-sm">
                                     Read Story <i class="bi bi-arrow-right ms-1"></i>

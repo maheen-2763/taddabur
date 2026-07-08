@@ -17,6 +17,8 @@ use App\Http\Controllers\WordTimingController;
 use App\Http\Controllers\ScholarController;
 use App\Http\Controllers\PreferenceController;
 use App\Http\Controllers\BackupController;
+use App\Http\Controllers\ProphetController;
+use App\Http\Controllers\HadithController;
 
 
 // Re-import any missing translations weekly (catches new additions)
@@ -36,7 +38,12 @@ Schedule::command('quran:import-translations --all')
 Route::get('/', [HomeController::class, 'index'])
     ->name('home');
 
-
+Route::prefix('hadith')->name('hadith.')->group(function () {
+    Route::get('/', [HadithController::class, 'index'])->name('index');
+    Route::get('/{collection:slug}', [HadithController::class, 'chapters'])->name('chapters');
+    Route::get('/{collection:slug}/{chapter:number}', [HadithController::class, 'show'])->name('show');
+    Route::get('/{collection:slug}/{chapter:number}/items', [HadithController::class, 'loadHadiths'])->name('items');
+});
 
 
 // Public Quran browsing (reading only, no tafsir/audio)
@@ -76,6 +83,10 @@ Route::get(
 // Prophets listing
 Route::get('/prophets', [StoryController::class, 'prophets'])->name('prophets.index');
 Route::get('/prophets/{prophet:slug}', [StoryController::class, 'prophetStories'])->name('prophets.show');
+
+// routes/web.php
+Route::get('/prophets/{prophet:slug}/journey', [ProphetController::class, 'journey'])
+    ->name('prophets.journey');
 
 Route::get('/scholars',          [ScholarController::class, 'index'])->name('scholars.index');
 Route::get('/scholars/{scholar:slug}', [ScholarController::class, 'show'])->name('scholars.show');
@@ -144,6 +155,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/{story}/chapters/{chapter}/complete', [StoryController::class, 'markComplete'])
             ->name('chapter.complete');
     });
+
+    Route::post('/stories/{story:slug}/reset', [StoryController::class, 'resetProgress'])
+        ->middleware('auth')
+        ->name('stories.reset');
 
     // --------------------------------------------------------
     // BOOKMARKS ROUTES
