@@ -16,6 +16,7 @@ use App\Http\Controllers\ReflectionController;
 use App\Http\Controllers\WordTimingController;
 use App\Http\Controllers\ScholarController;
 use App\Http\Controllers\PreferenceController;
+use App\Http\Controllers\BackupController;
 
 
 // Re-import any missing translations weekly (catches new additions)
@@ -208,6 +209,9 @@ Route::middleware(['auth', 'admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
+
+        Route::get('/admin/backups', [BackupController::class, 'index'])->name('admin.backups');
+        Route::get('/admin/backups/{backup}/download', [BackupController::class, 'download'])->name('admin.backups.download');
 
         // Dashboard
         Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])

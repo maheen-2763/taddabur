@@ -90,12 +90,16 @@ class ImportTafsir extends Command
                     }
 
                     foreach ($tafsirData as $item) {
-                        // BUG #2 FIX: validate verse_key format before explode
                         if (empty($item['verse_key']) || !str_contains($item['verse_key'], ':')) {
                             continue;
                         }
 
-                        [, $aNum] = explode(':', $item['verse_key']);
+                        [$vSurahNum, $aNum] = explode(':', $item['verse_key']);
+
+                        if ((int) $vSurahNum !== $surahNumber) {
+                            Log::warning("Mismatch: requested surah {$surahNumber} lekin API ne verse_key '{$item['verse_key']}' return kiya — skipped.");
+                            continue;
+                        }
 
                         $ayah = Ayah::where('surah_id', $surah->id)
                             ->where('number', (int) $aNum)

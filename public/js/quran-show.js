@@ -231,7 +231,7 @@ function fetchTafsirData() {
                 closeTafsirPanel();
                 return;
             }
-            // ✅ Ab saari header info bhi update hogi
+
             document.getElementById("tafsirAyahBadge").textContent =
                 `${data.surah_name} · ${data.surah_number}:${data.ayah_number}`;
             document.getElementById("tafsirArabicPreview").textContent =
@@ -240,7 +240,30 @@ function fetchTafsirData() {
                 data.translation;
             document.getElementById("tafsirContentTitle").textContent =
                 data.tafsir_name;
-            document.getElementById("tafsirPanelBody").innerHTML = data.text;
+
+            // ✅ NAYA — note handle karo
+            const body = document.getElementById("tafsirPanelBody");
+
+            if (!data.text && data.note) {
+                // Content hi nahi hai — sirf clean message dikhao
+                body.innerHTML = `
+        <div class="tafsir-unavailable-note" style="padding:16px; color:#888; font-size:0.85rem; text-align:center;">
+            <i class="bi bi-info-circle"></i>
+            <p>${data.note}</p>
+        </div>
+    `;
+            } else if (data.note) {
+                body.innerHTML = `
+        <div class="tafsir-note" style="background:#fff8e6; border-left:3px solid #c9a04d; padding:8px 12px; margin-bottom:12px; font-size:0.8rem; color:#666;">
+            <i class="bi bi-info-circle"></i> ${data.note}
+        </div>
+        ${data.text}
+    `;
+            } else if (data.text) {
+                body.innerHTML = data.text;
+            } else {
+                body.innerHTML = `<p style="color:#999">Tafsir not available for this ayah.</p>`;
+            }
         })
         .catch(() => {
             document.getElementById("tafsirPanelBody").innerHTML =

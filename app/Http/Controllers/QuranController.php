@@ -107,12 +107,23 @@ class QuranController extends Controller
             $ayahTafsir = $this->fetchSingleAyahTafsir($surah, $ayah, $tafsir);
         }
 
-        $isFallback = false;
         if (!$ayahTafsir) {
             $ayahTafsir = AyahTafsir::whereIn('ayah_id', $surah->ayahs()->pluck('id'))
                 ->where('tafsir_id', $tafsir->id)
                 ->first();
-            $isFallback = true;
+        }
+
+        if (!$ayahTafsir) {
+            return response()->json(['error' => 'Tafsir not available for this ayah.'], 404);
+        }
+
+        $result = $this->buildFallbackNote($ayah, $surah, $ayahTafsir);
+
+        if (!$result['text']) {
+            return response()->json([
+                'error'   => 'not_available_separately',
+                'message' => $result['note'] ?? 'Tafsir not available for this ayah.',
+            ], 404);
         }
 
         return response()->json([
@@ -120,8 +131,8 @@ class QuranController extends Controller
             'ayah_arabic'    => $ayah->text_arabic,
             'tafsir_name'    => $tafsir->name,
             'scholar'        => $tafsir->scholar,
-            'text'           => $ayahTafsir->text,
-            'note' => $isFallback ? 'this tafsir covers whole surah combined.' : null,
+            'text' => $result['text'],
+            'note' => $result['note'],
         ]);
     }
 
@@ -134,9 +145,24 @@ class QuranController extends Controller
 
         $slug = $request->get('source', QuranService::DEFAULT_TAFSIR);
         $selectedTafsir = Tafsir::where('slug', $slug)->where('is_active', true)->first();
-        $ayahTafsir = $ayah->tafsirs()->where('tafsir_id', $selectedTafsir?->id)->first();
 
-        // ✅ Bismillah strip — reader jaisa hi rule
+        if (!$selectedTafsir) {
+            return response()->json(['error' => 'No tafsir available.'], 404);
+        }
+
+        $ayahTafsir = AyahTafsir::where('ayah_id', $ayah->id)
+            ->where('tafsir_id', $selectedTafsir->id)
+            ->first();
+
+        if (!$ayahTafsir) {
+            $ayahTafsir = AyahTafsir::whereIn('ayah_id', $surah->ayahs()->pluck('id'))
+                ->where('tafsir_id', $selectedTafsir->id)
+                ->first();
+        }
+
+        // ✅ FIX — array-based result use karo, purana wala nahi
+        $result = $this->buildFallbackNote($ayah, $surah, $ayahTafsir);
+
         $arabicText = $ayah->text_arabic;
         $showBismillahTop = !in_array($surah->number, [1, 9]);
 
@@ -144,16 +170,16 @@ class QuranController extends Controller
             $arabicText = \App\Helpers\ArabicHelper::stripBismillah($arabicText);
         }
 
-
         return response()->json([
-            'surah_name' => $surah->name_transliteration,
+            'surah_name'   => $surah->name_transliteration,
             'surah_number' => $surah->number,
-            'ayah_number' => $ayah->number,
-            'arabic' => $arabicText,
-            'translation' => $ayah->translations->first()?->text,
-            'tafsir_name' => $selectedTafsir?->name,
-            'author' => $selectedTafsir?->name,
-            'text' => $ayahTafsir?->text ?? 'Tafsir not available.',
+            'ayah_number'  => $ayah->number,
+            'arabic'       => $arabicText,
+            'translation'  => $ayah->translations->first()?->text,
+            'tafsir_name'  => $selectedTafsir?->name,
+            'author'       => $selectedTafsir?->name,
+            'text'         => $result['text'], // ✅ null rehne do, fallback mat karo
+            'note'         => $result['note'],
         ]);
     }
 
@@ -516,5 +542,50 @@ class QuranController extends Controller
             'ayahs' => $ayahs,
             'has_more' => $ayahs->count() === 30,
         ]);
+    }
+
+
+    private function buildFallbackNote(Ayah $requestedAyah, Surah $requestedSurah, ?AyahTafsir $ayahTafsir): array
+    {
+        if (!$ayahTafsir) {
+            return ['text' => null, 'note' => null];
+        }
+
+        if (str_starts_with($ayahTafsir->api_source_version ?? '', 'cross_surah')) {
+            // Format: cross_surah_104_105 — dusra number nikaalo
+            $parts = explode('_', $ayahTafsir->api_source_version);
+            $combinedWithSurahNumber = $parts[3] ?? null; // 'cross', 'surah', '104', '105'
+
+            $combinedSurah = $combinedWithSurahNumber
+                ? Surah::where('number', $combinedWithSurahNumber)->first()
+                : null;
+
+            return [
+                'text' => null,
+                'note' => $combinedSurah
+                    ? "This tafsir edition does not have separate commentary for Surah {$requestedSurah->name_transliteration}. It is discussed together with Surah {$combinedSurah->name_transliteration}."
+                    : "This tafsir edition does not have separate commentary for Surah {$requestedSurah->name_transliteration}.",
+            ];
+        }
+
+        if ($ayahTafsir->ayah_id === $requestedAyah->id) {
+            return ['text' => $ayahTafsir->text, 'note' => null];
+        }
+
+        $sourceAyah = Ayah::find($ayahTafsir->ayah_id);
+
+        if ($sourceAyah && $sourceAyah->surah_id !== $requestedSurah->id) {
+            $sourceSurah = Surah::find($sourceAyah->surah_id);
+            return [
+                'text' => null,
+                'note' => "This tafsir edition does not have separate commentary for Surah {$requestedSurah->name_transliteration}. It is discussed together with Surah {$sourceSurah?->name_transliteration}.",
+            ];
+        }
+
+        // Al-Fil jaisa case — same surah ke andar combined
+        return [
+            'text' => $ayahTafsir->text,
+            'note' => "This tafsir covers the complete surah (verses combined into {$requestedSurah->number}:{$sourceAyah->number}).",
+        ];
     }
 }

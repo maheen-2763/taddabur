@@ -1,46 +1,36 @@
 <?php
-// app/Services/HadithApiService.php
+
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 class HadithApiService
 {
-    protected string $baseUrl;
-    protected string $apiKey;
+    const BASE_URL = 'https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1';
 
-    public function __construct()
+    public function getEdition(string $editionSlug): ?array
     {
-        $this->baseUrl = config('services.sunnah.base_url');
-        $this->apiKey = config('services.sunnah.key');
-    }
+        $response = Http::get(self::BASE_URL . "/editions/{$editionSlug}.json");
 
-    protected function request(string $endpoint): ?array
-    {
-        $response = Http::withHeaders(['X-API-Key' => $this->apiKey])
-            ->get("{$this->baseUrl}{$endpoint}");
-
-        if ($response->failed()) {
-            Log::error("Sunnah API failed: {$endpoint}", ['status' => $response->status()]);
+        if (!$response->successful()) {
             return null;
         }
 
         return $response->json();
     }
 
-    public function fetchCollections(): array
+    public function getAllEditions(): ?array
     {
-        return $this->request('/collections')['data'] ?? [];
+        $response = Http::get(self::BASE_URL . "/editions.json");
+        return $response->successful() ? $response->json() : null;
     }
 
-    public function fetchChapters(string $collectionSlug): array
-    {
-        return $this->request("/collections/{$collectionSlug}/books")['data'] ?? [];
-    }
 
-    public function fetchHadiths(string $collectionSlug, int $bookNumber, int $page = 1): array
+    public function getInfo(): ?array
     {
-        return $this->request("/collections/{$collectionSlug}/books/{$bookNumber}/hadiths?page={$page}&limit=50") ?? [];
+        return \Illuminate\Support\Facades\Cache::rememberForever('hadith_api_info', function () {
+            $response = Http::timeout(60)->get(self::BASE_URL . '/info.json');
+            return $response->successful() ? $response->json() : null;
+        });
     }
 }
