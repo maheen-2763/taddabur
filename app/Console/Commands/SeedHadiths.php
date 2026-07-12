@@ -70,11 +70,14 @@ class SeedHadiths extends Command
                     'english' => $englishHadith['text'] ?? null,
                     'grade' => $grade['grade'] ?? null,
                     'grade_source' => $grade['name'] ?? null,
-                    'total_hadith' => Hadith::where('collection_id', $collection->id)->count()
                 ]
             );
             $bar->advance();
         }
+
+        $collection->update([
+            'total_hadith' => Hadith::where('collection_id', $collection->id)->count(),
+        ]);
 
         $bar->finish();
         $this->newLine();

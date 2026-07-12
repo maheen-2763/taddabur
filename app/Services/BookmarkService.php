@@ -55,7 +55,13 @@ class BookmarkService
     {
         return Bookmark::where('user_id', $user->id)
             ->with([
-                'bookmarkable', // Loads Ayah OR StoryChapter — no nested loading here
+                'bookmarkable' => function ($morphTo) {
+                    $morphTo->morphWith([
+                        \App\Models\Ayah::class => ['surah'],
+                        \App\Models\Hadith::class => ['collection', 'chapter'],
+                        \App\Models\StoryChapter::class => ['story'],
+                    ]);
+                },
             ])
             ->latest()
             ->paginate($perPage);

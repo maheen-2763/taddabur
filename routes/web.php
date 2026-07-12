@@ -19,6 +19,9 @@ use App\Http\Controllers\PreferenceController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\ProphetController;
 use App\Http\Controllers\HadithController;
+use App\Http\Controllers\HadithGradeController;
+use App\Http\Controllers\RazorpayWebhookController;
+use App\Http\Middleware\VerifyCsrfToken;
 
 
 // Re-import any missing translations weekly (catches new additions)
@@ -29,6 +32,9 @@ Schedule::command('quran:import-translations --all')
     ->runInBackground()
     ->emailOutputOnFailure(config('mail.from.address'));
 
+
+Schedule::command('exchange-rate:update')->daily();
+Schedule::command('subscriptions:expire-overdue')->daily();
 // ============================================================
 // PUBLIC ROUTES — No login required
 // ============================================================
@@ -38,6 +44,8 @@ Schedule::command('quran:import-translations --all')
 Route::get('/', [HomeController::class, 'index'])
     ->name('home');
 
+Route::get('/hadith/grade/{reliability}', [HadithGradeController::class, 'show'])->name('hadith.grade');
+
 Route::prefix('hadith')->name('hadith.')->group(function () {
     Route::get('/', [HadithController::class, 'index'])->name('index');
     Route::get('/{collection:slug}', [HadithController::class, 'chapters'])->name('chapters');
@@ -45,6 +53,12 @@ Route::prefix('hadith')->name('hadith.')->group(function () {
     Route::get('/{collection:slug}/{chapter:number}/items', [HadithController::class, 'loadHadiths'])->name('items');
 });
 
+
+
+// routes/web.php
+Route::post('/webhooks/razorpay', [RazorpayWebhookController::class, 'handle'])
+    ->name('webhooks.razorpay')
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
 
 // Public Quran browsing (reading only, no tafsir/audio)
 Route::get('/quran', [QuranController::class, 'index'])->name('quran.index');

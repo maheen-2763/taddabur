@@ -643,6 +643,7 @@
             isLoggedIn: {{ auth()->check() ? 'true' : 'false' }},
             isPremium: {{ $isPremium ? 'true' : 'false' }},
             upgradeUrl: '{{ route('subscription.upgrade') }}',
+            defaultReciterSlug: "{{ \App\Services\QuranService::DEFAULT_RECITER }}",
             freeTranslationSlug: '{{ $translations->where('is_free', true)->first()?->slug ?? 'sahih-international' }}',
             lastAyahNumber: {{ $lastAyahNumber ?? 'null' }},
             savedFontSizeIndex: {{ auth()->user()?->userPreferences?->quran_font_size_index ?? 2 }}

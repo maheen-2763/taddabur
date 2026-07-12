@@ -3,9 +3,13 @@
 
 namespace App\Services;
 
+use App\Models\ExchangeRate;
 use App\Models\Plan;
+use App\Models\PaymentOrder;
 use App\Models\Subscription;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Razorpay\Api\Api;
 
 class RazorpayService
@@ -14,43 +18,53 @@ class RazorpayService
 
     public function __construct()
     {
-        // Initialize Razorpay API with your keys from config
         $this->api = new Api(
             config('services.razorpay.key'),
             config('services.razorpay.secret')
         );
     }
 
-    // -------------------------------------------------------
-    // CREATE ORDER
-    // Razorpay requires you to create an "order" first
-    // Then the frontend uses the order ID to open the payment popup
-    // -------------------------------------------------------
-    public function createOrder(Plan $plan, string $billing): array
+    public function createOrder(User $user, Plan $plan, string $billing): array
     {
-        // Get the price based on billing type
-        $amount = match ($billing) {
+        $amountUsd = match ($billing) {
             'monthly'  => $plan->price_monthly,
             'yearly'   => $plan->price_yearly,
             'lifetime' => $plan->price_lifetime,
-            default    => $plan->price_monthly,
+            default    => throw new \InvalidArgumentException('Invalid billing type.'),
         };
 
-        // Razorpay requires amount in PAISE (1 INR = 100 paise)
-        // Also convert USD to INR (approximate — use a real rate in production)
-        $amountInINR   = $amount * 83; // 1 USD ≈ 83 INR
-        $amountInPaise = (int) ($amountInINR * 100);
+        // Guard: don't create a ₹0 order for a billing type this plan doesn't sell
+        if ($amountUsd <= 0) {
+            throw new \InvalidArgumentException("This plan has no price set for {$billing} billing.");
+        }
 
-        // Create the order via Razorpay API
+        $rate = ExchangeRate::usdToInr();
+        $amountInInr = round($amountUsd * $rate, 2);
+        $amountInPaise = (int) round($amountInInr * 100); // round(), not truncate
+
         $order = $this->api->order->create([
             'amount'          => $amountInPaise,
             'currency'        => 'INR',
-            'receipt'         => 'order_' . time(),
-            'payment_capture' => 1, // Auto capture payment
+            'receipt'         => 'order_' . uniqid(),
+            'payment_capture' => 1,
             'notes'           => [
+                'user_id' => (string) $user->id,
                 'plan'    => $plan->slug,
                 'billing' => $billing,
             ],
+        ]);
+
+        // This row is the real record of what this order is for.
+        // Everything after this point reads from here — never from session.
+        PaymentOrder::create([
+            'user_id'            => $user->id,
+            'plan_id'            => $plan->id,
+            'billing'            => $billing,
+            'razorpay_order_id'  => $order->id,
+            'amount'             => $amountInPaise,
+            'currency'           => 'INR',
+            'exchange_rate_used' => $rate,
+            'status'             => 'created',
         ]);
 
         return [
@@ -62,77 +76,75 @@ class RazorpayService
         ];
     }
 
-    // -------------------------------------------------------
-    // VERIFY PAYMENT
-    // After user pays, Razorpay sends back 3 IDs
-    // We verify they are authentic using our secret key
-    // This prevents fake/tampered payment confirmations
-    // -------------------------------------------------------
-    public function verifyPayment(
-        string $orderId,
-        string $paymentId,
-        string $signature
-    ): bool {
-        try {
-            // Razorpay signature verification
-            // It hashes orderId + paymentId with your secret
-            // If the hash matches → payment is real
-            $expectedSignature = hash_hmac(
-                'sha256',
-                $orderId . '|' . $paymentId,
-                config('services.razorpay.secret')
-            );
-
-            return hash_equals($expectedSignature, $signature);
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error(
-                'Razorpay verification failed: ' . $e->getMessage()
-            );
-            return false;
-        }
+    public function verifySignature(string $orderId, string $paymentId, string $signature): bool
+    {
+        $expected = hash_hmac('sha256', $orderId . '|' . $paymentId, config('services.razorpay.secret'));
+        return hash_equals($expected, $signature);
     }
 
-    // -------------------------------------------------------
-    // ACTIVATE SUBSCRIPTION
-    // Called after payment is verified
-    // Updates user plan and creates subscription record
-    // -------------------------------------------------------
-    public function activateSubscription(
-        User $user,
-        Plan $plan,
-        string $billing,
-        string $paymentId
-    ): Subscription {
-
-        // Calculate expiry date
-        $expiresAt = match ($billing) {
-            'monthly'  => now()->addMonth(),
-            'yearly'   => now()->addYear(),
-            'lifetime' => null, // Never expires
-            default    => now()->addMonth(),
-        };
-
-        // Update user plan
-        $user->update([
-            'plan'            => $plan->slug,
-            'plan_expires_at' => $expiresAt,
-        ]);
-
-        // Create subscription record for history/audit
-        return Subscription::create([
-            'user_id'        => $user->id,
-            'plan_id'        => $plan->id,
-            'type'           => $billing,
-            'stripe_id'      => $paymentId, // Reusing stripe_id column for razorpay payment ID
-            'stripe_status'  => 'active',
-            'ends_at'        => $expiresAt,
-        ]);
+    public function verifyWebhookSignature(string $rawPayload, string $signature): bool
+    {
+        // Uses a DIFFERENT secret than checkout — set separately in
+        // your Razorpay Dashboard under Webhooks, not the same as
+        // services.razorpay.secret.
+        $expected = hash_hmac('sha256', $rawPayload, config('services.razorpay.webhook_secret'));
+        return hash_equals($expected, $signature);
     }
 
-    // -------------------------------------------------------
-    // GET RAZORPAY KEY (for frontend)
-    // The publishable key is safe to expose to frontend
-    // -------------------------------------------------------
+    /**
+     * Activates a plan for a verified, completed payment.
+     * Safe to call more than once with the same payment_id —
+     * it will never double-activate (idempotent).
+     * Called from BOTH the client-side verify endpoint AND the webhook —
+     * whichever arrives first "wins," the other becomes a safe no-op.
+     */
+    public function activateFromPayment(string $razorpayOrderId, string $paymentId): ?Subscription
+    {
+        return DB::transaction(function () use ($razorpayOrderId, $paymentId) {
+
+            $existing = Subscription::where('razorpay_payment_id', $paymentId)->first();
+            if ($existing) {
+                return $existing; // already processed — nothing to do
+            }
+
+            $order = PaymentOrder::where('razorpay_order_id', $razorpayOrderId)
+                ->lockForUpdate()
+                ->first();
+
+            if (!$order) {
+                Log::error("Payment activation failed: no local order found for {$razorpayOrderId}");
+                return null;
+            }
+
+            $plan = $order->plan;
+            $user = $order->user;
+
+            $expiresAt = match ($order->billing) {
+                'monthly'  => now()->addMonth(),
+                'yearly'   => now()->addYear(),
+                'lifetime' => null,
+                default    => now()->addMonth(),
+            };
+
+            $user->update([
+                'plan'            => $plan->slug,
+                'plan_expires_at' => $expiresAt,
+            ]);
+
+            $order->update(['status' => 'paid']);
+
+            return Subscription::create([
+                'user_id'             => $user->id,
+                'plan_id'             => $plan->id,
+                'payment_order_id'    => $order->id,
+                'type'                => $order->billing,
+                'razorpay_payment_id' => $paymentId,
+                'status'              => 'active',
+                'ends_at'             => $expiresAt,
+            ]);
+        });
+    }
+
     public function getKey(): string
     {
         return config('services.razorpay.key');

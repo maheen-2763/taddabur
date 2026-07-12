@@ -1,3 +1,21 @@
+:root {
+    --bg-grade-good: rgba(27, 94, 59, 0.1);
+    --text-grade-good: #1b5e3b;
+    --bg-grade-ok: rgba(212, 175, 55, 0.15);
+    --text-grade-ok: #8a6d1a;
+    --bg-grade-weak: rgba(139, 0, 0, 0.08);
+    --text-grade-weak: #8b0000;
+}
+
+[data-bs-theme="dark"] {
+    --bg-grade-good: rgba(127, 201, 160, 0.15);
+    --text-grade-good: #7fc9a0;
+    --bg-grade-ok: rgba(232, 199, 102, 0.18);
+    --text-grade-ok: #e8c766;
+    --bg-grade-weak: rgba(224, 100, 100, 0.15);
+    --text-grade-weak: #e06464;
+}
+
 .hadith-card {
     background: var(--cream);
     border: 1px solid var(--border);
@@ -5,29 +23,58 @@
     padding: 1.25rem;
     margin-bottom: 1rem;
     position: relative;
+    transition: box-shadow 0.4s ease;
 }
+
+.hadith-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    color: var(--emerald);
+    border-color: var(--gold);
+}
+
 .hadith-number-badge {
     display: inline-block;
     background: var(--emerald);
     color: white;
-    width: 28px;
-    height: 28px;
+    box-shadow: 0 2px 6px rgba(27, 94, 59, 0.25);
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     text-align: center;
-    line-height: 28px;
-    font-size: 0.8rem;
-    margin-bottom: 0.5rem;
-}
-.hadith-arabic {
-    font-family: "Scheherazade New", "Amiri", serif;
-    font-size: 1.3rem;
-    color: var(--emerald);
-    line-height: 2;
+    line-height: 30px;
+    font-size: 0.85rem;
     margin-bottom: 0.75rem;
 }
+
+.hadith-arabic {
+    font-family: "Scheherazade New", "Amiri", serif;
+    font-size: 1.4rem;
+    color: var(--emerald-light);
+    line-height: 2.4;
+    margin-bottom: 0.75rem;
+    text-align: right;
+    padding: 0.25rem 0;
+    letter-spacing: 0.3px;
+}
 .hadith-english {
-    color: #333;
+    color: var(--emerald-light);
     font-size: 0.92rem;
+    line-height: 1.75; /* zyada space — easy reading, calm feel */
+    padding-top: 0.25rem;
+    border-top: none;
+    position: relative;
+    padding-top: 1rem;
+    margin-top: 0.5rem;
+}
+
+.hadith-english::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background: var(--gold);
 }
 .grade-badge {
     display: inline-block;
@@ -36,17 +83,25 @@
     font-size: 0.72rem;
     margin-top: 0.5rem;
 }
+
+.grade-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    color: var(--emerald-light);
+}
+
 .grade-sahih {
-    background: rgba(27, 94, 59, 0.1);
-    color: var(--emerald);
+    background: var(--bg-grade-good);
+    color: var(--text-grade-good);
 }
 .grade-hasan {
-    background: rgba(212, 175, 55, 0.15);
-    color: #8a6d1a;
+    background: var(--bg-grade-ok);
+    color: var(--text-grade-ok);
 }
 .grade-daif {
-    background: rgba(139, 0, 0, 0.08);
-    color: #8b0000;
+    background: var(--bg-grade-weak);
+    color: var(--text-grade-weak);
 }
 
 /* Collection Card — hover lift + icon */
@@ -73,4 +128,312 @@
     justify-content: center;
     font-size: 0.8rem;
     margin-right: 0.5rem;
+}
+
+/* ════════════ ACTION BUTTONS (Bookmark/Copy/Share/Note) ════════════ */
+.ayah-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--emerald-light);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 0.82rem;
+    margin-right: 0.4rem;
+    margin-top: 1.25rem;
+    padding-top: 0.5rem;
+    margin-bottom: 0.4rem;
+    transition: all 0.15s ease;
+    cursor: pointer;
+}
+
+.ayah-btn:hover {
+    background: rgba(27, 94, 59, 0.06);
+    border-color: var(--emerald);
+}
+
+.ayah-btn.bookmarked,
+.ayah-btn.has-note {
+    background: var(--emerald);
+    color: white;
+    border-color: var(--emerald);
+}
+
+/* ════════════ NOTE BANNER — spiritually calm, soft card look ════════════ */
+.note-banner {
+    display: none; /* default: hidden */
+    margin-top: 0.75rem;
+    background: rgba(212, 175, 55, 0.05);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gold);
+    border-radius: var(--radius);
+    padding: 1rem;
+}
+
+.note-banner.open {
+    display: block; /* JS ye class add karta hai tab dikhega */
+}
+
+.note-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.6rem;
+    color: var(--emerald);
+    font-size: 0.9rem;
+}
+
+.note-close {
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    color: var(--emerald-light);
+    cursor: pointer;
+    line-height: 1;
+}
+
+.note-title-input,
+.note-content-input {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.88rem;
+    margin-bottom: 0.6rem;
+    background: var(--cream);
+    color: var(--emerald-light);
+}
+
+.note-content-input {
+    resize: vertical;
+    line-height: 1.6;
+}
+
+.note-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.note-save-btn {
+    background: var(--emerald);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 5px 16px;
+    font-size: 0.82rem;
+    cursor: pointer;
+}
+
+.note-delete-btn {
+    background: transparent;
+    border: 1px solid #8b0000;
+    color: #8b0000;
+    border-radius: 20px;
+    padding: 5px 16px;
+    font-size: 0.82rem;
+    cursor: pointer;
+}
+
+/* ════════════ FLASH TOAST (showFlash() ke liye) ════════════ */
+.flash-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--emerald);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+    z-index: 9999;
+    animation: flashIn 0.25s ease;
+}
+
+.flash-warning {
+    background: #8a6d1a;
+}
+.flash-error {
+    background: #8b0000;
+}
+
+@keyframes flashIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+/* ════════════ COLLECTIONS INDEX PAGE ════════════ */
+.hadith-collection-card {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gold);
+    border-radius: var(--radius);
+    padding: 1.1rem 1.25rem;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+    height: 100%;
+}
+
+.hadith-collection-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.hadith-collection-card h5 {
+    font-family: "Cinzel", serif; /* tumhari heading font */
+    font-size: 1.05rem;
+}
+
+.hadith-count-badge {
+    display: inline-block;
+    background: rgba(27, 94, 59, 0.1);
+    color: var(--emerald-light);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 12px;
+    margin-top: 0.5rem;
+}
+
+/* ════════════ CHAPTERS LIST PAGE ════════════ */
+.hadith-chapter-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.85rem 1.1rem;
+    margin-bottom: 0.6rem;
+    text-decoration: none;
+    color: var(--emerald-light);
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.hadith-chapter-row:hover {
+    background: rgba(212, 175, 55, 0.06);
+    border-color: var(--gold);
+    color: var(--emerald-light);
+}
+
+.hadith-chapter-title {
+    display: flex;
+    align-items: center;
+    font-size: 0.95rem;
+}
+
+.hadith-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--emerald);
+    border-radius: 20px;
+    padding: 5px 16px;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+
+.hadith-back-btn:hover {
+    background: rgba(27, 94, 59, 0.06);
+    border-color: var(--emerald);
+    color: var(--emerald);
+}
+
+/* ════════════ BREADCRUMB ════════════ */
+.hadith-breadcrumb {
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+    color: var(--emerald-light);
+}
+
+.hadith-breadcrumb a {
+    color: var(--gold-dark);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.hadith-breadcrumb a:hover {
+    color: var(--emerald);
+    text-decoration: underline;
+}
+
+.hadith-breadcrumb .breadcrumb-separator {
+    color: var(--border);
+    margin: 0 0.4rem;
+}
+
+.hadith-breadcrumb .breadcrumb-current {
+    color: var(--emerald-light);
+    opacity: 0.7;
+}
+
+/* ════════════ EMPTY STATE ════════════ */
+.hadith-empty-state {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    background: var(--cream);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    color: var(--emerald-light);
+}
+
+.hadith-empty-icon {
+    font-size: 2.2rem;
+    color: var(--gold);
+    margin-bottom: 0.75rem;
+    display: block;
+}
+
+.hadith-empty-title {
+    font-family: "Cinzel", serif;
+    color: var(--emerald);
+    font-size: 1.1rem;
+    margin-bottom: 0.4rem;
+}
+
+.hadith-empty-text {
+    font-size: 0.88rem;
+    opacity: 0.75;
+    max-width: 360px;
+    margin: 0 auto;
+}
+.hadith-grade-legend {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+}
+
+.grade-legend-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0.75rem 1.5rem;
+}
+
+.grade-legend-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+}
+
+.grade-legend-item .grade-badge {
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+}
+
+.grade-legend-item p {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--emerald-light);
+    line-height: 1.5;
 }

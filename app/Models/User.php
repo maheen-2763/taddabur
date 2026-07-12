@@ -68,7 +68,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function activeSubscription(): HasOne
     {
         return $this->hasOne(Subscription::class)
-            ->where('status', 'active')
+            ->where('status', 'active')   // was 'stripe_status' — now matches renamed column
             ->latestOfMany();
     }
 
@@ -110,7 +110,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function isPremium(): bool
     {
-        return $this->plan === 'premium'
+        return $this->plan !== 'free'
             && (
                 $this->plan_expires_at === null
                 || $this->plan_expires_at->isFuture()
@@ -124,17 +124,15 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function canAccess(string $feature): bool
     {
-        return (bool) data_get(
-            $this->planModel,
-            $feature
-        );
+        if (!$this->isPremium()) {
+            return false;
+        }
+        return (bool) data_get($this->planModel, $feature);
     }
 
     public function hasFeature(string $feature): bool
     {
-        return (bool) optional(
-            $this->subscription?->plan
-        )->{$feature};
+        return $this->canAccess($feature);
     }
 
     /*

@@ -23,31 +23,6 @@ class SubscriptionService
             ->get();
     }
 
-    // UPGRADE USER TO A PLAN
-    public function upgradeTo(User $user, Plan $plan, string $billing): void
-    {
-        $expiresAt = match ($billing) {
-            'monthly'  => now()->addMonth(),
-            'yearly'   => now()->addYear(),
-            'lifetime' => null,
-            default    => now()->addMonth(),
-        };
-
-        $user->update([
-            'plan'            => $plan->slug,
-            'plan_expires_at' => $expiresAt,
-        ]);
-    }
-
-    // CANCEL SUBSCRIPTION
-    public function cancel(User $user): void
-    {
-        $user->update([
-            'plan'            => 'free',
-            'plan_expires_at' => null,
-        ]);
-    }
-
     // EXPIRE OVERDUE SUBSCRIPTIONS (called by scheduler)
     public function expireOverdueSubscriptions(): int
     {
@@ -61,6 +36,12 @@ class SubscriptionService
                 'plan'            => 'free',
                 'plan_expires_at' => null,
             ]);
+
+            // Keep the subscriptions table honest too — otherwise
+            // it would still say "active" after the user has actually
+            // lapsed back to free, the same dual-source-of-truth
+            // problem we fixed earlier for isPremium().
+            $user->activeSubscription?->update(['status' => 'expired']);
         }
 
         return $expired->count();

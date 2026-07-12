@@ -22,8 +22,9 @@
     {{-- Bootstrap Icons --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     @stack('styles')
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-
+    <script src="{{ asset('js/app.js') }}"></script>
     <style>
         /* ================================================
            CSS VARIABLES — Islamic colour palette
@@ -44,10 +45,15 @@
             --radius: 12px;
             --radius-lg: 20px;
 
+
             /* Font stacks */
             --font-heading: 'Cinzel', Georgia, serif;
             --font-body: 'Lora', Georgia, serif;
             --font-arabic: 'Amiri', 'Traditional Arabic', serif;
+            --text-primary: #1a2e22;
+            --text-secondary: #4a5c52;
+            --text-on-badge: #1b5e3b;
+
         }
 
         [data-bs-theme="dark"] {
@@ -57,6 +63,11 @@
             --ink-soft: #C8C0B8;
             --border: #2A3A4A;
             --muted: #8899AA;
+
+            --emerald-light: #7FC9A0;
+            --text-primary: #E8EDE9;
+            --text-secondary: #9DB3A5;
+            --text-on-badge: #D4F0E0;
         }
 
         /* ================================================

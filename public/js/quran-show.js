@@ -82,12 +82,6 @@ function scrollToAyah(num) {
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-function jumpToAyah(num) {
-    const n = parseInt(num);
-    const total = window.QURAN_CONFIG?.totalAyahs || 0;
-    if (n >= 1 && n <= total) scrollToAyah(n);
-}
-
 // ════════════════════════════════════════════
 // FLASH MESSAGE
 // ════════════════════════════════════════════
@@ -164,13 +158,15 @@ function handleTranslationChange(select) {
 
 function handleReciterChange(select) {
     const isPremium = window.QURAN_CONFIG?.isPremium || false;
+    const defaultReciter =
+        window.QURAN_CONFIG?.defaultReciterSlug || "mishary-rashid";
     const option = select.options[select.selectedIndex];
     const isFree = option?.dataset.free === "1";
 
     if (!isFree && !isPremium) {
-        select.value = "mishary-rashid";
+        select.value = defaultReciter;
         showFlash(
-            "🎙 Premium reciters require an upgrade. Using Mishary Rashid.",
+            "🎙 Premium reciters require an upgrade. Using the free reciter.",
             "info",
         );
     }
@@ -292,14 +288,16 @@ function changeTranslation(slug) {
 function getSelectedReciter() {
     const picker = document.getElementById("reciterPicker");
     const isPremium = window.QURAN_CONFIG?.isPremium || false;
+    const defaultReciter =
+        window.QURAN_CONFIG?.defaultReciterSlug || "mishary-rashid";
 
-    if (!picker || !picker.value) return "mishary-rashid";
+    if (!picker || !picker.value) return defaultReciter;
 
     const option = picker.options[picker.selectedIndex];
     const isFree = option?.dataset.free === "1";
 
     // Free user trying premium reciter → fallback silently
-    if (!isPremium && !isFree) return "mishary-rashid";
+    if (!isPremium && !isFree) return defaultReciter;
 
     return picker.value;
 }
@@ -527,7 +525,6 @@ function startWordHighlight() {
     const audioEl = document.getElementById("audioElement");
     clearInterval(wordHighlightTimer);
 
-    // ✅ Correct global — matches what playAudio() now sets
     const timings = window.QURAN_CONFIG?.wordTimings;
 
     wordHighlightTimer = setInterval(() => {
@@ -537,29 +534,47 @@ function startWordHighlight() {
         }
 
         const currentMs = audioEl.currentTime * 1000;
+        let startIdx, endIdx; // endIdx is exclusive — matches the source data convention
 
-        let wordIndex;
         if (timings && timings.length > 0) {
             const match = timings.find(
                 (t) => currentMs >= t.start_ms && currentMs < t.end_ms,
             );
-            wordIndex = match
-                ? match.word_index
-                : currentMs < timings[0].start_ms
-                  ? 0
-                  : timings[timings.length - 1].word_index;
+
+            if (match) {
+                startIdx = match.word_start_index;
+                endIdx = match.word_end_index;
+            } else if (currentMs < timings[0].start_ms) {
+                // Before any known segment starts (e.g. a brief lead-in) —
+                // don't guess a word, just show nothing highlighted yet.
+                startIdx = null;
+            } else {
+                // Past the last known segment — hold the final word(s) lit
+                const last = timings[timings.length - 1];
+                startIdx = last.word_start_index;
+                endIdx = last.word_end_index;
+            }
         } else {
-            wordIndex = getWeightedWordIndex(audioEl, currentWordCount);
+            // No real timing data for this ayah — fall back to the
+            // existing weighted-estimate approach, single word at a time
+            const idx = getWeightedWordIndex(audioEl, currentWordCount);
+            startIdx = idx;
+            endIdx = idx + 1;
         }
 
         document
             .querySelectorAll(`#arabic-${currentAyahId} .arabic-word`)
             .forEach((w) => w.classList.remove("highlighted"));
 
+        if (startIdx === null) return;
+
         const words = document.querySelectorAll(
             `#arabic-${currentAyahId} .arabic-word`,
         );
-        if (words[wordIndex]) words[wordIndex].classList.add("highlighted");
+
+        for (let i = startIdx; i < endIdx; i++) {
+            if (words[i]) words[i].classList.add("highlighted");
+        }
     }, 50);
 }
 
@@ -1216,12 +1231,4 @@ function appendAyahsToSidebar(ayahs) {
     });
 }
 
-function showFontSizeToast(size) {
-    const toast = document.createElement("div");
-    toast.className = "font-size-toast";
-    toast.textContent = `Font size: ${size}`;
-    document.body.appendChild(toast);
-
-    setTimeout(() => toast.remove(), 1500); // 1.5 second baad gayab
-}
 // ← JS FILE ENDS HERE. Nothing after this.

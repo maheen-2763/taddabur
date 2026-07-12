@@ -26,6 +26,8 @@ class Recitation extends Model
         'is_active' => 'boolean',
     ];
 
+    protected $appends = ['has_verified_timing']; // fixed — was 'timing_accuracy', didn't match the accessor below
+
     // -------------------------------------------------------
     // SCOPES
     // -------------------------------------------------------
@@ -43,7 +45,6 @@ class Recitation extends Model
     // $recitation->audioUrlFor($surah, $ayah)
     public function audioUrlFor(Surah $surah, Ayah $ayah): string
     {
-
         $surahPadded = str_pad($surah->number, 3, '0', STR_PAD_LEFT);
         $ayahPadded  = str_pad($ayah->number,  3, '0', STR_PAD_LEFT);
 
@@ -54,8 +55,17 @@ class Recitation extends Model
         );
     }
 
+    // Is this reciter available to the given user (or a guest, if null)?
+    // Free reciters (currently just Mishary) — open to everyone.
+    // Everything else needs a paid plan (Basic or Premium both qualify).
+    public function isAccessibleBy(?User $user): bool
+    {
+        if ($this->is_free) {
+            return true;
+        }
 
-    protected $appends = ['timing_accuracy']; // <-- this line is required
+        return $user?->isPremium() ?? false;
+    }
 
     const REAL_TIMING_RECITERS = [
         'mishary-rashid',
@@ -65,7 +75,6 @@ class Recitation extends Model
         'abdul-basit',
         'al-husary',
     ];
-
 
     public function getHasVerifiedTimingAttribute(): bool
     {

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Hadith extends Model
 {
-    protected $fillable = ['collection_id', 'chapter_id', 'number', 'arabic', 'english', 'narrator_chain', 'grade', 'grade_source'];
+    protected $fillable = ['collection_id', 'chapter_id', 'number', 'arabic', 'english', 'narrator_chain', 'grade', 'grade_source', 'reliability', 'attribution_type'];
     public function collection()
     {
         return $this->belongsTo(HadithCollection::class, 'collection_id');

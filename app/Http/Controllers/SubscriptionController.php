@@ -57,27 +57,18 @@ class SubscriptionController extends Controller
 
         $plan = Plan::where('slug', $request->plan_slug)->firstOrFail();
 
-        // Can't subscribe to free plan
         if ($plan->slug === 'free') {
             return response()->json(['error' => 'Invalid plan.'], 400);
         }
 
         try {
-            $order = $this->razorpay->createOrder($plan, $request->billing);
-
-            // Store plan and billing in session for verification step
-            session([
-                'pending_plan'    => $plan->slug,
-                'pending_billing' => $request->billing,
-            ]);
-
+            $order = $this->razorpay->createOrder(Auth::user(), $plan, $request->billing);
             return response()->json($order);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['error' => $e->getMessage()], 400);
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Order creation failed: ' . $e->getMessage());
-
-            return response()->json([
-                'error' => 'Could not create order. Please try again.'
-            ], 500);
+            Log::error('Order creation failed: ' . $e->getMessage());
+            return response()->json(['error' => 'Could not create order. Please try again.'], 500);
         }
     }
 
@@ -94,47 +85,28 @@ class SubscriptionController extends Controller
             'razorpay_signature'  => 'required|string',
         ]);
 
-        // Verify payment is authentic
-        $isValid = $this->razorpay->verifyPayment(
+        if (!$this->razorpay->verifySignature(
             $request->razorpay_order_id,
             $request->razorpay_payment_id,
             $request->razorpay_signature
-        );
-
-        if (!$isValid) {
-            return response()->json([
-                'error' => 'Payment verification failed. Please contact support.'
-            ], 400);
+        )) {
+            return response()->json(['error' => 'Payment verification failed. Please contact support.'], 400);
         }
 
-        // Get plan from session
-        $planSlug = session('pending_plan');
-        $billing  = session('pending_billing');
-
-        if (!$planSlug || !$billing) {
-            return response()->json(['error' => 'Session expired. Please try again.'], 400);
-        }
-
-        $plan = Plan::where('slug', $planSlug)->firstOrFail();
-        $user = Auth::user();
-
-        // Activate the subscription
-        $this->razorpay->activateSubscription(
-            $user,
-            $plan,
-            $billing,
+        $subscription = $this->razorpay->activateFromPayment(
+            $request->razorpay_order_id,
             $request->razorpay_payment_id
         );
 
-        // Clear session
-        session()->forget(['pending_plan', 'pending_billing']);
+        if (!$subscription) {
+            return response()->json(['error' => 'Could not match this payment to an order. Please contact support.'], 400);
+        }
 
         return response()->json([
-            'status'      => 'success',
+            'status'       => 'success',
             'redirect_url' => route('subscription.success'),
         ]);
     }
-
     // -------------------------------------------------------
     // SUCCESS — After successful payment
     // GET /subscription/success
@@ -153,16 +125,23 @@ class SubscriptionController extends Controller
     // -------------------------------------------------------
     public function cancel(Request $request)
     {
-        /** @var \App\Models\User|null $user */
         $user = Auth::user();
+        $subscription = $user->activeSubscription;
 
-        $user->update([
-            'plan'            => 'free',
-            'plan_expires_at' => null,
-        ]);
+        if ($subscription) {
+            $subscription->update(['status' => 'cancelled']);
+        }
 
-        return redirect()
-            ->route('dashboard')
-            ->with('message', 'Your subscription has been cancelled.');
+        // Nothing auto-renews in this model, so there's no Razorpay
+        // mandate to stop. The person already paid for their current
+        // period — they keep access until it naturally expires.
+        // isPremium() already checks plan_expires_at, so access will
+        // lapse correctly on its own without any further action here.
+
+        return redirect()->route('dashboard')->with(
+            'message',
+            'Your plan will not renew. You keep access until ' .
+                optional($user->plan_expires_at)->format('M d, Y')
+        );
     }
 }

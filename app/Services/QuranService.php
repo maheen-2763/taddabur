@@ -181,11 +181,11 @@ class QuranService
         return $this->userIsPremium($user);
     }
 
-    // Can user access a specific reciter
+
+    // now just delegates, doesn't duplicate the rule
     public function userCanAccessReciter(?User $user, Recitation $reciter): bool
     {
-        if ($reciter->is_free) return true;
-        return $this->userIsPremium($user);
+        return $reciter->isAccessibleBy($user);
     }
 
     // -------------------------------------------------------

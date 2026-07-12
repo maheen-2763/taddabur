@@ -233,14 +233,15 @@ class QuranController extends Controller
     }
 
     // ── GET /quran/{surah}/{ayah}/audio (AJAX) ───────────
+    // QuranController.php — audio() method, corrected
     public function audio(Request $request, Surah $surah, Ayah $ayah): JsonResponse
     {
-        $requestedReciter = $request->get('reciter', 'mishary-rashid');
+        $requestedReciter = $request->get('reciter', QuranService::DEFAULT_RECITER);
         $recitation       = Recitation::where('slug', $requestedReciter)->where('is_active', true)->first();
 
-        if ($recitation && !$recitation->is_free && !$this->quranService->userIsPremium(Auth::user())) {
-            $requestedReciter = 'mishary-rashid';
-            $recitation = Recitation::where('slug', $requestedReciter)->first();
+        if ($recitation && !$recitation->isAccessibleBy(Auth::user())) {
+            $requestedReciter = QuranService::DEFAULT_RECITER;
+            $recitation = Recitation::where('slug', $requestedReciter)->where('is_active', true)->first();
         }
 
         if (!$recitation) {

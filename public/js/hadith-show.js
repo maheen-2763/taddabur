@@ -1,3 +1,4 @@
+// ════════════ LAZY LOAD ════════════
 let hadithCurrentPage = 1;
 let hadithIsLoading = false;
 let hadithHasMore = true;
@@ -10,6 +11,7 @@ const hadithObserver = new IntersectionObserver((entries) => {
 hadithObserver.observe(document.querySelector("#hadith-sentinel"));
 
 function loadMoreHadiths() {
+    if (hadithIsLoading || !hadithHasMore) return;
     hadithIsLoading = true;
     hadithCurrentPage++;
 
@@ -25,6 +27,7 @@ function loadMoreHadiths() {
         .catch(() => {
             hadithIsLoading = false;
             hadithCurrentPage--;
+            showFlash("Could not load more hadiths. Scroll to retry.", "error");
         });
 }
 
@@ -71,166 +74,4 @@ function appendHadiths(hadiths) {
         `;
         list.appendChild(div);
     });
-}
-
-// ════════════ BOOKMARK ════════════
-function toggleHadithBookmark(btn, hadithId) {
-    const CSRF = document.querySelector('meta[name="csrf-token"]').content;
-
-    fetch("/bookmarks", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            "X-CSRF-TOKEN": CSRF,
-        },
-        body: JSON.stringify({ type: "hadith", id: hadithId }),
-    })
-        .then((r) => r.json())
-        .then((data) => {
-            if (data.status === "added") {
-                btn.classList.add("bookmarked");
-                btn.innerHTML =
-                    '<i class="bi bi-bookmark-fill"></i> Bookmarked';
-            } else {
-                btn.classList.remove("bookmarked");
-                btn.innerHTML = '<i class="bi bi-bookmark"></i> Bookmark';
-            }
-        });
-}
-
-// ════════════ COPY ════════════
-function copyHadithText(btn, number) {
-    const card = btn.closest(".hadith-card");
-    const arabic = card.querySelector(".hadith-arabic").textContent.trim();
-    const english = card.querySelector(".hadith-english").textContent.trim();
-    const text = `${arabic}\n\n${english}\n\n— Hadith ${number}`;
-
-    navigator.clipboard.writeText(text).then(() => {
-        const orig = btn.innerHTML;
-        btn.innerHTML = '<i class="bi bi-check"></i> Copied!';
-        setTimeout(() => (btn.innerHTML = orig), 1500);
-    });
-}
-
-// ════════════ SHARE ════════════
-function shareHadith(collectionSlug, number, btn) {
-    const url = `${location.origin}/hadith/${collectionSlug}#hadith-${number}`;
-    if (navigator.share) {
-        navigator.share({ title: `Hadith #${number}`, url }).catch(() => {});
-        return;
-    }
-    navigator.clipboard.writeText(url).then(() => {
-        const orig = btn.innerHTML;
-        btn.innerHTML = '<i class="bi bi-check"></i> Link Copied!';
-        setTimeout(() => (btn.innerHTML = orig), 1500);
-    });
-}
-
-// ════════════ NOTES ════════════
-function toggleHadithNoteEditor(btn, hadithId) {
-    const banner = document.getElementById("hadith-note-" + hadithId);
-    const isOpen = banner.classList.contains("open");
-
-    document.querySelectorAll(".note-banner.open").forEach((b) => {
-        if (b !== banner) b.classList.remove("open");
-    });
-
-    if (isOpen) {
-        banner.classList.remove("open");
-        return;
-    }
-
-    const existing = (window.HADITH_USER_NOTES || {})[hadithId];
-    document.getElementById("hadith-note-title-" + hadithId).value =
-        existing?.title || "";
-    document.getElementById("hadith-note-content-" + hadithId).value =
-        existing?.content || "";
-    document.getElementById("hadith-note-delete-" + hadithId).style.display =
-        existing ? "inline" : "none";
-
-    banner.classList.add("open");
-}
-
-function closeHadithNoteEditor(hadithId) {
-    document
-        .getElementById("hadith-note-" + hadithId)
-        ?.classList.remove("open");
-}
-
-function saveHadithNote(hadithId) {
-    const CSRF = document.querySelector('meta[name="csrf-token"]').content;
-    const content = document
-        .getElementById("hadith-note-content-" + hadithId)
-        .value.trim();
-
-    if (!content) {
-        showFlash("Please write something before saving.", "warning");
-        return;
-    }
-
-    const existing = (window.HADITH_USER_NOTES || {})[hadithId];
-    const isUpdate = !!existing?.id;
-    const url = isUpdate ? `/notes/${existing.id}` : "/notes";
-    const method = isUpdate ? "PUT" : "POST";
-
-    fetch(url, {
-        method,
-        headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            "X-CSRF-TOKEN": CSRF,
-        },
-        body: JSON.stringify({
-            hadith_id: hadithId,
-            title: document
-                .getElementById("hadith-note-title-" + hadithId)
-                .value.trim(),
-            content,
-            is_private: true,
-        }),
-    })
-        .then((r) => r.json())
-        .then((data) => {
-            if (!data.note) {
-                showFlash("Could not save your note.", "error");
-                return;
-            }
-            window.HADITH_USER_NOTES = window.HADITH_USER_NOTES || {};
-            window.HADITH_USER_NOTES[hadithId] = data.note;
-
-            const btn = document.getElementById("hadith-note-btn-" + hadithId);
-            btn.classList.add("has-note");
-            btn.innerHTML = '<i class="bi bi-pencil-square"></i> Note';
-
-            closeHadithNoteEditor(hadithId);
-            showFlash("✓ Note saved", "success");
-        })
-        .catch(() => showFlash("Could not save your note.", "error"));
-}
-
-function deleteHadithNote(hadithId) {
-    const existing = (window.HADITH_USER_NOTES || {})[hadithId];
-    if (!existing?.id) return;
-    if (!confirm("Delete this note? This cannot be undone.")) return;
-
-    const CSRF = document.querySelector('meta[name="csrf-token"]').content;
-
-    fetch(`/notes/${existing.id}`, {
-        method: "DELETE",
-        headers: { Accept: "application/json", "X-CSRF-TOKEN": CSRF },
-    })
-        .then((r) => r.json())
-        .then((data) => {
-            if (data.status !== "deleted") {
-                showFlash("Could not delete note.", "error");
-                return;
-            }
-            delete window.HADITH_USER_NOTES[hadithId];
-            const btn = document.getElementById("hadith-note-btn-" + hadithId);
-            btn.classList.remove("has-note");
-            btn.innerHTML = '<i class="bi bi-pencil-square"></i> Add Note';
-            closeHadithNoteEditor(hadithId);
-            showFlash("Note deleted", "info");
-        });
 }
