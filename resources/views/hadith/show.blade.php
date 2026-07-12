@@ -50,8 +50,10 @@
 
     <script>
         window.HADITH_CONFIG = {
-            collectionSlug: '{{ $collection->slug }}',
-            chapterNumber: {{ $chapter->number }}
+            collectionSlug: "{{ $collection->slug }}",
+            chapterNumber: {{ $chapter->number }},
+            targetPage: {{ $targetPage ? (int) $targetPage : 'null' }},
+            targetHadithNumber: {{ $targetHadithNumber ? (int) $targetHadithNumber : 'null' }},
         };
         window.HADITH_USER_NOTES = @json($userNotesForJs);
     </script>

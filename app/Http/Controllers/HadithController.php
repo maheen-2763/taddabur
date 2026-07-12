@@ -28,13 +28,27 @@ class HadithController extends Controller
         return view('hadith.chapters', compact('collection', 'chapters'));
     }
 
-    public function show(HadithCollection $collection, HadithChapter $chapter)
+    public function show(HadithCollection $collection, HadithChapter $chapter, Request $request)
     {
+        $perPage = 20;
+
         $hadiths = Hadith::where('collection_id', $collection->id)
             ->where('chapter_id', $chapter->id)
             ->orderBy('number')
-            ->take(20)
+            ->take($perPage)
             ->get(['id', 'number', 'arabic', 'english', 'grade', 'grade_source']);
+
+        $targetHadithNumber = $request->query('highlight'); // e.g. ?highlight=4213
+        $targetPage = null;
+
+        if ($targetHadithNumber) {
+            $position = Hadith::where('collection_id', $collection->id)
+                ->where('chapter_id', $chapter->id)
+                ->where('number', '<=', $targetHadithNumber)
+                ->count();
+
+            $targetPage = (int) ceil($position / $perPage);
+        }
 
         $user = Auth::user();
         $bookmarkedIds = [];
@@ -43,7 +57,6 @@ class HadithController extends Controller
         if ($user) {
             $hadithIds = $hadiths->pluck('id');
 
-            // ✅ Ek hi query se saare bookmarks check ho gaye — N+1 nahi
             $bookmarkedIds = \App\Models\Bookmark::where('user_id', $user->id)
                 ->where('bookmarkable_type', \App\Models\Hadith::class)
                 ->whereIn('bookmarkable_id', $hadithIds)
@@ -56,7 +69,15 @@ class HadithController extends Controller
                 ->keyBy('hadith_id');
         }
 
-        return view('hadith.show', compact('collection', 'chapter', 'hadiths', 'bookmarkedIds', 'userNotes'));
+        return view('hadith.show', compact(
+            'collection',
+            'chapter',
+            'hadiths',
+            'bookmarkedIds',
+            'userNotes',
+            'targetPage',
+            'targetHadithNumber'
+        ));
     }
 
     public function loadHadiths(Request $request, HadithCollection $collection, HadithChapter $chapter)

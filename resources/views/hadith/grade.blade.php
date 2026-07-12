@@ -38,7 +38,7 @@
                 <div class="hadith-card">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
                         <span class="hadith-count-badge">{{ $h->collection->name }}</span>
-                        <span class="text-muted" style="font-size:0.78rem">Hadith {{ $h->number }}</span>
+                        <span class="text-muted" style="font-size:0.78rem;">Hadith {{ $h->number }}</span>
                     </div>
 
                     <p class="hadith-arabic" dir="rtl">{{ $h->arabic }}</p>
@@ -54,8 +54,8 @@
                     </div>
 
                     <div class="hadith-actions mt-2">
-                        <a href="{{ route('hadith.show', [$h->collection->slug, $h->chapter->number ?? 1]) }}#hadith-{{ $h->number }}"
-                            class="ayah-btn">
+                        <a href="{{ route('hadith.show', [$h->collection->slug, $h->chapter->number ?? 1]) }}?highlight={{ $h->number }}"
+                            class="ayah-btn hadith-nav-link hadith-view-in-chapter-btn">
                             <i class="bi bi-box-arrow-up-right"></i> View in chapter
                         </a>
                     </div>

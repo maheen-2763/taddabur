@@ -19,14 +19,20 @@
         </a>
         <h2 class="heading-font mb-1" style="color:var(--emerald)">{{ $collection->name }}</h2>
         <p class="text-muted mb-4">{{ $collection->scholar }}</p>
-        <div class="mb-4">
-            <p class="text-muted mb-2" style="font-size:0.85rem">Browse by grade</p>
-            <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
-                <a href="{{ route('hadith.grade', 'Sahih') }}" class="hadith-back-btn">Sahih</a>
-                <a href="{{ route('hadith.grade', 'Hasan') }}" class="hadith-back-btn">Hasan</a>
-                <a href="{{ route('hadith.grade', 'Daif') }}" class="hadith-back-btn">Da'if</a>
+        @unless (in_array($collection->slug, ['bukhari', 'muslim']))
+            <div class="mb-4">
+                <p class="text-muted mb-2" style="font-size:0.85rem">Browse by grade</p>
+                <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                    <a href="{{ route('hadith.grade.collection', [$collection->slug, 'Sahih']) }}"
+                        class="hadith-back-btn">Sahih</a>
+                    <a href="{{ route('hadith.grade.collection', [$collection->slug, 'Hasan']) }}"
+                        class="hadith-back-btn">Hasan</a>
+                    <a href="{{ route('hadith.grade.collection', [$collection->slug, 'Daif']) }}"
+                        class="hadith-back-btn">Da'if</a>
+
+                </div>
             </div>
-        </div>
+        @endunless
 
         @if ($chapters->isEmpty())
             <div class="hadith-empty-state">
@@ -39,7 +45,8 @@
         @else
             <div>
                 @foreach ($chapters as $ch)
-                    <a href="{{ route('hadith.show', [$collection->slug, $ch->number]) }}" class="hadith-chapter-row">
+                    <a href="{{ route('hadith.show', [$collection->slug, $ch->number]) }}"
+                        class="hadith-chapter-row hadith-nav-link">
                         <span class="hadith-chapter-title">
                             <span class="chapter-number-badge">{{ $ch->number }}</span>
                             {{ $ch->title }}

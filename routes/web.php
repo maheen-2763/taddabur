@@ -44,7 +44,14 @@ Schedule::command('subscriptions:expire-overdue')->daily();
 Route::get('/', [HomeController::class, 'index'])
     ->name('home');
 
-Route::get('/hadith/grade/{reliability}', [HadithGradeController::class, 'show'])->name('hadith.grade');
+
+// Global — collections index page (all collections mix)
+Route::get('/hadith/grade/{reliability}', [HadithGradeController::class, 'show'])
+    ->name('hadith.grade');
+
+// Collection-scoped
+Route::get('/hadith/{collection:slug}/grade/{reliability}', [HadithGradeController::class, 'showForCollection'])
+    ->name('hadith.grade.collection');   // ✅ alag naam
 
 Route::prefix('hadith')->name('hadith.')->group(function () {
     Route::get('/', [HadithController::class, 'index'])->name('index');
@@ -52,7 +59,6 @@ Route::prefix('hadith')->name('hadith.')->group(function () {
     Route::get('/{collection:slug}/{chapter:number}', [HadithController::class, 'show'])->name('show');
     Route::get('/{collection:slug}/{chapter:number}/items', [HadithController::class, 'loadHadiths'])->name('items');
 });
-
 
 
 // routes/web.php

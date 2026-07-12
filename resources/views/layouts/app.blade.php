@@ -24,7 +24,7 @@
     @stack('styles')
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-    <script src="{{ asset('js/app.js') }}"></script>
+    <script src="{{ asset('js/app.js') }}" defer></script>
     <style>
         /* ================================================
            CSS VARIABLES — Islamic colour palette
@@ -438,6 +438,20 @@
     <main>
         @yield('content')
     </main>
+    @include('partials.scroll-to-top')
+    <div id="page-loader"
+        class="d-none position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
+        style="background: rgba(0,0,0,0.3); z-index: 9999;">
+        <div class="tasbih-loader" id="tasbih-loader" aria-label="Loading…">
+            <div class="bead"></div>
+            <div class="bead"></div>
+            <div class="bead"></div>
+            <div class="bead"></div>
+            <div class="bead"></div>
+            <div class="bead"></div>
+            <div class="bead"></div>
+        </div>
+    </div>
 
     {{-- FOOTER --}}
     {{-- Footer section only — replace your existing footer in layouts/app.blade.php --}}

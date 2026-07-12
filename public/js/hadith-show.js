@@ -5,30 +5,82 @@ let hadithHasMore = true;
 
 const hadithObserver = new IntersectionObserver((entries) => {
     if (entries[0].isIntersecting && !hadithIsLoading && hadithHasMore) {
-        loadMoreHadiths();
+        loadMoreHadithsAsync();
     }
 });
+
 hadithObserver.observe(document.querySelector("#hadith-sentinel"));
+// Page load ke baad, agar target hai to auto-jump karo
+document.addEventListener("DOMContentLoaded", () => {
+    if (
+        window.HADITH_CONFIG.targetPage &&
+        window.HADITH_CONFIG.targetPage > 1
+    ) {
+        jumpToHadith(
+            window.HADITH_CONFIG.targetPage,
+            window.HADITH_CONFIG.targetHadithNumber,
+        );
+    } else if (window.HADITH_CONFIG.targetHadithNumber) {
+        // pehle page mein hi hai, seedha highlight karo
+        highlightHadith(window.HADITH_CONFIG.targetHadithNumber);
+    }
+});
 
-function loadMoreHadiths() {
-    if (hadithIsLoading || !hadithHasMore) return;
-    hadithIsLoading = true;
-    hadithCurrentPage++;
+async function jumpToHadith(targetPage, targetHadithNumber) {
+    showPageLoader(); // tumhara tasbih loader reuse ho gaya
 
-    fetch(
-        `/hadith/${window.HADITH_CONFIG.collectionSlug}/${window.HADITH_CONFIG.chapterNumber}/items?page=${hadithCurrentPage}`,
-    )
-        .then((res) => res.json())
-        .then((data) => {
-            appendHadiths(data.hadiths);
-            hadithHasMore = data.has_more;
-            hadithIsLoading = false;
-        })
-        .catch(() => {
-            hadithIsLoading = false;
-            hadithCurrentPage--;
-            showFlash("Could not load more hadiths. Scroll to retry.", "error");
-        });
+    // observer ko temporarily hata do, taaki normal scroll-triggered loading beech mein interfere na kare
+    hadithObserver.unobserve(document.querySelector("#hadith-sentinel"));
+
+    while (hadithCurrentPage < targetPage && hadithHasMore) {
+        await loadMoreHadithsAsync();
+    }
+
+    hidePageLoader();
+    hadithObserver.observe(document.querySelector("#hadith-sentinel")); // wapas normal lazy-load resume
+
+    highlightHadith(targetHadithNumber);
+}
+
+// loadMoreHadiths() ko Promise-based banao taaki 'await' kaam kare
+function loadMoreHadithsAsync() {
+    return new Promise((resolve) => {
+        if (hadithIsLoading || !hadithHasMore) {
+            resolve();
+            return;
+        }
+        hadithIsLoading = true;
+        hadithCurrentPage++;
+
+        fetch(
+            `/hadith/${window.HADITH_CONFIG.collectionSlug}/${window.HADITH_CONFIG.chapterNumber}/items?page=${hadithCurrentPage}`,
+        )
+            .then((res) => res.json())
+            .then((data) => {
+                appendHadiths(data.hadiths);
+                hadithHasMore = data.has_more;
+                hadithIsLoading = false;
+                resolve();
+            })
+            .catch(() => {
+                hadithIsLoading = false;
+                hadithCurrentPage--;
+                showFlash(
+                    "Could not load more hadiths. Scroll to retry.",
+                    "error",
+                );
+                resolve(); // resolve karo taaki loop stuck na ho
+            });
+    });
+}
+
+function highlightHadith(number) {
+    const el = document.getElementById(`hadith-${number}`);
+    if (!el) return;
+
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.classList.add("highlight-flash");
+    setTimeout(() => el.classList.remove("highlight-flash"), 3000);
 }
 
 function appendHadiths(hadiths) {

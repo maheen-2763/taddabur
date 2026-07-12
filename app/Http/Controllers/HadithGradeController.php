@@ -4,22 +4,44 @@ namespace App\Http\Controllers;
 
 use App\Models\Hadith;
 use Illuminate\View\View;
+use App\Models\HadithCollection;
 
 class HadithGradeController extends Controller
 {
     private const VALID_RELIABILITIES = ['Sahih', 'Hasan', 'Daif', 'Very Daif', 'Mawdu', 'Munkar', 'Shadh'];
+    private const EXCLUDED_FROM_GRADING = ['bukhari', 'muslim'];
 
+    // Global — collections index page ke liye (purana wala, jaisa tha)
     public function show(string $reliability): View
     {
-        // Security + correctness: sirf known values allow karo, random string se DB query na chale
         abort_unless(in_array($reliability, self::VALID_RELIABILITIES), 404);
 
         $hadiths = Hadith::where('reliability', $reliability)
             ->with('collection', 'chapter')
-            ->latest()
+            ->orderBy('number')
             ->paginate(20);
 
         return view('hadith.grade', [
+            'collection' => null,          // view ko batayega ye global hai
+            'reliability' => $reliability,
+            'hadiths' => $hadiths,
+        ]);
+    }
+
+    // Collection-scoped — collection ke andar se
+    public function showForCollection(HadithCollection $collection, string $reliability): View
+    {
+        abort_if(in_array($collection->slug, self::EXCLUDED_FROM_GRADING), 404);
+        abort_unless(in_array($reliability, self::VALID_RELIABILITIES), 404);
+
+        $hadiths = Hadith::where('collection_id', $collection->id)
+            ->where('reliability', $reliability)
+            ->with('chapter')
+            ->orderBy('number')
+            ->paginate(20);
+
+        return view('hadith.grade', [
+            'collection' => $collection,
             'reliability' => $reliability,
             'hadiths' => $hadiths,
         ]);

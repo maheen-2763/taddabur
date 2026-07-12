@@ -6,12 +6,13 @@
 @endpush
 
 @section('content')
-    <div class="container py-4">
+    <div class="container-fluid px-4 py-4">
         <h2 class="heading-font mb-3" style="color:var(--emerald)">Hadith Collections</h2>
+
         {{-- Browse by grade --}}
         <div class="mb-4">
             <p class="text-muted mb-2" style="font-size:0.85rem">Browse by grade</p>
-            <div class="grade-buttons d-flex flex-wrap gap-2">
+            <div class="grade-buttons d-flex flex-wrap gap-2" style="color:var(--emerald)">
                 <a href="{{ route('hadith.grade', 'Sahih') }}" class="hadith-back-btn">Sahih</a>
                 <a href="{{ route('hadith.grade', 'Hasan') }}" class="hadith-back-btn">Hasan</a>
                 <a href="{{ route('hadith.grade', 'Daif') }}" class="hadith-back-btn">Da'if</a>
@@ -25,19 +26,32 @@
                 and are not individually graded — so they won't appear in these grade pages.
             </p>
         </div>
-        @include('hadith._grade-legend')
-        <div class="row g-3">
-            @foreach ($collections as $c)
-                <div class="col-md-4">
-                    <a href="{{ route('hadith.chapters', $c->slug) }}" class="text-decoration-none">
-                        <div class="hadith-collection-card">
-                            <h5 style="color:var(--emerald)">{{ $c->name }}</h5>
-                            <p class="text-muted mb-1" style="font-size:0.85rem">{{ $c->scholar }}</p>
-                            <span class="hadith-count-badge">{{ $c->display_count }} Hadiths</span>
+
+        <div class="hadith-grade-legend-top mb-4">
+            @include('hadith._grade-legend')
+        </div>
+
+        {{-- Yahan se naya flex layout shuru --}}
+        <div class="d-flex gap-4 align-items-start hadith-layout">
+
+            {{-- LEFT: Collections grid --}}
+            <div class="flex-grow-1" style="min-width: 0;">
+                <div class="row g-3">
+                    @foreach ($collections as $c)
+                        <div class="col-md-4">
+                            <a href="{{ route('hadith.chapters', $c->slug) }}" class="text-decoration-none hadith-nav-link">
+                                <div class="hadith-collection-card">
+                                    <h5 style="color:var(--emerald)">{{ $c->name }}</h5>
+                                    <p class="text-muted mb-1" style="font-size:0.85rem">{{ $c->scholar }}</p>
+                                    <span class="hadith-count-badge">{{ $c->display_count }} Hadiths</span>
+                                </div>
+                            </a>
                         </div>
-                    </a>
+                    @endforeach
                 </div>
-            @endforeach
+            </div>
+
         </div>
     </div>
+
 @endsection
