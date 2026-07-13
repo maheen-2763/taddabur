@@ -7,17 +7,19 @@
     <div class="container py-5">
 
         {{-- Hero --}}
-        <div class="scholar-hero text-center mb-5 p-5 rounded">
+        <div class="scholar-hero text-center mb-5 p-5 rounded" style="--madhab-color: var(--madhab-{{ $scholar->madhab }})">
             <h1 class="display-4 fw-bold">{{ $scholar->name }}</h1>
             <p class="fs-4 arabic" dir="rtl" lang="ar">{{ $scholar->arabic_name }}</p>
             <div class="mt-3">
-                <span class="badge bg-success fs-6">{{ strtoupper($scholar->madhab) }}</span>
-                <span class="badge bg-secondary fs-6">{{ $scholar->period }}</span>
+                <span class="badge imam-badge fs-6">
+                    {{ $scholar->madhab === 'shafi_i' ? "SHAFI'I" : strtoupper($scholar->madhab) }}
+                </span>
+                <span class="badge bg-secondary fs-6">{{ $scholar->birth_ah }}–{{ $scholar->death_ah }} AH</span>
             </div>
         </div>
 
         {{-- Tabs --}}
-        <ul class="nav nav-tabs mb-4" role="tablist">
+        <ul class="nav nav-tabs imam-tabs mb-4" role="tablist" style="--madhab-color: var(--madhab-{{ $scholar->madhab }})">
             @foreach ([
             'biography' => 'Biography',
             'teachings' => 'Methodology',

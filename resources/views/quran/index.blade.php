@@ -6,45 +6,91 @@
 @endpush
 
 @section('content')
-    <div class="quran-page">
+    <div class="quran-index-page">
 
-        @include('quran.partials.hero', [
-            'surahCount' => 114,
-            'ayahCount' => 6236,
-            'juzCount' => 30,
-            'completedCount' => $completedCount ?? 0,
-        ])
+        <div class="quran-hero">
+            <div class="bismillah-calligraphy">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+            <p class="bismillah-sub">In the name of Allah, the Most Gracious, the Most Merciful</p>
 
-        @include('quran.partials.search')
-        @include('quran.partials.search-results')
+            <div class="quran-stats">
+                <div><span class="stat-num">114</span><span class="stat-label">surahs</span></div>
+                <div><span class="stat-num">6236</span><span class="stat-label">ayahs</span></div>
+                <div><span class="stat-num">30</span><span class="stat-label">juz</span></div>
+                <div><span class="stat-num">{{ $completedCount }}</span><span class="stat-label">completed</span></div>
+            </div>
 
-        <div class="quran-bookshelf-wrapper" id="bookshelfWrapper">
-            @foreach ($juzData->chunk(5) as $rowIndex => $row)
-                <div class="juz-row" data-row="{{ $rowIndex }}">
-                    @foreach ($row as $juz)
-                        @include('quran.partials.juz-book', [
-                            'juz' => $juz,
-                            'juzNum' => $juz['juz'],
-                            'row' => $rowIndex,
-                        ])
-                    @endforeach
-                </div>
+        </div>
 
-                <div class="inline-panel" id="inline-panel-{{ $rowIndex }}" data-row="{{ $rowIndex }}">
-                    <div class="inline-panel-inner">
-                        <div class="inline-panel-header">
-                            <div class="inline-panel-title" id="panel-title-{{ $rowIndex }}"></div>
-                            <button class="inline-panel-close" onclick="closePanel({{ $rowIndex }})">✕</button>
-                        </div>
-                        <div class="panel-tile-grid" id="surah-grid-{{ $rowIndex }}"></div>
+
+        <div class="search-bar-wrapper">
+            <button type="button" class="js-search-toggle search-icon-btn" aria-label="Search surahs"
+                aria-expanded="false">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <circle cx="11" cy="11" r="7" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+            </button>
+            <input type="text" id="surahSearch" class="js-surah-search surah-search-input"
+                placeholder="Search surah by name or number..." autocomplete="off">
+        </div>
+
+        <div class="filter-chips">
+            <button class="js-filter-chip chip active" data-filter="all">All</button>
+            <button class="js-filter-chip chip" data-filter="progress">In Progress</button>
+            <button class="js-filter-chip chip" data-filter="completed">Completed</button>
+        </div>
+
+        <div id="surahListContainer">
+            @foreach ($juzGroups as $group)
+                <div class="juz-section" data-juz="{{ $group['juz'] }}">
+                    <div class="juz-header">
+                        <span class="juz-label">Juz {{ $group['juz'] }}</span>
+                        @if ($group['title_ar'])
+                            <span class="juz-title-ar">{{ $group['title_ar'] }}</span>
+                        @endif
+                        <span class="juz-title">{{ $group['title'] }}</span>
+                        <x-progress-ring :percent="$group['juz_progress']" :size="30" />
+                    </div>
+
+                    <div class="surah-list">
+                        @foreach ($group['surahs'] as $surah)
+                            <a href="{{ route('quran.show', $surah->number) }}#ayah-{{ $surah->start_ayah }}"
+                                class="js-surah-row surah-row"
+                                data-name="{{ strtolower($surah->name_transliteration) }} {{ strtolower($surah->name_english) }} {{ $surah->number }}"
+                                data-percent="{{ $surah->progress_percent }}">
+                                <span class="surah-number">{{ $surah->number }}</span>
+                                <div class="surah-name-ar">{{ $surah->name_arabic }}</div>
+                                <div class="surah-info">
+                                    <div class="surah-name-en">{{ $surah->name_transliteration }}</div>
+                                    <div class="surah-ayah-count">
+                                        {{-- OPTION 1: Enhanced continuation marker --}}
+                                        @if ($surah->is_continuation)
+                                            <span class="continuation-marker">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                                                    stroke="currentColor" stroke-width="2.5">
+                                                    <path d="M12 19V5M5 12l7-7 7 7" />
+                                                </svg>
+                                                continued
+                                            </span>
+                                        @endif
+                                        Ayah {{ $surah->start_ayah }}–{{ $surah->end_ayah }}
+                                        <span class="ayah-count-total">of {{ $surah->ayah_count }}</span>
+                                    </div>
+                                </div>
+                                <x-progress-ring :percent="$surah->progress_percent" />
+                            </a>
+                        @endforeach
                     </div>
                 </div>
             @endforeach
         </div>
 
+        <p class="no-results-msg" id="noResultsMsg" style="display:none">No Surah Completed Yet.</p>
+
     </div>
 @endsection
 
 @push('scripts')
-    <script src="{{ asset('js/quran-index.js') }}"></script>
+    <script src="{{ asset('js/quran-index.js') }}?v={{ time() }}"></script>
 @endpush

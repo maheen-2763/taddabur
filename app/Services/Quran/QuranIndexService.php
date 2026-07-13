@@ -2,125 +2,101 @@
 
 namespace App\Services\Quran;
 
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
+use App\Models\Juz;
 use App\Models\SurahProgress;
-
+use App\Models\UserReadAyah;
+use Illuminate\Support\Facades\DB;
 
 class QuranIndexService
 {
     public function get(?int $userId = null): array
     {
-        $surahs = $this->getSurahs();
-        $counts = $this->getCounts($surahs);
-
-        $progress = $this->getProgress($userId);
-        $progressIds = $progress['ids'];
-
-        $juzData = $this->BuildJuzTree($progressIds);
+        $progress = $this->getProgressMap($userId);
 
         return [
-            'surahs'              => $surahs,
-            'meccanCount'         => $counts['meccan'],
-            'medinanCount'        => $counts['medinan'],
-            'juzData'             => $juzData,
-            'completedSurahIds'   => $progress['ids'],
-            'completedCount'      => $progress['count'],
+            'juzGroups'      => $this->getJuzGroups($progress),
+            'completedCount' => count($progress['completedIds']),
         ];
     }
 
-    private function getSurahs()
-    {
-        return app('App\Services\QuranService')->getAllSurahs();
-    }
-
-    private function getCounts($surahs): array
-    {
-        return [
-            'meccan'  => $surahs->where('revelation_type', 'meccan')->count(),
-            'medinan' => $surahs->where('revelation_type', 'medinan')->count(),
-        ];
-    }
-
-    private function getProgress(?int $userId): array
+    private function getProgressMap(?int $userId): array
     {
         if (!$userId) {
-            return [
-                'ids' => [],
-                'count' => 0
-            ];
+            return ['readNumbers' => collect(), 'completedIds' => []];
         }
 
-        $completed = SurahProgress::where('user_id', $userId)
+        // surah_id => collection of read ayah NUMBERS (not just a count)
+        // needed to calculate progress per juz-slice, not just per whole surah
+        $readNumbers = UserReadAyah::where('user_id', $userId)
+            ->join('ayahs', 'ayahs.id', '=', 'user_read_ayahs.ayah_id')
+            ->select('ayahs.surah_id', 'ayahs.number')
+            ->get()
+            ->groupBy('surah_id')
+            ->map(fn($items) => $items->pluck('number'));
+
+        $completedIds = SurahProgress::where('user_id', $userId)
             ->where('is_completed', true)
             ->pluck('surah_id')
             ->toArray();
 
-        return [
-            'ids' => $completed,
-            'count' => count($completed)
-        ];
+        return ['readNumbers' => $readNumbers, 'completedIds' => $completedIds];
     }
 
-    private function buildJuzTree(array $progressIds): \Illuminate\Support\Collection
+    private function getJuzGroups(array $progress): \Illuminate\Support\Collection
     {
-        $juzNames = JuzNameService::getAll();
+        $juzList = Juz::orderBy('number')->get();
 
-        $completedLookup = array_flip($progressIds);
+        $surahsByNumber = DB::table('surahs')
+            ->select('id', 'number', 'name_arabic', 'name_english', 'name_transliteration', 'ayah_count')
+            ->get()
+            ->keyBy('number');
 
-        $data = DB::table('juz_surah')
-            ->join('surahs', 'surahs.id', '=', 'juz_surah.surah_id')
-            ->select(
-                'juz_surah.juz',
-                'surahs.id',
-                'surahs.number',
-                'surahs.name_arabic',
-                'surahs.name_english',
-                'surahs.name_transliteration',
-                'surahs.revelation_type',
-                'surahs.ayah_count'
-            )
-            ->orderBy('juz_surah.juz')
-            ->orderBy('surahs.number')
-            ->get();
+        return $juzList->map(function ($juz) use ($progress, $surahsByNumber) {
+            $mapping = $juz->verse_mapping ?? [];
 
-        return $data
-            ->groupBy('juz')
-            ->map(function ($items, $juzNumber) use ($juzNames, $completedLookup) {
+            $surahs = collect($mapping)->map(function ($range, $surahNumber) use ($progress, $surahsByNumber) {
+                $surahNumber = (int) $surahNumber;
+                $surah = $surahsByNumber[$surahNumber] ?? null;
 
-                $surahs = $items->map(function ($surah) use ($completedLookup) {
-                    return [
-                        'id'                  => $surah->id,
-                        'number'              => $surah->number,
-                        'name_arabic'         => $surah->name_arabic,
-                        'name_english'        => $surah->name_english,
-                        'name_transliteration' => $surah->name_transliteration,
-                        'type'                => $surah->revelation_type,
-                        'ayah_count'          => $surah->ayah_count,
-                        'completed'           => isset($completedLookup[$surah->id]),
-                    ];
-                });
+                if (!$surah) {
+                    return null;
+                }
 
-                $total     = $surahs->count();
-                $completed = $surahs->where('completed', true)->count();
+                [$startAyah, $endAyah] = array_map('intval', explode('-', $range));
+                $ayahsInSlice = max(1, $endAyah - $startAyah + 1);
 
-                return [
-                    'juz'   => (int) $juzNumber,
-                    'title' => [
-                        'ar' => $juzNames[$juzNumber]['ar'] ?? "الجزء {$juzNumber}",
-                        'en' => $juzNames[$juzNumber]['en'] ?? "Juz {$juzNumber}",
-                    ],
+                $isCompleted = in_array($surah->id, $progress['completedIds']);
 
-                    'surahs'   => $surahs->values(),
+                // Progress SPECIFIC to this juz-slice, not the whole surah
+                $readInSlice = ($progress['readNumbers'][$surah->id] ?? collect())
+                    ->filter(fn($n) => $n >= $startAyah && $n <= $endAyah)
+                    ->count();
 
-                    'progress' => [
-                        'total'        => $total,
-                        'completed'    => $completed,
-                        'is_completed' => $total > 0 && $completed === $total,
-                        'percentage'   => $total > 0 ? round(($completed / $total) * 100) : 0,
-                    ],
+                $slicePercent = $isCompleted
+                    ? 100
+                    : min(99, (int) round(($readInSlice / $ayahsInSlice) * 100));
+
+                return (object) [
+                    'id'                   => $surah->id,
+                    'number'               => $surah->number,
+                    'name_arabic'          => $surah->name_arabic,
+                    'name_english'         => $surah->name_english,
+                    'name_transliteration' => $surah->name_transliteration,
+                    'ayah_count'           => $surah->ayah_count,
+                    'start_ayah'           => $startAyah,
+                    'end_ayah'             => $endAyah,
+                    'is_continuation'      => $startAyah > 1,
+                    'progress_percent'     => $slicePercent,
                 ];
-            })
-            ->values();
+            })->filter()->values();
+
+            return [
+                'juz'          => $juz->number,
+                'title'        => $juz->name_english,
+                'title_ar'     => $juz->name_arabic,
+                'surahs'       => $surahs,
+                'juz_progress' => $surahs->isNotEmpty() ? round($surahs->avg('progress_percent')) : 0,
+            ];
+        })->values();
     }
 }

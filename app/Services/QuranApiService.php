@@ -230,6 +230,25 @@ class QuranApiService
         return null;
     }
 
+
+    // -------------------------------------------------------
+    // FETCH ALL JUZS WITH VERSE BOUNDARIES (Quran Foundation — auth required)
+    // Single call returns all 30 juz — no need to loop.
+    // -------------------------------------------------------
+    public function fetchAllJuzs(): array
+    {
+        $url = "{$this->contentBase}/content/api/v4/juzs";
+
+        $response = $this->getAuthenticated($url);
+
+        if (!$response || !isset($response['juzs'])) {
+            Log::error('Failed to fetch juzs list from Quran Foundation.');
+            return [];
+        }
+
+        return $response['juzs'];
+    }
+
     // -------------------------------------------------------
     // PRIVATE HELPER: Plain (no-auth) GET request — for alquran.cloud
     // -------------------------------------------------------

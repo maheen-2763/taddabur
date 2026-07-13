@@ -1,5 +1,6 @@
 @forelse($scholar->quotes as $quote)
-    <div class="card mb-4 border-start border-5 border-success shadow-sm">
+    <div class="card mb-4 border-start border-5 shadow-sm quote-card"
+        style="--madhab-color: var(--madhab-{{ $scholar->madhab }})">
         <div class="card-body">
             <blockquote class="blockquote mb-3">
                 <p class="arabic fs-5" dir="rtl" lang="ar">

@@ -1,5 +1,5 @@
 @forelse($scholar->works as $work)
-    <div class="card mb-3 border-0 shadow-sm">
+    <div class="card mb-3 border-0 shadow-sm work-card" style="--madhab-color: var(--madhab-{{ $scholar->madhab }})">
         <div class="card-body">
             <h6 class="fw-bold">{{ $work->title }}</h6>
             @if ($work->arabic_title)

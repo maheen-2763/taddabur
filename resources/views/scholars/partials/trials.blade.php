@@ -1,7 +1,7 @@
 @if ($scholar->trials)
-    <div class="card border-warning border-0 shadow-sm">
+    <div class="card border-0 shadow-sm trials-card">
         <div class="card-body">
-            <h5 class="fw-bold text-warning">Trials & Tests of Faith</h5>
+            <h5 class="fw-bold">Trials & Tests of Faith</h5>
             <p>{{ $scholar->trials }}</p>
         </div>
     </div>
