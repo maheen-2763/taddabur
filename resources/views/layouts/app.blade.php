@@ -114,7 +114,9 @@
 
         <div class="scholars-wrapper">
             <aside class="scholars-sidebar" id="scholarsSidebar">
-                @yield('sidebar')
+                <div class="scholars-sidebar-inner">
+                    @yield('sidebar')
+                </div>
             </aside>
             <div class="d-lg-none" id="sidebarOverlay"
                 style="display:none!important; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1049;"
@@ -147,7 +149,7 @@
     </div>
 
     {{-- ✅ Sirf EK footer --}}
-    <footer class="footer-islamic mt-5">
+    <footer class="footer-islamic mt-1">
         <div class="container-fluid px-3 px-md-5">
             <div class="row">
 

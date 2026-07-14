@@ -1,8 +1,11 @@
+/* ============================================================
+   MADHAB COLOR VARIABLES
+   ============================================================ */
 :root {
-    --madhab-hanafi: #2f6f4f; /* green */
-    --madhab-maliki: #3b6ea5; /* blue */
-    --madhab-shafi_i: #b8860b; /* gold */
-    --madhab-hanbali: #a84438; /* red-brown */
+    --madhab-hanafi: #2f6f4f;
+    --madhab-maliki: #3b6ea5;
+    --madhab-shafi_i: #b8860b;
+    --madhab-hanbali: #a84438;
 }
 
 [data-bs-theme="dark"] {
@@ -12,6 +15,9 @@
     --madhab-hanbali: #d16a5a;
 }
 
+/* ============================================================
+   IMAM CARDS (Scholars Index Page)
+   ============================================================ */
 .imam-divider {
     width: 60px;
     border: none;
@@ -39,7 +45,11 @@
     color: #fff;
 }
 
+/* ============================================================
+   SCHOLAR HERO (Individual Imam Page)
+   ============================================================ */
 .scholar-hero {
+    background: var(--madhab-color); /* fallback for unsupported browsers */
     background: linear-gradient(
         135deg,
         var(--madhab-color),
@@ -48,11 +58,6 @@
     color: #fff;
     position: relative;
     overflow: hidden;
-}
-
-/* fallback */
-.scholar-hero {
-    background: var(--madhab-color);
 }
 
 .scholar-hero::after {
@@ -70,6 +75,9 @@
     pointer-events: none;
 }
 
+/* ============================================================
+   TABS (Biography / Methodology / Quotes / etc.)
+   ============================================================ */
 .imam-tabs .nav-link {
     color: var(--text-muted, #6c757d);
     border: none;
@@ -82,25 +90,18 @@
     color: var(--madhab-color);
     font-weight: 600;
 }
-.quote-card {
-    border-left-color: var(--madhab-color) !important;
+
+.tab-content > .tab-pane {
+    padding-top: 0.5rem;
 }
 
-/* ============================
-   TYPOGRAPHY - Section Headers
-   ============================ */
-.card h5.fw-bold,
-.card h6.fw-bold {
-    font-family: var(
-        --font-body,
-        inherit
-    ); /* agar aapka serif font hai title ke liye */
-    letter-spacing: 0.02em;
+.tab-content .card + .card {
+    margin-top: 1rem;
 }
 
-/* ============================
-   CARD - Softer, consistent feel
-   ============================ */
+/* ============================================================
+   GENERAL CARD STYLING
+   ============================================================ */
 .card.border-0.shadow-sm {
     border-radius: 0.75rem;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04) !important;
@@ -111,29 +112,24 @@
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07) !important;
 }
 
-/* ============================
-   Section Spacing - breathing room
-   ============================ */
-.tab-content > .tab-pane {
-    padding-top: 0.5rem;
+.card h5.fw-bold,
+.card h6.fw-bold {
+    font-family: var(--font-body, inherit);
+    letter-spacing: 0.02em;
 }
 
-.tab-content .card + .card {
-    margin-top: 1rem;
-}
-
-/* ============================
-   Arabic text - consistent rhythm
-   ============================ */
+/* ============================================================
+   ARABIC TEXT
+   ============================================================ */
 .arabic {
     font-family: var(--font-arabic, "Amiri", "Scheherazade New", serif);
     line-height: 1.9;
     color: var(--madhab-color, inherit);
 }
 
-/* ============================
-   Blockquote (Quotes tab) polish
-   ============================ */
+/* ============================================================
+   QUOTES TAB
+   ============================================================ */
 .blockquote p.arabic {
     line-height: 2.1;
 }
@@ -141,59 +137,6 @@
 .blockquote-footer cite {
     font-size: 0.85rem;
     opacity: 0.75;
-}
-
-/* ============================
-   Trials card - calmer warning tone
-   ============================ */
-.card.border-warning {
-    border-left: 4px solid #b8860b !important;
-    background: color-mix(in srgb, #b8860b 5%, transparent);
-}
-
-/* ============================
-   List items (Students/Works) - subtle hover
-   ============================ */
-.list-group-item {
-    transition: background-color 0.15s ease;
-}
-
-.list-group-item:hover {
-    background-color: color-mix(
-        in srgb,
-        var(--madhab-color, #ccc) 5%,
-        transparent
-    );
-}
-
-.biography-card {
-    border-radius: 0.75rem;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04) !important;
-}
-
-.biography-card hr {
-    border-top: 1px solid var(--madhab-color, #ccc);
-    opacity: 0.2;
-}
-
-.biography-card h5 {
-    color: var(--madhab-color, inherit);
-    font-size: 1.1rem;
-}
-.teaching-card {
-    border-radius: 0.75rem;
-    border-left: 3px solid var(--madhab-color, #ccc) !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
-    transition: transform 0.15s ease;
-}
-
-.teaching-card:hover {
-    transform: translateX(3px);
-}
-
-.teaching-card .card-title {
-    font-size: 1rem;
-    color: var(--madhab-color, inherit);
 }
 
 .quote-card {
@@ -210,6 +153,34 @@
 .quote-card .blockquote-footer cite {
     font-size: 0.85rem;
     opacity: 0.8;
+}
+
+/* ============================================================
+   TRIALS & TESTS TAB
+   ============================================================ */
+.trials-card {
+    border-radius: 0.75rem;
+    border-left: 4px solid #b8860b !important;
+    background: color-mix(in srgb, #b8860b 5%, transparent);
+}
+
+.trials-card h5 {
+    color: #8a6914;
+}
+
+/* ============================================================
+   LIST ITEMS (Students / Works)
+   ============================================================ */
+.list-group-item {
+    transition: background-color 0.15s ease;
+}
+
+.list-group-item:hover {
+    background-color: color-mix(
+        in srgb,
+        var(--madhab-color, #ccc) 5%,
+        transparent
+    );
 }
 
 .student-item {
@@ -243,41 +214,67 @@
     font-size: 1.5rem;
 }
 
-.trials-card {
+/* ============================================================
+   BIOGRAPHY / METHODOLOGY / TEACHING CARDS
+   ============================================================ */
+.biography-card {
     border-radius: 0.75rem;
-    border-left: 4px solid #b8860b !important;
-    background: color-mix(in srgb, #b8860b 5%, transparent);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04) !important;
 }
 
-.trials-card h5 {
-    color: #8a6914;
+.biography-card hr {
+    border-top: 1px solid var(--madhab-color, #ccc);
+    opacity: 0.2;
 }
 
+.biography-card h5 {
+    color: var(--madhab-color, inherit);
+    font-size: 1.1rem;
+}
+
+.teaching-card {
+    border-radius: 0.75rem;
+    border-left: 3px solid var(--madhab-color, #ccc) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+    transition: transform 0.15s ease;
+}
+
+.teaching-card:hover {
+    transform: translateX(3px);
+}
+
+.teaching-card .card-title {
+    font-size: 1rem;
+    color: var(--madhab-color, inherit);
+}
+
+/* ============================================================
+   SIDEBAR LAYOUT (Scholars Wrapper — Flexbox)
+   ============================================================ */
 .scholars-wrapper {
-    display: grid;
-    grid-template-columns: 260px 1fr;
-    gap: 0;
-    min-height: calc(100vh - 64px);
+    display: flex;
+    align-items: stretch;
 }
 
-/* ---- Sidebar ---- */
 .scholars-sidebar {
+    flex: 0 0 260px;
     background: var(--emerald-dark);
     border-right: 1px solid rgba(201, 150, 58, 0.2);
-    padding: 2rem 0;
-    position: sticky;
-    top: 64px;
-    height: calc(100vh - 64px);
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--gold-dark) transparent;
 }
 
-.scholars-sidebar::-webkit-scrollbar {
+.scholars-sidebar-inner {
+    position: sticky;
+    top: 64px;
+    max-height: calc(100vh - 64px);
+    overflow-y: auto;
+    padding: 2rem 0;
+}
+
+.scholars-sidebar-inner::-webkit-scrollbar {
     width: 4px;
 }
 
-.scholars-sidebar::-webkit-scrollbar-thumb {
+.scholars-sidebar-inner::-webkit-scrollbar-thumb {
     background: var(--gold-dark);
     border-radius: 2px;
 }
@@ -338,7 +335,6 @@
     min-width: 8px;
 }
 
-/* Madhab color dots */
 .dot-hanafi {
     background: #5ac98a;
 }
@@ -361,16 +357,13 @@
     margin: 1rem 1.5rem;
 }
 
-/* ---- Main Content ---- */
 .scholars-main {
+    flex: 1 1 0;
     padding: 2.5rem;
     background: var(--cream);
-    overflow-y: auto;
+    min-width: 0;
 }
 
-/* ================================================
-           SCHOLARS NAVBAR (top breadcrumb bar)
-        ================================================ */
 .scholars-topbar {
     background: var(--cream-dark);
     border-bottom: 1px solid var(--border);
@@ -396,12 +389,12 @@
     color: var(--border);
 }
 
-/* ================================================
-           RESPONSIVE — Mobile: sidebar collapses
-        ================================================ */
+/* ============================================================
+   RESPONSIVE — Mobile: sidebar collapses to off-canvas
+   ============================================================ */
 @media (max-width: 992px) {
     .scholars-wrapper {
-        grid-template-columns: 1fr;
+        flex-direction: column;
     }
 
     .scholars-sidebar {
