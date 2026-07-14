@@ -12,3 +12,495 @@
     background: linear-gradient(135deg, var(--emerald), var(--gold));
     color: white;
 }
+
+/* ================================================
+           CSS VARIABLES — Islamic colour palette
+        ================================================ */
+:root {
+    --gold: #c9963a;
+    --gold-light: #e8be6d;
+    --gold-dark: #9a6f2b;
+    --emerald: #1b5e3b;
+    --emerald-light: #2d8a59;
+    --emerald-dark: #0d3d22;
+    --cream: #faf6ee;
+    --cream-dark: #f0e8d8;
+    --ink: #1a1a2e;
+    --ink-soft: #3d3d5c;
+    --muted: #6b7280;
+    --border: #e5ddd0;
+    --radius: 12px;
+    --radius-lg: 20px;
+
+    /* Font stacks */
+    --font-heading: "Cinzel", Georgia, serif;
+    --font-body: "Lora", Georgia, serif;
+    --font-arabic: "Amiri", "Traditional Arabic", serif;
+    --text-primary: #1a2e22;
+    --text-secondary: #4a5c52;
+    --text-on-badge: #1b5e3b;
+}
+
+[data-bs-theme="dark"] {
+    --cream: #0f1923;
+    --cream-dark: #162030;
+    --ink: #f0eae0;
+    --ink-soft: #c8c0b8;
+    --border: #2a3a4a;
+    --muted: #8899aa;
+
+    --emerald-light: #7fc9a0;
+    --text-primary: #e8ede9;
+    --text-secondary: #9db3a5;
+    --text-on-badge: #d4f0e0;
+}
+
+/* ================================================
+           BASE STYLES
+        ================================================ */
+body {
+    font-family: var(--font-body);
+    background-color: var(--cream);
+    color: var(--ink);
+    line-height: 1.75;
+}
+
+h1,
+h2,
+h3,
+h4,
+.heading-font {
+    font-family: var(--font-heading);
+    letter-spacing: 0.03em;
+}
+
+/* Arabic text — always right-to-left */
+.arabic {
+    font-family: var(--font-arabic);
+    font-size: 1.6rem;
+    line-height: 2.4;
+    direction: rtl;
+    text-align: right;
+    color: var(--ink);
+}
+
+.arabic-sm {
+    font-family: var(--font-arabic);
+    font-size: 1.2rem;
+    line-height: 2.2;
+    direction: rtl;
+    text-align: right;
+}
+
+/* ================================================
+           NAVBAR
+        ================================================ */
+.navbar-islamic {
+    background: var(--emerald-dark);
+    border-bottom: 2px solid var(--gold-dark);
+    padding: 0.75rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+}
+
+.navbar-brand-text {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    color: var(--gold-light) !important;
+    letter-spacing: 0.05em;
+}
+
+.navbar-brand-text span {
+    color: #fff;
+}
+
+.nav-link-islamic {
+    color: rgba(255, 255, 255, 0.85) !important;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem !important;
+    border-radius: var(--radius);
+    transition: all 0.2s;
+}
+
+.nav-link-islamic:hover,
+.nav-link-islamic.active {
+    color: var(--gold-light) !important;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* ================================================
+           PLAN BADGE
+        ================================================ */
+.badge-free {
+    background: #6b7280;
+}
+
+.badge-basic {
+    background: var(--emerald-light);
+}
+
+.badge-premium {
+    background: var(--gold);
+    color: #1a1a2e;
+}
+
+/* ================================================
+           CARDS
+        ================================================ */
+.card-islamic {
+    background: var(--cream-dark);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    transition:
+        transform 0.2s,
+        box-shadow 0.2s;
+}
+
+.card-islamic:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* ================================================
+           GOLD DIVIDER
+        ================================================ */
+.divider-gold {
+    border: none;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 2rem 0;
+}
+
+/* ================================================
+           BUTTONS
+        ================================================ */
+.btn-gold {
+    background: var(--gold);
+    color: #1a1a2e;
+    border: none;
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    padding: 0.6rem 1.5rem;
+    border-radius: var(--radius);
+    transition: all 0.2s;
+}
+
+.btn-gold:hover {
+    background: var(--gold-light);
+    color: #1a1a2e;
+    transform: translateY(-1px);
+}
+
+.btn-emerald {
+    background: var(--emerald);
+    color: #fff;
+    border: none;
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    padding: 0.6rem 1.5rem;
+    border-radius: var(--radius);
+    transition: all 0.2s;
+}
+
+.btn-emerald:hover {
+    background: var(--emerald-light);
+    color: #fff;
+}
+
+/* ================================================
+           UPGRADE BANNER
+        ================================================ */
+.upgrade-banner {
+    background: linear-gradient(135deg, var(--emerald-dark), var(--emerald));
+    border-left: 4px solid var(--gold);
+    border-radius: var(--radius);
+    padding: 1rem 1.5rem;
+    color: #fff;
+}
+
+/* ================================================
+           FOOTER
+        ================================================ */
+.footer-islamic {
+    background: var(--emerald-dark);
+    border-top: 2px solid var(--gold-dark);
+    color: rgba(255, 255, 255, 0.7);
+    padding: 2.5rem 0;
+    font-size: 0.9rem;
+}
+
+.footer-islamic a {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.footer-islamic a:hover {
+    color: var(--gold-light);
+}
+
+/* ================================================
+           FLASH MESSAGES
+        ================================================ */
+.alert-islamic-success {
+    background: rgba(27, 94, 59, 0.1);
+    border: 1px solid var(--emerald-light);
+    color: var(--emerald);
+    border-radius: var(--radius);
+}
+
+/* ================================================
+           DARK MODE TOGGLE
+        ================================================ */
+.theme-toggle {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.theme-toggle:hover {
+    border-color: var(--gold);
+    color: var(--gold-light);
+}
+
+/* ================================================
+           SCROLLBAR (subtle)
+        ================================================ */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--cream);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+.feature-card {
+    padding: 1.5rem;
+    text-align: center;
+    min-height: 280px;
+}
+
+.feature-card h5 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.feature-card p {
+    margin-bottom: 0;
+    font-size: 0.95rem;
+}
+
+.lifetime-card {
+    background: linear-gradient(
+        135deg,
+        rgba(201, 150, 58, 0.08),
+        rgba(27, 94, 59, 0.08)
+    );
+    border: 2px solid var(--gold);
+    border-radius: var(--radius-lg);
+}
+
+.arabic-name {
+    font-family: "Amiri", serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    direction: rtl;
+    color: var(--emerald);
+    line-height: 1.6;
+}
+
+.arabic-title {
+    font-family: "Amiri", serif;
+    font-size: 1.1rem;
+    direction: rtl;
+    color: var(--gold);
+    line-height: 1.6;
+    margin-top: 0.5rem;
+}
+
+.arabic-text {
+    font-family: "Amiri", serif;
+}
+
+.timeline-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.timeline-item:last-child {
+    border-bottom: none;
+}
+
+.timeline-period {
+    background: rgba(27, 94, 59, 0.08);
+    color: var(--emerald);
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Unicode ayah end marker */
+.ayah-end-marker {
+    font-family: var(--font-arabic);
+    font-size: 1.1rem;
+    color: var(--gold);
+    margin-right: 0.5rem;
+    direction: rtl;
+    unicode-bidi: bidi-override;
+}
+
+.scroll-top-btn {
+    position: fixed;
+    bottom: 5.5rem;
+    right: 1.25rem;
+    width: 38px;
+    height: 38px;
+    background: var(--emerald);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: all 0.3s;
+    z-index: 500;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    font-size: 0.85rem;
+}
+
+.scroll-top-btn.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+.scroll-top-btn:hover {
+    background: var(--emerald-light);
+}
+
+/* /=======================================================/ */
+
+:root {
+    --nav-dropdown-bg: #ffffff;
+    --nav-dropdown-text: #1a1a1a;
+    --nav-dropdown-border: rgba(0, 0, 0, 0.08);
+    --nav-dropdown-hover-bg: rgba(16, 94, 62, 0.08);
+    --nav-dropdown-active-bg: var(--emerald);
+    --nav-dropdown-active-text: #ffffff;
+
+    --nav-badge-bg: rgba(255, 255, 255, 0.08);
+    --nav-badge-text: rgba(255, 255, 255, 0.9);
+    --nav-badge-border: rgba(255, 255, 255, 0.15);
+}
+
+[data-bs-theme="dark"] {
+    --nav-dropdown-bg: #1c2b23;
+    --nav-dropdown-text: #f0ead6;
+    --nav-dropdown-border: rgba(255, 255, 255, 0.1);
+    --nav-dropdown-hover-bg: rgba(255, 255, 255, 0.06);
+    --nav-dropdown-active-bg: var(--emerald);
+    --nav-dropdown-active-text: #ffffff;
+
+    --nav-badge-bg: rgba(255, 255, 255, 0.08);
+    --nav-badge-text: rgba(255, 255, 255, 0.9);
+    --nav-badge-border: rgba(255, 255, 255, 0.15);
+}
+
+.nav-user-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--nav-badge-bg);
+    color: var(--nav-badge-text);
+    border: 1px solid var(--nav-badge-border);
+    border-radius: var(--radius);
+    padding: 0.35rem 0.85rem;
+    font-size: 0.85rem;
+    transition:
+        background 0.2s,
+        border-color 0.2s;
+}
+
+.nav-user-badge:hover {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.nav-user-name {
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.nav-dropdown-menu {
+    background: var(--nav-dropdown-bg);
+    border: 1px solid var(--nav-dropdown-border);
+    border-radius: var(--radius);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    padding: 0.4rem;
+    margin-top: 0.5rem !important;
+}
+
+.nav-dropdown-menu .dropdown-item {
+    color: var(--nav-dropdown-text);
+    border-radius: calc(var(--radius) - 4px);
+    padding: 0.5rem 0.85rem;
+    transition:
+        background 0.2s,
+        color 0.2s;
+}
+
+.nav-dropdown-menu .dropdown-item:hover,
+.nav-dropdown-menu .dropdown-item:focus {
+    background: var(--nav-dropdown-hover-bg);
+    color: var(--nav-dropdown-text);
+}
+
+.nav-dropdown-menu .dropdown-item.active {
+    background: var(--nav-dropdown-active-bg);
+    color: var(--nav-dropdown-active-text);
+}
+
+.nav-dropdown-menu .dropdown-divider {
+    border-color: var(--nav-dropdown-border);
+    opacity: 1;
+}
+
+/* 👇 Ye actual mobile fix add karo agar navbar collapse pe dropdown menu chhota/misaligned lagta hai */
+@media (max-width: 991.98px) {
+    .nav-dropdown-menu {
+        box-shadow: none;
+        border: none;
+        margin-top: 0 !important;
+        padding-left: 1rem;
+    }
+    .nav-user-name {
+        max-width: 150px;
+    }
+}

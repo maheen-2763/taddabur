@@ -2,16 +2,22 @@
 
 @section('title', 'My Notes — Taddabur')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/notes-bookmarks.css') }}">
+@endpush
+
 @section('content')
     <div class="container py-5">
 
         {{-- Header --}}
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h2 class="fw-bold mb-1">My Notes</h2>
-                <p class="text-muted mb-0">Your personal reflections from Quran and stories.</p>
+                <h2 class="heading-font mb-1" style="color:var(--emerald-light)">My Notes</h2>
+                <p class="mb-0" style="color:var(--muted); font-size:0.9rem">
+                    Your personal reflections from Quran and stories.
+                </p>
             </div>
-            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addNoteModal">
+            <button class="btn-gold btn" data-bs-toggle="modal" data-bs-target="#addNoteModal">
                 <i class="bi bi-plus-lg me-1"></i> New Note
             </button>
         </div>
@@ -19,39 +25,37 @@
         {{-- Notes List --}}
         <div id="notes-container">
             @forelse ($notes as $note)
-                <div class="card border-0 shadow-sm mb-3 note-card" data-id="{{ $note->id }}">
-                    <div class="card-body">
+                <div class="card-islamic p-4 mb-3 note-card" data-id="{{ $note->id }}">
 
-                        {{-- Reference badge --}}
-                        <span class="badge bg-success bg-opacity-10 text-success mb-2">
-                            <i class="bi {{ $note->reference_icon }} me-1"></i>
-                            {{ $note->reference_label }}
-                        </span>
+                    {{-- Reference badge --}}
+                    <span class="badge-note mb-2">
+                        <i class="bi {{ $note->reference_icon }} me-1"></i>
+                        {{ $note->reference_label }}
+                    </span>
 
-                        {{-- Content --}}
-                        <p class="card-text note-content mb-3">{{ $note->content }}</p>
+                    {{-- Content --}}
+                    <p class="note-content mb-0">{{ $note->content }}</p>
 
-                        {{-- Footer --}}
-                        <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted">{{ $note->created_at->diffForHumans() }}</small>
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-sm btn-outline-secondary edit-btn" data-id="{{ $note->id }}"
-                                    data-content="{{ $note->content }}">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger delete-btn" data-id="{{ $note->id }}">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </div>
+                    {{-- Footer --}}
+                    <div class="note-footer d-flex justify-content-between align-items-center">
+                        <small style="color:var(--muted)">{{ $note->created_at->diffForHumans() }}</small>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-outline-secondary edit-btn" data-id="{{ $note->id }}"
+                                data-content="{{ $note->content }}">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger delete-btn" data-id="{{ $note->id }}">
+                                <i class="bi bi-trash"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
             @empty
-                <div class="text-center py-5 text-muted" id="empty-state">
+                <div class="text-center py-5" id="empty-state" style="color:var(--muted)">
                     <i class="bi bi-journal-plus display-4 d-block mb-3 opacity-50"></i>
-                    <h5>No notes yet</h5>
+                    <h5 class="heading-font" style="color:var(--emerald-light)">No notes yet</h5>
                     <p>Capture your reflections as you read the Quran or prophet stories.</p>
-                    <button class="btn btn-success mt-2" data-bs-toggle="modal" data-bs-target="#addNoteModal">
+                    <button class="btn-gold btn mt-2" data-bs-toggle="modal" data-bs-target="#addNoteModal">
                         Add Your First Note
                     </button>
                 </div>
@@ -70,21 +74,21 @@
     {{-- ── Add Note Modal ────────────────────────────────────── --}}
     <div class="modal fade" id="addNoteModal" tabindex="-1" aria-labelledby="addNoteLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow">
+            <div class="modal-content border-0 shadow" style="background:var(--cream)">
                 <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold" id="addNoteLabel">New Note</h5>
+                    <h5 class="modal-title heading-font" id="addNoteLabel" style="color:var(--emerald-light)">New Note</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <textarea id="note-content-input" class="form-control" rows="5" maxlength="2000"
                         placeholder="Write your reflection here..."></textarea>
                     <div class="text-end mt-1">
-                        <small class="text-muted"><span id="add-char-count">0</span>/2000</small>
+                        <small style="color:var(--muted)"><span id="add-char-count">0</span>/2000</small>
                     </div>
                 </div>
                 <div class="modal-footer border-0 pt-0">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-success" id="save-note-btn">
+                    <button type="button" class="btn-gold btn" id="save-note-btn">
                         Save Note
                         <span id="save-spinner" class="spinner-border spinner-border-sm d-none ms-1"></span>
                     </button>
@@ -96,21 +100,21 @@
     {{-- ── Edit Note Modal ───────────────────────────────────── --}}
     <div class="modal fade" id="editNoteModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow">
+            <div class="modal-content border-0 shadow" style="background:var(--cream)">
                 <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold">Edit Note</h5>
+                    <h5 class="modal-title heading-font" style="color:var(--emerald-light)">Edit Note</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <input type="hidden" id="edit-note-id">
                     <textarea id="edit-note-content" class="form-control" rows="5" maxlength="2000"></textarea>
                     <div class="text-end mt-1">
-                        <small class="text-muted"><span id="edit-char-count">0</span>/2000</small>
+                        <small style="color:var(--muted)"><span id="edit-char-count">0</span>/2000</small>
                     </div>
                 </div>
                 <div class="modal-footer border-0 pt-0">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-success" id="update-note-btn">
+                    <button type="button" class="btn-gold btn" id="update-note-btn">
                         Save Changes
                         <span id="update-spinner" class="spinner-border spinner-border-sm d-none ms-1"></span>
                     </button>
@@ -123,7 +127,6 @@
         <script>
             const CSRF = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
 
-            // ── Char counters ──────────────────────────────────────────────────
             document.getElementById('note-content-input').addEventListener('input', function() {
                 document.getElementById('add-char-count').textContent = this.value.length;
             });
@@ -132,7 +135,6 @@
                 document.getElementById('edit-char-count').textContent = this.value.length;
             });
 
-            // ── Save new note ──────────────────────────────────────────────────
             document.getElementById('save-note-btn').addEventListener('click', async function() {
                 const content = document.getElementById('note-content-input').value.trim();
                 if (!content) return;
@@ -166,7 +168,6 @@
                 }
             });
 
-            // ── Open edit modal ────────────────────────────────────────────────
             document.addEventListener('click', function(e) {
                 const btn = e.target.closest('.edit-btn');
                 if (!btn) return;
@@ -178,7 +179,6 @@
                 new bootstrap.Modal(document.getElementById('editNoteModal')).show();
             });
 
-            // ── Update note ────────────────────────────────────────────────────
             document.getElementById('update-note-btn').addEventListener('click', async function() {
                 const id = document.getElementById('edit-note-id').value;
                 const content = document.getElementById('edit-note-content').value.trim();
@@ -213,7 +213,6 @@
                 }
             });
 
-            // ── Delete note ────────────────────────────────────────────────────
             document.addEventListener('click', async function(e) {
                 const btn = e.target.closest('.delete-btn');
                 if (!btn) return;
@@ -231,42 +230,38 @@
                 if (res.ok) {
                     document.querySelector(`.note-card[data-id="${id}"]`).remove();
 
-                    // Show empty state if no notes left
                     if (!document.querySelector('.note-card')) {
                         document.getElementById('notes-container').innerHTML = `
-                <div class="text-center py-5 text-muted" id="empty-state">
+                <div class="text-center py-5" id="empty-state" style="color:var(--muted)">
                     <i class="bi bi-journal-plus display-4 d-block mb-3 opacity-50"></i>
-                    <h5>No notes yet</h5>
+                    <h5 class="heading-font" style="color:var(--emerald-light)">No notes yet</h5>
                     <p>Capture your reflections as you read.</p>
                 </div>`;
                     }
                 }
             });
 
-            // ── Helpers ────────────────────────────────────────────────────────
             function prependNote(note) {
                 const emptyState = document.getElementById('empty-state');
                 if (emptyState) emptyState.remove();
 
                 const html = `
-        <div class="card border-0 shadow-sm mb-3 note-card" data-id="${note.id}">
-            <div class="card-body">
-                <span class="badge bg-success bg-opacity-10 text-success mb-2">
-                    <i class="bi bi-sticky me-1"></i> General Note
-                </span>
-                <p class="card-text note-content mb-3">${escapeHtml(note.content)}</p>
-                <div class="d-flex justify-content-between align-items-center">
-                    <small class="text-muted">Just now</small>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-sm btn-outline-secondary edit-btn"
-                                data-id="${note.id}"
-                                data-content="${escapeHtml(note.content)}">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${note.id}">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
+        <div class="card-islamic p-4 mb-3 note-card" data-id="${note.id}">
+            <span class="badge-note mb-2">
+                <i class="bi bi-sticky me-1"></i> General Note
+            </span>
+            <p class="note-content mb-0">${escapeHtml(note.content)}</p>
+            <div class="note-footer d-flex justify-content-between align-items-center">
+                <small style="color:var(--muted)">Just now</small>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-outline-secondary edit-btn"
+                            data-id="${note.id}"
+                            data-content="${escapeHtml(note.content)}">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${note.id}">
+                        <i class="bi bi-trash"></i>
+                    </button>
                 </div>
             </div>
         </div>`;

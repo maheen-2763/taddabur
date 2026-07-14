@@ -152,10 +152,10 @@
 }
 
 .sidebar-item.active .sidebar-item-num {
-    color: var(--emerald);
+    color: var(--emerald-light);
 }
 .sidebar-item.active .sidebar-item-text {
-    color: var(--emerald-dark);
+    color: var(--emerald-light);
 }
 
 /* ════════════════════════════════════════════
@@ -681,39 +681,6 @@
     background: var(--emerald);
     border-color: var(--emerald);
     color: white;
-}
-
-/* ════════════════════════════════════════════
-   SCROLL TO TOP
-════════════════════════════════════════════ */
-.scroll-top-btn {
-    position: fixed;
-    bottom: 5.5rem;
-    right: 1.25rem;
-    width: 38px;
-    height: 38px;
-    background: var(--emerald);
-    color: white;
-    border: none;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: all 0.3s;
-    z-index: 500;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-    font-size: 0.85rem;
-}
-
-.scroll-top-btn.visible {
-    opacity: 1;
-    transform: translateY(0);
-}
-.scroll-top-btn:hover {
-    background: var(--emerald-light);
 }
 
 /* ════════════════════════════════════════════

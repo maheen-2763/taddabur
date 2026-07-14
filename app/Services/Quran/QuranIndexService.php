@@ -76,6 +76,12 @@ class QuranIndexService
                     ? 100
                     : min(99, (int) round(($readInSlice / $ayahsInSlice) * 100));
 
+
+                // Resume point: agar kuch padha hai (par poora nahi), to next unread ayah dikhao
+                $nextAyah = ($readInSlice > 0 && $readInSlice < $ayahsInSlice)
+                    ? $startAyah + $readInSlice
+                    : $startAyah;
+
                 return (object) [
                     'id'                   => $surah->id,
                     'number'               => $surah->number,
@@ -85,6 +91,8 @@ class QuranIndexService
                     'ayah_count'           => $surah->ayah_count,
                     'start_ayah'           => $startAyah,
                     'end_ayah'             => $endAyah,
+                    'read_count_in_slice'  => $readInSlice,   // NEW — "kitni padhi" ke liye
+                    'has_progress'         => $readInSlice > 0 && $slicePercent < 100,
                     'is_continuation'      => $startAyah > 1,
                     'progress_percent'     => $slicePercent,
                 ];

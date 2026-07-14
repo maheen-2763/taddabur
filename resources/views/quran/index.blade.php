@@ -64,7 +64,6 @@
                                 <div class="surah-info">
                                     <div class="surah-name-en">{{ $surah->name_transliteration }}</div>
                                     <div class="surah-ayah-count">
-                                        {{-- OPTION 1: Enhanced continuation marker --}}
                                         @if ($surah->is_continuation)
                                             <span class="continuation-marker">
                                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
@@ -74,8 +73,17 @@
                                                 continued
                                             </span>
                                         @endif
-                                        Ayah {{ $surah->start_ayah }}–{{ $surah->end_ayah }}
-                                        <span class="ayah-count-total">of {{ $surah->ayah_count }}</span>
+
+                                        @if ($surah->progress_percent == 100)
+                                            <span class="ayah-status-done">Completed</span>
+                                        @else
+                                            Ayah {{ $surah->start_ayah }}–{{ $surah->end_ayah }}
+                                            @if ($surah->has_progress)
+                                                <span class="ayah-resume-tag"> ·
+                                                    {{ $surah->read_count_in_slice }} read </span>
+                                            @endif
+                                            <span class="ayah-count-total">of {{ $surah->ayah_count }}</span>
+                                        @endif
                                     </div>
                                 </div>
                                 <x-progress-ring :percent="$surah->progress_percent" />

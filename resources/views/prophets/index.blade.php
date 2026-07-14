@@ -150,7 +150,7 @@
 @endpush
 
 @section('content')
-    <div class="container py-5">
+    <div class="container px-3 px-sm-4 py-4 prophets-wrap">
 
         {{-- ═══════════════════════════════════════════════
          PAGE HEADER

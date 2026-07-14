@@ -31,6 +31,7 @@ class DashboardService
             );
         }
         $storyProgress  = $this->storyService->getInProgressStories($user);
+        $recentBookmarks = app(BookmarkService::class)->getRecentBookmarks($user, 5);
 
         // ✅ New line — attach real completion data to each story in progress
         $storiesInProgress = $storyProgress->pluck('story')->filter();
@@ -43,6 +44,7 @@ class DashboardService
             'quranProgress'     => $quranProgress,
             'quranReadCount' => $quranReadCount,
             'storyProgress'     => $storyProgress,
+            'recentBookmarks'   => $recentBookmarks,
             'achievement'       => $this->getAchievement($totalAyahsRead),
 
             // ✅ Correct level — sibling of dailyContent, not nested

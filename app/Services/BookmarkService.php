@@ -67,6 +67,23 @@ class BookmarkService
             ->paginate($perPage);
     }
 
+    public function getRecentBookmarks(User $user, int $limit = 5)
+    {
+        return Bookmark::where('user_id', $user->id)
+            ->with([
+                'bookmarkable' => function ($morphTo) {
+                    $morphTo->morphWith([
+                        Ayah::class         => ['surah', 'translations.translation'],
+                        Hadith::class       => ['collection', 'chapter'],
+                        StoryChapter::class => ['story'],
+                    ]);
+                },
+            ])
+            ->latest()
+            ->take($limit)
+            ->get();
+    }
+
     // -------------------------------------------------------
     // CHECK IF AN ITEM IS BOOKMARKED BY USER
     // Used to show the correct button state (filled vs empty)

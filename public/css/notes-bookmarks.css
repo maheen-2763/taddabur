@@ -1,0 +1,58 @@
+:root {
+    --badge-note-bg: rgba(27, 94, 59, 0.08);
+    --badge-note-text: var(--emerald-dark);
+    --badge-grade-bg: rgba(201, 150, 58, 0.12);
+    --badge-grade-text: var(--gold-dark);
+    --tab-badge-bg: var(--emerald);
+    --tab-badge-text: #ffffff;
+}
+
+[data-bs-theme="dark"] {
+    --badge-note-bg: rgba(255, 255, 255, 0.08);
+    --badge-note-text: var(--emerald-light);
+    --badge-grade-bg: rgba(255, 255, 255, 0.08);
+    --badge-grade-text: var(--gold-light);
+    --tab-badge-bg: var(--emerald);
+    --tab-badge-text: #ffffff;
+}
+
+/* Shared badges */
+.badge-grade,
+.badge-note {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+
+.badge-grade {
+    background: var(--badge-grade-bg);
+    color: var(--badge-grade-text);
+}
+
+.badge-note {
+    background: var(--badge-note-bg);
+    color: var(--badge-note-text);
+}
+
+/* Nav-tab count badges (Bookmarks page) */
+.nav-tabs .badge {
+    background: var(--tab-badge-bg) !important;
+    color: var(--tab-badge-text) !important;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+/* Note card — same shell as card-islamic, chhoti extra spacing */
+.note-card .note-content {
+    color: var(--ink);
+    line-height: 1.7;
+    font-size: 0.95rem;
+}
+
+.note-card .note-footer {
+    border-top: 1px solid var(--border);
+    padding-top: 0.75rem;
+    margin-top: 0.75rem;
+}

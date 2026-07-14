@@ -368,9 +368,14 @@
 
                                     {{-- Bookmark --}}
                                     @auth
-                                        <button class="ayah-btn" data-ayah-id="{{ $ayah->id }}"
+                                        @php
+                                            $isBookmarked = in_array($ayah->id, $bookmarkedAyahIds ?? []);
+                                        @endphp
+                                        <button class="ayah-btn {{ $isBookmarked ? 'bookmarked' : '' }}"
+                                            data-ayah-id="{{ $ayah->id }}"
                                             onclick="toggleBookmark(this, {{ $ayah->id }})">
-                                            <i class="bi bi-bookmark"></i> Bookmark
+                                            <i class="bi {{ $isBookmarked ? 'bi-bookmark-fill' : 'bi-bookmark' }}"></i>
+                                            {{ $isBookmarked ? 'Bookmarked' : 'Bookmark' }}
                                         </button>
                                     @endauth
                                     {{-- Tafsir → Opens side panel --}}
@@ -508,12 +513,6 @@
 
         </div>
     </div>
-
-    {{-- Scroll to top --}}
-    <button class="scroll-top-btn" id="scrollTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})"
-        title="Back to top">
-        <i class="bi bi-chevron-up"></i>
-    </button>
 
     {{-- Audio Player --}}
     <div id="audioPlayer">

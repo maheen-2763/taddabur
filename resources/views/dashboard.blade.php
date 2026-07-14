@@ -7,16 +7,19 @@
 @endpush
 
 @section('content')
-    <div class="container py-4 dashboard-wrap">
+    <div class="container px-3 px-sm-4 py-4 dashboard-wrap">
 
+        {{-- Top: Welcome banner --}}
         <x-dashboard.welcome :user="auth()->user()" />
 
-        <div class="mt-4">
-            <x-dashboard.allah-names-preview :names="$dashboard['allahNamesPreview']" />
+        {{-- Highlight row: Allah's Names + Daily Ayah — equal spacing via dashboard-stack --}}
+        <div class="dashboard-stack mt-4">
             <x-dashboard.daily-ayah-bold :dailyContent="$dashboard['dailyContent']" />
+            <x-dashboard.allah-names-preview :names="$dashboard['allahNamesPreview']" />
         </div>
 
-        <div class="row g-4 mt-2">
+        {{-- Main grid: Left = active learning, Right = stats/progress --}}
+        <div class="row g-4 mt-1">
 
             <div class="col-lg-8">
                 <div class="dashboard-stack">
@@ -27,10 +30,10 @@
 
             <div class="col-lg-4">
                 <div class="dashboard-stack">
-
                     <x-dashboard.progress :stats="$dashboard['stats']" :user="auth()->user()" />
                     <x-dashboard.achievement :achievement="$dashboard['achievement']" />
                     <x-dashboard.notes-preview :notes="$dashboard['recentNotes']" />
+                    <x-dashboard.bookmarks-preview :bookmarks="$dashboard['recentBookmarks']" />
                 </div>
             </div>
 

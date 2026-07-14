@@ -98,7 +98,7 @@
 @endpush
 
 @section('content')
-    <div class="container py-5">
+    <div class="container py-4">
 
         {{-- Breadcrumb --}}
         <nav aria-label="breadcrumb" class="mb-4" style="font-size:0.85rem">

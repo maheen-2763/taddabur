@@ -252,3 +252,177 @@
 .trials-card h5 {
     color: #8a6914;
 }
+
+.scholars-wrapper {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 0;
+    min-height: calc(100vh - 64px);
+}
+
+/* ---- Sidebar ---- */
+.scholars-sidebar {
+    background: var(--emerald-dark);
+    border-right: 1px solid rgba(201, 150, 58, 0.2);
+    padding: 2rem 0;
+    position: sticky;
+    top: 64px;
+    height: calc(100vh - 64px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gold-dark) transparent;
+}
+
+.scholars-sidebar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.scholars-sidebar::-webkit-scrollbar-thumb {
+    background: var(--gold-dark);
+    border-radius: 2px;
+}
+
+.sidebar-section-label {
+    font-family: var(--font-heading);
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(201, 150, 58, 0.6);
+    padding: 0 1.5rem;
+    margin-bottom: 0.5rem;
+    margin-top: 1.5rem;
+}
+
+.sidebar-section-label:first-child {
+    margin-top: 0;
+}
+
+.sidebar-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 1.5rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+}
+
+.sidebar-nav-link:hover {
+    color: var(--gold-light);
+    background: rgba(255, 255, 255, 0.05);
+    border-left-color: var(--gold-dark);
+}
+
+.sidebar-nav-link.active {
+    color: var(--gold-light);
+    background: rgba(201, 150, 58, 0.08);
+    border-left-color: var(--gold);
+    font-weight: 500;
+}
+
+.sidebar-nav-link .arabic-sm {
+    font-family: var(--font-arabic);
+    font-size: 0.9rem;
+    direction: rtl;
+    color: rgba(201, 150, 58, 0.7);
+    line-height: 1;
+}
+
+.sidebar-madhab-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    min-width: 8px;
+}
+
+/* Madhab color dots */
+.dot-hanafi {
+    background: #5ac98a;
+}
+
+.dot-maliki {
+    background: #60a5fa;
+}
+
+.dot-shafi_i {
+    background: #f59e0b;
+}
+
+.dot-hanbali {
+    background: #f87171;
+}
+
+.sidebar-divider {
+    border: none;
+    border-top: 1px solid rgba(201, 150, 58, 0.15);
+    margin: 1rem 1.5rem;
+}
+
+/* ---- Main Content ---- */
+.scholars-main {
+    padding: 2.5rem;
+    background: var(--cream);
+    overflow-y: auto;
+}
+
+/* ================================================
+           SCHOLARS NAVBAR (top breadcrumb bar)
+        ================================================ */
+.scholars-topbar {
+    background: var(--cream-dark);
+    border-bottom: 1px solid var(--border);
+    padding: 0.6rem 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.82rem;
+    color: var(--muted);
+    font-family: var(--font-body);
+}
+
+.scholars-topbar a {
+    color: var(--emerald);
+    text-decoration: none;
+}
+
+.scholars-topbar a:hover {
+    color: var(--gold-dark);
+}
+
+.scholars-topbar .separator {
+    color: var(--border);
+}
+
+/* ================================================
+           RESPONSIVE — Mobile: sidebar collapses
+        ================================================ */
+@media (max-width: 992px) {
+    .scholars-wrapper {
+        grid-template-columns: 1fr;
+    }
+
+    .scholars-sidebar {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 280px;
+        height: 100vh;
+        z-index: 1050;
+    }
+
+    .scholars-sidebar.open {
+        display: block;
+    }
+
+    .scholars-main {
+        padding: 1.5rem 1rem;
+    }
+
+    .scholars-topbar {
+        padding: 0.6rem 1rem;
+    }
+}

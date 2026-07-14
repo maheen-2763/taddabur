@@ -3,7 +3,7 @@
     Place this file at: resources/views/components/nav.blade.php
 --}}
 <nav class="navbar navbar-islamic navbar-expand-lg">
-    <div class="container">
+    <div class="container-fluid px-3 px-md-5">
 
         {{-- Logo --}}
         <a class="navbar-brand text-decoration-none" href="{{ route('home') }}">
@@ -17,44 +17,63 @@
             <i class="bi bi-list" style="font-size:1.5rem;"></i>
         </button>
 
-        {{-- Links --}}
+        {{-- Collapse wrapper — YEH MISSING THA, wapas add kiya --}}
         <div class="collapse navbar-collapse" id="navMain">
+
+            {{-- Links --}}
+
             <ul class="navbar-nav mx-auto gap-1">
+
+                <li class="nav-item">
+                    <a class="nav-link-islamic nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
+                        href="{{ route('dashboard') }}">
+                        <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                    </a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link-islamic nav-link {{ request()->routeIs('quran.*') ? 'active' : '' }}"
+                        {{ request()->routeIs('quran.*') ? 'aria-current=page' : '' }}
                         href="{{ route('quran.index') }}">
                         <i class="bi bi-book me-1"></i>Quran
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link-islamic nav-link {{ request()->routeIs('stories.*') ? 'active' : '' }}"
-                        href="{{ route('stories.index') }}">
-                        <i class="bi bi-journal-text me-1"></i>Stories
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link-islamic nav-link {{ request()->routeIs('prophets.*') ? 'active' : '' }}"
-                        href="{{ route('prophets.index') }}">
-                        <i class="bi bi-stars me-1"></i>Prophets
-                    </a>
-                </li>
 
-                <li class="nav-item">
-                    <a class="nav-link-islamic nav-link {{ request()->routeIs('scholars.*') ? 'active' : '' }}"
-                        href="{{ route('scholars.index') }}">
-                        <i class="bi bi-stars me-1"></i>Four Imams
+                <li class="nav-item dropdown">
+                    <a class="nav-link-islamic nav-link dropdown-toggle {{ request()->routeIs(['stories.*', 'prophets.*', 'scholars.*', 'hadith.*']) ? 'active' : '' }}"
+                        href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-grid me-1"></i>Features
                     </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link-islamic nav-link {{ request()->routeIs('hadith.*') ? 'active' : '' }}"
-                        href="{{ route('hadith.index') }}">
-                        <i class="bi bi-stars me-1"></i>Hadith
-                    </a>
+                    <ul class="dropdown-menu nav-dropdown-menu">
+                        <li>
+                            <a class="dropdown-item {{ request()->routeIs('stories.*') ? 'active' : '' }}"
+                                href="{{ route('stories.index') }}">
+                                <i class="bi bi-journal-text me-2"></i>Stories
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item {{ request()->routeIs('prophets.*') ? 'active' : '' }}"
+                                href="{{ route('prophets.index') }}">
+                                <i class="bi bi-stars me-2"></i>Prophets
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item {{ request()->routeIs('scholars.*') ? 'active' : '' }}"
+                                href="{{ route('scholars.index') }}">
+                                <i class="bi bi-mortarboard me-2"></i>Four Imams
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item {{ request()->routeIs('hadith.*') ? 'active' : '' }}"
+                                href="{{ route('hadith.index') }}">
+                                <i class="bi bi-collection me-2"></i>Hadith
+                            </a>
+                        </li>
+                    </ul>
                 </li>
 
                 <li class="nav-item">
                     <a class="nav-link-islamic nav-link {{ request()->routeIs('pricing') ? 'active' : '' }}"
-                        href="{{ route('pricing') }}">
+                        {{ request()->routeIs('pricing') ? 'aria-current=page' : '' }} href="{{ route('pricing') }}">
                         <i class="bi bi-gem me-1"></i>Pricing
                     </a>
                 </li>
@@ -69,25 +88,12 @@
                 </button>
 
                 @auth
-
                     <div class="dropdown">
-                        <button class="btn btn-sm d-flex align-items-center gap-2 dropdown-toggle"
-                            style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15);
-                                       color:#fff; border-radius:var(--radius); padding:0.35rem 0.85rem;"
-                            data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="dropdown-toggle nav-user-badge" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-person-circle"></i>
-                            <span
-                                style="font-size:0.85rem; max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-                                {{ auth()->user()->name }}
-                            </span>
+                            <span class="nav-user-name">{{ auth()->user()->name }}</span>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end mt-1"
-                            style="border-color:var(--border); border-radius:var(--radius);">
-                            <li>
-                                <a class="dropdown-item small" href="{{ route('dashboard') }}">
-                                    <i class="bi bi-speedometer2 me-2"></i>Dashboard
-                                </a>
-                            </li>
+                        <ul class="dropdown-menu nav-dropdown-menu">
                             <li>
                                 <a class="dropdown-item small" href="{{ route('profile.edit') }}">
                                     <i class="bi bi-person me-2"></i>Profile
@@ -120,7 +126,25 @@
                     </a>
                 @endauth
             </div>
-        </div>
+
+        </div> {{-- navMain close --}}
 
     </div>
 </nav>
+
+<script>
+    // Mobile collapse menu link click hote hi band ho
+    document.querySelectorAll('#navMain .nav-link:not(.dropdown-toggle), #navMain .dropdown-item').forEach(link => {
+        link.addEventListener('click', () => {
+            const navMain = document.getElementById('navMain');
+            if (navMain.classList.contains('show')) {
+                bootstrap.Collapse.getInstance(navMain)?.hide();
+            }
+        });
+    });
+
+    // Agar toggleTheme() load nahi hui, dev ko turant pata chale
+    if (typeof toggleTheme !== 'function') {
+        console.warn('toggleTheme() not loaded — check theme.js is included in this page.');
+    }
+</script>

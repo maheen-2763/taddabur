@@ -23,6 +23,7 @@ use App\Models\ListenedAyah;
 use App\Services\Quran\QuranIndexService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use App\Models\Bookmark;
 
 class QuranController extends Controller
 {
@@ -62,6 +63,14 @@ class QuranController extends Controller
             ? UserReadAyah::where('user_id', $user->id)
             ->whereIn('ayah_id', $data['ayahs']->pluck('id'))
             ->pluck('ayah_id')
+            ->toArray()
+            : [];
+
+        $data['bookmarkedAyahIds'] = $user
+            ? Bookmark::where('user_id', $user->id)
+            ->where('bookmarkable_type', Ayah::class)
+            ->whereIn('bookmarkable_id', $data['ayahs']->pluck('id'))
+            ->pluck('bookmarkable_id')
             ->toArray()
             : [];
 

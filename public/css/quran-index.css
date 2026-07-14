@@ -87,7 +87,7 @@
     cursor: pointer;
     flex-shrink: 0;
     transition: background 0.2s ease;
-    margin-bottom: 4px;
+    margin-bottom: 8px;
 }
 
 .search-icon-btn:hover {
@@ -118,7 +118,7 @@
     opacity: 1;
     padding: 0.6rem 1.2rem;
     pointer-events: auto;
-    margin-bottom: 4px;
+    margin-bottom: 8px;
 }
 
 .surah-search-input:focus {
@@ -344,32 +344,6 @@
     }
 }
 
-/* ---- Option 3: Continue Reading banner ---- */
-.resume-quick-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 12px;
-    padding: 8px 18px;
-    background: rgba(201, 150, 58, 0.1);
-    border: 1px solid var(--gold);
-    border-radius: 999px;
-    color: var(--gold-dark);
-    font-family: var(--font-body);
-    font-size: 0.82rem;
-    text-decoration: none;
-    transition: background 0.15s ease;
-}
-
-.resume-quick-link:hover {
-    background: rgba(201, 150, 58, 0.18);
-}
-
-.resume-icon {
-    font-size: 1rem;
-    line-height: 1;
-}
-
 .juz-header svg {
     margin-left: auto; /* push ring to the right of the header row */
     flex-shrink: 0;
@@ -386,6 +360,20 @@
     text-transform: uppercase;
     letter-spacing: 0.02em;
     margin-right: 4px;
+}
+
+.ayah-resume-tag {
+    font-size: 0.62rem;
+    color: var(--emerald);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.ayah-status-done {
+    color: var(--emerald);
+    font-weight: 600;
+    font-size: 0.75rem;
 }
 
 /* Remove old .continuation-badge rule if still present — replaced by .continuation-marker */
