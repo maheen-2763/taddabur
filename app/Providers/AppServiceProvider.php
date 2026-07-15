@@ -14,6 +14,7 @@ use Illuminate\Support\ServiceProvider;
 use App\Models\StoryChapter;
 use App\Observers\StoryChapterObserver;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -32,6 +33,10 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+
+        if ($this->app->environment('local')) {
+            URL::forceScheme('https');
+        }
         StoryChapter::observe(StoryChapterObserver::class);
         \Illuminate\Support\Facades\Route::bind('surah', function ($value) {
             return \App\Models\Surah::where('number', $value)->firstOrFail();

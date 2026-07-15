@@ -102,6 +102,8 @@ class SubscriptionController extends Controller
             return response()->json(['error' => 'Could not match this payment to an order. Please contact support.'], 400);
         }
 
+        session(['just_purchased' => true]); // ✅ naya — success page ko "unlock" karta hai
+
         return response()->json([
             'status'       => 'success',
             'redirect_url' => route('subscription.success'),
@@ -111,8 +113,12 @@ class SubscriptionController extends Controller
     // SUCCESS — After successful payment
     // GET /subscription/success
     // -------------------------------------------------------
-    public function success(): View
+    public function success(): View|\Illuminate\Http\RedirectResponse
     {
+        if (!session()->pull('just_purchased')) {
+            return redirect()->route('subscription.dashboard');
+        }
+
         $user = Auth::user();
         $plan = Plan::where('slug', $user->plan)->first();
 
@@ -138,8 +144,8 @@ class SubscriptionController extends Controller
         // isPremium() already checks plan_expires_at, so access will
         // lapse correctly on its own without any further action here.
 
-        return redirect()->route('dashboard')->with(
-            'message',
+        return redirect()->route('subscription.dashboard')->with(
+            'success',
             'Your plan will not renew. You keep access until ' .
                 optional($user->plan_expires_at)->format('M d, Y')
         );

@@ -21,7 +21,7 @@
         "barryvdh/laravel-debugbar": "^4.4",
         "fakerphp/faker": "^1.23",
         "laravel/breeze": "^2.4",
-        "laravel/pail": "^1.2.5",
+        "laravel/pail": "^1.2",
         "laravel/pao": "^1.0.6",
         "laravel/pint": "^1.27",
         "mockery/mockery": "^1.6",

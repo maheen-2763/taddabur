@@ -10,9 +10,10 @@
             cursor: pointer;
             transition: all 0.2s;
             background: var(--cream-dark);
+            position: relative;
         }
 
-        .plan-card:hover,
+        .plan-card:hover:not(.unavailable),
         .plan-card.selected {
             border-color: var(--gold);
             background: rgba(201, 150, 58, 0.05);
@@ -21,6 +22,12 @@
         .plan-card.selected .plan-radio {
             background: var(--gold);
             border-color: var(--gold);
+        }
+
+        .plan-card.unavailable {
+            cursor: not-allowed;
+            opacity: 0.45;
+            filter: grayscale(0.3);
         }
 
         .plan-radio {
@@ -48,6 +55,15 @@
             border-color: var(--emerald);
         }
 
+        .unavailable-tag {
+            display: inline-block;
+            font-size: 0.75rem;
+            background: rgba(0, 0, 0, 0.08);
+            padding: 0.2rem 0.6rem;
+            border-radius: 50px;
+            color: var(--text-muted, #777);
+        }
+
         .payment-overlay {
             display: none;
             position: fixed;
@@ -71,16 +87,16 @@
 
                 <div class="text-center mb-4">
                     <h2 class="heading-font mb-1">Upgrade Your Plan</h2>
-                    <p class="text-muted">
+                    <p class="text-muted mb-0">
                         Currently on:
-                        <span class="badge badge-{{ $currentPlan }}">
+                        <span class="badge px-3 py-2" style="background:var(--emerald); color:#fff;">
                             {{ strtoupper($currentPlan) }}
                         </span>
                     </p>
                 </div>
 
                 {{-- Billing Toggle --}}
-                <div class="d-flex justify-content-center gap-2 mb-4">
+                <div class="d-flex justify-content-center gap-2 mb-4 flex-wrap">
                     <button class="billing-tab active" data-billing="monthly" onclick="setBilling('monthly', this)">
                         Monthly
                     </button>
@@ -100,10 +116,15 @@
                     @foreach ($plans as $plan)
                         <div class="col-md-6">
                             <div class="plan-card {{ $loop->first ? 'selected' : '' }}"
-                                onclick="selectPlan('{{ $plan->slug }}', this)" data-plan="{{ $plan->slug }}">
+                                onclick="selectPlan('{{ $plan->slug }}', this)" data-plan="{{ $plan->slug }}"
+                                data-monthly="{{ $plan->price_monthly > 0 ? 1 : 0 }}"
+                                data-yearly="{{ $plan->price_yearly > 0 ? 1 : 0 }}"
+                                data-lifetime="{{ $plan->price_lifetime > 0 ? 1 : 0 }}">
 
                                 <div class="d-flex align-items-center gap-3 mb-3">
-                                    <div class="plan-radio {{ $loop->first ? 'bg-warning' : '' }}"></div>
+                                    <div class="plan-radio {{ $loop->first ? '' : '' }}"
+                                        style="{{ $loop->first ? 'background:var(--gold);border-color:var(--gold);' : '' }}">
+                                    </div>
                                     <div>
                                         <h5 class="heading-font mb-0">{{ $plan->name }}</h5>
                                         <small class="text-muted">{{ $plan->description }}</small>
@@ -132,8 +153,8 @@
                                             </span>
                                             <small class="text-muted">one time</small>
                                         @else
-                                            <span class="text-muted" style="font-size:0.9rem">
-                                                Not available
+                                            <span class="unavailable-tag">
+                                                <i class="bi bi-x-circle me-1"></i>Not available on Lifetime
                                             </span>
                                         @endif
                                     </div>
@@ -159,7 +180,7 @@
                         <i class="bi bi-lock-fill me-2"></i>
                         Pay Securely with Razorpay
                     </button>
-                    <p class="text-muted mt-2" style="font-size:0.8rem">
+                    <p class="text-muted mt-2 mb-0" style="font-size:0.8rem">
                         <i class="bi bi-shield-check me-1"></i>
                         Secured by Razorpay · UPI, Cards, NetBanking accepted
                     </p>
@@ -190,14 +211,14 @@
 
             // ── SELECT PLAN ───────────────────────────────────────
             function selectPlan(slug, card) {
-                // Remove selected from all
+                if (card.classList.contains('unavailable')) return; // can't select a plan not sold on this billing cycle
+
                 document.querySelectorAll('.plan-card').forEach(c => {
                     c.classList.remove('selected');
                     c.querySelector('.plan-radio').style.background = '';
                     c.querySelector('.plan-radio').style.borderColor = '';
                 });
 
-                // Select this one
                 card.classList.add('selected');
                 card.querySelector('.plan-radio').style.background = 'var(--gold)';
                 card.querySelector('.plan-radio').style.borderColor = 'var(--gold)';
@@ -218,6 +239,29 @@
                 document.querySelectorAll('.price-' + billing).forEach(el => {
                     el.style.display = 'block';
                 });
+
+                // Mark cards unavailable for this billing cycle, and auto-switch
+                // selection away from any card that just became unavailable —
+                // this is what stops a Lifetime + "no lifetime price" combo
+                // from ever reaching the Pay button.
+                let selectedCardStillValid = false;
+                let firstAvailableCard = null;
+
+                document.querySelectorAll('.plan-card').forEach(card => {
+                    const available = card.dataset[billing] === '1';
+                    card.classList.toggle('unavailable', !available);
+
+                    if (available && !firstAvailableCard) {
+                        firstAvailableCard = card;
+                    }
+                    if (available && card.dataset.plan === selectedPlan) {
+                        selectedCardStillValid = true;
+                    }
+                });
+
+                if (!selectedCardStillValid && firstAvailableCard) {
+                    selectPlan(firstAvailableCard.dataset.plan, firstAvailableCard);
+                }
             }
 
             // ── INITIATE PAYMENT ──────────────────────────────────
@@ -227,7 +271,6 @@
                 btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Creating order...';
 
                 try {
-                    // Step 1: Create order on our server
                     const orderRes = await fetch("{{ route('subscription.create-order') }}", {
                         method: 'POST',
                         headers: {
@@ -249,7 +292,6 @@
                         return;
                     }
 
-                    // Step 2: Open Razorpay payment popup
                     const options = {
                         key: RAZORPAY_KEY,
                         amount: order.amount,
@@ -259,21 +301,18 @@
                         description: selectedPlan + ' plan — ' + selectedBilling,
                         image: '/images/logo.png',
 
-                        // Prefill user details
                         prefill: {
                             name: "{{ auth()->user()->name }}",
                             email: "{{ auth()->user()->email }}",
                         },
 
                         theme: {
-                            color: '#C9963A', // Our gold colour
+                            color: '#C9963A',
                         },
 
-                        // Step 3: After payment succeeds
                         handler: async function(response) {
                             document.getElementById('loadingOverlay').classList.add('show');
 
-                            // Verify payment on our server
                             const verifyRes = await fetch("{{ route('subscription.verify') }}", {
                                 method: 'POST',
                                 headers: {
@@ -298,7 +337,6 @@
                             }
                         },
 
-                        // User closed the popup without paying
                         modal: {
                             ondismiss: function() {
                                 resetBtn();

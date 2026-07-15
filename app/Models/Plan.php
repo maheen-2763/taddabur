@@ -71,7 +71,6 @@ class Plan extends Model
     // ACCESSORS
     // -------------------------------------------------------
 
-    // "Free", "9.99/mo", etc.
     public function getFormattedMonthlyPriceAttribute(): string
     {
         if ($this->price_monthly == 0) {
@@ -112,38 +111,5 @@ class Plan extends Model
     public function getTranslationLimitLabelAttribute(): string
     {
         return $this->translation_limit === null ? 'All' : (string) $this->translation_limit;
-    }
-
-    // app/Models/Plan.php
-
-    // What each plan gets
-    public static function featureLimits(): array
-    {
-        return [
-            'free' => [
-                'translations' => 1,   // Only Sahih International
-                'tafsirs'      => 0,   // No tafsir
-                'reciters'     => 1,   // Only Mishary
-                'has_tafsir'   => false,
-                'has_audio'    => true,  // 1 reciter only
-                'has_notes'    => false,
-            ],
-            'basic' => [
-                'translations' => -1,  // unlimited
-                'tafsirs'      => -1,
-                'reciters'     => -1,
-                'has_tafsir'   => true,
-                'has_audio'    => true,
-                'has_notes'    => false,
-            ],
-            'premium' => [
-                'translations' => -1,
-                'tafsirs'      => -1,
-                'reciters'     => -1,
-                'has_tafsir'   => true,
-                'has_audio'    => true,
-                'has_notes'    => true,
-            ],
-        ];
     }
 }

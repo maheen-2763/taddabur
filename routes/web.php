@@ -85,12 +85,19 @@ Route::get('/quran/sajdas', [QuranController::class, 'sajdas'])
 // ✅ This comes AFTER search
 Route::get('/quran/{surah}', [QuranController::class, 'show'])->name('quran.show');
 
+// NOTE (fix): pehle iska naam bhi 'quran.tafsir' ban raha tha, jo authenticated
+// group ke andar wale /{surah}/{ayah}/tafsir route ke naam se collide kar raha
+// tha (dono ka final naam same "quran.tafsir" ban jaata, alag URL/controller
+// ke saath). Naam ab 'quran.tafsir-page' hai taaki dono routes alag-alag
+// pehchane ja sakein. Agar kahin Blade/JS mein route('quran.tafsir') is
+// tafsir-page URL ke liye use ho raha ho, use route('quran.tafsir-page') se
+// badalna hoga.
 Route::get(
     '/quran/{surah}/{ayah}/tafsir-page',
     [QuranController::class, 'tafsirPage']
 )
     ->middleware(['auth', 'verified'])
-    ->name('quran.tafsir');
+    ->name('quran.tafsir-page');
 
 // Public stories listing (shows free stories only)
 Route::get('/stories', [StoryController::class, 'index'])->name('stories.index');
@@ -212,6 +219,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/', [SubscriptionController::class, 'index'])->name('index');
             Route::get('/upgrade', [SubscriptionController::class, 'upgrade'])->name('upgrade');
             Route::get('/success', [SubscriptionController::class, 'success'])->name('success');
+            // NOTE (fix): group already applies name('subscription.'), toh
+            // yahan sirf 'dashboard' likhna tha. Pehle 'subscription.dashboard'
+            // likha hua tha, jisse actual naam ban raha tha
+            // "subscription.subscription.dashboard" — ye naam kahin exist
+            // nahi karta. Hamare cancel() controller method mein
+            // route('subscription.dashboard') use hota hai, jo is bug ki
+            // wajah se crash karta (RouteNotFoundException). Ab fix hai.
             Route::get('/dashboard', [SubscriptionController::class, 'dashboard'])->name('dashboard');
             Route::post('/create-order', [SubscriptionController::class, 'createOrder'])->name('create-order');
             Route::post('/verify', [SubscriptionController::class, 'verifyPayment'])->name('verify');
@@ -245,8 +259,9 @@ Route::middleware(['auth', 'admin'])
     ->name('admin.')
     ->group(function () {
 
-        Route::get('/admin/backups', [BackupController::class, 'index'])->name('admin.backups');
-        Route::get('/admin/backups/{backup}/download', [BackupController::class, 'download'])->name('admin.backups.download');
+        // NOTE (fix): group already applies prefix('admin') + name('admin.'),
+        Route::get('/backups', [BackupController::class, 'index'])->name('backups');
+        Route::get('/backups/{backup}/download', [BackupController::class, 'download'])->name('backups.download');
 
         // Dashboard
         Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])
@@ -297,8 +312,6 @@ Route::middleware(['auth', 'admin'])
         Route::patch('/prophets/{prophet}', [App\Http\Controllers\Admin\ProphetController::class, 'update'])
             ->name('prophets.update');
 
-        Route::get('/', [ScholarController::class, 'index'])->name('scholars.index');
-        Route::get('/{scholar:slug}', [ScholarController::class, 'show'])->name('scholars.show');
 
         Route::resource(
             'daily-reflections',

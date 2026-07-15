@@ -148,6 +148,8 @@
                 @endforelse
             </div>
 
+            {{-- ── HADITH BOOKMARKS ───────────────────── --}}
+
             <div class="tab-pane fade" id="hadiths">
                 @forelse($hadithBookmarks as $bookmark)
                     <div class="card-islamic p-4 mb-3">
@@ -168,6 +170,10 @@
                                 @endif
                             </div>
                             <div class="d-flex flex-column gap-2 ms-3">
+                                <a href="{{ route('hadith.show', [$bookmark->bookmarkable?->collection?->slug, $bookmark->bookmarkable?->chapter?->number]) }}?highlight={{ $bookmark->bookmarkable?->number }}"
+                                    class="btn btn-sm btn-emerald">
+                                    <i class="bi bi-book"></i>
+                                </a>
                                 <button class="btn btn-sm btn-outline-danger"
                                     onclick="removeBookmark({{ $bookmark->id }}, this)">
                                     <i class="bi bi-trash"></i>
