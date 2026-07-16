@@ -45,6 +45,11 @@ Route::get('/', [HomeController::class, 'index'])
     ->name('home');
 
 
+Route::view('/terms', 'legal.terms')->name('terms');
+Route::view('/privacy-policy', 'legal.privacy')->name('privacy');
+Route::view('/about', 'about')->name('about');
+
+
 // Global — collections index page (all collections mix)
 Route::middleware(['auth', 'plan:has_hadith'])->group(function () {
 
@@ -163,9 +168,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{surah}', [QuranController::class, 'show'])
             ->name('show');
 
-
-
-
         Route::post('/progress', [QuranController::class, 'saveProgress'])
             ->name('progress.save');
 
@@ -221,19 +223,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/', [SubscriptionController::class, 'index'])->name('index');
             Route::get('/upgrade', [SubscriptionController::class, 'upgrade'])->name('upgrade');
             Route::get('/success', [SubscriptionController::class, 'success'])->name('success');
-            // NOTE (fix): group already applies name('subscription.'), toh
-            // yahan sirf 'dashboard' likhna tha. Pehle 'subscription.dashboard'
-            // likha hua tha, jisse actual naam ban raha tha
-            // "subscription.subscription.dashboard" — ye naam kahin exist
-            // nahi karta. Hamare cancel() controller method mein
-            // route('subscription.dashboard') use hota hai, jo is bug ki
-            // wajah se crash karta (RouteNotFoundException). Ab fix hai.
+
             Route::get('/dashboard', [SubscriptionController::class, 'dashboard'])->name('dashboard');
             Route::post('/create-order', [SubscriptionController::class, 'createOrder'])->name('create-order');
             Route::post('/verify', [SubscriptionController::class, 'verifyPayment'])->name('verify');
             Route::post('/checkout', [SubscriptionController::class, 'checkout'])->name('checkout');
             Route::post('/cancel', [SubscriptionController::class, 'cancel'])->name('cancel');
-            Route::post('/resume', [SubscriptionController::class, 'resume'])->name('resume');
+            // Route::post('/resume', [SubscriptionController::class, 'resume'])->name('resume');
         });
     // --------------------------------------------------------
     // PROFILE ROUTES

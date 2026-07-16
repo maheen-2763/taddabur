@@ -4,23 +4,10 @@
 
 @push('styles')
     <style>
-        /* ── Page Background ── */
+        /* ── Page Layout ── */
         .profile-page {
-            background: var(--bg-dark, #0D3D22);
             min-height: calc(100vh - 60px);
             padding: 2.5rem 1rem 2.5rem;
-            /* ← was just 2.5rem 1rem, bottom was 0 */
-            position: relative;
-        }
-
-        /* Subtle geometric pattern overlay — same as auth pages */
-        .profile-page::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C9963A' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-            pointer-events: none;
-            z-index: 0;
         }
 
         .profile-inner {
@@ -56,21 +43,21 @@
         .profile-user-name {
             font-family: 'Cinzel', serif;
             font-size: 18px;
-            color: var(--gold, #C9963A);
+            color: (var(--ink));
             margin-bottom: 0.35rem;
         }
 
         /* ── Plan Badge ── */
         .badge-free {
-            background: rgba(108, 117, 125, 0.2);
-            color: #adb5bd;
-            border: 1px solid rgba(108, 117, 125, 0.4);
+            background: rgba(108, 117, 125, 0.15);
+            color: #6c757d;
+            border: 1px solid rgba(108, 117, 125, 0.35);
         }
 
         .badge-basic {
-            background: rgba(13, 110, 253, 0.15);
-            color: #74b9ff;
-            border: 1px solid rgba(13, 110, 253, 0.4);
+            background: rgba(13, 110, 253, 0.12);
+            color: #0d6efd;
+            border: 1px solid rgba(13, 110, 253, 0.35);
         }
 
         .badge-premium {
@@ -109,14 +96,14 @@
 
         .verse-band .reference {
             font-size: 11px;
-            color: rgba(201, 150, 58, 0.6);
+            color: var(--gold, #C9963A);
             letter-spacing: 0.5px;
         }
 
         /* ── Tabs ── */
         .profile-tabs {
             display: flex;
-            border-bottom: 1px solid rgba(201, 150, 58, 0.2);
+            border-bottom: 1px solid rgba(201, 150, 58, 0.3);
             margin-bottom: 1.75rem;
             gap: 0;
         }
@@ -126,7 +113,7 @@
             text-align: center;
             padding: 10px 8px;
             font-size: 12px;
-            color: rgba(232, 220, 200, 0.5);
+            color: rgba(26, 26, 46, 0.5);
             cursor: pointer;
             border-bottom: 2px solid transparent;
             margin-bottom: -1px;
@@ -139,7 +126,7 @@
         }
 
         .profile-tab:hover {
-            color: rgba(201, 150, 58, 0.75);
+            color: var(--gold, #C9963A);
             border-bottom-color: rgba(201, 150, 58, 0.3);
         }
 
@@ -150,18 +137,16 @@
 
         /* ── Cards ── */
         .card-islamic {
-            background: rgba(23, 77, 45, 0.5);
-            border: 1px solid rgba(201, 150, 58, 0.25);
+            background: var(--cream, #FDFBF7);
+            border: 1px solid var(--border, rgba(201, 150, 58, 0.25));
             border-radius: 10px;
             padding: 1.5rem;
             margin-bottom: 1.25rem;
             position: relative;
             overflow: hidden;
-            /* Gold shimmer top border */
             background-clip: padding-box;
         }
 
-        /* Thin gold line at top of each card */
         .card-islamic::before {
             content: '';
             position: absolute;
@@ -197,16 +182,16 @@
             font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            color: rgba(201, 150, 58, 0.65);
+            color: rgba(26, 26, 46, 0.55);
             margin-bottom: 6px;
             display: block;
         }
 
         .form-control,
         .form-select {
-            background: rgba(13, 61, 34, 0.7) !important;
-            border: 1px solid rgba(201, 150, 58, 0.25) !important;
-            color: rgba(232, 220, 200, 0.9) !important;
+            background: rgba(201, 150, 58, 0.12);
+            border: 1px solid var(--border, rgba(201, 150, 58, 0.3)) !important;
+            color: var(--ink, #1A1A2E) !important;
             border-radius: 6px !important;
             padding: 10px 14px !important;
             font-size: 14px !important;
@@ -218,18 +203,16 @@
             border-color: var(--gold, #C9963A) !important;
             box-shadow: 0 0 0 3px rgba(201, 150, 58, 0.12) !important;
             outline: none !important;
-            background: rgba(13, 61, 34, 0.85) !important;
         }
 
         .form-control::placeholder {
-            color: rgba(232, 220, 200, 0.3) !important;
+            color: rgba(26, 26, 46, 0.3) !important;
         }
 
         /* ── Buttons ── */
-        /* Primary — gold fill */
         .btn-emerald {
-            background: var(--gold, #C9963A) !important;
-            color: #0D3D22 !important;
+            background: var(--emerald, #1B5E3B) !important;
+            color: #fff !important;
             border: none !important;
             font-family: 'Cinzel', serif !important;
             font-size: 13px !important;
@@ -242,17 +225,15 @@
         }
 
         .btn-emerald:hover {
-            background: #e0b05a !important;
-            color: #0D3D22 !important;
+            background: var(--emerald-dark, #164a2f) !important;
+            color: #fff !important;
             transform: translateY(-1px);
         }
 
         .btn-emerald:active {
             transform: translateY(0);
-            background: #b8832e !important;
         }
 
-        /* Secondary — outline */
         .btn-outline-gold {
             background: transparent !important;
             color: var(--gold, #C9963A) !important;
@@ -267,8 +248,8 @@
         }
 
         .btn-outline-gold:hover {
-            background: rgba(201, 150, 58, 0.12) !important;
-            color: #e0b05a !important;
+            background: rgba(201, 150, 58, 0.1) !important;
+            color: var(--gold, #C9963A) !important;
             transform: translateY(-1px);
         }
 
@@ -276,11 +257,10 @@
             transform: translateY(0);
         }
 
-        /* Danger */
         .btn-danger-outline {
             background: transparent !important;
-            color: #f87171 !important;
-            border: 1px solid rgba(248, 113, 113, 0.4) !important;
+            color: #dc3545 !important;
+            border: 1px solid rgba(220, 53, 69, 0.4) !important;
             font-size: 13px !important;
             padding: 9px 20px !important;
             border-radius: 6px !important;
@@ -289,8 +269,8 @@
         }
 
         .btn-danger-outline:hover {
-            background: rgba(248, 113, 113, 0.1) !important;
-            color: #fca5a5 !important;
+            background: rgba(220, 53, 69, 0.08) !important;
+            color: #b02a37 !important;
         }
 
         /* ── Subscription Card ── */
@@ -311,7 +291,7 @@
 
         .sub-plan-desc {
             font-size: 12px;
-            color: rgba(232, 220, 200, 0.5);
+            color: var(--gold, #C9963A);
             margin-top: 3px;
         }
 
@@ -320,7 +300,7 @@
             border: 1px solid rgba(220, 53, 69, 0.3);
             border-radius: 10px;
             padding: 1.25rem 1.5rem;
-            background: rgba(220, 53, 69, 0.05);
+            background: rgba(220, 53, 69, 0.04);
         }
 
         .danger-zone-label {
@@ -328,29 +308,29 @@
             font-size: 11px;
             letter-spacing: 1.5px;
             text-transform: uppercase;
-            color: #f87171;
+            color: #dc3545;
             margin-bottom: 0.5rem;
         }
 
         .danger-zone-text {
             font-size: 13px;
-            color: rgba(232, 220, 200, 0.5);
+            color: rgba(26, 26, 46, 0.55);
             margin-bottom: 1rem;
             line-height: 1.6;
         }
 
         /* ── Alert ── */
         .alert-islamic-success {
-            background: rgba(25, 135, 84, 0.15);
+            background: rgba(25, 135, 84, 0.1);
             border: 1px solid rgba(25, 135, 84, 0.3);
-            color: #6ee7b7;
+            color: #146c43;
             border-radius: 8px;
             padding: 12px 16px;
             font-size: 13px;
         }
 
         .text-danger {
-            color: #f87171 !important;
+            color: #dc3545 !important;
             font-size: 12px;
             margin-top: 4px;
         }
@@ -362,14 +342,13 @@
         <div class="profile-inner">
 
             {{-- ── Avatar & Identity ── --}}
+            @php
+                $nameParts = explode(' ', trim($user->name));
+                $initials = strtoupper(substr($nameParts[0], 0, 1) . substr(end($nameParts), 0, 1));
+            @endphp
             <div class="profile-avatar-block">
                 <div class="profile-avatar-ring">
-                    {{--
-                    We take the first letter of the name.
-                    strtoupper(substr($user->name, 0, 1)) gives us e.g. "M"
-                    For two initials, we could do first + last name letter.
-                --}}
-                    {{ strtoupper(substr($user->name, 0, 2)) }}
+                    {{ $initials }}
                 </div>
                 <div class="profile-user-name">{{ $user->name }}</div>
                 <span class="profile-plan-badge badge-{{ $user->plan }}">
@@ -378,10 +357,6 @@
             </div>
 
             {{-- ── Quranic Verse Band ── --}}
-            {{--
-            Ta-Ha 20:114 — same verse on your register page.
-            Keeps the spiritual identity consistent across all user-facing pages.
-        --}}
             <div class="verse-band">
                 <div class="arabic">رَبِّ زِدۡنِی عِلۡمًا</div>
                 <div class="reference">My Lord, increase me in knowledge — Ta-Ha 20:114</div>
@@ -395,16 +370,8 @@
             @endif
 
             {{-- ── Tabs ── --}}
-            {{--
-            Pure CSS tabs using :target selector trick.
-            No JavaScript needed. Each tab links to an anchor (#tab-profile etc.)
-            The section with matching id becomes visible.
-            Default (no target) shows profile section.
-        --}}
             <div class="profile-tabs">
-                <a href="#tab-profile"
-                    class="profile-tab {{ !request()->is('*#tab-preferences') && !request()->is('*#tab-password') ? 'active' : '' }}"
-                    id="link-profile">
+                <a href="#tab-profile" class="profile-tab active" id="link-profile">
                     Profile
                 </a>
                 <a href="#tab-preferences" class="profile-tab" id="link-preferences">Preferences</a>
@@ -413,7 +380,6 @@
 
             {{-- ══════════════════════════════════════
              TAB 1 — PROFILE
-             Handles: name, email update
         ══════════════════════════════════════ --}}
             <div id="tab-profile">
 
@@ -457,21 +423,37 @@
                             <div class="sub-plan-name">{{ strtoupper($user->plan) }}</div>
                             <div class="sub-plan-desc">
                                 @if ($user->plan === 'premium')
-                                    Full access — unlimited Quran, Tafsir, Prophet Stories
+                                    Full access — all 24 Prophet stories, Hadith, personal notes, offline downloads
                                 @elseif($user->plan === 'basic')
-                                    Standard access — Quran reading + basic Tafsir
+                                    All translations & recitations, tafsir, 12 Prophet stories, unlimited bookmarks
                                 @else
-                                    Free tier — limited daily reading
+                                    Free tier — 5 Prophet stories, 7 bookmarks
                                 @endif
                             </div>
+                            @if ($user->plan_expires_at)
+                                <div class="sub-plan-desc mt-1">
+                                    <i class="bi bi-calendar3 me-1"></i>
+                                    @if ($user->activeSubscription?->status === 'cancelled')
+                                        Access ends {{ $user->plan_expires_at->format('d M Y') }}
+                                    @else
+                                        Renews {{ $user->plan_expires_at->format('d M Y') }}
+                                    @endif
+                                </div>
+                            @endif
                         </div>
 
-                        {{-- Only show upgrade button if not already premium --}}
-                        @if ($user->plan !== 'premium')
-                            <a href="{{ route('pricing') }}" class="btn btn-outline-gold">
-                                Upgrade Plan
-                            </a>
-                        @endif
+                        <div class="d-flex gap-2 flex-wrap">
+                            @if ($user->plan !== 'free')
+                                <a href="{{ route('subscription.dashboard') }}" class="btn btn-outline-gold">
+                                    Manage Subscription
+                                </a>
+                            @endif
+                            @if ($user->plan !== 'premium')
+                                <a href="{{ route('pricing') }}" class="btn btn-emerald">
+                                    Upgrade Plan
+                                </a>
+                            @endif
+                        </div>
                     </div>
                 </div>
 
@@ -480,7 +462,6 @@
 
             {{-- ══════════════════════════════════════
              TAB 2 — PREFERENCES
-             Handles: preferred_language update
         ══════════════════════════════════════ --}}
             <div id="tab-preferences">
 
@@ -493,10 +474,6 @@
                         <div class="mb-4">
                             <label class="form-label">Preferred Language</label>
                             <select name="preferred_language" class="form-select">
-                                {{--
-                                We compare $user->preferred_language to each value.
-                                The ternary outputs 'selected' or '' for the HTML attribute.
-                            --}}
                                 <option value="en" {{ $user->preferred_language === 'en' ? 'selected' : '' }}>
                                     English
                                 </option>
@@ -520,7 +497,6 @@
 
             {{-- ══════════════════════════════════════
              TAB 3 — PASSWORD
-             Handles: current + new password change
         ══════════════════════════════════════ --}}
             <div id="tab-password">
 
@@ -562,23 +538,20 @@
                 </form>
 
                 {{-- ── Danger Zone ── --}}
-                {{--
-                Placed inside the password tab so it's not the first thing
-                a user sees. Keeps it accessible but out of the way.
-            --}}
                 <div class="danger-zone">
                     <div class="danger-zone-label">Danger Zone</div>
                     <div class="danger-zone-text">
                         Permanently deletes your account and removes all reading progress,
                         bookmarks, and notes. This action cannot be undone.
                     </div>
-                    {{--
-                    This links to a separate DELETE confirmation route.
-                    A confirmation prompt should be on that page, not a JS confirm().
-                --}}
-                    <a href="{{ route('profile.destroy') }}" class="btn btn-danger-outline">
-                        Delete My Account
-                    </a>
+                    <form action="{{ route('profile.destroy') }}" method="POST" class="d-inline"
+                        onsubmit="return confirm('Are you absolutely sure? This will permanently delete your account and remove all reading progress, bookmarks, and notes. This cannot be undone.')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger-outline">
+                            Delete My Account
+                        </button>
+                    </form>
                 </div>
 
             </div>{{-- end #tab-password --}}
@@ -589,20 +562,6 @@
 
 @push('scripts')
     <script>
-        /*
-         * Tab switching — pure JS, no jQuery needed.
-         *
-         * How it works:
-         * 1. We grab all sections (tab-profile, tab-preferences, tab-password)
-         * 2. We grab all tab links
-         * 3. On click of a tab link, we hide all sections and show the one matching
-         *    the href (e.g. "#tab-profile" → show element with id="tab-profile")
-         * 4. We also update the active class on the tab links
-         * 5. On page load, we check the URL hash and activate that tab.
-         *    This means if the form has an error, we redirect back with
-         *    #tab-password in the URL and the correct tab opens automatically.
-         */
-
         const sections = {
             'tab-profile': document.getElementById('tab-profile'),
             'tab-preferences': document.getElementById('tab-preferences'),
@@ -612,21 +571,17 @@
         const tabLinks = document.querySelectorAll('.profile-tab');
 
         function showTab(targetId) {
-            // Hide all sections
             Object.values(sections).forEach(el => {
                 if (el) el.style.display = 'none';
             });
 
-            // Remove active from all tabs
             tabLinks.forEach(link => link.classList.remove('active'));
 
-            // Show the target section
             const sectionId = targetId.replace('#', '');
             if (sections[sectionId]) {
                 sections[sectionId].style.display = 'block';
             }
 
-            // Add active class to the matching tab link
             tabLinks.forEach(link => {
                 if (link.getAttribute('href') === targetId) {
                     link.classList.add('active');
@@ -634,18 +589,15 @@
             });
         }
 
-        // Click handler for each tab
         tabLinks.forEach(link => {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
                 const target = this.getAttribute('href');
-                // Update URL hash without page jump
                 history.pushState(null, null, target);
                 showTab(target);
             });
         });
 
-        // On page load — check hash, default to #tab-profile
         const initialHash = window.location.hash || '#tab-profile';
         showTab(initialHash);
     </script>

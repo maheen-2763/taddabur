@@ -106,7 +106,7 @@
                             <i class="bi bi-stars fs-2 text-success mb-2 d-block"></i>
                             <h5 class="fw-bold mb-2">Unlock Premium Features</h5>
                             <p class="text-muted mb-3">
-                                Get all 24 prophet stories, Hadith collections, personal notes on every ayah,
+                                Get all 25 prophet stories, Hadith collections, personal notes on every ayah,
                                 and offline downloads
                                 @if ($premiumPlan)
                                     for just ${{ number_format($premiumPlan->price_monthly, 2) }}/month.

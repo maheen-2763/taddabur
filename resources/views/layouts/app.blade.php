@@ -196,7 +196,9 @@
                     <h6 class="text-white mb-3"
                         style="font-family:var(--font-heading); font-size:0.8rem; letter-spacing:0.06em;">About Us</h6>
                     <ul class="list-unstyled mb-0" style="font-size:0.875rem;">
-                        <li class="mb-2"><a href="#">Sources</a></li>
+                        <li class="mb-2"> <a href="{{ route('terms') }}">Terms</a></li>
+                        <li class="mb-2"> <a href="{{ route('privacy') }}">Privacy Policy</a></li>
+                        <li class="mb-2"> <a href="{{ route('about') }}">Sources</a></li>
                     </ul>
                 </div>
 

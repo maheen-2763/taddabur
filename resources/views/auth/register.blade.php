@@ -5,8 +5,8 @@
 @push('styles')
     <style>
         /* ================================================
-           AUTH BACKGROUND
-        ================================================ */
+                                                                                   AUTH BACKGROUND
+                                                                                ================================================ */
         .auth-section {
             min-height: 100vh;
             display: flex;
@@ -45,23 +45,42 @@
 
         .auth-watermark {
             position: fixed;
-            top: 50%;
-            left: 50%;
+            top: 30%;
+            right: 20%;
             transform: translate(-50%, -50%);
             font-family: var(--font-arabic);
             font-size: clamp(9rem, 16vw, 16rem);
             line-height: 1;
-            color: rgba(201, 150, 58, 0.05);
+            color: rgba(201, 150, 58, 0.16);
             pointer-events: none;
             z-index: 0;
             user-select: none;
-            -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 75%);
-            mask-image: radial-gradient(circle at center, black 40%, transparent 75%);
+            animation: watermark-breathe 6s ease-in-out infinite;
+        }
+
+        @keyframes watermark-breathe {
+
+            0%,
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.16;
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.05);
+                opacity: 0.24;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .auth-watermark {
+                animation: none;
+            }
         }
 
         /* ================================================
-           WRAPPER
-        ================================================ */
+                                                                                   WRAPPER
+                                                                                ================================================ */
         .auth-wrapper {
             position: relative;
             z-index: 1;
@@ -70,8 +89,8 @@
         }
 
         /* ================================================
-           BRAND HEADER
-        ================================================ */
+                                                                BRAND HEADER
+                                                               ================================================ */
         .auth-bismillah {
             font-family: var(--font-arabic);
             font-size: 1.4rem;
@@ -96,8 +115,8 @@
         }
 
         /* ================================================
-           CARD
-        ================================================ */
+                                                       CARD
+                                                                                ================================================ */
         .auth-card {
             position: relative;
             background: var(--cream);
@@ -133,8 +152,8 @@
         }
 
         /* ================================================
-           FORM ELEMENTS
-        ================================================ */
+                                                                                   FORM ELEMENTS
+                                                                                ================================================ */
         .auth-card .form-control {
             border-radius: var(--radius);
             border-color: var(--border);
@@ -184,8 +203,8 @@
         }
 
         /* ================================================
-           TASBIH LOADING STATE
-        ================================================ */
+                                                                                   TASBIH LOADING STATE
+                                                                                ================================================ */
         .tasbih-loader {
             display: none;
             align-items: center;
@@ -258,8 +277,8 @@
         }
 
         /* ================================================
-           REGISTER VERSE (Ta-Ha 20:114)
-        ================================================ */
+                                                                                   REGISTER VERSE (Ta-Ha 20:114)
+                                                                                ================================================ */
         .register-verse {
             background: linear-gradient(135deg,
                     rgba(201, 150, 58, 0.08) 0%,
@@ -288,8 +307,8 @@
         }
 
         /* ================================================
-           FOOTER
-        ================================================ */
+                                                                                   FOOTER
+                                                                                ================================================ */
         .auth-footer-note {
             color: rgba(255, 255, 255, 0.45);
             font-size: 0.75rem;
@@ -310,7 +329,7 @@
 @section('content')
 
     <div class="auth-pattern" aria-hidden="true"></div>
-    <div class="auth-watermark" aria-hidden="true">ﷲ</div>
+    <div class="auth-watermark" aria-hidden="true">اقْرَأْ</div>
 
     <section class="auth-section">
         <div class="auth-wrapper">
@@ -338,7 +357,7 @@
                 {{-- Register verse — Ta-Ha 20:114 --}}
                 <div class="register-verse">
                     <div class="register-verse-ar" lang="ar" dir="rtl">
-                        رَّبِّ زِدۡنِي عِلۡمٗا
+                        رَّبِّ زِدْنِى عِلْمًۭا
                     </div>
                     <div class="register-verse-en">
                         "My Lord, increase me in knowledge." — Ta-Ha 20:114
@@ -381,7 +400,7 @@
                     <div class="mb-3">
                         <label for="password" class="form-label">Password</label>
                         <div class="input-group">
-                            <input id="password" type="password" name="password"
+                            <input id="password" type="password" name="password" minlength="8"
                                 class="form-control @error('password') is-invalid @enderror" placeholder="Min. 8 characters"
                                 required autocomplete="new-password">
                             <button class="btn btn-toggle-pass" type="button" onclick="togglePassword('password', this)"
@@ -398,12 +417,15 @@
                         <label for="password_confirmation" class="form-label">Confirm Password</label>
                         <div class="input-group">
                             <input id="password_confirmation" type="password" name="password_confirmation"
-                                class="form-control" placeholder="Repeat your password" required
-                                autocomplete="new-password">
+                                class="form-control @error('password_confirmation') is-invalid @enderror"
+                                placeholder="Repeat your password" required minlength="8" autocomplete="new-password">
                             <button class="btn btn-toggle-pass" type="button"
                                 onclick="togglePassword('password_confirmation', this)" tabindex="-1">
                                 <i class="bi bi-eye"></i>
                             </button>
+                            @error('password_confirmation')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
 
@@ -431,7 +453,7 @@
 
             <p class="text-center auth-footer-note mt-4">
                 By registering you agree to our
-                <a href="#">Terms</a> &amp; <a href="#">Privacy Policy</a>.
+                <a href="{{ route('terms') }}">Terms</a> &amp; <a href="{{ route('privacy') }}">Privacy Policy</a>
             </p>
 
         </div>

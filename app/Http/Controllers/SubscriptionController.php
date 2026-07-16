@@ -22,6 +22,12 @@ class SubscriptionController extends Controller
     // PRICING — Public page
     // GET /pricing
     // -------------------------------------------------------
+
+    public function dashboard(): View
+    {
+        return view('subscription.dashboard');
+    }
+
     public function pricing(): View
     {
         $plans = $this->subscriptionService->getActivePlans();
