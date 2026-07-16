@@ -25,6 +25,7 @@ class Story extends Model
         'cover_image',
         'difficulty',
         'is_free',
+        'min_plan_slug',
         'is_published',
         'sort_order',
         'read_time_minutes',
@@ -165,5 +166,15 @@ class Story extends Model
     public function scopeGeneral($query)
     {
         return $query->where('category', 'general');
+    }
+
+
+    public function isAccessibleBy(?User $user): bool
+    {
+        $planRanks    = Plan::pluck('sort_order', 'slug'); // ['free'=>1,'basic'=>2,'premium'=>3]
+        $userRank     = $planRanks[$user?->plan ?? 'free'] ?? 1;
+        $requiredRank = $planRanks[$this->min_plan_slug] ?? 99;
+
+        return $userRank >= $requiredRank;
     }
 }

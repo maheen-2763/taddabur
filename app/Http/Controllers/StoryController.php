@@ -13,6 +13,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
+
 class StoryController extends Controller
 {
     public function __construct(private StoryService $storyService) {}
@@ -56,12 +57,15 @@ class StoryController extends Controller
     }
 
     // GET /stories/{story:slug}
-    public function show(Story $story): View
+
+    public function show(Story $story): View|RedirectResponse
     {
         $user = Auth::user();
 
         if (!$this->storyService->userCanAccessStory($user, $story)) {
-            abort(403);
+            return redirect()
+                ->route('subscription.upgrade')
+                ->with('upgrade_message', "Upgrade to {$story->min_plan_slug} plan to unlock \"{$story->title}\".");
         }
 
         $story->load(['chapters' => fn($q) => $q->orderBy('order'), 'prophet']);

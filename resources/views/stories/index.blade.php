@@ -390,16 +390,18 @@
 
                                         {{-- Badge row --}}
                                         <div class="d-flex justify-content-between align-items-center mb-2">
-                                            @if ($story->is_free)
+                                            @php $accessible = $story->isAccessibleBy(Auth::user()); @endphp
+
+                                            @if ($story->min_plan_slug === 'free')
                                                 <span class="story-badge-free">Free</span>
+                                            @elseif ($accessible)
+                                                <span class="story-badge-free">
+                                                    <i class="bi bi-unlock-fill me-1"></i>Unlocked
+                                                </span>
                                             @else
                                                 <span class="story-badge-premium">
-                                                    <i class="bi bi-lock-fill me-1"></i>Premium
-                                                </span>
-                                            @endif
-                                            @if ($story->difficulty)
-                                                <span class="story-chip">
-                                                    {{ ucfirst($story->difficulty) }}
+                                                    <i
+                                                        class="bi bi-lock-fill me-1"></i>{{ ucfirst($story->min_plan_slug) }}
                                                 </span>
                                             @endif
                                         </div>
@@ -453,14 +455,11 @@
                                                 @endif
                                             </div>
 
-                                            @if (!$story->is_free && !Auth::user()?->isPremium())
-                                                <span style="font-size:0.75rem; color:var(--gold)">
-                                                    Upgrade →
-                                                </span>
+                                            @if (!$accessible)
+                                                <span style="font-size:0.75rem; color:var(--gold)">Upgrade →</span>
                                             @else
-                                                <span style="font-size:0.78rem; color:var(--emerald); font-weight:500">
-                                                    Read →
-                                                </span>
+                                                <span style="font-size:0.78rem; color:var(--emerald); font-weight:500">Read
+                                                    →</span>
                                             @endif
                                         </div>
 

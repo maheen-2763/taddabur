@@ -81,7 +81,8 @@
                             @else
                                 <h6 class="fw-bold mb-1 text-danger">Cancel Subscription</h6>
                                 <p class="text-muted small mb-3">
-                                    You'll keep Premium access until your current billing period ends —
+                                    You'll keep {{ ucfirst(auth()->user()->plan) }} access until your current billing period
+                                    ends —
                                     no further charges after that.
                                 </p>
                                 <form action="{{ route('subscription.cancel') }}" method="POST"
@@ -94,7 +95,9 @@
                             @endif
                         </div>
                     </div>
-                @else
+                @endif
+
+                @if (auth()->user()->plan !== 'premium')
                     @php
                         $premiumPlan = \App\Models\Plan::where('slug', 'premium')->first();
                     @endphp
@@ -103,7 +106,8 @@
                             <i class="bi bi-stars fs-2 text-success mb-2 d-block"></i>
                             <h5 class="fw-bold mb-2">Unlock Premium Features</h5>
                             <p class="text-muted mb-3">
-                                Get tafsir, audio, notes, and all prophet stories
+                                Get all 24 prophet stories, Hadith collections, personal notes on every ayah,
+                                and offline downloads
                                 @if ($premiumPlan)
                                     for just ${{ number_format($premiumPlan->price_monthly, 2) }}/month.
                                 @else

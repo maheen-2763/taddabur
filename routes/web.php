@@ -46,20 +46,22 @@ Route::get('/', [HomeController::class, 'index'])
 
 
 // Global — collections index page (all collections mix)
-Route::get('/hadith/grade/{reliability}', [HadithGradeController::class, 'show'])
-    ->name('hadith.grade');
+Route::middleware(['auth', 'plan:has_hadith'])->group(function () {
 
-// Collection-scoped
-Route::get('/hadith/{collection:slug}/grade/{reliability}', [HadithGradeController::class, 'showForCollection'])
-    ->name('hadith.grade.collection');   // ✅ alag naam
+    Route::get('/hadith/grade/{reliability}', [HadithGradeController::class, 'show'])
+        ->name('hadith.grade');
 
-Route::prefix('hadith')->name('hadith.')->group(function () {
-    Route::get('/', [HadithController::class, 'index'])->name('index');
-    Route::get('/{collection:slug}', [HadithController::class, 'chapters'])->name('chapters');
-    Route::get('/{collection:slug}/{chapter:number}', [HadithController::class, 'show'])->name('show');
-    Route::get('/{collection:slug}/{chapter:number}/items', [HadithController::class, 'loadHadiths'])->name('items');
+    // Collection-scoped
+    Route::get('/hadith/{collection:slug}/grade/{reliability}', [HadithGradeController::class, 'showForCollection'])
+        ->name('hadith.grade.collection');   // ✅ alag naam
+
+    Route::prefix('hadith')->name('hadith.')->group(function () {
+        Route::get('/', [HadithController::class, 'index'])->name('index');
+        Route::get('/{collection:slug}', [HadithController::class, 'chapters'])->name('chapters');
+        Route::get('/{collection:slug}/{chapter:number}', [HadithController::class, 'show'])->name('show');
+        Route::get('/{collection:slug}/{chapter:number}/items', [HadithController::class, 'loadHadiths'])->name('items');
+    });
 });
-
 
 // routes/web.php
 Route::post('/webhooks/razorpay', [RazorpayWebhookController::class, 'handle'])

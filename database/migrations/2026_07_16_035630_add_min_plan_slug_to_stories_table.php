@@ -11,15 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('juz', function (Blueprint $table) {
-            $table->json('verse_mapping')->nullable()->after('number');
+        Schema::table('stories', function (Blueprint $table) {
+            $table->string('min_plan_slug')->default('premium')->after('is_free');
         });
     }
 
     public function down(): void
     {
-        Schema::table('juz', function (Blueprint $table) {
-            $table->dropColumn('verse_mapping');
+        Schema::table('stories', function (Blueprint $table) {
+            $table->dropColumn('min_plan_slug');
         });
     }
 };

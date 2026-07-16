@@ -34,7 +34,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
 
-        if ($this->app->environment('local')) {
+        if (config('app.force_https', false)) {
             URL::forceScheme('https');
         }
         StoryChapter::observe(StoryChapterObserver::class);

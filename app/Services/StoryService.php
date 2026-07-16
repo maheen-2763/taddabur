@@ -8,6 +8,7 @@ use App\Models\ReadingProgress;
 use App\Models\Story;
 use App\Models\StoryChapter;
 use App\Models\User;
+use App\Models\Plan;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use App\Models\ChapterCompletion;
@@ -58,18 +59,9 @@ class StoryService
     // -------------------------------------------------------
     public function userCanAccessStory(?User $user, Story $story): bool
     {
-        // Free stories — anyone can read
-        if ($story->is_free) {
-            return true;
-        }
-
-        // Paid stories — must be logged in AND have a paid plan
-        if (!$user) {
-            return false;
-        }
-
-        return $user->isPremium();
+        return $story->isAccessibleBy($user);
     }
+
 
     // -------------------------------------------------------
     // GET CHAPTER WITH ALL CONTEXT
@@ -145,7 +137,6 @@ class StoryService
     {
         return Story::published()
             ->where('prophet_id', $prophet->id)
-            ->when(!$user?->isPremium(), fn($q) => $q->free())
             ->orderBy('sort_order')
             ->get();
     }

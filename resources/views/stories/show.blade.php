@@ -231,6 +231,24 @@
         .prophet-sidebar-card-body {
             padding: 1.1rem 1.25rem 1.25rem;
         }
+
+        .story-badge-free {
+            font-size: 0.65rem;
+            padding: 0.18rem 0.55rem;
+            border-radius: 50px;
+            font-weight: 600;
+            background: rgba(27, 94, 59, 0.1);
+            color: var(--emerald-light);
+        }
+
+        .story-badge-premium {
+            font-size: 0.65rem;
+            padding: 0.18rem 0.55rem;
+            border-radius: 50px;
+            font-weight: 600;
+            background: rgba(180, 130, 40, 0.1);
+            color: var(--gold);
+        }
     </style>
 @endpush
 
@@ -292,11 +310,17 @@
 
                         {{-- Badges --}}
                         <div class="mb-2">
-                            @if ($story->is_free)
-                                <span class="meta-chip-white">Free</span>
+                            @php $accessible = $story->isAccessibleBy(Auth::user()); @endphp
+
+                            @if ($story->min_plan_slug === 'free')
+                                <span class="story-badge-free">Free</span>
+                            @elseif ($accessible)
+                                <span class="story-badge-free">
+                                    <i class="bi bi-unlock-fill me-1"></i>Unlocked
+                                </span>
                             @else
-                                <span class="meta-chip-white-gold">
-                                    <i class="bi bi-lock-fill me-1"></i>Premium
+                                <span class="story-badge-premium">
+                                    <i class="bi bi-lock-fill me-1"></i>{{ ucfirst($story->min_plan_slug) }}
                                 </span>
                             @endif
                         </div>

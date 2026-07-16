@@ -49,14 +49,13 @@
 
                             <div class="card-body p-4 d-flex flex-column">
 
-                                <h4 class="fw-bold mb-1">{{ $plan->name }}</h4>
-                                <p class="text-muted small mb-4">{{ $plan->description }}</p>
+
 
                                 {{-- Price --}}
                                 <div class="mb-4">
                                     @if ($plan->isFree())
-                                        <span class="display-6 fw-bold">Free</span>
-                                        <span class="text-muted small d-block mt-1">Forever</span>
+                                        <h4 class="fw-bold mb-1">{{ $plan->name }}</h4>
+                                        <p class="text-muted small mb-4">{{ $plan->description }}</p>
                                     @else
                                         <div class="price-monthly">
                                             <span
@@ -108,20 +107,6 @@
                                             @endif
                                         @endforeach
                                     @endif
-
-                                    <li class="mb-2 d-flex align-items-start gap-2 text-muted">
-                                        <i class="bi bi-book flex-shrink-0 mt-1 text-success"></i>
-                                        <span class="small">
-                                            {{ $plan->story_limit_label }} prophet stories
-                                        </span>
-                                    </li>
-                                    <li class="mb-2 d-flex align-items-start gap-2 text-muted">
-                                        <i class="bi bi-translate flex-shrink-0 mt-1 text-success"></i>
-                                        <span class="small">
-                                            {{ $plan->translation_limit_label }}
-                                            translation {{ Str::plural('language', $plan->translation_limit ?? 2) }}
-                                        </span>
-                                    </li>
                                 </ul>
 
                                 {{-- CTA Button --}}

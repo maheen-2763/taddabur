@@ -22,6 +22,8 @@ class Plan extends Model
         'features',
         'story_limit',
         'translation_limit',
+        'bookmark_limit',
+        'has_hadith',
         'has_tafsir',
         'has_audio',
         'has_notes',
