@@ -5,8 +5,8 @@
 @push('styles')
     <style>
         /* ================================================
-                                                                               AUTH BACKGROUND
-                                                                            ================================================ */
+                                                                                   AUTH BACKGROUND
+                                                                                ================================================ */
         .auth-section {
             min-height: 100vh;
             display: flex;
@@ -80,8 +80,8 @@
         }
 
         /* ================================================
-                                                                               WRAPPER
-                                                                            ================================================ */
+                                                                                   WRAPPER
+                                                                                ================================================ */
         .auth-wrapper {
             position: relative;
             z-index: 1;
@@ -90,8 +90,8 @@
         }
 
         /* ================================================
-                                                                               BRAND HEADER
-                                                                            ================================================ */
+                                                                                   BRAND HEADER
+                                                                                ================================================ */
         .auth-bismillah {
             font-family: var(--font-arabic);
             font-size: 1.4rem;
@@ -108,8 +108,8 @@
 
 
         /* ================================================
-                                                                               CARD
-                                                                            ================================================ */
+                                                                                   CARD
+                                                                                ================================================ */
         .auth-card {
             position: relative;
             background: var(--cream);
@@ -146,8 +146,8 @@
         }
 
         /* ================================================
-                                                                               FORM ELEMENTS
-                                                                            ================================================ */
+                                                                                   FORM ELEMENTS
+                                                                                ================================================ */
         .auth-card .form-control {
             border-radius: var(--radius);
             border-color: var(--border);
@@ -206,8 +206,8 @@
         }
 
         /* ================================================
-                                                                               TASBIH LOADING STATE
-                                                                            ================================================ */
+                                                                                   TASBIH LOADING STATE
+                                                                                ================================================ */
         .tasbih-loader {
             display: none;
             align-items: center;
@@ -280,8 +280,8 @@
         }
 
         /* ================================================
-                                                                               FOOTER VERSE
-                                                                            ================================================ */
+                                                                                   FOOTER VERSE
+                                                                                ================================================ */
         .ayah-footer {
             color: rgba(255, 255, 255, 0.55);
             font-size: 0.82rem;
@@ -350,9 +350,6 @@
                         <input id="email" type="email" name="email" value="{{ old('email') }}"
                             class="form-control @error('email') is-invalid @enderror" placeholder="you@example.com" required
                             @if (!$errors->has('password') || $errors->has('email')) autofocus @endif autocomplete="username">
-                        @error('email')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
                     </div>
 
                     <div class="mb-3">
@@ -371,9 +368,7 @@
                                 tabindex="-1" aria-label="Show password" aria-pressed="false">
                                 <i class="bi bi-eye"></i>
                             </button>
-                            @error('password')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+
                         </div>
                     </div>
 

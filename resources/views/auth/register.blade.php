@@ -5,8 +5,8 @@
 @push('styles')
     <style>
         /* ================================================
-                                                                                                                                                                       AUTH BACKGROUND
-                                                                                                                                                                    ================================================ */
+                                                                                                                                                                                   AUTH BACKGROUND
+                                                                                                                                                                                ================================================ */
         .auth-section {
             min-height: 100vh;
             display: flex;
@@ -79,8 +79,8 @@
         }
 
         /* ================================================
-                                                                                                                                                                       WRAPPER
-                                                                                                                                                                    ================================================ */
+                                                                                                                                                                                   WRAPPER
+                                                                                                                                                                                ================================================ */
         .auth-wrapper {
             position: relative;
             z-index: 1;
@@ -89,8 +89,8 @@
         }
 
         /* ================================================
-                                                                                                                                                    BRAND HEADER
-                                                                                                                                                   ================================================ */
+                                                                                                                                                                BRAND HEADER
+                                                                                                                                                               ================================================ */
         .auth-bismillah {
             font-family: var(--font-arabic);
             font-size: 1.4rem;
@@ -107,8 +107,8 @@
 
 
         /* ================================================
-                                                                                                                                           CARD
-                                                                                                                                                                    ================================================ */
+                                                                                                                                                       CARD
+                                                                                                                                                                                ================================================ */
         .auth-card {
             position: relative;
             background: var(--cream);
@@ -144,8 +144,8 @@
         }
 
         /* ================================================
-                                                                                                                                                                       FORM ELEMENTS
-                                                                                                                                                                    ================================================ */
+                                                                                                                                                                                   FORM ELEMENTS
+                                                                                                                                                                                ================================================ */
         .auth-card .form-control {
             border-radius: var(--radius);
             border-color: var(--border);
@@ -172,16 +172,26 @@
             margin-bottom: 0.35rem;
         }
 
+
+
+
         .btn-toggle-pass {
             border: 1px solid var(--border);
             border-left: none;
             background: #fff;
             color: var(--ink-soft);
+
+
         }
 
         .btn-toggle-pass:hover {
             color: var(--gold-dark);
             background: #fff;
+        }
+
+        input[type="password"]::-ms-reveal,
+        input[type="password"]::-ms-clear {
+            display: none;
         }
 
         .link-gold {
@@ -195,8 +205,8 @@
         }
 
         /* ================================================
-                                                                                                                                                                       TASBIH LOADING STATE
-                                                                                                                                                                    ================================================ */
+                                                                                                                                                                                   TASBIH LOADING STATE
+                                                                                                                                                                                ================================================ */
         .tasbih-loader {
             display: none;
             align-items: center;
@@ -269,8 +279,8 @@
         }
 
         /* ================================================
-                                                                                                                                                                       REGISTER VERSE (Ta-Ha 20:114)
-                                                                                                                                                                    ================================================ */
+                                                                                                                                                                                   REGISTER VERSE (Ta-Ha 20:114)
+                                                                                                                                                                                ================================================ */
         .register-verse {
             background: linear-gradient(135deg,
                     rgba(201, 150, 58, 0.08) 0%,
@@ -299,8 +309,8 @@
         }
 
         /* ================================================
-                                                                                                                                                                       FOOTER
-                                                                                                                                                                    ================================================ */
+                                                                                                                                                                                   FOOTER
+                                                                                                                                                                                ================================================ */
         .auth-footer-note {
             color: rgba(255, 255, 255, 0.45);
             font-size: 0.75rem;
