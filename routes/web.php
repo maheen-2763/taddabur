@@ -50,6 +50,10 @@ Route::view('/privacy-policy', 'legal.privacy')->name('privacy');
 Route::view('/about', 'about')->name('about');
 
 
+
+
+
+
 // Global — collections index page (all collections mix)
 Route::middleware(['auth', 'plan:has_hadith'])->group(function () {
 
@@ -240,11 +244,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/', [ProfileController::class, 'destroy'])->name('destroy');
         Route::post('/preferences', [ProfileController::class, 'updatePreferences'])->name('preferences');
     });
-});
-
-Route::get('/test-name', function () {
-
-    return view('test');
 });
 
 // ============================================================

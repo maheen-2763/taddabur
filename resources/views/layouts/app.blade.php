@@ -155,7 +155,9 @@
 
                 <div class="col-md-4 mb-4">
                     <div class="mb-3">
-                        @include('components.logo', ['height' => 32])
+                        <a class="navbar-brand text-decoration-none" href="{{ route('home') }}">
+                            @include('components.logo', ['height' => 32])
+                        </a>
                     </div>
                     <p class="mb-0" style="font-size:0.85rem; color:rgba(255,255,255,0.65)">
                         Quran reading, Tafsir, and Prophet stories and many more —<br>

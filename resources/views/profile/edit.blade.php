@@ -182,7 +182,7 @@
             font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            color: rgba(26, 26, 46, 0.55);
+            color: var(--gold, #C9963A);
             margin-bottom: 6px;
             display: block;
         }
@@ -313,8 +313,8 @@
         }
 
         .danger-zone-text {
-            font-size: 13px;
-            color: rgba(26, 26, 46, 0.55);
+            font-size: 12px;
+            color: #dc3545 !important;
             margin-bottom: 1rem;
             line-height: 1.6;
         }
@@ -540,14 +540,27 @@
                 {{-- ── Danger Zone ── --}}
                 <div class="danger-zone">
                     <div class="danger-zone-label">Danger Zone</div>
-                    <div class="danger-zone-text">
+                    <div class="danger-zone-label">
                         Permanently deletes your account and removes all reading progress,
                         bookmarks, and notes. This action cannot be undone.
                     </div>
-                    <form action="{{ route('profile.destroy') }}" method="POST" class="d-inline"
+
+                    <form action="{{ route('profile.destroy') }}" method="POST" class="d-inline danger-zone-label"
                         onsubmit="return confirm('Are you absolutely sure? This will permanently delete your account and remove all reading progress, bookmarks, and notes. This cannot be undone.')">
                         @csrf
                         @method('DELETE')
+
+                        <div class="mb-3">
+                            <label for="delete_password" class="form-label danger-zone-label">Confirm your
+                                password</label>
+                            <input type="password" id="delete_password" name="password"
+                                class="form-control @error('password', 'userDeletion') is-invalid @enderror"
+                                placeholder="Enter your password to confirm">
+                            @error('password', 'userDeletion')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         <button type="submit" class="btn btn-danger-outline">
                             Delete My Account
                         </button>

@@ -14,16 +14,13 @@
             isolation: isolate;
         }
 
-        .geo-pattern-overlay {
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z' fill='none' stroke='rgba(201,150,58,0.07)' stroke-width='1'/%3E%3C/svg%3E");
-            background-size: 60px 60px;
-        }
-
         /* Decorative geometric pattern overlay */
         .hero::before {
             content: '';
             position: absolute;
             inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z' fill='none' stroke='rgba(201,150,58,0.07)' stroke-width='1'/%3E%3C/svg%3E");
+            background-size: 60px 60px;
         }
 
         .quran-ayah {
@@ -115,20 +112,6 @@
             z-index: 1;
         }
 
-        .allah-watermark {
-            position: absolute;
-            top: 58%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-family: 'Amiri', serif;
-            font-size: clamp(10rem, 18vw, 20rem);
-            line-height: 1;
-            color: rgba(201, 150, 58, 0.08);
-            white-space: nowrap;
-            user-select: none;
-            -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 75%);
-            mask-image: radial-gradient(circle at center, black 40%, transparent 75%);
-        }
 
         .hero .container {
             position: relative;
@@ -159,8 +142,8 @@
         }
 
         /* ==========================================
-                                                                                                                                                                                                                                                                                                   COMING SOON CARDS
-                                                                                                                                                                                                                                                                                                ========================================== */
+                                                                                                                                                                                                                                                                                                                                               COMING SOON CARDS
+                                                                                                                                                                                                                                                                                                                                            ========================================== */
 
         .card-coming-soon {
             position: relative;
@@ -341,7 +324,7 @@
             width: 100%;
             height: 60px;
             margin-bottom: -1px;
-            /* neeche wale section se seamlessly juड़ जाए */
+
         }
 
 
@@ -581,48 +564,45 @@
             </div>
 
             <div class="row g-4">
-                <div class="row g-6">
-                    {{-- Sahaba Stories --}}
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card-coming-soon p-4 h-100">
-                            <span class="badge-coming-soon">Coming Soon</span>
-                            <div class="feature-icon-outline mb-3">
-                                <i class="bi bi-people"></i>
-                            </div>
-                            <h5 class="heading-font mb-1" style="font-size:1rem">Sahaba Stories</h5>
-                            <p class="text-muted mb-0" style="font-size:0.9rem">
-                                The companions who carried the message forward — their courage, sacrifice, and lives
-                                beside the Prophet ﷺ.
-                            </p>
+                {{-- Sahaba Stories --}}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card-coming-soon p-4 h-100">
+                        <span class="badge-coming-soon">Coming Soon</span>
+                        <div class="feature-icon-outline mb-3">
+                            <i class="bi bi-people"></i>
                         </div>
-                    </div>
-
-                    {{-- Tadabbur AI — with live mini preview --}}
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card-coming-soon p-4 h-100">
-                            <span class="badge-coming-soon">Coming Soon</span>
-                            <div class="feature-icon-outline mb-3">
-                                <i class="bi bi-robot"></i>
-                            </div>
-                            <h5 class="heading-font mb-1" style="font-size:1rem">Tadabbur AI</h5>
-                            <p class="text-muted mb-0" style="font-size:0.9rem">
-                                Ask questions about any ayah and get clear answers — grounded only in your existing
-                                Tafsir sources, built to help you reflect, not replace a scholar.
-                            </p>
-                            <div class="asma-preview">
-                                <div class="asma-preview-ar" id="asma-preview-ar">&nbsp;</div>
-                                <div class="asma-preview-en" id="asma-preview-en">&nbsp;</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="text-center mt-5">
-                        <p class="text-muted mb-2" style="font-size:0.9rem">Want to know the moment these launch?</p>
-                        <a href="{{ route('register') }}" class="btn-emerald btn">
-                            Create a Free Account
-                        </a>
+                        <h5 class="heading-font mb-1" style="font-size:1rem">Sahaba Stories</h5>
+                        <p class="text-muted mb-0" style="font-size:0.9rem">
+                            The companions who carried the message forward — their courage, sacrifice, and lives
+                            beside the Prophet ﷺ.
+                        </p>
                     </div>
                 </div>
+
+                {{-- Tadabbur AI — with live mini preview --}}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card-coming-soon p-4 h-100">
+                        <span class="badge-coming-soon">Coming Soon</span>
+                        <div class="feature-icon-outline mb-3">
+                            <i class="bi bi-robot"></i>
+                        </div>
+                        <h5 class="heading-font mb-1" style="font-size:1rem">Tadabbur AI</h5>
+                        <p class="text-muted mb-0" style="font-size:0.9rem">
+                            Ask questions about any ayah and get clear answers — grounded only in your existing
+                            Tafsir sources, built to help you reflect, not replace a scholar.
+                        </p>
+                        <div class="asma-preview">
+                            <div class="asma-preview-ar" id="asma-preview-ar">&nbsp;</div>
+                            <div class="asma-preview-en" id="asma-preview-en">&nbsp;</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-5">
+                    <p class="text-muted mb-2" style="font-size:0.9rem">Want to know the moment these launch?</p>
+                    <a href="{{ route('register') }}" class="btn-emerald btn">Create a Free Account</a>
+                </div>
+            </div>
     </section>
 
     {{-- ============================================================

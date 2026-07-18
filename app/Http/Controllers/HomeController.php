@@ -18,6 +18,7 @@ class HomeController extends Controller
         $allahNames = AllahName::inRandomOrder()
             ->take(20)
             ->get();
+
         $plans = Plan::where('is_active', true)->orderBy('sort_order')->get();
 
         return view('welcome', compact('allahNames', 'plans'));

@@ -5,8 +5,8 @@
 @push('styles')
     <style>
         /* ================================================
-                                                                                   AUTH BACKGROUND
-                                                                                ================================================ */
+                                                                                                                                                                       AUTH BACKGROUND
+                                                                                                                                                                    ================================================ */
         .auth-section {
             min-height: 100vh;
             display: flex;
@@ -46,8 +46,8 @@
         .auth-watermark {
             position: fixed;
             top: 30%;
-            right: 20%;
-            transform: translate(-50%, -50%);
+            right: 10%;
+            transform: translate(50%, -50%);
             font-family: var(--font-arabic);
             font-size: clamp(9rem, 16vw, 16rem);
             line-height: 1;
@@ -79,8 +79,8 @@
         }
 
         /* ================================================
-                                                                                   WRAPPER
-                                                                                ================================================ */
+                                                                                                                                                                       WRAPPER
+                                                                                                                                                                    ================================================ */
         .auth-wrapper {
             position: relative;
             z-index: 1;
@@ -89,8 +89,8 @@
         }
 
         /* ================================================
-                                                                BRAND HEADER
-                                                               ================================================ */
+                                                                                                                                                    BRAND HEADER
+                                                                                                                                                   ================================================ */
         .auth-bismillah {
             font-family: var(--font-arabic);
             font-size: 1.4rem;
@@ -104,19 +104,11 @@
             letter-spacing: 0.04em;
         }
 
-        .hijri-date {
-            display: inline-block;
-            font-family: var(--font-arabic);
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.55);
-            margin-top: 6px;
-            letter-spacing: 0.02em;
-            direction: rtl;
-        }
+
 
         /* ================================================
-                                                       CARD
-                                                                                ================================================ */
+                                                                                                                                           CARD
+                                                                                                                                                                    ================================================ */
         .auth-card {
             position: relative;
             background: var(--cream);
@@ -152,8 +144,8 @@
         }
 
         /* ================================================
-                                                                                   FORM ELEMENTS
-                                                                                ================================================ */
+                                                                                                                                                                       FORM ELEMENTS
+                                                                                                                                                                    ================================================ */
         .auth-card .form-control {
             border-radius: var(--radius);
             border-color: var(--border);
@@ -203,8 +195,8 @@
         }
 
         /* ================================================
-                                                                                   TASBIH LOADING STATE
-                                                                                ================================================ */
+                                                                                                                                                                       TASBIH LOADING STATE
+                                                                                                                                                                    ================================================ */
         .tasbih-loader {
             display: none;
             align-items: center;
@@ -277,8 +269,8 @@
         }
 
         /* ================================================
-                                                                                   REGISTER VERSE (Ta-Ha 20:114)
-                                                                                ================================================ */
+                                                                                                                                                                       REGISTER VERSE (Ta-Ha 20:114)
+                                                                                                                                                                    ================================================ */
         .register-verse {
             background: linear-gradient(135deg,
                     rgba(201, 150, 58, 0.08) 0%,
@@ -307,8 +299,8 @@
         }
 
         /* ================================================
-                                                                                   FOOTER
-                                                                                ================================================ */
+                                                                                                                                                                       FOOTER
+                                                                                                                                                                    ================================================ */
         .auth-footer-note {
             color: rgba(255, 255, 255, 0.45);
             font-size: 0.75rem;
@@ -344,7 +336,6 @@
                 </a>
 
                 <p class="auth-tagline mt-2 mb-1">Begin your journey of reflection</p>
-                <div class="hijri-date" id="hijri-date" lang="ar" dir="rtl" aria-label="Today's Hijri date"></div>
 
             </div>
 
@@ -382,9 +373,7 @@
                         <input id="name" type="text" name="name" value="{{ old('name') }}"
                             class="form-control @error('name') is-invalid @enderror" placeholder="e.g. Mohammed Ahmed"
                             required autofocus autocomplete="name">
-                        @error('name')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+
                     </div>
 
                     <div class="mb-3">
@@ -392,9 +381,7 @@
                         <input id="email" type="email" name="email" value="{{ old('email') }}"
                             class="form-control @error('email') is-invalid @enderror" placeholder="you@example.com" required
                             autocomplete="username">
-                        @error('email')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+
                     </div>
 
                     <div class="mb-3">
@@ -404,12 +391,10 @@
                                 class="form-control @error('password') is-invalid @enderror" placeholder="Min. 8 characters"
                                 required autocomplete="new-password">
                             <button class="btn btn-toggle-pass" type="button" onclick="togglePassword('password', this)"
-                                tabindex="-1">
+                                tabindex="-1" aria-label="Show password" aria-pressed="false">
                                 <i class="bi bi-eye"></i>
                             </button>
-                            @error('password')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+
                         </div>
                     </div>
 
@@ -420,12 +405,11 @@
                                 class="form-control @error('password_confirmation') is-invalid @enderror"
                                 placeholder="Repeat your password" required minlength="8" autocomplete="new-password">
                             <button class="btn btn-toggle-pass" type="button"
-                                onclick="togglePassword('password_confirmation', this)" tabindex="-1">
+                                onclick="togglePassword('password_confirmation', this)" tabindex="-1"
+                                aria-label="Show password" aria-pressed="false">
                                 <i class="bi bi-eye"></i>
                             </button>
-                            @error('password_confirmation')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+
                         </div>
                     </div>
 
@@ -464,16 +448,6 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
-            /* ── 1. Hijri date ── */
-            try {
-                const hijri = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric'
-                }).format(new Date());
-                document.getElementById('hijri-date').textContent = hijri;
-            } catch (e) {}
-
             /* ── 2. Tasbih loader on submit ── */
             const form = document.getElementById('register-form');
             const btn = document.getElementById('register-btn');
@@ -490,14 +464,13 @@
             window.togglePassword = (fieldId, el) => {
                 const input = document.getElementById(fieldId);
                 const icon = el.querySelector('i');
-                if (input.type === 'password') {
-                    input.type = 'text';
-                    icon.className = 'bi bi-eye-slash';
-                } else {
-                    input.type = 'password';
-                    icon.className = 'bi bi-eye';
-                }
+                const isHidden = input.type === 'password';
+                input.type = isHidden ? 'text' : 'password';
+                icon.className = isHidden ? 'bi bi-eye-slash' : 'bi bi-eye';
+                el.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+                el.setAttribute('aria-pressed', isHidden ? 'true' : 'false');
             };
+
 
         });
     </script>

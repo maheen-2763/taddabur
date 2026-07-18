@@ -15,6 +15,9 @@ use App\Models\StoryChapter;
 use App\Observers\StoryChapterObserver;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Auth\Events\Verified;
+use App\Listeners\SendWelcomeEmail;
+use Illuminate\Support\Facades\Event;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -41,6 +44,8 @@ class AppServiceProvider extends ServiceProvider
         \Illuminate\Support\Facades\Route::bind('surah', function ($value) {
             return \App\Models\Surah::where('number', $value)->firstOrFail();
         });
+
+        Event::listen(Verified::class, SendWelcomeEmail::class);
 
         Paginator::useBootstrapFive();
     }

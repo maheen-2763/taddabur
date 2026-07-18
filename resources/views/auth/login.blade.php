@@ -5,8 +5,8 @@
 @push('styles')
     <style>
         /* ================================================
-           AUTH BACKGROUND
-        ================================================ */
+                                                                               AUTH BACKGROUND
+                                                                            ================================================ */
         .auth-section {
             min-height: 100vh;
             display: flex;
@@ -44,26 +44,44 @@
             }
         }
 
-        /* Allah watermark */
         .auth-watermark {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            top: 30%;
+            right: 10%;
+            transform: translate(50%, -50%);
             font-family: var(--font-arabic);
             font-size: clamp(9rem, 16vw, 16rem);
             line-height: 1;
-            color: rgba(201, 150, 58, 0.05);
+            color: rgba(201, 150, 58, 0.16);
             pointer-events: none;
             z-index: 0;
             user-select: none;
-            -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 75%);
-            mask-image: radial-gradient(circle at center, black 40%, transparent 75%);
+            animation: watermark-breathe 6s ease-in-out infinite;
+        }
+
+        @keyframes watermark-breathe {
+
+            0%,
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.16;
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.05);
+                opacity: 0.24;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .auth-watermark {
+                animation: none;
+            }
         }
 
         /* ================================================
-           WRAPPER
-        ================================================ */
+                                                                               WRAPPER
+                                                                            ================================================ */
         .auth-wrapper {
             position: relative;
             z-index: 1;
@@ -72,8 +90,8 @@
         }
 
         /* ================================================
-           BRAND HEADER
-        ================================================ */
+                                                                               BRAND HEADER
+                                                                            ================================================ */
         .auth-bismillah {
             font-family: var(--font-arabic);
             font-size: 1.4rem;
@@ -87,20 +105,11 @@
             letter-spacing: 0.04em;
         }
 
-        /* Hijri date pill */
-        .hijri-date {
-            display: inline-block;
-            font-family: var(--font-arabic);
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.55);
-            margin-top: 6px;
-            letter-spacing: 0.02em;
-            direction: rtl;
-        }
+
 
         /* ================================================
-           CARD
-        ================================================ */
+                                                                               CARD
+                                                                            ================================================ */
         .auth-card {
             position: relative;
             background: var(--cream);
@@ -137,8 +146,8 @@
         }
 
         /* ================================================
-           FORM ELEMENTS
-        ================================================ */
+                                                                               FORM ELEMENTS
+                                                                            ================================================ */
         .auth-card .form-control {
             border-radius: var(--radius);
             border-color: var(--border);
@@ -197,8 +206,8 @@
         }
 
         /* ================================================
-           TASBIH LOADING STATE
-        ================================================ */
+                                                                               TASBIH LOADING STATE
+                                                                            ================================================ */
         .tasbih-loader {
             display: none;
             align-items: center;
@@ -271,8 +280,8 @@
         }
 
         /* ================================================
-           FOOTER VERSE
-        ================================================ */
+                                                                               FOOTER VERSE
+                                                                            ================================================ */
         .ayah-footer {
             color: rgba(255, 255, 255, 0.55);
             font-size: 0.82rem;
@@ -290,7 +299,7 @@
 
     {{-- Ambient layers --}}
     <div class="auth-pattern" aria-hidden="true"></div>
-    <div class="auth-watermark" aria-hidden="true">ﷲ</div>
+    <div class="auth-watermark" aria-hidden="true">اقْرَأْ</div>
 
     <section class="auth-section">
         <div class="auth-wrapper">
@@ -306,8 +315,7 @@
 
                 <p class="auth-tagline mt-2 mb-1">Reflect. Understand. Grow.</p>
 
-                {{-- Hijri date — rendered by JS --}}
-                <div class="hijri-date" id="hijri-date" lang="ar" dir="rtl" aria-label="Today's Hijri date"></div>
+
 
             </div>
 
@@ -318,7 +326,10 @@
                 <p class="text-muted small mb-4">Sign in to continue your journey.</p>
 
                 @if (session('status'))
-                    <div class="alert alert-islamic-success small py-2 mb-3">{{ session('status') }}</div>
+                    <div class="alert border-0 rounded-3 small py-2 mb-3"
+                        style="background:rgba(27,94,59,0.1); border:1px solid var(--emerald-light)!important; color:var(--emerald);">
+                        <i class="bi bi-check-circle-fill me-2"></i>{{ session('status') }}
+                    </div>
                 @endif
 
                 @if ($errors->any())
@@ -338,7 +349,7 @@
                         <label for="email" class="form-label">Email Address</label>
                         <input id="email" type="email" name="email" value="{{ old('email') }}"
                             class="form-control @error('email') is-invalid @enderror" placeholder="you@example.com" required
-                            autofocus autocomplete="username">
+                            @if (!$errors->has('password') || $errors->has('email')) autofocus @endif autocomplete="username">
                         @error('email')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -354,9 +365,10 @@
                         <div class="input-group">
                             <input id="password" type="password" name="password"
                                 class="form-control @error('password') is-invalid @enderror"
-                                placeholder="Enter your password" required autocomplete="current-password">
+                                placeholder="Enter your password" required
+                                @if ($errors->has('password') && !$errors->has('email')) autofocus @endif autocomplete="current-password">
                             <button class="btn btn-toggle-pass" type="button" onclick="togglePassword('password', this)"
-                                tabindex="-1">
+                                tabindex="-1" aria-label="Show password" aria-pressed="false">
                                 <i class="bi bi-eye"></i>
                             </button>
                             @error('password')
@@ -409,15 +421,6 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
-            /* ── 1. Hijri date ── */
-            try {
-                const hijri = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric'
-                }).format(new Date());
-                document.getElementById('hijri-date').textContent = hijri;
-            } catch (e) {}
 
             /* ── 2. Verse of the Day (deterministic — same verse all day) ── */
             const verses = [{
@@ -499,13 +502,11 @@
             window.togglePassword = (fieldId, el) => {
                 const input = document.getElementById(fieldId);
                 const icon = el.querySelector('i');
-                if (input.type === 'password') {
-                    input.type = 'text';
-                    icon.className = 'bi bi-eye-slash';
-                } else {
-                    input.type = 'password';
-                    icon.className = 'bi bi-eye';
-                }
+                const isHidden = input.type === 'password';
+                input.type = isHidden ? 'text' : 'password';
+                icon.className = isHidden ? 'bi bi-eye-slash' : 'bi bi-eye';
+                el.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+                el.setAttribute('aria-pressed', isHidden ? 'true' : 'false');
             };
 
         });

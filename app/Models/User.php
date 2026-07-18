@@ -11,6 +11,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Auth\Notifications\VerifyEmail;
+use App\Mail\VerifyEmailMail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -157,5 +161,18 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->avatar
             ? Storage::url($this->avatar)
             : asset('images/default-avatar.png');
+    }
+
+
+
+    public function sendEmailVerificationNotification()
+    {
+        $verificationUrl = URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addMinutes(60),
+            ['id' => $this->getKey(), 'hash' => sha1($this->getEmailForVerification())]
+        );
+
+        Mail::to($this->email)->send(new VerifyEmailMail($verificationUrl, $this->name));
     }
 }

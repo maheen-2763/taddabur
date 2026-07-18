@@ -198,6 +198,21 @@
             color: rgba(255, 255, 255, 0.35);
             font-size: 0.75rem;
         }
+
+        @keyframes beadPulse {
+
+            0%,
+            100% {
+                opacity: 0.2;
+                transform: scale(0.85);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.15);
+                background: var(--gold);
+            }
+        }
     </style>
 @endpush
 
@@ -295,22 +310,6 @@
 @endsection
 
 @push('scripts')
-    <style>
-        @keyframes beadPulse {
-
-            0%,
-            100% {
-                opacity: 0.2;
-                transform: scale(0.85);
-            }
-
-            50% {
-                opacity: 1;
-                transform: scale(1.15);
-                background: var(--gold);
-            }
-        }
-    </style>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const form = document.getElementById('resend-form');

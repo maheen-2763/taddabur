@@ -168,6 +168,21 @@
             color: rgba(255, 255, 255, 0.35);
             font-size: 0.75rem;
         }
+
+        @keyframes beadPulse {
+
+            0%,
+            100% {
+                opacity: 0.2;
+                transform: scale(0.85);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.15);
+                background: var(--gold);
+            }
+        }
     </style>
 @endpush
 
@@ -227,7 +242,7 @@
                                 class="form-control @error('password') is-invalid @enderror" placeholder="Min. 8 characters"
                                 required autocomplete="new-password">
                             <button class="btn btn-toggle-pass" type="button" onclick="togglePassword('password', this)"
-                                tabindex="-1">
+                                tabindex="-1" aria-label="Show password" aria-pressed="false">
                                 <i class="bi bi-eye"></i>
                             </button>
                             @error('password')
@@ -275,22 +290,6 @@
 @endsection
 
 @push('scripts')
-    <style>
-        @keyframes beadPulse {
-
-            0%,
-            100% {
-                opacity: 0.2;
-                transform: scale(0.85);
-            }
-
-            50% {
-                opacity: 1;
-                transform: scale(1.15);
-                background: var(--gold);
-            }
-        }
-    </style>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const form = document.getElementById('reset-form');
@@ -302,11 +301,26 @@
                     loader.style.display = 'flex';
                 });
             }
-            window.togglePassword = (id, el) => {
-                const input = document.getElementById(id);
+            window.togglePassword = (fieldId, el) => {
+                const input = document.getElementById(fieldId);
                 const icon = el.querySelector('i');
-                input.type = input.type === 'password' ? 'text' : 'password';
-                icon.className = input.type === 'password' ? 'bi bi-eye' : 'bi bi-eye-slash';
+                const isHidden = input.type === 'password';
+                input.type = isHidden ? 'text' : 'password';
+                icon.className = isHidden ? 'bi bi-eye-slash' : 'bi bi-eye';
+                el.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+                el.setAttribute('aria-pressed', isHidden ? 'true' : 'false');
+            };
+
+
+
+            window.togglePassword = (fieldId, el) => {
+                const input = document.getElementById(fieldId);
+                const icon = el.querySelector('i');
+                const isHidden = input.type === 'password_confirmation';
+                input.type = isHidden ? 'text' : 'password_confirmation';
+                icon.className = isHidden ? 'bi bi-eye-slash' : 'bi bi-eye';
+                el.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+                el.setAttribute('aria-pressed', isHidden ? 'true' : 'false');
             };
         });
     </script>
