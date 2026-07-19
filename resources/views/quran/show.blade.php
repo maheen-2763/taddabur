@@ -1,16 +1,3 @@
-{{-- resources/views/quran/show.blade.php --}}
-{{--
-    ARCHITECTURE:
-    CSS  → public/css/quran-show.css
-    JS   → public/js/quran-show.js
-    Data → window.QURAN_CONFIG (set at bottom of this file)
-
-    BISMILLAH RULES:
-    Surah 1  → Bismillah IS ayah 1 → show IN ayahs, not at top
-    Surah 9  → No Bismillah at all
-    Others   → Show Bismillah at top, strip from ayah 1 text
---}}
-
 @extends('layouts.app')
 @section('title', $surah->number . '. ' . $surah->name_transliteration . ' — Taddabur')
 
@@ -21,16 +8,10 @@
 @php
     $showBismillahTop = !in_array($surah->number, [1, 9]);
 
-    // ✅ Highest ayah number ACTUALLY marked read —
-    // immune to out-of-order marking, uses $readAyahIds
-    // and $ayahs which are already loaded by the controller
     $lastAyahNumber = auth()->check() ? $ayahs->whereIn('id', $readAyahIds ?? [])->max('number') : null;
 
-    // ✅ The NEXT unread ayah — what the Continue button
-    // should actually point to
     $resumeAyahNumber = $lastAyahNumber ? min($lastAyahNumber + 1, $surah->ayah_count) : null;
 
-    // ✅ Add this here too
     $userNotesForJs = ($userNotes ?? collect())->map(function ($note) {
         return [
             'id' => $note->id,
@@ -50,7 +31,7 @@
             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
 
                 {{-- Left --}}
-                <div class="d-flex align-items-center gap-2">
+                <div class="d-flex align-items-center gap-2" id="toolbarLeft">
                     <a href="{{ route('quran.index') }}" class="btn btn-sm" style="border:1px solid var(--border)">
                         <i class="bi bi-arrow-left me-1"></i>
                         <span class="d-none d-sm-inline">Surahs</span>
@@ -66,7 +47,7 @@
                 </div>
 
                 {{-- Right: All dropdowns same class --}}
-                <div class="d-flex align-items-center gap-2 flex-wrap">
+                <div class="d-flex align-items-center gap-2 flex-wrap" id="toolbarRight">
                     <div class="font-size-control d-flex gap-1">
                         <button onclick="changeFontSize('decrease')" class="btn btn-sm"
                             style="border:1px solid var(--border)">A-</button>
@@ -110,9 +91,7 @@
                         @endif
                     @endauth
 
-                    {{-- Reciter --}}
-                    {{-- Reciter --}}
-                    {{-- Reciter --}}
+
                     @auth
                         @if ($reciters->count() > 0)
                             <select id="reciterPicker" class="toolbar-select" onchange="handleReciterChange(this)">
@@ -175,11 +154,11 @@
                 <div
                     style="font-family:'Scheherazade New','Amiri',serif;
                         font-size:1.3rem;
-                        color:var(--emerald);
+                        color:var(--emerald-light);
                         direction:rtl">
                     {{ $surah->name_arabic }}
                 </div>
-                <small class="text-muted" style="font-size:0.7rem">
+                <small class="text-muted" style="font-size:0.7rem; color:var(--emerald-light)">
                     {{ $surah->name_english }} · {{ ucfirst($surah->revelation_type) }}
                 </small>
             </div>
@@ -234,7 +213,7 @@
                              color:{{ $surah->revelation_type === 'meccan' ? '#1A1A2E' : 'white' }}">
                         {{ ucfirst($surah->revelation_type) }}
                     </span>
-                    <span class="badge bg-secondary">
+                    <span class="badge bg-success">
                         {{ $surah->ayah_count }} Ayahs
                     </span>
                     <span class="badge bg-secondary">
@@ -301,13 +280,7 @@
                 @endif
             @endauth
 
-            {{-- ════════════════════════════
-             AYAHS LOOP
-             ✅ Performance fixes:
-             - No word spans by default
-             - Words wrapped only when needed
-             - Bismillah stripped from ayah 1
-        ════════════════════════════ --}}
+
             <div id="ayahList">
 
                 @foreach ($ayahs as $ayah)
@@ -391,7 +364,8 @@
                                             data-ayah-id="{{ $ayah->id }}"
                                             onclick="toggleBookmark(this, {{ $ayah->id }})">
                                             <i class="bi {{ $isBookmarked ? 'bi-bookmark-fill' : 'bi-bookmark' }}"></i>
-                                            {{ $isBookmarked ? 'Bookmarked' : 'Bookmark' }}
+                                            <span
+                                                class="d-none d-sm-inline">{{ $isBookmarked ? ' Bookmarked' : ' Bookmark' }}</span>
                                         </button>
                                     @endauth
                                     {{-- Tafsir → Opens side panel --}}
@@ -399,17 +373,17 @@
                                         @if ($isPremium)
                                             <button class="ayah-btn"
                                                 onclick="openTafsirPanel({{ $surah->number }}, {{ $ayah->id }})">
-                                                <i class="bi bi-book"></i> Tafsir
+                                                <i class="bi bi-book"></i> <span class="d-none d-sm-inline">Tafsir</span>
                                             </button>
                                         @else
                                             <button class="ayah-btn position-relative" onclick="redirectToUpgrade('Tafsir')">
-                                                <i class="bi bi-book"></i> Tafsir
+                                                <i class="bi bi-book"></i> <span class="d-none d-sm-inline">Tafsir</span>
                                                 <span class="lock-icon">🔒</span>
                                             </button>
                                         @endif
                                     @else
                                         <a href="{{ route('login') }}" class="ayah-btn">
-                                            <i class="bi bi-book"></i> Tafsir
+                                            <i class="bi bi-book"></i> <span class="d-none d-sm-inline">Tafsir</span>
                                         </a>
                                     @endauth
 
@@ -417,30 +391,25 @@
                                     {{-- Audio --}}
                                     @auth
                                         <button class="ayah-btn" id="audio-btn-{{ $ayah->id }}"
-                                            onclick="playAudio(
-                                        {{ $surah->number }},
-                                        {{ $ayah->number }},
-                                        {{ $ayah->id }},
-                                        this
-                                    )">
-                                            <i class="bi bi-play-circle"></i> Listen
+                                            onclick="playAudio({{ $surah->number }}, {{ $ayah->number }}, {{ $ayah->id }}, this)">
+                                            <i class="bi bi-play-circle"></i> <span class="d-none d-sm-inline">Listen</span>
                                         </button>
                                     @else
                                         <a href="{{ route('login') }}" class="ayah-btn">
-                                            <i class="bi bi-play-circle"></i> Listen
+                                            <i class="bi bi-play-circle"></i> <span class="d-none d-sm-inline">Listen</span>
                                         </a>
                                     @endauth
 
                                     {{-- Copy --}}
                                     <button class="ayah-btn"
                                         onclick="copyText(this.closest('.ayah-card').dataset.ayahText, this)">
-                                        <i class="bi bi-clipboard"></i> Copy
+                                        <i class="bi bi-clipboard"></i> <span class="d-none d-sm-inline">Copy</span>
                                     </button>
 
                                     {{-- Share --}}
                                     <button class="ayah-btn"
                                         onclick="shareAyah({{ $surah->number }}, {{ $ayah->number }}, this)">
-                                        <i class="bi bi-share"></i> Share
+                                        <i class="bi bi-share"></i> <span class="d-none d-sm-inline">Share</span>
                                     </button>
 
 

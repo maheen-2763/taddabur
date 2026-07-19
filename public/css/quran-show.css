@@ -87,7 +87,7 @@
     font-family: var(--font-heading);
     font-size: 0.62rem;
     letter-spacing: 0.1em;
-    color: var(--muted);
+    color: var(--emerald-light);
     text-transform: uppercase;
     padding: 0 1rem;
     margin: 0.75rem 0 0.4rem;
@@ -250,6 +250,26 @@
     transition: opacity 0.4s;
 }
 
+/* ✅ Mobile — stack vertically, buttons full width */
+@media (max-width: 576px) {
+    .resume-banner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .resume-banner .d-flex.gap-2 {
+        width: 100%;
+    }
+
+    .resume-banner .d-flex.gap-2 .btn {
+        flex: 1;
+        white-space: nowrap;
+        font-size: 0.7rem !important;
+        padding: 0.4rem 0.5rem;
+    }
+}
+
 /* ════════════════════════════════════════════
    UPGRADE BANNER
 ════════════════════════════════════════════ */
@@ -299,6 +319,36 @@
     border-left: 3px solid var(--emerald);
     padding-left: 0.75rem;
     border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+@media (max-width: 576px) {
+    .ayah-actions {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: flex-start;
+    }
+
+    .ayah-btn {
+        width: 38px;
+        height: 38px;
+        padding: 0;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        overflow: hidden; /* ✅ safety net — agar text kahin reh bhi gaya, circle nahi toothega */
+        white-space: nowrap;
+    }
+
+    .ayah-btn i {
+        font-size: 1rem;
+        margin: 0; /* text hatne ke baad icon ka default right-margin bhi hata do */
+    }
+
+    .lock-icon {
+        font-size: 0.65rem;
+    }
 }
 
 /* ════════════════════════════════════════════
@@ -913,6 +963,124 @@
     font-weight: 500;
 }
 
+@media (max-width: 576px) {
+    .audio-player-row {
+        gap: 0.5rem;
+    }
+
+    .audio-info .audio-label {
+        font-size: 0.72rem;
+    }
+
+    .audio-controls-center {
+        gap: 0.5rem;
+    }
+
+    .audio-ctrl-btn {
+        width: 30px;
+        height: 30px;
+        font-size: 0.85rem;
+    }
+
+    .audio-ctrl-btn--main {
+        width: 38px;
+        height: 38px;
+        font-size: 1.05rem;
+    }
+
+    .mini-reciter-wrap,
+    .audio-mini-select {
+        width: 32px;
+        height: 32px;
+    }
+
+    .audio-time {
+        font-size: 0.65rem;
+    }
+
+    .audio-right-group {
+        gap: 0.4rem;
+    }
+}
+
+@media (max-width: 576px) {
+    #audioPlayer {
+        padding: 0.7rem 0 0.85rem;
+    }
+
+    .audio-bar {
+        margin: 0 1rem 0.7rem;
+    }
+
+    /* ✅ Row layout tod do — absolute-center hatao mobile pe */
+    .audio-player-row {
+        position: static;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.55rem;
+        min-height: auto;
+    }
+
+    .audio-info {
+        order: 1;
+        width: 100%;
+    }
+
+    .audio-label {
+        font-size: 0.75rem;
+        justify-content: center;
+        text-align: center;
+    }
+
+    /* Controls ab normal flow mein — center hone ke liye justify-content use karo, absolute nahi */
+    .audio-controls-center {
+        position: static;
+        transform: none;
+        order: 2;
+        justify-content: center;
+        gap: 0.9rem;
+    }
+
+    .audio-right-group {
+        order: 3;
+        justify-content: center;
+        gap: 0.7rem;
+    }
+
+    /* Buttons thode chhote — sab comfortably fit ho jaayein */
+    .audio-ctrl-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+    }
+
+    .audio-ctrl-btn--main {
+        width: 42px;
+        height: 42px;
+        font-size: 1.15rem;
+    }
+
+    .audio-ctrl-btn--close {
+        width: 28px;
+        height: 28px;
+        font-size: 0.9rem;
+    }
+
+    .mini-reciter-wrap,
+    .audio-mini-select {
+        width: 34px;
+        height: 34px;
+    }
+
+    .mini-reciter-icon {
+        font-size: 1rem;
+    }
+
+    .audio-time {
+        font-size: 0.68rem;
+    }
+}
+
 /* ════════════════════════════════════════════
    COMPLETION MODAL
 ════════════════════════════════════════════ */
@@ -1126,4 +1294,72 @@
 
 .tafsir-full-view-link i {
     font-size: 0.75rem;
+}
+
+@media (max-width: 767px) {
+    .reader-toolbar .d-flex.align-items-center.justify-content-between {
+        flex-wrap: nowrap;
+        gap: 0.5rem;
+    }
+
+    /* Left side — surah name truncate ho jaaye agar lamba ho */
+    .reader-toolbar .d-flex.align-items-center.gap-2:first-child {
+        flex-shrink: 0;
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    .reader-toolbar .heading-font {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: inline-block;
+        max-width: 140px;
+        vertical-align: middle;
+    }
+
+    /* ✅ Right side — horizontal scroll strip */
+    .reader-toolbar .d-flex.align-items-center.gap-2.flex-wrap {
+        flex-wrap: nowrap !important;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: none; /* Firefox — scrollbar hide */
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 2px;
+    }
+
+    .reader-toolbar
+        .d-flex.align-items-center.gap-2.flex-wrap::-webkit-scrollbar {
+        display: none; /* Chrome/Safari — scrollbar hide */
+    }
+
+    /* Har control ka size fix — shrink na ho, scroll mein comfortably rahe */
+    .reader-toolbar .btn-sm,
+    .reader-toolbar .toolbar-select,
+    .reader-toolbar .font-size-control,
+    .reader-toolbar .btn-group {
+        flex-shrink: 0;
+    }
+
+    .toolbar-select {
+        font-size: 0.76rem;
+        padding: 0.35rem 0.5rem;
+        max-width: 110px;
+    }
+
+    .reader-toolbar .btn-sm {
+        font-size: 0.78rem;
+        padding: 0.35rem 0.55rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .reader-toolbar .heading-font {
+        max-width: 100px;
+    }
+
+    .toolbar-select {
+        max-width: 95px;
+        font-size: 0.72rem;
+    }
 }

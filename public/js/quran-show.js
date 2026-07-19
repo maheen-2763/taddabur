@@ -326,7 +326,8 @@ function playAudio(surah, ayahNumber, ayahId, btn) {
     if (currentAyahId === ayahId && !audioEl.paused) {
         audioEl.pause();
         if (btn) {
-            btn.innerHTML = '<i class="bi bi-play-circle"></i> Listen';
+            btn.innerHTML =
+                '<i class="bi bi-play-circle"></i> <span class="d-none d-sm-inline">Listen</span>';
             btn.classList.remove("active");
         }
         return;
@@ -335,7 +336,8 @@ function playAudio(surah, ayahNumber, ayahId, btn) {
     clearWordHighlights();
 
     if (currentAudioBtn) {
-        currentAudioBtn.innerHTML = '<i class="bi bi-play-circle"></i> Listen';
+        currentAudioBtn.innerHTML =
+            '<i class="bi bi-play-circle"></i> <span class="d-none d-sm-inline">Listen</span>';
         currentAudioBtn.classList.remove("active");
     }
 
@@ -348,7 +350,8 @@ function playAudio(surah, ayahNumber, ayahId, btn) {
 
     currentAudioBtn = btn;
     if (btn) {
-        btn.innerHTML = '<i class="bi bi-pause-circle"></i> Playing...';
+        btn.innerHTML =
+            '<i class="bi bi-pause-circle"></i> <span class="d-none d-sm-inline">Playing...</span>';
         btn.classList.add("active");
     }
 
@@ -374,7 +377,8 @@ function playAudio(surah, ayahNumber, ayahId, btn) {
             if (data.error) {
                 showFlash("Audio not available for this ayah.", "error");
                 if (btn) {
-                    btn.innerHTML = '<i class="bi bi-play-circle"></i> Listen';
+                    btn.innerHTML =
+                        '<i class="bi bi-play-circle"></i> <span class="d-none d-sm-inline">Listen</span>';
                     btn.classList.remove("active");
                 }
                 return;
@@ -404,7 +408,8 @@ function playAudio(surah, ayahNumber, ayahId, btn) {
         .catch(() => {
             showFlash("Could not load audio. Please try again.", "error");
             if (btn) {
-                btn.innerHTML = '<i class="bi bi-play-circle"></i> Listen';
+                btn.innerHTML =
+                    '<i class="bi bi-play-circle"></i> <span class="d-none d-sm-inline">Listen</span>';
                 btn.classList.remove("active");
             }
         });
@@ -422,7 +427,8 @@ function stopAudio() {
         .forEach((c) => c.classList.remove("playing-now"));
 
     if (currentAudioBtn) {
-        currentAudioBtn.innerHTML = '<i class="bi bi-play-circle"></i> Listen';
+        currentAudioBtn.innerHTML =
+            '<i class="bi bi-play-circle"></i> <span class="d-none d-sm-inline">Listen</span>';
         currentAudioBtn.classList.remove("active");
     }
 
@@ -456,7 +462,8 @@ function onAudioEnded() {
     clearWordHighlights();
 
     if (currentAudioBtn) {
-        currentAudioBtn.innerHTML = '<i class="bi bi-play-circle"></i> Listen';
+        currentAudioBtn.innerHTML =
+            '<i class="bi bi-play-circle"></i> <span class="d-none d-sm-inline">Listen</span>';
         currentAudioBtn.classList.remove("active");
     }
 

@@ -107,7 +107,10 @@ class ImportTafsir extends Command
 
                         if (!$ayah) continue;
 
-                        $cleanText = $this->htmlToPlainText($item['tafsirs'][0]['text'] ?? '');
+                        $tafsirEntry = collect($item['tafsirs'] ?? [])
+                            ->first(fn($t) => trim($t['text'] ?? '') !== '');
+
+                        $cleanText = $this->htmlToPlainText($tafsirEntry['text'] ?? '');
 
                         if ($cleanText === '') {
                             $totalSkippedEmpty++;

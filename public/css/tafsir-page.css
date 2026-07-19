@@ -82,7 +82,7 @@
 .tafsir-back-btn {
     font-family: var(--font-heading);
     font-size: 0.75rem;
-    color: var(--muted);
+    color: var(--emerald-light);
     text-decoration: none;
     display: flex;
     align-items: center;
