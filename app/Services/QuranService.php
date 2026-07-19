@@ -145,6 +145,7 @@ class QuranService
     public function getAllReciters(): Collection
     {
         return Recitation::where('is_active', true)
+            ->orderByDesc('has_verified_timing')
             ->orderBy('name')
             ->get();
     }

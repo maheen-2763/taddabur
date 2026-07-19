@@ -25,7 +25,7 @@
 .sajdas-header .arabic-title {
     font-family: "Amiri", "Scheherazade New", serif;
     font-size: 1.8rem;
-    color: var(--emerald-dark);
+    color: var(--emerald-light);
     direction: rtl;
     unicode-bidi: isolate;
     display: block;
@@ -115,14 +115,14 @@
 .sajda-ref {
     font-family: var(--font-heading);
     font-size: 0.88rem;
-    color: var(--emerald-dark);
+    color: var(--emerald-light);
     margin-bottom: 0.2rem;
 }
 
 .sajda-arabic-preview {
     font-family: "Amiri", "Scheherazade New", serif;
     font-size: 1.1rem;
-    color: var(--ink);
+    color: var(--emerald-light);
     direction: rtl;
     unicode-bidi: isolate;
     text-align: right;

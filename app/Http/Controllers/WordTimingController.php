@@ -24,8 +24,8 @@ class WordTimingController extends Controller
         $timings = ReciterWordTiming::where('reciter_id', $reciter->id)
             ->where('surah_number', $surahNumber)
             ->where('ayah_number', $ayahNumber)
-            ->orderBy('word_index')
-            ->get(['word_index', 'start_ms', 'end_ms']);
+            ->orderBy('word_start_index')                                          // ✅ fixed
+            ->get(['word_start_index', 'word_end_index', 'start_ms', 'end_ms']);   // ✅ fixed
 
         return response()->json([
             'timings' => $timings,

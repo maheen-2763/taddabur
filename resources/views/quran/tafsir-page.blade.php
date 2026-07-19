@@ -125,7 +125,7 @@
 
             {{-- Previous Ayah --}}
             @if ($prevAyah)
-                <a href="{{ route('quran.tafsir', [$surah->number, $prevAyah->id]) }}" class="tafsir-nav-btn">
+                <a href="{{ route('quran.tafsir-page', [$surah->number, $prevAyah->id]) }}" class="tafsir-nav-btn">
                     <i class="bi bi-chevron-left"></i>
                     <div>
                         <div style="font-size:0.65rem; color:var(--muted)">Previous</div>
@@ -148,7 +148,7 @@
 
             {{-- Next Ayah --}}
             @if ($nextAyah)
-                <a href="{{ route('quran.tafsir', [$surah->number, $nextAyah->id]) }}" class="tafsir-nav-btn">
+                <a href="{{ route('quran.tafsir-page', [$surah->number, $nextAyah->id]) }}" class="tafsir-nav-btn">
                     <div style="text-align:right">
                         <div style="font-size:0.65rem; color:var(--muted)">Next</div>
                         <div>Ayah {{ $nextAyah->number }}</div>

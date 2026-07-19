@@ -80,4 +80,13 @@ class Recitation extends Model
     {
         return in_array($this->slug, self::REAL_TIMING_RECITERS);
     }
+
+
+    // app/Models/Recitation.php
+    public function getInitialsAttribute(): string
+    {
+        return collect(explode(' ', $this->name))
+            ->map(fn($word) => mb_strtoupper(mb_substr($word, 0, 1)))
+            ->implode('');
+    }
 }

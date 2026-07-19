@@ -111,16 +111,32 @@
                     @endauth
 
                     {{-- Reciter --}}
+                    {{-- Reciter --}}
+                    {{-- Reciter --}}
                     @auth
                         @if ($reciters->count() > 0)
                             <select id="reciterPicker" class="toolbar-select" onchange="handleReciterChange(this)">
                                 <option value="">🎙 Reciter</option>
-                                @foreach ($reciters as $r)
-                                    <option value="{{ $r->slug }}" data-free="{{ $r->is_free ? '1' : '0' }}">
-                                        {{ $r->name }}
-                                        {{ !$r->is_free && !$isPremium ? '🔒' : '' }}
-                                    </option>
-                                @endforeach
+
+                                <optgroup label="✓ Verified Word-Sync">
+                                    @foreach ($reciters->where('has_verified_timing', true) as $r)
+                                        <option value="{{ $r->slug }}" data-free="{{ $r->is_free ? '1' : '0' }}"
+                                            title="Exact word-by-word sync available">
+                                            {{ $r->name }}
+                                            {{ !$r->is_free && !$isPremium ? '🔒' : '' }}
+                                        </option>
+                                    @endforeach
+                                </optgroup>
+
+                                <optgroup label="Approximate Sync">
+                                    @foreach ($reciters->where('has_verified_timing', false) as $r)
+                                        <option value="{{ $r->slug }}" data-free="{{ $r->is_free ? '1' : '0' }}"
+                                            title="Approximate word-highlighting — exact timing data not available">
+                                            {{ $r->name }}
+                                            {{ !$r->is_free && !$isPremium ? '🔒' : '' }}
+                                        </option>
+                                    @endforeach
+                                </optgroup>
                             </select>
                         @endif
                     @endauth
@@ -517,31 +533,83 @@
     {{-- Audio Player --}}
     <div id="audioPlayer">
         <div class="container-fluid px-4">
-            <div class="d-flex align-items-center gap-3">
-                <i class="bi bi-music-note-beamed" style="color:var(--gold-light)"></i>
-                <div class="flex-grow-1">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span id="audioLabel" style="color:white; font-size:0.82rem">
-                            Loading...
-                        </span>
-                        <span id="audioTime" style="color:rgba(255,255,255,0.45); font-size:0.72rem">
-                        </span>
-                    </div>
-                    <div class="audio-bar" onclick="seekAudio(event)">
-                        <div class="audio-bar-fill" id="audioBarFill"></div>
-                    </div>
-                </div>
-                <button onclick="stopAudio()"
-                    style="background:none; border:none;
-                           color:rgba(255,255,255,0.55);
-                           font-size:1.3rem; cursor:pointer">
-                    &times;
-                </button>
+
+            {{-- TOP: Progress Bar (full width) --}}
+            <div class="audio-bar" onclick="seekAudio(event)">
+                <div class="audio-bar-fill" id="audioBarFill"></div>
             </div>
-            <audio id="audioElement" style="display:none" onended="onAudioEnded()" ontimeupdate="onAudioTimeUpdate()"
-                onloadedmetadata="onAudioLoaded()">
-            </audio>
+
+            {{-- BOTTOM: Label | Controls | Right group --}}
+            <div class="audio-player-row">
+
+                {{-- LEFT: Label --}}
+                <div class="audio-info">
+                    <span id="audioLabel" class="audio-label">
+                        <i class="bi bi-music-note-beamed audio-note-icon"></i>
+                        Loading...
+                    </span>
+                </div>
+
+                {{-- CENTER: Controls --}}
+                <div class="audio-controls-center">
+                    <button class="audio-ctrl-btn js-audio-prev" onclick="playPrevAyah()" title="Previous Ayah">
+                        <i class="bi bi-skip-start-fill"></i>
+                    </button>
+
+                    <button class="audio-ctrl-btn audio-ctrl-btn--main js-audio-toggle" onclick="toggleAudioPlayback()"
+                        title="Play/Pause">
+                        <i class="bi bi-play-fill js-audio-icon"></i>
+                    </button>
+
+                    <button class="audio-ctrl-btn js-audio-next" onclick="playNextAyah()" title="Next Ayah">
+                        <i class="bi bi-skip-end-fill"></i>
+                    </button>
+                </div>
+
+                {{-- RIGHT: Reciter + Time + Close --}}
+                <div class="audio-right-group">
+                    @auth
+                        @if ($reciters->count() > 0)
+                            <div class="mini-reciter-wrap">
+                                <i class="bi bi-mic-fill mini-reciter-icon" id="miniReciterIcon"></i>
+
+                                <select id="miniReciterPicker" class="audio-mini-select js-audio-reciter"
+                                    onchange="handleMiniReciterChange(this)" title="Change Reciter">
+                                    <option value="" disabled selected></option>
+
+                                    <optgroup label="Verified">
+                                        @foreach ($reciters->where('has_verified_timing', true) as $r)
+                                            <option value="{{ $r->slug }}" data-free="{{ $r->is_free ? '1' : '0' }}"
+                                                title="{{ $r->name }}">
+                                                {{ $r->initials }}
+                                            </option>
+                                        @endforeach
+                                    </optgroup>
+                                    <optgroup label="Approximate">
+                                        @foreach ($reciters->where('has_verified_timing', false) as $r)
+                                            <option value="{{ $r->slug }}" data-free="{{ $r->is_free ? '1' : '0' }}"
+                                                title="{{ $r->name }}">
+                                                {{ $r->initials }}
+                                            </option>
+                                        @endforeach
+                                    </optgroup>
+                                </select>
+                            </div>
+                        @endif
+                    @endauth
+
+                    <span id="audioTime" class="audio-time"></span>
+
+                    <button class="audio-ctrl-btn audio-ctrl-btn--close" onclick="stopAudio()" title="Close">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+            </div>
         </div>
+
+        <audio id="audioElement" style="display:none" onended="onAudioEnded()" ontimeupdate="onAudioTimeUpdate()"
+            onloadedmetadata="onAudioLoaded()">
+        </audio>
     </div>
 
     {{-- Completion Modal --}}
@@ -627,7 +695,12 @@
         </div>
         <div class="tafsir-content-card">
             <h6 class="tafsir-content-title" id="tafsirContentTitle"></h6>
+
             <div class="tafsir-content-body" id="tafsirPanelBody">Loading...</div>
+            <a href="#" id="tafsirFullViewLink" class="tafsir-full-view-link" target="_blank">
+                View in Full Page <i class="bi bi-box-arrow-up-right"></i>
+            </a>
+
         </div>
     </div>
     <div id="tafsirOverlay" onclick="closeTafsirPanel()"></div>

@@ -157,6 +157,8 @@ function handleTranslationChange(select) {
 }
 
 function handleReciterChange(select) {
+    syncMiniPickerFrom(select);
+    applyReciterSwitch(select);
     const isPremium = window.QURAN_CONFIG?.isPremium || false;
     const defaultReciter =
         window.QURAN_CONFIG?.defaultReciterSlug || "mishary-rashid";
@@ -169,6 +171,18 @@ function handleReciterChange(select) {
             "🎙 Premium reciters require an upgrade. Using the free reciter.",
             "info",
         );
+    }
+
+    const audio = document.getElementById("audioElement");
+    if (currentAyahId && audio && !audio.paused) {
+        const card = document.querySelector(
+            `[data-ayah-id="${currentAyahId}"]`,
+        );
+        const btn = card?.querySelector('[onclick^="playAudio"]');
+        if (btn) {
+            audio.pause(); // pehle rok do, playAudio() apna naya load karega
+            btn.click();
+        }
     }
 }
 
@@ -213,6 +227,8 @@ function switchPanelTafsir() {
 function fetchTafsirData() {
     const slug = document.getElementById("tafsirPanelPicker").value;
     document.getElementById("tafsirPanelBody").innerHTML = "Loading...";
+    document.getElementById("tafsirFullViewLink").href =
+        `/quran/${currentTafsirSurah}/${currentTafsirAyahId}/tafsir-page?source=${slug}`;
 
     fetch(
         `/quran/${currentTafsirSurah}/${currentTafsirAyahId}/tafsir-data?source=${slug}`,
@@ -374,9 +390,14 @@ function playAudio(surah, ayahNumber, ayahId, btn) {
             document.getElementById("audioLabel").textContent =
                 `${data.reciter} — ${data.surah_name} ${surah}:${ayahNumber}`;
 
-            document.getElementById("audioPlayer").style.display = "block";
+            document
+                .getElementById("audioPlayer")
+                .classList.add("audio-player-visible");
             audioEl.src = data.audio_url;
             audioEl.play();
+            document
+                .querySelector(".js-audio-icon")
+                ?.classList.replace("bi-play-fill", "bi-pause-fill");
 
             card?.scrollIntoView({ behavior: "smooth", block: "center" });
         })
@@ -391,7 +412,9 @@ function playAudio(surah, ayahNumber, ayahId, btn) {
 
 function stopAudio() {
     document.getElementById("audioElement").pause();
-    document.getElementById("audioPlayer").style.display = "none";
+    document
+        .getElementById("audioPlayer")
+        .classList.remove("audio-player-visible"); // ✅ CHANGE — fade out shuru karega
     clearWordHighlights();
 
     document
@@ -406,7 +429,6 @@ function stopAudio() {
     currentAyahId = null;
     currentAudioBtn = null;
 }
-
 function onAudioLoaded() {
     startWordHighlight();
 }
@@ -428,6 +450,9 @@ function onAudioTimeUpdate() {
 // AUDIO ENDED — Server is the source of truth
 // ════════════════════════════════════════════
 function onAudioEnded() {
+    document
+        .querySelector(".js-audio-icon")
+        ?.classList.replace("bi-pause-fill", "bi-play-fill");
     clearWordHighlights();
 
     if (currentAudioBtn) {
@@ -795,6 +820,8 @@ function formatTime(s) {
 document.addEventListener("DOMContentLoaded", function () {
     const cfg = window.QURAN_CONFIG || {};
     const hash = window.location.hash;
+    const picker = document.getElementById("reciterPicker");
+    if (picker) handleReciterChange(picker);
 
     // ✅ PRIORITY 1 — User arrived via a direct ayah link
     //    (search result, shared link, bookmark)
@@ -1229,6 +1256,119 @@ function appendAyahsToSidebar(ayahs) {
         `;
         list.appendChild(div);
     });
+}
+
+function playNextAyah() {
+    navigateAyahAudio(1);
+}
+
+function playPrevAyah() {
+    navigateAyahAudio(-1);
+}
+
+function navigateAyahAudio(direction) {
+    if (!currentAyahId) return;
+
+    const currentCard = document.querySelector(
+        `[data-ayah-id="${currentAyahId}"]`,
+    );
+    if (!currentCard) return;
+
+    const currentNum = parseInt(currentCard.dataset.ayahNumber);
+    const targetNum = currentNum + direction;
+    const targetCard = document.querySelector(
+        `.ayah-card[data-ayah-number="${targetNum}"]`,
+    );
+
+    if (!targetCard) {
+        showFlash(
+            direction > 0
+                ? "This is the last ayah in this surah."
+                : "This is the first ayah in this surah.",
+            "info",
+        );
+        return;
+    }
+
+    const targetBtn = targetCard.querySelector('[onclick^="playAudio"]');
+    if (targetBtn) {
+        targetBtn.click();
+    } else {
+        showFlash("Could not play the next ayah.", "error");
+    }
+}
+
+function toggleAudioPlayback() {
+    const audio = document.getElementById("audioElement");
+    const icon = document.querySelector(".js-audio-icon");
+
+    if (audio.paused) {
+        audio.play();
+        icon?.classList.replace("bi-play-fill", "bi-pause-fill");
+    } else {
+        audio.pause();
+        icon?.classList.replace("bi-pause-fill", "bi-play-fill");
+    }
+}
+
+function focusReciterPicker() {
+    const picker = document.getElementById("reciterPicker");
+    if (!picker) return;
+
+    picker.focus();
+    picker.scrollIntoView({ behavior: "smooth", block: "center" });
+
+    // Chhota visual pulse — user ka dhyan dropdown ki taraf le jaaye
+    picker.classList.add("reciter-picker-pulse");
+    setTimeout(() => picker.classList.remove("reciter-picker-pulse"), 1200);
+}
+
+function handleMiniReciterChange(select) {
+    const mainPicker = document.getElementById("reciterPicker");
+    if (mainPicker) {
+        mainPicker.value = select.value;
+    }
+    applyReciterSwitch(select);
+}
+
+// Toolbar wale ke liye bhi (existing handleReciterChange ke andar ye add karo)
+function syncMiniPickerFrom(select) {
+    const miniPicker = document.getElementById("miniReciterPicker");
+    if (miniPicker) {
+        miniPicker.value = select.value;
+    }
+}
+
+// Common logic — jo bhi dropdown se aaye, isi se resume hoga
+function applyReciterSwitch(select) {
+    const isPremium = window.QURAN_CONFIG?.isPremium || false;
+    const defaultReciter =
+        window.QURAN_CONFIG?.defaultReciterSlug || "mishary-rashid";
+    const option = select.options[select.selectedIndex];
+    const isFree = option?.dataset.free === "1";
+
+    if (!isFree && !isPremium) {
+        select.value = defaultReciter;
+        document.getElementById("reciterPicker").value = defaultReciter;
+        document.getElementById("miniReciterPicker").value = defaultReciter;
+        showFlash(
+            "🎙 Premium reciters require an upgrade. Using the free reciter.",
+            "info",
+        );
+    }
+
+    // Agar audio abhi playing hai, naye reciter se resume karo
+    const audio = document.getElementById("audioElement");
+    if (currentAyahId && audio) {
+        const card = document.querySelector(
+            `[data-ayah-id="${currentAyahId}"]`,
+        );
+        const btn = card?.querySelector('[onclick^="playAudio"]');
+        if (btn) {
+            audio.pause(); // zaroori hai — taaki playAudio() ka toggle-branch skip ho, reload wala chale
+            btn.click();
+        }
+    }
 }
 
 // ← JS FILE ENDS HERE. Nothing after this.

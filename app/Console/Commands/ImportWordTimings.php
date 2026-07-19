@@ -21,13 +21,12 @@ class ImportWordTimings extends Command
             return self::FAILURE;
         }
 
-        // Match each JSON filename to a reciter by finding its folder
-        // segment inside audio_url_pattern — e.g. "Alafasy_128kbps" from
-        // ".../data/Alafasy_128kbps/{surah_padded}{ayah_padded}.mp3"
+        // ✅ CHANGE 1: normalize karke key banao (bitrate hata ke)
         $reciterByFileKey = [];
         foreach (Recitation::all() as $reciter) {
             if (preg_match('#/data/([^/]+)/#', $reciter->audio_url_pattern, $m)) {
-                $reciterByFileKey[$m[1]] = $reciter;
+                $normalizedKey = preg_replace('/_\d+kbps$/i', '', $m[1]);
+                $reciterByFileKey[$normalizedKey] = $reciter;
             }
         }
 
@@ -39,7 +38,10 @@ class ImportWordTimings extends Command
 
         foreach ($files as $filePath) {
             $fileKey = pathinfo($filePath, PATHINFO_FILENAME);
-            $reciter = $reciterByFileKey[$fileKey] ?? null;
+
+            // ✅ CHANGE 2: file ka naam bhi normalize karke match karo
+            $normalizedFileKey = preg_replace('/_\d+kbps$/i', '', $fileKey);
+            $reciter = $reciterByFileKey[$normalizedFileKey] ?? null;
 
             if (!$reciter) {
                 $this->warn("⚠️  Skipped {$fileKey}.json — no reciter's audio_url_pattern matches this filename.");
@@ -54,55 +56,62 @@ class ImportWordTimings extends Command
                 continue;
             }
 
-            $rows = [];
+            // ✅ CHANGE 3: memory-safe buffer + accurate reporting (pehle wala fix)
+            $totalImported = 0;
             $ayahsCovered = [];
             $skippedSegments = 0;
 
-            foreach ($entries as $entry) {
-                $surah = $entry['surah'] ?? null;
-                $ayah  = $entry['ayah'] ?? null;
-                $segments = $entry['segments'] ?? [];
+            DB::transaction(function () use ($entries, $reciter, &$totalImported, &$ayahsCovered, &$skippedSegments) {
+                ReciterWordTiming::where('reciter_id', $reciter->id)->delete();
 
-                if (!$surah || !$ayah || empty($segments)) {
-                    continue;
-                }
+                $buffer = [];
 
-                $ayahsCovered[$surah . ':' . $ayah] = true;
+                foreach ($entries as $entry) {
+                    $surah = $entry['surah'] ?? null;
+                    $ayah  = $entry['ayah'] ?? null;
+                    $segments = $entry['segments'] ?? [];
 
-                foreach ($segments as $segment) {
-                    if (count($segment) !== 4) {
-                        $skippedSegments++;
+                    if (!$surah || !$ayah || empty($segments)) {
                         continue;
                     }
 
-                    [$wordStart, $wordEnd, $startMs, $endMs] = $segment;
+                    $ayahsCovered[$surah . ':' . $ayah] = true;
 
-                    $rows[] = [
-                        'reciter_id'       => $reciter->id,
-                        'surah_number'     => $surah,
-                        'ayah_number'      => $ayah,
-                        'word_start_index' => $wordStart,
-                        'word_end_index'   => $wordEnd,
-                        'start_ms'         => $startMs,
-                        'end_ms'           => $endMs,
-                        'created_at'       => now(),
-                        'updated_at'       => now(),
-                    ];
+                    foreach ($segments as $segment) {
+                        if (count($segment) !== 4) {
+                            $skippedSegments++;
+                            continue;
+                        }
+
+                        [$wordStart, $wordEnd, $startMs, $endMs] = $segment;
+
+                        $buffer[] = [
+                            'reciter_id'       => $reciter->id,
+                            'surah_number'     => $surah,
+                            'ayah_number'      => $ayah,
+                            'word_start_index' => $wordStart,
+                            'word_end_index'   => $wordEnd,
+                            'start_ms'         => $startMs,
+                            'end_ms'           => $endMs,
+                            'created_at'       => now(),
+                            'updated_at'       => now(),
+                        ];
+
+                        $totalImported++;
+
+                        if (count($buffer) >= 500) {
+                            ReciterWordTiming::insert($buffer);
+                            $buffer = [];
+                        }
+                    }
                 }
-            }
 
-            DB::transaction(function () use ($rows, $reciter) {
-                // Wipe this reciter's old rows first — makes re-running
-                // the import always safe, never creates duplicates or
-                // leaves stale data behind from a previous run.
-                ReciterWordTiming::where('reciter_id', $reciter->id)->delete();
-
-                foreach (array_chunk($rows, 500) as $chunk) {
-                    ReciterWordTiming::insert($chunk);
+                if (!empty($buffer)) {
+                    ReciterWordTiming::insert($buffer);
                 }
             });
 
-            $this->info("  ✓ Imported " . count($rows) . " segments across " . count($ayahsCovered) . " ayahs.");
+            $this->info("  ✓ Imported {$totalImported} segments across " . count($ayahsCovered) . " ayahs.");
             if ($skippedSegments > 0) {
                 $this->warn("  ⚠️  Skipped {$skippedSegments} malformed segments (wrong array shape).");
             }

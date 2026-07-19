@@ -146,6 +146,43 @@ class QuranController extends Controller
     }
 
     // ── GET /quran/{surah}/{ayah}/tafsir-page ────────────
+    public function tafsirPage(Request $request, Surah $surah, Ayah $ayah)
+    {
+        if (!$this->quranService->userCanAccessTafsir(Auth::user())) {
+            return redirect()->route('subscription.upgrade')
+                ->with('message', 'Tafsir requires a paid plan.');
+        }
+
+        $slug = $request->get('source', QuranService::DEFAULT_TAFSIR);
+
+        $tafsirs = Tafsir::where('is_active', true)->orderBy('name')->get();
+
+        $selectedTafsir = Tafsir::where('slug', $slug)
+            ->where('is_active', true)
+            ->first() ?? $tafsirs->first();
+
+        $prevAyah = Ayah::where('surah_id', $surah->id)
+            ->where('number', '<', $ayah->number)
+            ->orderByDesc('number')
+            ->first();
+
+        $nextAyah = Ayah::where('surah_id', $surah->id)
+            ->where('number', '>', $ayah->number)
+            ->orderBy('number')
+            ->first();
+
+        $ayah->load('translations');
+
+        return view('quran.tafsir-page', compact(
+            'surah',
+            'ayah',
+            'tafsirs',
+            'selectedTafsir',
+            'prevAyah',
+            'nextAyah'
+        ));
+    }
+
     public function tafsirData(Request $request, Surah $surah, Ayah $ayah)
     {
         if (!$this->quranService->userCanAccessTafsir(Auth::user())) {

@@ -85,14 +85,14 @@ Route::get('/ayah/{surahNumber}/{ayahNumber}/timings/{reciter}', [WordTimingCont
 Route::get('/allah-names', [App\Http\Controllers\AllahNameController::class, 'index'])
     ->name('allah-names.index');
 
+Route::get('/quran/sajdas', [QuranController::class, 'sajdas'])
+    ->name('quran.sajdas');
 
 
 // ✅ ADD THIS — search must come BEFORE /{surah}
 Route::get('/quran/search', [QuranController::class, 'search'])
     ->name('quran.search');
 
-Route::get('/quran/sajdas', [QuranController::class, 'sajdas'])
-    ->name('quran.sajdas');
 // ✅ This comes AFTER search
 Route::get('/quran/{surah}', [QuranController::class, 'show'])->name('quran.show');
 
