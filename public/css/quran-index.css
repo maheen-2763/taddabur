@@ -221,7 +221,7 @@
     height: 26px;
     border-radius: 50%;
     background: var(--cream-dark);
-    color: var(--muted);
+    color: var(--emerald-light);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -232,7 +232,7 @@
 
 .surah-name-ar {
     font-size: 1.35rem;
-    color: var(--emerald);
+    color: var(--emerald-light);
     font-family: var(--font-arabic);
     min-width: 70px;
     direction: rtl;

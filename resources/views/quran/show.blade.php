@@ -32,7 +32,7 @@
 
                 {{-- Left --}}
                 <div class="d-flex align-items-center gap-2" id="toolbarLeft">
-                    <a href="{{ route('quran.index') }}" class="btn btn-sm" style="border:1px solid var(--border)">
+                    <a href="{{ route('quran.index') }}" class="btn btn-sm toolbar-btn">
                         <i class="bi bi-arrow-left me-1"></i>
                         <span class="d-none d-sm-inline">Surahs</span>
                     </a>
@@ -141,10 +141,18 @@
         </div>
     </div>
 
+
     {{-- ════════════════════════════════
      MAIN LAYOUT
 ════════════════════════════════ --}}
     <div class="quran-layout">
+
+        {{-- Mobile floating trigger --}}
+        <button class="sidebar-toggle-btn" onclick="toggleMobileSidebar()" aria-label="Jump to Ayah">
+            <i class="bi bi-list-ol"></i>
+        </button>
+
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
 
         {{-- ── SIDEBAR ─────────────────── --}}
         <aside class="quran-sidebar" id="quranSidebar">
@@ -208,20 +216,19 @@
 
                 {{-- Badges --}}
                 <div class="d-flex justify-content-center gap-2 flex-wrap mt-1" id="surahBadges">
-                    <span class="badge"
-                        style="background:{{ $surah->revelation_type === 'meccan' ? 'var(--gold)' : 'var(--emerald-light)' }};
-                             color:{{ $surah->revelation_type === 'meccan' ? '#1A1A2E' : 'white' }}">
+                    <span
+                        class="surah-badge {{ $surah->revelation_type === 'meccan' ? 'badge-meccan' : 'badge-medinan' }}">
                         {{ ucfirst($surah->revelation_type) }}
                     </span>
-                    <span class="badge bg-success">
+                    <span class="surah-badge badge-neutral">
                         {{ $surah->ayah_count }} Ayahs
                     </span>
-                    <span class="badge bg-secondary">
+                    <span class="surah-badge badge-neutral">
                         Juz {{ $ayahs->first()?->juz ?? '—' }}
                     </span>
                     @auth
                         @if ($isSurahCompleted)
-                            <span class="badge" style="background:var(--emerald); color:white">
+                            <span class="surah-badge badge-completed">
                                 <i class="bi bi-check-circle-fill me-1"></i>Completed
                             </span>
                         @endif

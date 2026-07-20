@@ -110,18 +110,15 @@ function loadTafsir(tafsirSlug) {
 function formatTafsirText(text) {
     if (!text) return "<p>No tafsir text available.</p>";
 
-    // Split into paragraphs by double newline or long sentences
     const paragraphs = text
         .split(/\n\n+/)
         .filter((p) => p.trim().length > 0)
         .map((p) => `<p>${p.trim()}</p>`);
 
-    // If no natural paragraphs — split by sentences
     if (paragraphs.length <= 1) {
         const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
         const chunks = [];
 
-        // Group 3-4 sentences per paragraph
         for (let i = 0; i < sentences.length; i += 3) {
             const chunk = sentences
                 .slice(i, i + 3)
@@ -130,10 +127,27 @@ function formatTafsirText(text) {
             if (chunk) chunks.push(`<p>${chunk}</p>`);
         }
 
-        return chunks.join("") || `<p>${text}</p>`;
+        return applyArabicStyling(chunks.join("") || `<p>${text}</p>`);
     }
 
-    return paragraphs.join("");
+    return applyArabicStyling(paragraphs.join(""));
+}
+
+// ════════════════════════════════════
+// NAYA FUNCTION — Arabic paragraphs ko style class deta hai
+// ════════════════════════════════════
+function applyArabicStyling(html) {
+    return html.replace(/<p>([\s\S]*?)<\/p>/g, function (match, content) {
+        const arabicChars = (
+            content.match(/[\u0600-\u06FF\u0750-\u077F]/g) || []
+        ).length;
+        const totalChars = content
+            .replace(/<[^>]*>/g, "")
+            .replace(/\s+/g, "").length;
+        const ratio = totalChars > 0 ? arabicChars / totalChars : 0;
+        const cls = ratio > 0.5 ? "tafsir-arabic-quote" : "tafsir-body-text";
+        return `<p class="${cls}">${content}</p>`;
+    });
 }
 
 // ════════════════════════════════════
@@ -143,7 +157,9 @@ function onTafsirChange(select) {
     const slug = select.value;
     if (!slug) return;
 
-    // Update URL without reload so user can share/refresh
+    // Preference save karo — future mein har jagah yehi default use hoga
+    localStorage.setItem("taddabur_preferred_tafsir", slug);
+
     const url = new URL(window.location.href);
     url.searchParams.set("tafsir", slug);
     window.history.pushState({}, "", url.toString());
@@ -157,7 +173,18 @@ function onTafsirChange(select) {
 document.addEventListener("DOMContentLoaded", function () {
     const cfg = window.TAFSIR_CONFIG || {};
     const select = document.getElementById("tafsirSelector");
+    const savedTafsir = localStorage.getItem("taddabur_preferred_tafsir");
 
-    // Load default tafsir on page load
-    loadTafsir(select?.value || cfg.defaultTafsir || "");
+    // Priority: URL param (agar explicitly share kiya gaya link hai) > saved preference > server default
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlTafsir = urlParams.get("tafsir");
+
+    const initialTafsir = urlTafsir || savedTafsir || cfg.defaultTafsir || "";
+
+    // Dropdown ko bhi sync kar do taaki wahi selected dikhe
+    if (select && initialTafsir) {
+        select.value = initialTafsir;
+    }
+
+    loadTafsir(select?.value || initialTafsir);
 });

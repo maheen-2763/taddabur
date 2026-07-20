@@ -96,13 +96,13 @@
 
 /* Arabic ayah text */
 .tafsir-arabic {
-    font-family: "Scheherazade New", "Amiri", serif;
-    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    font-family: "Amiri", "Noto Naskh Arabic", serif;
+    font-size: 1.6rem;
     transition: font-size 0.25s ease;
     direction: rtl;
     text-align: right;
     color: var(--emerald-light);
-    line-height: 2.4;
+    line-height: 2.6;
     margin-bottom: 1rem;
     padding-bottom: 1rem;
     border-bottom: 1px solid var(--border);
@@ -200,9 +200,10 @@
 /* Tafsir body text */
 .tafsir-body {
     padding: 1.75rem 1.5rem;
-    font-size: 0.95rem;
-    line-height: 2;
+    font-size: 1.05rem;
+    line-height: 1.8;
     color: var(--ink);
+    max-width: 100%;
 }
 
 .tafsir-body p {
@@ -324,4 +325,31 @@
     font-size: 0.8rem;
     color: var(--muted);
     border-radius: 4px;
+}
+
+.tafsir-arabic-quote {
+    font-family: "Amiri Quran", "Amiri", serif;
+    font-size: 1.7rem;
+    line-height: 2.6;
+    direction: rtl;
+    text-align: center; /* right ki jagah center — short ayat/quotes ke liye zyada balanced dikhta hai */
+    margin: 1.2rem auto;
+    padding: 0 1rem;
+    max-width: 90%; /* container ke edge tak mat jaane do */
+    color: #2f5233;
+}
+
+.tafsir-body-text {
+    font-family: Georgia, serif;
+    font-size: 1.05rem;
+    line-height: 1.8;
+}
+
+#tafsirBody h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #6b5842;
+    margin-top: 1.5rem;
+    border-bottom: 1px solid #e0d5c0;
+    padding-bottom: 0.3rem;
 }

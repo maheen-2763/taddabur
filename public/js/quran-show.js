@@ -195,7 +195,6 @@ function changeActiveTafsir(slug) {
         return;
     }
 
-    // Close all open tafsir banners — they will reload with new selection
     document
         .querySelectorAll(".tafsir-banner.open")
         .forEach((b) => b.classList.remove("open"));
@@ -204,6 +203,13 @@ function changeActiveTafsir(slug) {
         .forEach((el) => delete el.dataset.loaded);
 
     window.selectedTafsir = slug;
+
+    // ✅ NAYA — preference save karo taaki panel/page bhi isi ko follow kare
+    localStorage.setItem("taddabur_preferred_tafsir", slug);
+
+    // ✅ NAYA — panel ka picker bhi khula hai toh usse bhi sync kar do
+    const panelPicker = document.getElementById("tafsirPanelPicker");
+    if (panelPicker) panelPicker.value = slug;
 }
 
 let currentTafsirSurah = null;
@@ -213,6 +219,11 @@ function openTafsirPanel(surah, ayahId) {
     currentTafsirSurah = surah;
     currentTafsirAyahId = ayahId;
 
+    // ✅ NAYA — panel khulte hi last-used tafsir select kar do
+    const saved = localStorage.getItem("taddabur_preferred_tafsir");
+    const panelPicker = document.getElementById("tafsirPanelPicker");
+    if (saved && panelPicker) panelPicker.value = saved;
+
     document.getElementById("tafsirPanel").classList.add("open");
     document.getElementById("tafsirOverlay").classList.add("visible");
     document.body.style.overflow = "hidden";
@@ -221,6 +232,15 @@ function openTafsirPanel(surah, ayahId) {
 }
 
 function switchPanelTafsir() {
+    const slug = document.getElementById("tafsirPanelPicker").value;
+
+    // ✅ NAYA — preference save karo
+    localStorage.setItem("taddabur_preferred_tafsir", slug);
+
+    // ✅ NAYA — toolbar ka picker bhi sync kar do agar visible hai
+    const toolbarPicker = document.getElementById("tafsirPicker");
+    if (toolbarPicker) toolbarPicker.value = slug;
+
     fetchTafsirData();
 }
 
@@ -828,7 +848,14 @@ document.addEventListener("DOMContentLoaded", function () {
     const cfg = window.QURAN_CONFIG || {};
     const hash = window.location.hash;
     const picker = document.getElementById("reciterPicker");
+    const saved = localStorage.getItem("taddabur_preferred_tafsir");
+    const toolbarPicker = document.getElementById("tafsirPicker");
     if (picker) handleReciterChange(picker);
+
+    if (saved && toolbarPicker) {
+        toolbarPicker.value = saved;
+        window.selectedTafsir = saved;
+    }
 
     // ✅ PRIORITY 1 — User arrived via a direct ayah link
     //    (search result, shared link, bookmark)
@@ -924,6 +951,7 @@ function updateResumeBannerLive(ayahNumber, readCount, totalAyahs) {
 // ════════════════════════════════════════════
 // MOBILE SIDEBAR DRAWER
 // ════════════════════════════════════════════
+
 function toggleMobileSidebar() {
     const sidebar = document.getElementById("quranSidebar");
     const overlay = document.getElementById("sidebarOverlay");
@@ -948,11 +976,11 @@ function closeMobileSidebar() {
 }
 
 // Close mobile sidebar when user jumps to an ayah
-// Update jumpFromSidebar to also close on mobile
 const _originalJumpFromSidebar = jumpFromSidebar;
 jumpFromSidebar = function (num) {
     _originalJumpFromSidebar(num);
-    if (window.innerWidth < 600) {
+    if (window.innerWidth < 768) {
+        // ✅ 600 se 768 kiya — CSS breakpoint se match
         setTimeout(closeMobileSidebar, 400);
     }
 };

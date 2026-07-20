@@ -117,8 +117,12 @@ class QuranController extends Controller
         }
 
         if (!$ayahTafsir) {
-            $ayahTafsir = AyahTafsir::whereIn('ayah_id', $surah->ayahs()->pluck('id'))
-                ->where('tafsir_id', $tafsir->id)
+            $ayahTafsir = AyahTafsir::where('tafsir_id', $tafsir->id)
+                ->join('ayahs', 'ayahs.id', '=', 'ayah_tafsirs.ayah_id')
+                ->where('ayahs.surah_id', $surah->id)
+                ->where('ayahs.number', '<=', $ayah->number)
+                ->orderByDesc('ayahs.number')
+                ->select('ayah_tafsirs.*')
                 ->first();
         }
 
@@ -201,8 +205,14 @@ class QuranController extends Controller
             ->first();
 
         if (!$ayahTafsir) {
-            $ayahTafsir = AyahTafsir::whereIn('ayah_id', $surah->ayahs()->pluck('id'))
-                ->where('tafsir_id', $selectedTafsir->id)
+            // ✅ Nearest PRECEDING ayah dhoondो jiska tafsir available hai —
+            //    kyunki grouped-tafsir hamesha group ki PEHLI ayah ke against store hoti hai
+            $ayahTafsir = AyahTafsir::where('tafsir_id', $selectedTafsir->id)
+                ->join('ayahs', 'ayahs.id', '=', 'ayah_tafsirs.ayah_id')
+                ->where('ayahs.surah_id', $surah->id)
+                ->where('ayahs.number', '<=', $ayah->number)
+                ->orderByDesc('ayahs.number')
+                ->select('ayah_tafsirs.*')
                 ->first();
         }
 
@@ -599,9 +609,9 @@ class QuranController extends Controller
         }
 
         if (str_starts_with($ayahTafsir->api_source_version ?? '', 'cross_surah')) {
-            // Format: cross_surah_104_105 — dusra number nikaalo
+            // ...jaisा hai waisा hi rahega, koi change nahi
             $parts = explode('_', $ayahTafsir->api_source_version);
-            $combinedWithSurahNumber = $parts[3] ?? null; // 'cross', 'surah', '104', '105'
+            $combinedWithSurahNumber = $parts[3] ?? null;
 
             $combinedSurah = $combinedWithSurahNumber
                 ? Surah::where('number', $combinedWithSurahNumber)->first()
@@ -616,6 +626,22 @@ class QuranController extends Controller
         }
 
         if ($ayahTafsir->ayah_id === $requestedAyah->id) {
+            // ✅ NAYA — row directly maujood hai, lekin check karo pichली ayahs se
+            //    text duplicate to nahi (Ibn Kathir jaisा copy-paste pattern)
+            $groupStartNumber = $this->findGroupStartAyahNumber(
+                $requestedSurah,
+                $requestedAyah->number,
+                $ayahTafsir->tafsir_id,
+                $ayahTafsir->text
+            );
+
+            if ($groupStartNumber !== $requestedAyah->number) {
+                return [
+                    'text' => $ayahTafsir->text,
+                    'note' => "This tafsir covers the complete passage (verses combined into {$requestedSurah->number}:{$groupStartNumber}).",
+                ];
+            }
+
             return ['text' => $ayahTafsir->text, 'note' => null];
         }
 
@@ -629,10 +655,31 @@ class QuranController extends Controller
             ];
         }
 
-        // Al-Fil jaisa case — same surah ke andar combined
         return [
             'text' => $ayahTafsir->text,
             'note' => "This tafsir covers the complete surah (verses combined into {$requestedSurah->number}:{$sourceAyah->number}).",
         ];
+    }
+
+    private function findGroupStartAyahNumber(Surah $surah, int $currentAyahNumber, int $tafsirId, string $text): int
+    {
+        $rows = AyahTafsir::where('tafsir_id', $tafsirId)
+            ->join('ayahs', 'ayahs.id', '=', 'ayah_tafsirs.ayah_id')
+            ->where('ayahs.surah_id', $surah->id)
+            ->where('ayahs.number', '<=', $currentAyahNumber)
+            ->orderByDesc('ayahs.number')
+            ->select('ayahs.number as ayah_number', 'ayah_tafsirs.text')
+            ->get();
+
+        $groupStart = $currentAyahNumber;
+
+        foreach ($rows as $row) {
+            if (trim($row->text) !== trim($text)) {
+                break; // text badal gaya — yahीं group khatam hota hai
+            }
+            $groupStart = $row->ayah_number;
+        }
+
+        return $groupStart;
     }
 }
