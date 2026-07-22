@@ -163,6 +163,13 @@ class User extends Authenticatable implements MustVerifyEmail
             : asset('images/default-avatar.png');
     }
 
+    // User.php
+    public function readHadiths()
+    {
+        return $this->belongsToMany(Hadith::class, 'hadith_reads')
+            ->withPivot('read_at');
+    }
+
 
 
     public function sendEmailVerificationNotification()

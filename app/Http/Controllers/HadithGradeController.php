@@ -11,6 +11,8 @@ class HadithGradeController extends Controller
     private const VALID_RELIABILITIES = ['Sahih', 'Hasan', 'Daif', 'Very Daif', 'Mawdu', 'Munkar', 'Shadh'];
     private const EXCLUDED_FROM_GRADING = ['bukhari', 'muslim'];
 
+    private const PER_PAGE = 20;
+
     // Global — collections index page ke liye (purana wala, jaisa tha)
     public function show(string $reliability): View
     {
@@ -19,7 +21,7 @@ class HadithGradeController extends Controller
         $hadiths = Hadith::where('reliability', $reliability)
             ->with('collection', 'chapter')
             ->orderBy('number')
-            ->paginate(20);
+            ->paginate(self::PER_PAGE);
 
         return view('hadith.grade', [
             'collection' => null,          // view ko batayega ye global hai
@@ -38,7 +40,7 @@ class HadithGradeController extends Controller
             ->where('reliability', $reliability)
             ->with('chapter')
             ->orderBy('number')
-            ->paginate(20);
+            ->paginate(self::PER_PAGE);
 
         return view('hadith.grade', [
             'collection' => $collection,

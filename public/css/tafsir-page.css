@@ -336,7 +336,7 @@
     margin: 1.2rem auto;
     padding: 0 1rem;
     max-width: 90%; /* container ke edge tak mat jaane do */
-    color: #2f5233;
+    color: var(--emerald-light);
 }
 
 .tafsir-body-text {

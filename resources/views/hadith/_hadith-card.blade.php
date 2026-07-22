@@ -1,6 +1,6 @@
-<div class="hadith-card" id="hadith-{{ $h->number }}" data-hadith-id="{{ $h->id }}">
+<div class="hadith-card" id="hadith-{{ $h->id }}" data-hadith-id="{{ $h->id }}">
 
-    <div class="hadith-number-badge">{{ $h->number }}</div>
+    <div class="hadith-number-badge">{{ $h->id }}</div>
 
     <p class="hadith-arabic" dir="rtl">{{ $h->arabic }}</p>
 
@@ -20,12 +20,12 @@
             </button>
         @endauth
 
-        <button class="ayah-btn" onclick="copyHadithText(this, {{ $h->number }})">
+        <button class="ayah-btn" onclick="copyHadithText(this, {{ $h->id }})">
             <i class="bi bi-clipboard"></i> Copy
         </button>
 
         <button class="ayah-btn"
-            onclick="shareHadith('{{ $collectionSlug ?? $h->collection->slug }}', {{ $h->number }}, this)">
+            onclick="shareHadith('{{ $collectionSlug ?? $h->collection->slug }}', {{ $h->id }}, this)">
             <i class="bi bi-share"></i> Share
         </button>
 
@@ -35,7 +35,13 @@
                 <i class="bi bi-pencil-square"></i>
                 {{ $hasNote ? 'Note' : 'Add Note' }}
             </button>
+
         @endauth
+        <button class="ayah-btn js-mark-read {{ $isRead ?? false ? 'bookmarked' : '' }}"
+            id="hadith-read-btn-{{ $h->id }}" onclick="toggleHadithRead(this, {{ $h->id }})">
+            <i class="bi bi-check-circle{{ $isRead ?? false ? '-fill' : '' }}"></i>
+            {{ $isRead ?? false ? 'Read' : 'Mark as Read' }}
+        </button>
 
     </div>
 

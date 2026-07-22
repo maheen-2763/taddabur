@@ -53,7 +53,7 @@
             collectionSlug: "{{ $collection->slug }}",
             chapterNumber: {{ $chapter->number }},
             targetPage: {{ $targetPage ? (int) $targetPage : 'null' }},
-            targetHadithNumber: {{ $targetHadithNumber ? (int) $targetHadithNumber : 'null' }},
+            targetHadithId: {{ $targetHadithId ? (int) $targetHadithId : 'null' }},
         };
         window.HADITH_USER_NOTES = @json($userNotesForJs);
     </script>

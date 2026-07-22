@@ -98,9 +98,11 @@
                 <div class="col-md-6">
                     <div class="source-card">
                         <span class="source-tag">Hadith</span>
-                        <h5 class="mb-2">Sahih al-Bukhari & Sahih Muslim</h5>
+                        <h5 class="mb-2">Six Major Collections</h5>
                         <p class="text-muted small mb-0">
-                            Authenticated hadith collections, available as part of the Premium plan.
+                            Sahih Bukhari, Sahih Muslim, Muwatta Malik, Abu Dawud, Jami' at-Tirmidhi, and
+                            Sunan Ibn Majah — sourced via the Fawaz Ahmed Hadith API, cross-checked for
+                            completeness before publishing.
                         </p>
                     </div>
                 </div>
@@ -129,11 +131,95 @@
 
             </div>
 
+            <h4 class="heading-font mb-3">How We Ensure Accuracy</h4>
+            <div class="row g-4 mb-5">
+
+                <div class="col-md-6">
+                    <div class="source-card">
+                        <span class="source-tag">Translation Coverage</span>
+                        <h5 class="mb-2">Every Ayah, Verified</h5>
+                        <p class="text-muted small mb-0">
+                            All 5 translations are checked against the complete 6,236-ayah count of the Quran to confirm
+                            no verse is missing or mismatched.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="source-card">
+                        <span class="source-tag">Hadith Grading</span>
+                        <h5 class="mb-2">Standardized Classification</h5>
+                        <p class="text-muted small mb-0">
+                            Grade labels (Sahih, Da'if, Hasan, etc.) from source data are normalized into a single
+                            consistent system, so grading is never ambiguous across collections.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="source-card">
+                        <span class="source-tag">Ongoing Review</span>
+                        <h5 class="mb-2">Some Grades Pending Verification</h5>
+                        <p class="text-muted small mb-0">
+                            A small number of hadith grade entries are still under manual scholarly review.
+                            These are clearly marked wherever they appear, rather than shown with false
+                            confidence.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="source-card">
+                        <span class="source-tag">Tafsir Sources</span>
+                        <h5 class="mb-2">Verified Against Official Records</h5>
+                        <p class="text-muted small mb-0">
+                            Tafsir texts are matched against official scholarly resource IDs, not just names, to ensure
+                            the correct commentary is always shown for the correct scholar.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="source-card">
+                        <span class="source-tag">Word-by-Word Audio Sync</span>
+                        <h5 class="mb-2">Verified Reciter by Reciter</h5>
+                        <p class="text-muted small mb-0">
+                            Each reciter's word-timing data is individually checked for accuracy before being marked as
+                            "verified." Where a reciter's timing data has known issues, we clearly label it as an
+                            approximate sync rather than showing incorrect highlighting.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="source-card">
+                        <span class="source-tag">Arabic Text Integrity</span>
+                        <h5 class="mb-2">Careful Text Handling</h5>
+                        <p class="text-muted small mb-0">
+                            Arabic script — including diacritics and letter variants — is handled with dedicated
+                            normalization to prevent silent text errors during search or reference lookup.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="source-card">
+                        <span class="source-tag">Ayah Presentation</span>
+                        <h5 class="mb-2">Correct Bismillah Placement</h5>
+                        <p class="text-muted small mb-0">
+                            Bismillah is displayed once at the start of each Surah, matching how it appears in the mus'haf —
+                            never duplicated within the first ayah's text.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
             <h4 class="heading-font mb-3">Found an error?</h4>
             <p class="text-muted">
-                If you notice any inaccuracy in the Quran text, translation, Tafsir, or story content, please let us
-                know — accuracy in presenting the Quran and Islamic knowledge is our highest priority.
-                {{-- TODO: add report-an-error link/email once support email is ready --}}
+                Despite these checks, mistakes can still happen. If you notice any inaccuracy in the Quran text,
+                translation, Tafsir, or story content, Hadiths please
+                <a href="mailto:your-email@example.com" style="color:var(--gold-dark)">let us know</a> —
+                accuracy in presenting the Quran and Islamic knowledge is our highest priority.
             </p>
 
         </div>

@@ -49,19 +49,15 @@
                 {{-- Right: All dropdowns same class --}}
                 <div class="d-flex align-items-center gap-2 flex-wrap" id="toolbarRight">
                     <div class="font-size-control d-flex gap-1">
-                        <button onclick="changeFontSize('decrease')" class="btn btn-sm"
-                            style="border:1px solid var(--border)">A-</button>
-                        <button onclick="changeFontSize('increase')" class="btn btn-sm"
-                            style="border:1px solid var(--border)">A+</button>
+                        <button onclick="changeFontSize('decrease')" class="toolbar-btn">A-</button>
+                        <button onclick="changeFontSize('increase')" class="toolbar-btn">A+</button>
                     </div>
                     {{-- Search --}}
-                    <a href="{{ route('quran.search') }}" class="btn btn-sm" style="border:1px solid var(--border)"
-                        title="Search Quran">
+                    <a href="{{ route('quran.search') }}" class="toolbar-btn" title="Search Quran">
                         <i class="bi bi-search"></i>
                     </a>
 
-                    <a href="{{ route('quran.sajdas') }}" class="btn btn-sm" style="border:1px solid var(--border)"
-                        title="Verses of Prostration">
+                    <a href="{{ route('quran.sajdas') }}" class="toolbar-btn" title="Verses of Prostration">
                         ۩
                     </a>
 
@@ -152,7 +148,6 @@
             <i class="bi bi-list-ol"></i>
         </button>
 
-        <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
 
         {{-- ── SIDEBAR ─────────────────── --}}
         <aside class="quran-sidebar" id="quranSidebar">
@@ -193,7 +188,7 @@
                         onclick="jumpFromSidebar({{ $ayah->number }})">
                         <span class="sidebar-item-num">{{ $ayah->number }}</span>
                         <span class="sidebar-item-text">
-                            {{ Str::limit($ayah->text_arabic, 15) }}
+                            <x-ayah-preview-text :ayah="$ayah" :strip-bismillah="$showBismillahTop" :limit="15" />
                         </span>
                     </div>
                 @endforeach
@@ -642,10 +637,7 @@
             </div>
         </div>
     </div>
-    <button class="mobile-jump-btn d-md-none" id="mobileSidebarBtn" onclick="toggleMobileSidebar()"
-        title="Jump to Ayah">
-        <i class="bi bi-list-ol"></i>
-    </button>
+
 
     {{-- Mobile overlay --}}
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()">
@@ -671,11 +663,12 @@
         </div>
         <div class="tafsir-content-card">
             <h6 class="tafsir-content-title" id="tafsirContentTitle"></h6>
-
-            <div class="tafsir-content-body" id="tafsirPanelBody">Loading...</div>
             <a href="#" id="tafsirFullViewLink" class="tafsir-full-view-link" target="_blank">
                 View in Full Page <i class="bi bi-box-arrow-up-right"></i>
             </a>
+
+            <div class="tafsir-content-body" id="tafsirPanelBody">Loading...</div>
+            
 
         </div>
     </div>

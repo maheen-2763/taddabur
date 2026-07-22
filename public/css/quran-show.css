@@ -8,6 +8,10 @@
     --quran-font: "Scheherazade New", "Amiri", serif;
 }
 
+[data-bs-theme="dark"] {
+    --quran-font: "Scheherazade New", "Amiri", serif;
+}
+
 /* ════════════════════════════════════════════
    TOOLBAR
 ════════════════════════════════════════════ */
@@ -52,9 +56,6 @@
 @media (max-width: 900px) {
     .quran-layout {
         grid-template-columns: 1fr;
-    }
-    .quran-sidebar {
-        display: none;
     }
 }
 
@@ -234,6 +235,7 @@
     }
 
     aside.quran-sidebar.mobile-open {
+        display: block !important;
         transform: translateX(0) !important;
     }
 }
@@ -1482,17 +1484,26 @@
    TOOLBAR — Buttons
 ════════════════════════════════════ */
 .toolbar-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     border: 1px solid var(--border);
     background: var(--cream);
     color: var(--ink-soft);
     border-radius: var(--radius);
     transition: all 0.15s ease;
+    padding: 0.35rem 0.65rem;
+    font-size: 0.82rem;
+    min-width: 36px;
+    height: 32px;
+    text-decoration: none;
 }
 
 .toolbar-btn:hover {
     border-color: var(--emerald);
     color: var(--emerald);
     background: rgba(27, 94, 59, 0.05);
+    text-decoration: none;
 }
 
 .toolbar-btn:focus-visible {

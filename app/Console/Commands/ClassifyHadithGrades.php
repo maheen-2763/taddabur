@@ -37,10 +37,10 @@ class ClassifyHadithGrades extends Command
                     return;
                 }
 
-                $hadith->update([
-                    'reliability'      => $mapped['reliability'],
-                    'attribution_type' => $mapped['attribution'],
-                ]);
+                // saving() event apne aap trigger hoga save() call pe
+                $hadith->reliability = $mapped['reliability'];
+                $hadith->attribution_type = $mapped['attribution'];
+                $hadith->save();
 
                 $bar->advance();
             });

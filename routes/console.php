@@ -14,3 +14,5 @@ Schedule::command('reflection:send')
 
 
 Schedule::command('quran:verify-translations')->weekly();
+
+Schedule::command('stories:backup')->weekly();

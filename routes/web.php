@@ -62,7 +62,11 @@ Route::middleware(['auth', 'plan:has_hadith'])->group(function () {
 
     // Collection-scoped
     Route::get('/hadith/{collection:slug}/grade/{reliability}', [HadithGradeController::class, 'showForCollection'])
-        ->name('hadith.grade.collection');   // ✅ alag naam
+        ->name('hadith.grade.collection');
+
+    Route::post('/hadith/{hadith}/toggle-read', [HadithController::class, 'toggleRead'])
+        ->middleware('auth')
+        ->name('hadith.toggle-read'); // ✅ alag naam
 
     Route::prefix('hadith')->name('hadith.')->group(function () {
         Route::get('/', [HadithController::class, 'index'])->name('index');

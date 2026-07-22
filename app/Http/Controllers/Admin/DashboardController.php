@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Ayah;
 use App\Models\AllahName;
 use App\Models\Bookmark;
+use App\Models\Hadith;
 use App\Models\Note;
 use App\Models\Prophet;
 use App\Models\Story;
@@ -109,6 +110,7 @@ class DashboardController extends Controller
         $totalReciters     = DB::table('recitations')->count();
         $totalBookmarks    = Bookmark::count();
         $totalNotes        = Note::count();
+        $totalHadiths    =   Hadith::count();
 
         $avgBookmarks = $totalUsers > 0
             ? round($totalBookmarks / $totalUsers, 1)
@@ -168,8 +170,8 @@ class DashboardController extends Controller
             ? DB::table('sahabas')->count()
             : 0;
 
-        $totalImams = DB::getSchemaBuilder()->hasTable('imams')
-            ? DB::table('imams')->count()
+        $totalScholars = DB::getSchemaBuilder()->hasTable('scholars')
+            ? DB::table('scholars')->count()
             : 0;
 
         // ═══════════════════════════════════════════════
@@ -281,6 +283,7 @@ class DashboardController extends Controller
             'totalTranslations',
             'totalReciters',
             'totalBookmarks',
+            'totalHadiths',
             'totalNotes',
             'avgBookmarks',
             'avgNotesPremium',
@@ -298,7 +301,7 @@ class DashboardController extends Controller
             'totalProphets',
             'totalAllahNames',
             'totalSahabas',
-            'totalImams',
+            'totalScholars',
 
             // Subscriptions
             'totalSubs',

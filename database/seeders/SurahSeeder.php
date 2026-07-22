@@ -10,7 +10,7 @@ class SurahSeeder extends Seeder
 {
     public function run(): void
     {
-        Surah::truncate();
+
 
         // Complete list of all 114 Surahs
         // Format: [number, arabic_name, transliteration, english_name, revelation_type, ayah_count, page]
@@ -132,17 +132,19 @@ class SurahSeeder extends Seeder
         ];
 
         foreach ($surahs as $surah) {
-            Surah::create([
-                'number'               => $surah[0],
-                'name_arabic'          => $surah[1],
-                'name_transliteration' => $surah[2],
-                'name_english'         => $surah[3],
-                'revelation_type'      => $surah[4],
-                'ayah_count'           => $surah[5],
-                'page_number'          => $surah[6],
-            ]);
+            Surah::updateOrCreate(
+                ['number' => $surah[0]],
+                [
+                    'name_arabic'          => $surah[1],
+                    'name_transliteration' => $surah[2],
+                    'name_english'         => $surah[3],
+                    'revelation_type'      => $surah[4],
+                    'ayah_count'           => $surah[5],
+                    'page_number'          => $surah[6],
+                ]
+            );
         }
 
-        $this->command->info('✅ Surahs seeded: All 114 Surahs of the Holy Quran');
+        $this->command->info('✅ Surahs seeded/updated: All 114 Surahs of the Holy Quran');
     }
 }

@@ -207,3 +207,15 @@ function flashCopied(btn, label = "Copied!") {
     btn.innerHTML = `<i class="bi bi-check"></i> ${label}`;
     setTimeout(() => (btn.innerHTML = orig), 1500);
 }
+
+// ════════════ MARK AS READ ════════════
+function toggleHadithRead(btn, hadithId) {
+    apiRequest(`/hadith/${hadithId}/toggle-read`, "POST")
+        .then((data) => {
+            btn.classList.toggle("bookmarked", data.is_read);
+            btn.innerHTML = data.is_read
+                ? '<i class="bi bi-check-circle-fill"></i> Read'
+                : '<i class="bi bi-check-circle"></i> Mark as Read';
+        })
+        .catch(() => showFlash("Could not update read status.", "error"));
+}

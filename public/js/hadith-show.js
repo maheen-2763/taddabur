@@ -18,15 +18,15 @@ document.addEventListener("DOMContentLoaded", () => {
     ) {
         jumpToHadith(
             window.HADITH_CONFIG.targetPage,
-            window.HADITH_CONFIG.targetHadithNumber,
+            window.HADITH_CONFIG.targetHadithId,
         );
-    } else if (window.HADITH_CONFIG.targetHadithNumber) {
+    } else if (window.HADITH_CONFIG.targetHadithId) {
         // pehle page mein hi hai, seedha highlight karo
-        highlightHadith(window.HADITH_CONFIG.targetHadithNumber);
+        highlightHadith(window.HADITH_CONFIG.targetHadithId);
     }
 });
 
-async function jumpToHadith(targetPage, targetHadithNumber) {
+async function jumpToHadith(targetPage, targetHadithId) {
     showPageLoader(); // tumhara tasbih loader reuse ho gaya
 
     // observer ko temporarily hata do, taaki normal scroll-triggered loading beech mein interfere na kare
@@ -39,7 +39,7 @@ async function jumpToHadith(targetPage, targetHadithNumber) {
     hidePageLoader();
     hadithObserver.observe(document.querySelector("#hadith-sentinel")); // wapas normal lazy-load resume
 
-    highlightHadith(targetHadithNumber);
+    highlightHadith(targetHadithId);
 }
 
 // loadMoreHadiths() ko Promise-based banao taaki 'await' kaam kare
@@ -74,13 +74,17 @@ function loadMoreHadithsAsync() {
     });
 }
 
-function highlightHadith(number) {
-    const el = document.getElementById(`hadith-${number}`);
+function highlightHadith(id) {
+    const el = document.getElementById(`hadith-${id}`);
     if (!el) return;
 
-    el.scrollIntoView({ behavior: "smooth", block: "center" });
-    el.classList.add("highlight-flash");
-    setTimeout(() => el.classList.remove("highlight-flash"), 3000);
+    requestAnimationFrame(() => {
+        setTimeout(() => {
+            el.scrollIntoView({ behavior: "smooth", block: "center" });
+            el.classList.add("highlight-flash");
+            setTimeout(() => el.classList.remove("highlight-flash"), 3000);
+        }, 100);
+    });
 }
 
 function appendHadiths(hadiths) {
@@ -88,7 +92,7 @@ function appendHadiths(hadiths) {
     hadiths.forEach((h) => {
         const div = document.createElement("div");
         div.className = "hadith-card";
-        div.id = `hadith-${h.number}`;
+        div.id = `hadith-${h.id}`;
         div.dataset.hadithId = h.id;
         div.innerHTML = `
             <div class="hadith-number-badge">${h.number}</div>

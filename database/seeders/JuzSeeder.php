@@ -14,7 +14,7 @@ class JuzSeeder extends Seeder
     public function run(): void
     {
 
-        Juz::truncate();
+
 
         $juzs = [
             [1,  'الم',              'Alif Lam Meem',        'alif-lam-meem',        1, 1,   2, 141],
@@ -48,5 +48,22 @@ class JuzSeeder extends Seeder
             [29, 'تَبَارَكَ',        'Tabarakallazi',        'tabarakallazi',        67, 1,  77, 50],
             [30, 'عَمَّ',            'Amma Yatasaa’loon',    'amma-yatasaaloon',     78, 1,  114, 6],
         ];
+
+        foreach ($juzs as $juz) {
+            Juz::updateOrCreate(
+                ['number' => $juz[0]],
+                [
+                    'name_arabic'          => $juz[1],
+                    'name_transliteration' => $juz[2],
+                    'slug'                 => $juz[3],
+                    'start_surah'          => $juz[4],
+                    'start_ayah'           => $juz[5],
+                    'end_surah'            => $juz[6],
+                    'end_ayah'             => $juz[7],
+                ]
+            );
+        }
+
+        $this->command->info('✅ Juzs seeded/updated: 30 Juz');
     }
 }

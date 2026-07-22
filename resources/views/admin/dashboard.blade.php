@@ -332,8 +332,10 @@
                                 stroke-width="3.5" stroke-dasharray="{{ ($basicPct / 100) * $circ }} {{ $circ }}"
                                 stroke-dashoffset="{{ (-$freePct / 100) * $circ }}" transform="rotate(-90 18 18)" />
                             <circle cx="18" cy="18" r="{{ $r }}" fill="none" stroke="#C9963A"
-                                stroke-width="3.5" stroke-dasharray="{{ ($premiumPct / 100) * $circ }} {{ $circ }}"
-                                stroke-dashoffset="{{ (-($freePct + $basicPct) / 100) * $circ }}" transform="rotate(-90 18 18)" />
+                                stroke-width="3.5"
+                                stroke-dasharray="{{ ($premiumPct / 100) * $circ }} {{ $circ }}"
+                                stroke-dashoffset="{{ (-($freePct + $basicPct) / 100) * $circ }}"
+                                transform="rotate(-90 18 18)" />
                             <text x="18" y="20" text-anchor="middle" font-size="5" fill="#1A1A2E"
                                 font-family="Cinzel,serif">{{ $totalUsers ?? 0 }}</text>
                         </svg>
@@ -473,6 +475,15 @@
 
         <div class="col-6 col-md-2">
             <div class="stat-card text-center">
+                <i class="bi bi-translate" style="font-size:1.4rem; color:var(--gold)"></i>
+                <div class="stat-number mt-1" style="color:var(--gold); font-size:1.6rem;">{{ $totalHadiths ?? 0 }}
+                </div>
+                <small class="text-muted">Hadiths</small>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-2">
+            <div class="stat-card text-center">
                 <i class="bi bi-mic" style="font-size:1.4rem; color:var(--emerald)"></i>
                 <div class="stat-number mt-1" style="color:var(--emerald); font-size:1.6rem;">{{ $totalReciters ?? 0 }}
                 </div>
@@ -587,7 +598,8 @@
                             <span style="width:18px; color:#ccc; font-size:0.72rem;">{{ $i + 1 }}</span>
                             <span class="surah-bar-label">{{ $surah['name'] }}</span>
                             <div class="surah-bar-track">
-                                <div class="surah-bar-fill" style="width:{{ round(($surah['reads'] / $maxReads) * 100) }}%">
+                                <div class="surah-bar-fill"
+                                    style="width:{{ round(($surah['reads'] / $maxReads) * 100) }}%">
                                 </div>
                             </div>
                             <span class="surah-bar-count">{{ $surah['reads'] }}</span>
@@ -686,7 +698,8 @@
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
                         <p class="text-muted mb-1" style="font-size:0.7rem">FOUR IMAMS</p>
-                        <div class="stat-number" style="color:var(--emerald); font-size:1.5rem;">{{ $totalImams ?? 0 }}
+                        <div class="stat-number" style="color:var(--emerald); font-size:1.5rem;">
+                            {{ $totalScholars ?? 0 }}
                         </div>
                     </div>
                     <div class="stat-icon" style="background:rgba(27,94,59,0.1)">
@@ -694,7 +707,7 @@
                     </div>
                 </div>
                 <span class="badge"
-                    style="background:rgba(201,150,58,0.15); color:var(--gold-dark); font-size:0.65rem;">Coming Soon</span>
+                    style="background:rgba(201,150,58,0.15); color:var(--gold-dark); font-size:0.65rem;"></span>
             </div>
         </div>
 

@@ -103,8 +103,14 @@ class PlanSeeder extends Seeder
         foreach ($plans as $plan) {
             Plan::updateOrCreate(
                 ['slug' => $plan['slug']],
-                $plan
+                collect($plan)->except([
+                    'slug',
+                    'stripe_monthly_price_id',
+                    'stripe_yearly_price_id',
+                ])->toArray()
             );
         }
+
+        $this->command->info('✅ Plans seeded/updated: ' . count($plans) . ' plans');
     }
 }

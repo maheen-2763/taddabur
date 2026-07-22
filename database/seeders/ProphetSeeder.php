@@ -10,7 +10,6 @@ class ProphetSeeder extends Seeder
 {
     public function run(): void
     {
-        Prophet::truncate();
 
         // All 25 Prophets mentioned in the Quran
         // Format: [order, arabic, english, transliteration, title, period, quran_references]
@@ -343,9 +342,12 @@ class ProphetSeeder extends Seeder
         ];
 
         foreach ($prophets as $prophet) {
-            Prophet::create($prophet);
+            Prophet::updateOrCreate(
+                ['slug' => $prophet['slug']],
+                $prophet
+            );
         }
 
-        $this->command->info('✅ Prophets seeded: All 25 Prophets of Islam');
+        $this->command->info('✅ Prophets seeded/updated: All 25 Prophets of Islam');
     }
 }

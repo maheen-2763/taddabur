@@ -19,6 +19,6 @@ class HadithCollection extends Model
     // ✅ Accessor — agar total_hadith stale/null ho, live count se fallback
     public function getDisplayCountAttribute(): int
     {
-        return $this->total_hadith ?? $this->hadiths()->count();
+        return $this->hadiths_count ?? $this->total_hadith ?? 0;
     }
 }

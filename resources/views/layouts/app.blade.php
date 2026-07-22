@@ -208,6 +208,45 @@
                     </ul>
                 </div>
 
+                {{-- Developer note trigger --}}
+                <button class="dev-note-trigger" onclick="toggleDevNote()" aria-label="A note from the developer"
+                    title="A note from the developer">
+                    <i class="bi bi-feather"></i>
+                </button>
+
+                {{-- Developer note modal --}}
+                <div class="dev-note-overlay" id="devNoteOverlay" onclick="toggleDevNote()"></div>
+                <div class="dev-note-modal" id="devNoteModal">
+                    <button class="dev-note-close" onclick="toggleDevNote()">&times;</button>
+
+                    <div class="dev-note-content">
+                        <p class="dev-note-arabic">بِسْمِ اللهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+
+                        <p>
+                            Taddabur is built by a single individual developer — a humble effort, not a company or a
+                            team.
+                            I'm continuing to improve it, both in content accuracy and in design, In Sha Allah.
+                        </p>
+
+                        <p>
+                            May Allah accept this from me, and make it a means of benefit for anyone who uses it.
+                            May He forgive every mistake made while building it, and have mercy on me and on the whole
+                            Ummah.
+                        </p>
+
+                        <p>
+                            May our Hereafter be as beautiful as He has promised us in the Qur'an. And may we be
+                            reunited
+                            with our Prophet ﷺ.
+                        </p>
+
+                        <p class="dev-note-signoff">
+                            If this app has helped you in any way, a small dua for me and my family
+                            would mean more than anything. — Ameen 🤲
+                        </p>
+                    </div>
+                </div>
+
             </div>
 
             <div class="row mt-2 pt-3" style="border-top:1px solid rgba(201,150,58,0.15);">

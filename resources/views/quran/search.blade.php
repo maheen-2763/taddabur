@@ -6,8 +6,8 @@
 @push('styles')
     <style>
         /* ════════════════════════════════════
-       SEARCH HERO
-    ════════════════════════════════════ */
+                           SEARCH HERO
+                        ════════════════════════════════════ */
         .search-hero {
             background: linear-gradient(160deg, var(--emerald-dark) 0%, #0f2d18 100%);
             padding: 3rem 1rem 2.5rem;
@@ -92,8 +92,8 @@
         }
 
         /* ════════════════════════════════════
-       RESULTS AREA
-    ════════════════════════════════════ */
+                           RESULTS AREA
+                        ════════════════════════════════════ */
         .results-wrap {
             max-width: 860px;
             margin: 0 auto;
@@ -118,13 +118,13 @@
         }
 
         .results-count span {
-            color: var(--emerald);
+            color: var(--emerald-light);
             font-weight: 600;
         }
 
         /* ════════════════════════════════════
-       RESULT CARD
-    ════════════════════════════════════ */
+                           RESULT CARD
+                        ════════════════════════════════════ */
         .result-card {
             background: var(--cream-dark);
             border: 1px solid var(--border);
@@ -170,7 +170,7 @@
 
         .result-surah-badge {
             background: rgba(27, 94, 59, 0.1);
-            color: var(--emerald);
+            color: var(--emerald-light);
             border: 1px solid rgba(27, 94, 59, 0.15);
             border-radius: 50px;
             padding: 0.2rem 0.75rem;
@@ -181,7 +181,7 @@
 
         .result-ayah-num {
             font-size: 0.72rem;
-            color: var(--muted);
+            color: var(--emerald-light);
             font-family: var(--font-heading);
         }
 
@@ -191,7 +191,7 @@
             font-size: 1.3rem;
             direction: rtl;
             text-align: right;
-            color: var(--emerald-dark);
+            color: var(--emerald-light);
             line-height: 2;
             margin-bottom: 0.5rem;
         }
@@ -227,7 +227,7 @@
         .result-read-btn {
             font-family: var(--font-heading);
             font-size: 0.72rem;
-            color: var(--emerald);
+            color: var(--emerald-light);
             text-decoration: none;
             letter-spacing: 0.04em;
             transition: color 0.2s;
@@ -241,8 +241,8 @@
         }
 
         /* ════════════════════════════════════
-       EMPTY / INITIAL STATES
-    ════════════════════════════════════ */
+                           EMPTY / INITIAL STATES
+                        ════════════════════════════════════ */
         .search-empty {
             text-align: center;
             padding: 4rem 1rem;
@@ -264,8 +264,8 @@
         }
 
         /* ════════════════════════════════════
-       PAGINATION
-    ════════════════════════════════════ */
+                           PAGINATION
+                        ════════════════════════════════════ */
         .quran-pagination {
             display: flex;
             justify-content: center;
