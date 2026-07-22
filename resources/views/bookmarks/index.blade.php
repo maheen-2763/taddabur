@@ -170,7 +170,7 @@
                                 @endif
                             </div>
                             <div class="d-flex flex-column gap-2 ms-3">
-                                <a href="{{ route('hadith.show', [$bookmark->bookmarkable?->collection?->slug, $bookmark->bookmarkable?->chapter?->number]) }}?highlight={{ $bookmark->bookmarkable?->number }}"
+                                <a href="{{ route('hadith.show', [$bookmark->bookmarkable?->collection?->slug, $bookmark->bookmarkable?->chapter?->number]) }}?highlight={{ $bookmark->bookmarkable?->id }}"
                                     class="btn btn-sm btn-emerald">
                                     <i class="bi bi-book"></i>
                                 </a>

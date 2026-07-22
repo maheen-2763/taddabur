@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Hadith extends Model
 {
-    protected $fillable = ['collection_id', 'chapter_id', 'number', 'arabic', 'english', 'narrator_chain', 'grade', 'grade_source', 'reliability', 'attribution_type'];
+    protected $fillable = ['collection_id', 'chapter_id', 'number', 'arabic', 'english', 'narrator_chain', 'grade', 'grade_source', 'needs_review', 'reliability', 'attribution_type'];
 
     protected static function booted(): void
     {

@@ -19,17 +19,37 @@
         </a>
         <h2 class="heading-font mb-1" style="color:var(--emerald)">{{ $collection->name }}</h2>
         <p class="text-muted mb-4">{{ $collection->scholar }}</p>
+
+        @if ($resumeHadith)
+            <a href="{{ route('hadith.show', [$collection->slug, $resumeHadith->chapter->number]) }}?highlight={{ $resumeHadith->id }}"
+                class="hadith-resume-btn mb-4">
+                <i class="bi bi-play-circle-fill"></i>
+                Resume Reading — Hadith {{ $resumeHadith->number }}
+            </a>
+        @elseif(Auth::check() && $hasReadAnything ?? false)
+            <div class="hadith-complete-banner mb-4">
+                <i class="bi bi-check-circle-fill"></i>
+                MashaAllah — you've completed this collection!
+            </div>
+        @endif
         @unless (in_array($collection->slug, ['bukhari', 'muslim']))
             <div class="mb-4">
                 <p class="text-muted mb-2" style="font-size:0.85rem">Browse by grade</p>
-                <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                <div class="grade-buttons d-flex flex-wrap gap-2">
                     <a href="{{ route('hadith.grade.collection', [$collection->slug, 'Sahih']) }}"
-                        class="hadith-back-btn">Sahih</a>
+                        class="hadith-grade-btn">Sahih</a>
                     <a href="{{ route('hadith.grade.collection', [$collection->slug, 'Hasan']) }}"
-                        class="hadith-back-btn">Hasan</a>
+                        class="hadith-grade-btn">Hasan</a>
                     <a href="{{ route('hadith.grade.collection', [$collection->slug, 'Daif']) }}"
-                        class="hadith-back-btn">Da'if</a>
-
+                        class="hadith-grade-btn">Da'if</a>
+                    <a href="{{ route('hadith.grade.collection', [$collection->slug, 'Very Daif']) }}"
+                        class="hadith-grade-btn">Very Da'if</a>
+                    <a href="{{ route('hadith.grade.collection', [$collection->slug, 'Munkar']) }}"
+                        class="hadith-grade-btn">Munkar</a>
+                    <a href="{{ route('hadith.grade.collection', [$collection->slug, 'Shadh']) }}"
+                        class="hadith-grade-btn">Shadh</a>
+                    <a href="{{ route('hadith.grade.collection', [$collection->slug, 'Mawdu']) }}"
+                        class="hadith-grade-btn">Mawdu</a>
                 </div>
             </div>
         @endunless
@@ -47,11 +67,20 @@
                 @foreach ($chapters as $ch)
                     <a href="{{ route('hadith.show', [$collection->slug, $ch->number]) }}"
                         class="hadith-chapter-row hadith-nav-link">
+
                         <span class="hadith-chapter-title">
                             <span class="chapter-number-badge">{{ $ch->number }}</span>
-                            {{ $ch->title }}
+                            <span class="chapter-title-text">{{ $ch->title }}</span>
                         </span>
-                        <span class="hadith-count-badge">{{ $ch->hadiths_count }}</span>
+
+                        <span class="chapter-meta">
+                            @if ($ch->start_number && $ch->end_number)
+                                <span class="chapter-range-badge">Hadith
+                                    {{ $ch->start_number }}–{{ $ch->end_number }}</span>
+                            @endif
+                            <span class="hadith-count-badge">{{ $ch->hadiths_count }}</span>
+                        </span>
+
                     </a>
                 @endforeach
             </div>

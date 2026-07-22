@@ -7,7 +7,13 @@
     <p class="hadith-english">{{ $h->english }}</p>
 
     @if ($h->grade)
-        <span class="grade-badge grade-{{ strtolower($h->grade) }}">{{ $h->grade }}</span>
+        <span class="grade-badge grade-{{ Str::slug($h->grade) }}">{{ $h->grade }}</span>
+    @endif
+
+    @if ($h->needs_review)
+        <span class="review-flag" title="This grade is pending scholarly verification">
+            ⚠ Under Review
+        </span>
     @endif
 
     <div class="hadith-actions mt-2">

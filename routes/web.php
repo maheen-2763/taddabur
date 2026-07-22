@@ -71,8 +71,8 @@ Route::middleware(['auth', 'plan:has_hadith'])->group(function () {
     Route::prefix('hadith')->name('hadith.')->group(function () {
         Route::get('/', [HadithController::class, 'index'])->name('index');
         Route::get('/{collection:slug}', [HadithController::class, 'chapters'])->name('chapters');
-        Route::get('/{collection:slug}/{chapter:number}', [HadithController::class, 'show'])->name('show');
-        Route::get('/{collection:slug}/{chapter:number}/items', [HadithController::class, 'loadHadiths'])->name('items');
+        Route::get('/{collection:slug}/{chapter:number}', [HadithController::class, 'show'])->name('show')->scopeBindings();
+        Route::get('/{collection:slug}/{chapter:number}/items', [HadithController::class, 'loadHadiths'])->name('items')->scopeBindings();
     });
 });
 

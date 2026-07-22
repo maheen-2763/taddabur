@@ -44,14 +44,57 @@ class HadithController extends Controller
 
     public function chapters(HadithCollection $collection)
     {
-        // ✅ chapters table mein stored count nahi hai, isliye withCount zaroori
         $chapters = HadithChapter::where('collection_id', $collection->id)
             ->withCount('hadiths')
             ->orderBy('number')
             ->get();
 
-        return view('hadith.chapters', compact('collection', 'chapters'));
+        $resumeHadith = null;
+        $hasReadAnything = false;
+
+        if ($user = Auth::user()) {
+            // Step 1: last-read hadith is collection ke andar
+            $lastRead = DB::table('hadith_reads')
+                ->join('hadiths', 'hadiths.id', '=', 'hadith_reads.hadith_id')
+                ->where('hadith_reads.user_id', $user->id)
+                ->where('hadiths.collection_id', $collection->id)
+                ->orderByDesc('hadith_reads.read_at')
+                ->select('hadiths.chapter_id', 'hadiths.number')
+                ->first();
+
+            $hasReadAnything = (bool) $lastRead;
+
+            if ($lastRead) {
+                // Step 2: same chapter mein agla hadith dhoondo
+                $resumeHadith = Hadith::where('chapter_id', $lastRead->chapter_id)
+                    ->where('number', '>', $lastRead->number)
+                    ->orderBy('number')
+                    ->first();
+
+                // Step 3: agar chapter khatam ho gaya, agle chapter ka pehla hadith
+                if (!$resumeHadith) {
+                    $currentChapter = HadithChapter::find($lastRead->chapter_id);
+
+                    $nextChapter = HadithChapter::where('collection_id', $collection->id)
+                        ->where('number', '>', $currentChapter->number)
+                        ->orderBy('number')
+                        ->first();
+
+                    if ($nextChapter) {
+                        $resumeHadith = Hadith::where('chapter_id', $nextChapter->id)
+                            ->orderBy('number')
+                            ->first();
+                    }
+                    // agar $nextChapter bhi nahi mila = poori collection complete, $resumeHadith null hi rahega
+                }
+            }
+        }
+
+        return view('hadith.chapters', compact('collection', 'chapters', 'resumeHadith', 'hasReadAnything'));
     }
+
+
+
 
     public function show(HadithCollection $collection, HadithChapter $chapter, Request $request)
     {
