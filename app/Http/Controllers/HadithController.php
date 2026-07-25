@@ -71,6 +71,30 @@ class HadithController extends Controller
                     ->orderBy('number')
                     ->first();
 
+                /** @var \App\Models\User|null $user */
+                $user = Auth::user();
+
+                if ($user) {
+                    // ✅ Single query — sab chapters ka read-count ek saath (N+1 nahi)
+                    $readCounts = DB::table('hadith_reads')
+                        ->join('hadiths', 'hadiths.id', '=', 'hadith_reads.hadith_id')
+                        ->where('hadith_reads.user_id', $user->id)
+                        ->where('hadiths.collection_id', $collection->id)
+                        ->selectRaw('hadiths.chapter_id, COUNT(*) as read_count')
+                        ->groupBy('hadiths.chapter_id')
+                        ->pluck('read_count', 'chapter_id');
+
+                    $chapters->each(function ($ch) use ($readCounts) {
+                        $read = $readCounts[$ch->id] ?? 0;
+                        $ch->read_count = $read;
+                        $ch->is_complete = $ch->hadiths_count > 0 && $read >= $ch->hadiths_count;
+                        $ch->progress_percent = $ch->hadiths_count > 0
+                            ? min(100, round(($read / $ch->hadiths_count) * 100))
+                            : 0;
+                    });
+                }
+
+
                 // Step 3: agar chapter khatam ho gaya, agle chapter ka pehla hadith
                 if (!$resumeHadith) {
                     $currentChapter = HadithChapter::find($lastRead->chapter_id);
@@ -95,14 +119,14 @@ class HadithController extends Controller
 
 
 
-
     public function show(HadithCollection $collection, HadithChapter $chapter, Request $request)
     {
+
         $hadiths = Hadith::where('collection_id', $collection->id)
             ->where('chapter_id', $chapter->id)
             ->orderBy('number')
             ->take(self::PER_PAGE)
-            ->get(['id', 'number', 'arabic', 'english', 'grade', 'grade_source']);
+            ->get(['id', 'number', 'arabic', 'english', 'grade', 'grade_source', 'needs_review', 'translation_incomplete']);
 
         $highlightId = $request->query('highlight'); // e.g. ?highlight=4213
 
@@ -168,13 +192,14 @@ class HadithController extends Controller
             ->orderBy('number')
             ->skip(($page - 1) * self::PER_PAGE)
             ->take(self::PER_PAGE)
-            ->get(['id', 'number', 'arabic', 'english', 'grade', 'grade_source']);
+            ->get(['id', 'number', 'arabic', 'english', 'grade', 'grade_source', 'needs_review', 'translation_incomplete']);
 
         /** @var \App\Models\User|null $user */
         $user = Auth::user();
 
         $bookmarkedIds = [];
         $readIds = [];
+        $userNotes = collect();
 
         if ($user) {
             $hadithIds = $hadiths->pluck('id');
@@ -186,11 +211,22 @@ class HadithController extends Controller
                 ->toArray();
 
             $readIds = $user->readHadiths()->whereIn('hadiths.id', $hadithIds)->pluck('hadiths.id')->toArray();
+
+            // ✅ naya — notes bhi fetch karo
+            $userNotes = \App\Models\Note::where('user_id', $user->id)
+                ->whereIn('hadith_id', $hadithIds)
+                ->get()
+                ->keyBy('hadith_id');
         }
 
-        $hadiths->each(function ($h) use ($bookmarkedIds, $readIds) {
+        $hadiths->each(function ($h) use ($bookmarkedIds, $readIds, $userNotes) {
             $h->is_bookmarked = in_array($h->id, $bookmarkedIds);
             $h->is_read = in_array($h->id, $readIds);
+
+            // ✅ naya — has_note aur note ka data dono bhejo
+            $note = $userNotes->get($h->id);
+            $h->has_note = (bool) $note;
+            $h->note_data = $note ? ['id' => $note->id, 'title' => $note->title, 'content' => $note->content] : null;
         });
 
         return response()->json([

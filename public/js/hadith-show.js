@@ -90,15 +90,44 @@ function highlightHadith(id) {
 function appendHadiths(hadiths) {
     const list = document.querySelector("#hadithList");
     hadiths.forEach((h) => {
+        if (h.has_note && h.note_data) {
+            window.HADITH_USER_NOTES = window.HADITH_USER_NOTES || {};
+            window.HADITH_USER_NOTES[h.id] = h.note_data;
+        }
+
+        // ✅ Str::slug() jaisa hi behavior — comma/space ko single hyphen mein badalta hai
+        const gradeSlug = h.grade
+            ? h.grade
+                  .toLowerCase()
+                  .replace(/[^a-z0-9]+/g, "-")
+                  .replace(/(^-|-$)/g, "")
+            : "";
+
         const div = document.createElement("div");
         div.className = "hadith-card";
         div.id = `hadith-${h.id}`;
         div.dataset.hadithId = h.id;
         div.innerHTML = `
-            <div class="hadith-number-badge">${h.number}</div>
-            <p class="hadith-arabic" dir="rtl">${h.arabic}</p>
+            <div class="hadith-card-header">
+                <span class="hadith-number-badge">${h.id}</span>
+                <span class="hadith-header-badges">
+                    ${h.grade ? `<span class="grade-badge grade-${gradeSlug}">${h.grade}</span>` : ""}
+                    ${h.needs_review ? `<span class="review-flag" title="This grade is pending scholarly verification">⚠ Under Review</span>` : ""}
+                </span>
+            </div>
+
+            <div class="hadith-arabic-zone">
+                <p class="hadith-arabic" dir="rtl">${h.arabic}</p>
+            </div>
+
+            <div class="hadith-divider"></div>
+
             <p class="hadith-english">${h.english}</p>
-            ${h.grade ? `<span class="grade-badge grade-${h.grade.toLowerCase()}">${h.grade}</span>` : ""}
+
+            <div class="hadith-reference-line">
+                ${window.HADITH_CONFIG.collectionName} › ${window.HADITH_CONFIG.chapterTitle} › Hadith# ${h.number}
+            </div>
+
             <div class="hadith-actions mt-2">
                 <button class="ayah-btn ${h.is_bookmarked ? "bookmarked" : ""}" id="hadith-bookmark-${h.id}" onclick="toggleHadithBookmark(this, ${h.id})">
                     <i class="bi bi-bookmark${h.is_bookmarked ? "-fill" : ""}"></i> ${h.is_bookmarked ? "Bookmarked" : "Bookmark"}
@@ -109,10 +138,14 @@ function appendHadiths(hadiths) {
                 <button class="ayah-btn" onclick="shareHadith('${window.HADITH_CONFIG.collectionSlug}', ${h.number}, this)">
                     <i class="bi bi-share"></i> Share
                 </button>
-                <button class="ayah-btn" id="hadith-note-btn-${h.id}" onclick="toggleHadithNoteEditor(this, ${h.id})">
-                    <i class="bi bi-pencil-square"></i> Add Note
+                <button class="ayah-btn ${h.has_note ? "has-note" : ""}" id="hadith-note-btn-${h.id}" onclick="toggleHadithNoteEditor(this, ${h.id})">
+                    <i class="bi bi-pencil-square"></i> ${h.has_note ? "Note" : "Add Note"}
+                </button>
+                <button class="ayah-btn js-mark-read ${h.is_read ? "bookmarked" : ""}" id="hadith-read-btn-${h.id}" onclick="toggleHadithRead(this, ${h.id})">
+                    <i class="bi bi-check-circle${h.is_read ? "-fill" : ""}"></i> ${h.is_read ? "Read" : "Mark as Read"}
                 </button>
             </div>
+
             <div class="note-banner" id="hadith-note-${h.id}">
                 <div class="note-inner">
                     <div class="note-head">
@@ -122,7 +155,7 @@ function appendHadiths(hadiths) {
                     <input type="text" class="note-title-input" id="hadith-note-title-${h.id}" placeholder="Optional title...">
                     <textarea class="note-content-input" id="hadith-note-content-${h.id}" rows="3" placeholder="Write your reflection..."></textarea>
                     <div class="note-actions">
-                        <button class="note-delete-btn" id="hadith-note-delete-${h.id}" onclick="deleteHadithNote(${h.id})" style="display:none">Delete</button>
+                        <button class="note-delete-btn" id="hadith-note-delete-${h.id}" onclick="deleteHadithNote(${h.id})" style="${h.has_note ? "" : "display:none"}">Delete</button>
                         <button class="note-save-btn" onclick="saveHadithNote(${h.id})">Save Note</button>
                     </div>
                 </div>

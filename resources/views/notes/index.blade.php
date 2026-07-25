@@ -28,10 +28,10 @@
                 <div class="card-islamic p-4 mb-3 note-card" data-id="{{ $note->id }}">
 
                     {{-- Reference badge --}}
-                    <span class="badge-note mb-2">
+                    <a href="{{ $note->reference_url }}" class="badge-note mb-2" style="text-decoration:none">
                         <i class="bi {{ $note->reference_icon }} me-1"></i>
                         {{ $note->reference_label }}
-                    </span>
+                    </a>
 
                     {{-- Content --}}
                     <p class="note-content mb-0">{{ $note->content }}</p>

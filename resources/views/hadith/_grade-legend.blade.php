@@ -14,19 +14,19 @@
             <p>Weak — a gap or unreliable narrator in the chain. Not a basis for rulings.</p>
         </div>
         <div class="grade-legend-item">
-            <span class="grade-badge grade-daif">Very Da'if</span>
+            <span class="grade-badge grade-very-daif">Very Da'if</span>
             <p>Very weak — a more serious chain defect than Da'if.</p>
         </div>
         <div class="grade-legend-item">
-            <span class="grade-badge grade-daif">Munkar</span>
+            <span class="grade-badge grade-munkar">Munkar</span>
             <p>Rejected — narrated by an unreliable source, contradicting stronger reports.</p>
         </div>
         <div class="grade-legend-item">
-            <span class="grade-badge grade-daif">Shadh</span>
+            <span class="grade-badge grade-shadh">Shadh</span>
             <p>Irregular — contradicts a more reliable, widely-accepted narration.</p>
         </div>
         <div class="grade-legend-item">
-            <span class="grade-badge grade-daif">Mawdu</span>
+            <span class="grade-badge grade-mawdu">Mawdu</span>
             <p>Fabricated — not authentic; falsely attributed. Shown for awareness only.</p>
         </div>
     </div>

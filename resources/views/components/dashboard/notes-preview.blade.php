@@ -11,22 +11,40 @@
 
         @foreach ($notes as $note)
             <div class="d-story-item">
-                <a href="{{ route('quran.show', $note->ayah->surah->number) }}#ayah-{{ $note->ayah->number }}"
-                    style="text-decoration:none; color:inherit; display:block">
+                @if ($note->hadith_id && $note->hadith)
+                    <a href="{{ route('hadith.show', [$note->hadith->collection->slug, $note->hadith->chapter->number]) }}?highlight={{ $note->hadith->id }}"
+                        style="text-decoration:none; color:inherit; display:block">
 
-                    <div class="d-story-title" style="font-size:0.85rem">
-                        📖 {{ $note->ayah->surah->name_transliteration }}
-                        {{ $note->ayah->surah->number }}:{{ $note->ayah->number }}
-                    </div>
+                        <div class="d-story-title" style="font-size:0.85rem">
+                            📗 {{ $note->hadith->collection->name }} #{{ $note->hadith->number }}
+                        </div>
 
-                    <small class="d-story-meta" style="display:block; margin-bottom:0.2rem">
-                        {{ Str::limit($note->content, 90) }}
-                    </small>
+                        <small class="d-story-meta" style="display:block; margin-bottom:0.2rem">
+                            {{ Str::limit($note->content, 90) }}
+                        </small>
 
-                    <small class="d-story-meta">
-                        {{ $note->updated_at->diffForHumans() }}
-                    </small>
-                </a>
+                        <small class="d-story-meta">
+                            {{ $note->updated_at->diffForHumans() }}
+                        </small>
+                    </a>
+                @elseif ($note->ayah_id && $note->ayah)
+                    <a href="{{ route('quran.show', $note->ayah->surah->number) }}#ayah-{{ $note->ayah->number }}"
+                        style="text-decoration:none; color:inherit; display:block">
+
+                        <div class="d-story-title" style="font-size:0.85rem">
+                            📖 {{ $note->ayah->surah->name_transliteration }}
+                            {{ $note->ayah->surah->number }}:{{ $note->ayah->number }}
+                        </div>
+
+                        <small class="d-story-meta" style="display:block; margin-bottom:0.2rem">
+                            {{ Str::limit($note->content, 90) }}
+                        </small>
+
+                        <small class="d-story-meta">
+                            {{ $note->updated_at->diffForHumans() }}
+                        </small>
+                    </a>
+                @endif
             </div>
         @endforeach
 

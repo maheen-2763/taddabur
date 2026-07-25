@@ -62,22 +62,46 @@ function copyHadithText(btn, number) {
 }
 
 // ════════════ SHARE ════════════
-function shareHadith(collectionSlug, number, btn) {
+async function shareHadith(collectionSlug, number, btn) {
     const url = `${location.origin}/hadith/${collectionSlug}#hadith-${number}`;
+    const card = btn.closest(".hadith-card");
 
-    if (navigator.share) {
-        navigator.share({ title: `Hadith #${number}`, url }).catch(() => {});
+    const arabic = card.querySelector(".hadith-arabic")?.textContent.trim();
+    const translation = card
+        .querySelector(".hadith-english")
+        ?.textContent.trim();
+    const gradeBadge = card.querySelector(".grade-badge")?.textContent.trim();
+    const reference = card
+        .querySelector(".hadith-reference-line")
+        ?.textContent.trim();
+
+    if (!arabic && !translation) {
+        // fallback to old link-share if text isn't found on page
+        shareLinkFallback(url, btn);
         return;
     }
 
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard
-            .writeText(url)
-            .then(() => flashCopied(btn, "Link Copied!"));
-    } else {
-        fallbackCopyToClipboard(url);
-        flashCopied(btn, "Link Copied!");
+    try {
+        const blob = await generateShareCardImage({
+            arabic,
+            translation,
+            reference,
+            badge: gradeBadge,
+        });
+        await shareCardImage(blob, `hadith-${number}.png`, url, btn);
+    } catch (e) {
+        shareLinkFallback(url, btn);
     }
+}
+
+function shareLinkFallback(url, btn) {
+    if (navigator.share) {
+        navigator.share({ url }).catch(() => {});
+        return;
+    }
+    navigator.clipboard
+        ?.writeText(url)
+        .then(() => flashCopied(btn, "Link Copied!"));
 }
 
 // ════════════ NOTES ════════════

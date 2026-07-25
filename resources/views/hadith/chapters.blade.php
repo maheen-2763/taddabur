@@ -14,24 +14,29 @@
             <span class="breadcrumb-current">{{ $collection->name }}</span>
         </div>
 
-        <a href="{{ route('hadith.index') }}" class="hadith-back-btn mb-3">
-            <i class="bi bi-arrow-left"></i> Collections
-        </a>
+        <div class="hadith-page-header-actions">
+            <a href="{{ route('hadith.index') }}" class="hadith-back-btn">
+                <i class="bi bi-arrow-left"></i> Collections
+            </a>
+
+            @if ($resumeHadith)
+                <a href="{{ route('hadith.show', [$collection->slug, $resumeHadith->chapter->number]) }}?highlight={{ $resumeHadith->id }}"
+                    class="hadith-resume-btn">
+                    <i class="bi bi-play-circle-fill"></i>
+                    Resume Reading — Hadith {{ $resumeHadith->number }}
+                </a>
+            @elseif(Auth::check() && $hasReadAnything ?? false)
+                <div class="hadith-complete-banner">
+                    <i class="bi bi-check-circle-fill"></i>
+                    MashaAllah — you've completed this collection!
+                </div>
+            @endif
+        </div>
+
         <h2 class="heading-font mb-1" style="color:var(--emerald)">{{ $collection->name }}</h2>
         <p class="text-muted mb-4">{{ $collection->scholar }}</p>
 
-        @if ($resumeHadith)
-            <a href="{{ route('hadith.show', [$collection->slug, $resumeHadith->chapter->number]) }}?highlight={{ $resumeHadith->id }}"
-                class="hadith-resume-btn mb-4">
-                <i class="bi bi-play-circle-fill"></i>
-                Resume Reading — Hadith {{ $resumeHadith->number }}
-            </a>
-        @elseif(Auth::check() && $hasReadAnything ?? false)
-            <div class="hadith-complete-banner mb-4">
-                <i class="bi bi-check-circle-fill"></i>
-                MashaAllah — you've completed this collection!
-            </div>
-        @endif
+
         @unless (in_array($collection->slug, ['bukhari', 'muslim']))
             <div class="mb-4">
                 <p class="text-muted mb-2" style="font-size:0.85rem">Browse by grade</p>
@@ -54,6 +59,7 @@
             </div>
         @endunless
 
+
         @if ($chapters->isEmpty())
             <div class="hadith-empty-state">
                 <i class="bi bi-hourglass-split hadith-empty-icon"></i>
@@ -66,21 +72,35 @@
             <div>
                 @foreach ($chapters as $ch)
                     <a href="{{ route('hadith.show', [$collection->slug, $ch->number]) }}"
-                        class="hadith-chapter-row hadith-nav-link">
+                        class="hadith-chapter-row hadith-nav-link {{ $ch->is_complete ?? false ? 'chapter-complete' : '' }}">
 
                         <span class="hadith-chapter-title">
                             <span class="chapter-number-badge">{{ $ch->number }}</span>
-                            <span class="chapter-title-text">{{ $ch->title }}</span>
+                            <span class="chapter-title-block">
+                                <span class="chapter-title-text">{{ $ch->title }}</span>
+                                @if ($ch->hadiths_count)
+                                    <span class="chapter-range-subtitle">
+                                        <span class="range-symbol">❖</span>
+                                        {{ $ch->hadiths_count }} {{ Str::plural('Hadith', $ch->hadiths_count) }}
+                                    </span>
+                                @endif
+                            </span>
                         </span>
 
                         <span class="chapter-meta">
-                            @if ($ch->start_number && $ch->end_number)
-                                <span class="chapter-range-badge">Hadith
-                                    {{ $ch->start_number }}–{{ $ch->end_number }}</span>
+                            @if ($ch->is_complete ?? false)
+                                <span class="chapter-complete-badge">
+                                    <i class="bi bi-check-circle-fill"></i> Completed
+                                </span>
+                            @elseif(($ch->progress_percent ?? 0) > 0)
+                                <span class="hadith-progress-ring" style="--pct: {{ $ch->progress_percent }}">
+                                    <span class="ring-label">{{ $ch->progress_percent }}%</span>
+                                </span>
+                                <span class="chapter-progress-text">{{ $ch->read_count }}/{{ $ch->hadiths_count }}</span>
                             @endif
-                            <span class="hadith-count-badge">{{ $ch->hadiths_count }}</span>
-                        </span>
 
+
+                        </span>
                     </a>
                 @endforeach
             </div>

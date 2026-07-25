@@ -59,6 +59,7 @@
                                             @endif
                                         </div>
 
+
                                         @if ($c->progress_percent > 0)
                                             <div class="hadith-progress-ring" style="--pct: {{ $c->progress_percent }}">
                                             </div>

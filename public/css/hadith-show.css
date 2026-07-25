@@ -5,6 +5,9 @@
     --text-grade-ok: #8a6d1a;
     --bg-grade-weak: rgba(139, 0, 0, 0.08);
     --text-grade-weak: #8b0000;
+    --warning-bg: rgba(180, 140, 40, 0.12);
+    --warning-text: #7a5c00;
+    --warning-border: rgba(180, 140, 40, 0.35);
 }
 
 [data-bs-theme="dark"] {
@@ -14,6 +17,9 @@
     --text-grade-ok: #e8c766;
     --bg-grade-weak: rgba(224, 100, 100, 0.15);
     --text-grade-weak: #e06464;
+    --warning-bg: rgba(240, 198, 116, 0.1);
+    --warning-text: #f0c674;
+    --warning-border: rgba(240, 198, 116, 0.3);
 }
 
 .hadith-card {
@@ -37,17 +43,17 @@
     background: var(--emerald);
     color: white;
     box-shadow: 0 2px 6px rgba(27, 94, 59, 0.25);
-    width: 30px;
-    height: 30px;
+    width: 35px;
+    height: 35px;
     border-radius: 50%;
     text-align: center;
-    line-height: 30px;
-    font-size: 0.85rem;
+    line-height: 35px;
+    font-size: 0.7rem;
     margin-bottom: 0.75rem;
 }
 
 .hadith-arabic {
-    font-family: "Scheherazade New", "Amiri", serif;
+    font-family: "Amiri Quran", "Scheherazade New", "Amiri", serif;
     font-size: 1.4rem;
     color: var(--emerald-light);
     line-height: 2.4;
@@ -77,6 +83,23 @@
     background: var(--gold);
 }
 
+.hadith-incomplete-notice {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--warning-bg, #fff3cd);
+    color: var(--warning-text, #856404);
+    border: 1px solid var(--warning-border, #ffeeba);
+    border-radius: 6px;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.85rem;
+    margin-bottom: 0.75rem;
+}
+
+.hadith-incomplete-notice i {
+    font-size: 1rem;
+}
+
 /* ════════════ GRADE BADGE (merged — sirf ek jagah define) ════════════ */
 .grade-badge {
     display: inline-block;
@@ -99,6 +122,20 @@
 .grade-daif {
     background: var(--bg-grade-weak);
     color: var(--text-grade-weak);
+}
+.grade-very-daif,
+.grade-munkar,
+.grade-shadh,
+.grade-mawdu {
+    background: var(--bg-grade-weak);
+    color: var(--text-grade-weak);
+    font-weight: 400;
+}
+
+.grade-mawdu {
+    background: var(--bg-grade-weak);
+    color: var(--text-grade-weak);
+    font-weight: 400;
 }
 .hadith-disclaimer {
     font-size: 0.85rem;
@@ -628,6 +665,7 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    position: relative; /* 👈 dusre block se merge kiya */
 }
 
 .hadith-progress-ring::before {
@@ -729,4 +767,234 @@
     background: rgba(127, 201, 160, 0.1);
     color: var(--emerald-light);
     border-color: var(--emerald-light);
+}
+/* Complete row — poora emerald fill */
+.chapter-complete {
+    background: var(--emerald) !important;
+    border-color: var(--emerald) !important;
+}
+
+.chapter-complete .chapter-title-text,
+.chapter-complete .chapter-range-badge,
+.chapter-complete .chapter-number-badge {
+    color: white !important;
+}
+
+.chapter-complete .chapter-number-badge {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.chapter-complete-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.chapter-complete .hadith-count-badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+/* Ring ke andar percentage number */
+
+.ring-label {
+    position: absolute;
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: var(--emerald);
+}
+
+[data-bs-theme="dark"] .ring-label {
+    color: var(--emerald-light);
+}
+.chapter-progress-text {
+    font-size: 0.72rem;
+    color: var(--emerald-light);
+    opacity: 0.7;
+}
+@media (max-width: 576px) {
+    .hadith-chapter-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .hadith-chapter-title {
+        width: 100%;
+    }
+
+    .chapter-meta {
+        width: 100%;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        padding-left: calc(
+            28px + 0.6rem
+        ); /* number-badge width + gap ke barabar, taaki text ke saath align ho */
+    }
+
+    .chapter-complete-badge {
+        font-size: 0.75rem;
+    }
+
+    .chapter-range-badge {
+        font-size: 0.68rem;
+    }
+}
+
+.chapter-title-block {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.chapter-range-subtitle {
+    font-size: 0.72rem;
+    color: var(--emerald-light);
+    opacity: 0.8;
+    font-style: italic;
+}
+
+.range-symbol {
+    color: var(--gold);
+    opacity: 0.8;
+    font-style: normal;
+    margin-right: 2px;
+}
+
+[data-bs-theme="dark"] .chapter-range-subtitle {
+    opacity: 0.7;
+}
+
+/* Complete state mein bhi subtitle white ho */
+.chapter-complete .chapter-range-subtitle {
+    color: rgba(255, 255, 255, 0.75);
+    opacity: 1;
+}
+
+.chapter-complete .range-symbol {
+    color: rgba(255, 255, 255, 0.9);
+}
+.hadith-page-header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+@media (max-width: 576px) {
+    .hadith-page-header-actions {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.6rem;
+    }
+
+    .hadith-resume-btn,
+    .hadith-complete-banner {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+a.hadith-back-btn {
+    color: var(--emerald-light) !important;
+    text-decoration: none !important;
+}
+
+a.hadith-back-btn:hover {
+    color: var(--gold) !important;
+}
+a.hadith-resume-btn {
+    color: var(--emerald-light) !important;
+    text-decoration: none !important;
+}
+
+a.hadith-resume-btn:hover {
+    color: var(--gold) !important;
+}
+
+.hadith-info-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--emerald-light);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 0.82rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.hadith-info-btn:hover {
+    background: rgba(27, 94, 59, 0.06);
+}
+
+.hadith-glossary-box {
+    background: rgba(212, 175, 55, 0.05);
+    border-left: 3px solid var(--gold);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+}
+
+.hadith-glossary-box p {
+    font-size: 0.85rem;
+    color: var(--emerald-light);
+    margin-bottom: 0.6rem;
+}
+
+.hadith-glossary-box p:last-child {
+    margin-bottom: 0;
+}
+.hadith-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.hadith-header-badges {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.hadith-arabic-zone {
+    background: rgba(212, 175, 55, 0.04);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+}
+
+[data-bs-theme="dark"] .hadith-arabic-zone {
+    background: rgba(232, 199, 102, 0.04);
+}
+
+.hadith-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 1rem 0;
+    position: relative;
+}
+
+.hadith-divider::after {
+    content: "۝";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--cream);
+    color: var(--gold);
+    padding: 0 10px;
+    font-size: 0.9rem;
+}
+
+.hadith-reference-line {
+    font-size: 0.72rem;
+    color: var(--emerald-light);
+    opacity: 0.8;
+    margin-top: 0.75rem;
+    margin-bottom: 0.25rem;
 }

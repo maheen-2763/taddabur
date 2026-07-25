@@ -16,6 +16,7 @@ class Note extends Model
         'user_id',
         'ayah_id',
         'story_id',
+        'hadith_id',
         'title',
         'content',
         'color',
@@ -47,6 +48,10 @@ class Note extends Model
         return $this->belongsTo(Story::class);
     }
 
+    public function hadith(): BelongsTo
+    {
+        return $this->belongsTo(Hadith::class);
+    }
     // -------------------------------------------------------
     // SCOPES
     // -------------------------------------------------------
@@ -67,5 +72,46 @@ class Note extends Model
     public function scopeStoryNotes($query)
     {
         return $query->whereNotNull('story_id');
+    }
+
+    // Notes attached to Hadiths (have hadith_id)
+    public function scopeHadithNotes($query)
+    {
+        return $query->whereNotNull('hadith_id');
+    }
+
+
+    public function getReferenceIconAttribute(): string
+    {
+        return match (true) {
+            $this->ayah_id !== null => 'bi-book',
+            $this->hadith_id !== null => 'bi-collection',
+            $this->story_id !== null => 'bi-journal-bookmark',
+            default => 'bi-sticky',
+        };
+    }
+
+    public function getReferenceLabelAttribute(): string
+    {
+        return match (true) {
+            $this->ayah_id !== null && $this->ayah =>
+            $this->ayah->surah->name_transliteration . ' ' . $this->ayah->surah->number . ':' . $this->ayah->number,
+            $this->hadith_id !== null && $this->hadith =>
+            $this->hadith->collection->name . ' #' . $this->hadith->number,
+            $this->story_id !== null && $this->story =>
+            $this->story->title,
+            default => 'General Note',
+        };
+    }
+
+    public function getReferenceUrlAttribute(): ?string
+    {
+        return match (true) {
+            $this->ayah_id !== null && $this->ayah =>
+            route('quran.show', $this->ayah->surah->number) . '#ayah-' . $this->ayah->number,
+            $this->hadith_id !== null && $this->hadith =>
+            route('hadith.show', [$this->hadith->collection->slug, $this->hadith->chapter->number]) . '?highlight=' . $this->hadith->id,
+            default => null,
+        };
     }
 }

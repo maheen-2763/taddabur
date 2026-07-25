@@ -21,6 +21,7 @@ class NoteController extends Controller
     {
         $notes = Note::query()
             ->forUser(Auth::id())
+            ->with(['ayah.surah', 'hadith.collection', 'hadith.chapter', 'story'])  // 👈 add karo
             ->latest()
             ->paginate(15);
 

@@ -748,22 +748,42 @@ function fallbackCopy(text, btn) {
 // ════════════════════════════════════════════
 // SHARE
 // ════════════════════════════════════════════
-function shareAyah(surah, ayah, btn) {
+async function shareAyah(surah, ayah, btn) {
     const url = `${location.origin}/quran/${surah}#ayah-${ayah}`;
-    const text = `Quran ${surah}:${ayah} — Read on Taddabur`;
+    const card = btn.closest(".ayah-card");
 
-    if (navigator.share) {
-        navigator.share({ title: text, url }).catch(() => {});
+    const arabic = card?.dataset.ayahText?.trim();
+    const translation = card
+        ?.querySelector(".ayah-translation")
+        ?.textContent.trim();
+    const reference = `Surah ${window.QURAN_CONFIG.surahNumber} : Ayah ${ayah}`;
+
+    if (!arabic) {
+        shareLinkFallback(url, btn);
         return;
     }
 
-    if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard
-            .writeText(url)
-            .then(() => showFeedback(btn, "Link Copied!"));
-    } else {
-        fallbackCopy(url, btn);
+    try {
+        const blob = await generateShareCardImage({
+            arabic,
+            translation,
+            reference,
+            badge: `Surah ${surah}`,
+        });
+        await shareCardImage(blob, `ayah-${surah}-${ayah}.png`, url, btn);
+    } catch (e) {
+        shareLinkFallback(url, btn);
     }
+}
+
+function shareLinkFallback(url, btn) {
+    if (navigator.share) {
+        navigator.share({ url }).catch(() => {});
+        return;
+    }
+    navigator.clipboard
+        ?.writeText(url)
+        .then(() => showFeedback(btn, "Link Copied!"));
 }
 
 // ════════════════════════════════════════════

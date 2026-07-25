@@ -44,8 +44,15 @@
                     <p class="hadith-arabic" dir="rtl">{{ $h->arabic }}</p>
                     <p class="hadith-english">{{ $h->english }}</p>
 
+                    @if ($h->translation_incomplete)
+                        <div class="hadith-incomplete-notice">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            Translation not available for this hadith yet.
+                        </div>
+                    @endif
+
                     <div style="margin-top:0.5rem; display:flex; gap:0.4rem; flex-wrap:wrap;">
-                        <span class="grade-badge grade-{{ strtolower($reliability) }}">{{ $h->grade }}</span>
+                        <span class="grade-badge grade-{{ Str::slug($reliability) }}">{{ $h->grade }}</span>
                         @if ($h->attribution_type && $h->attribution_type !== 'Marfu')
                             <span class="grade-badge" style="background:rgba(0,0,0,0.05); color:var(--emerald-light)">
                                 {{ $h->attribution_type }}

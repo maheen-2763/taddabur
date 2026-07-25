@@ -668,7 +668,7 @@
             </a>
 
             <div class="tafsir-content-body" id="tafsirPanelBody">Loading...</div>
-            
+
 
         </div>
     </div>
@@ -691,5 +691,6 @@
         };
         window.USER_NOTES = @json($userNotesForJs);
     </script>
+    <script src="{{ asset('js/shareCard.js') }}"></script>
     <script src="{{ asset('js/quran-show.js') }}"></script>
 @endpush
