@@ -22,6 +22,7 @@ use App\Http\Controllers\HadithController;
 use App\Http\Controllers\HadithGradeController;
 use App\Http\Controllers\RazorpayWebhookController;
 use App\Http\Middleware\VerifyCsrfToken;
+use App\Http\Controllers\HadithSearchController;
 
 
 // Re-import any missing translations weekly (catches new additions)
@@ -67,6 +68,9 @@ Route::middleware(['auth', 'plan:has_hadith'])->group(function () {
     Route::post('/hadith/{hadith}/toggle-read', [HadithController::class, 'toggleRead'])
         ->middleware('auth')
         ->name('hadith.toggle-read'); // ✅ alag naam
+
+    // routes/web.php
+    Route::get('/hadith/search', [HadithSearchController::class, 'search'])->name('hadith.search');
 
     Route::prefix('hadith')->name('hadith.')->group(function () {
         Route::get('/', [HadithController::class, 'index'])->name('index');

@@ -53,7 +53,8 @@
                         <button onclick="changeFontSize('increase')" class="toolbar-btn">A+</button>
                     </div>
                     {{-- Search --}}
-                    <a href="{{ route('quran.search') }}" class="toolbar-btn" title="Search Quran">
+                    <a href="{{ route('quran.search', ['translation' => $translation?->slug]) }}" class="toolbar-btn"
+                        title="Search Quran">
                         <i class="bi bi-search"></i>
                     </a>
 
@@ -321,6 +322,14 @@
                                 <span class="ayah-checkmark">
                                     <i class="bi bi-check-lg"></i>
                                 </span>
+
+                                {{-- ✅ NAYA — Listened indicator (subtle, alag color) --}}
+                                @if (in_array($ayah->id, $listenedAyahIds ?? []))
+                                    <span class="ayah-listened-badge">
+                                        <i class="bi bi-headphones"></i>
+                                        <span class="ayah-listened-tooltip">You've listened to this ayah</span>
+                                    </span>
+                                @endif
                                 <div class="ayah-tooltip">
                                     {{ $surah->name_transliteration }}
                                     {{ $surah->number }}:{{ $ayah->number }}

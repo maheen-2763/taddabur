@@ -6,8 +6,8 @@
 @push('styles')
     <style>
         /* ════════════════════════════════════
-                           SEARCH HERO
-                        ════════════════════════════════════ */
+                                       SEARCH HERO
+                                    ════════════════════════════════════ */
         .search-hero {
             background: linear-gradient(160deg, var(--emerald-dark) 0%, #0f2d18 100%);
             padding: 3rem 1rem 2.5rem;
@@ -92,8 +92,8 @@
         }
 
         /* ════════════════════════════════════
-                           RESULTS AREA
-                        ════════════════════════════════════ */
+                                       RESULTS AREA
+                                    ════════════════════════════════════ */
         .results-wrap {
             max-width: 860px;
             margin: 0 auto;
@@ -123,8 +123,8 @@
         }
 
         /* ════════════════════════════════════
-                           RESULT CARD
-                        ════════════════════════════════════ */
+                                       RESULT CARD
+                                    ════════════════════════════════════ */
         .result-card {
             background: var(--cream-dark);
             border: 1px solid var(--border);
@@ -241,8 +241,8 @@
         }
 
         /* ════════════════════════════════════
-                           EMPTY / INITIAL STATES
-                        ════════════════════════════════════ */
+                                       EMPTY / INITIAL STATES
+                                    ════════════════════════════════════ */
         .search-empty {
             text-align: center;
             padding: 4rem 1rem;
@@ -264,8 +264,8 @@
         }
 
         /* ════════════════════════════════════
-                           PAGINATION
-                        ════════════════════════════════════ */
+                                       PAGINATION
+                                    ════════════════════════════════════ */
         .quran-pagination {
             display: flex;
             justify-content: center;
@@ -319,16 +319,14 @@
 
         {{-- Search form --}}
         <form action="{{ route('quran.search') }}" method="GET" class="search-box-wrap">
-
             <i class="bi bi-search search-icon-left"></i>
+
+            <input type="hidden" name="translation" value="{{ request('translation') }}">
 
             <input type="text" name="q" id="searchInput" class="search-input" value="{{ $query }}"
                 placeholder="Search by meaning, word or topic..." autocomplete="off" autofocus>
 
-            <button type="submit" class="search-btn">
-                Search
-            </button>
-
+            <button type="submit" class="search-btn">Search</button>
         </form>
 
         {{-- Quick suggestions --}}
@@ -336,10 +334,8 @@
             <div class="mt-3" style="font-size:0.78rem; color:rgba(255,255,255,0.35)">
                 Try:
                 @foreach (['mercy', 'patience', 'prayer', 'paradise', 'forgiveness'] as $suggestion)
-                    <a href="{{ route('quran.search', ['q' => $suggestion]) }}"
-                        style="color:rgba(201,150,58,0.6);
-                      text-decoration:none;
-                      margin: 0 0.3rem">
+                    <a href="{{ route('quran.search', ['q' => $suggestion, 'translation' => request('translation')]) }}"
+                        style="color:rgba(201,150,58,0.6); text-decoration:none; margin: 0 0.3rem">
                         {{ $suggestion }}
                     </a>
                 @endforeach
@@ -463,7 +459,7 @@
 
                     {{-- Footer --}}
                     <div class="result-footer">
-                        <a href="{{ route('quran.show', $surah->number) }}#ayah-{{ $ayah->number }}"
+                        <a href="{{ route('quran.show', $surah->number) }}?translation={{ request('translation') }}#ayah-{{ $ayah->number }}"
                             class="result-read-btn">
                             Read in context
                             <i class="bi bi-arrow-right"></i>

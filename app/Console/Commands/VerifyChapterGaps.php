@@ -96,6 +96,6 @@ class VerifyChapterGaps extends Command
         $this->newLine();
         $this->info("Report saved to: {$reportPath}");
 
-        return self::SUCCESS;
+        return self::FAILURE;
     }
 }

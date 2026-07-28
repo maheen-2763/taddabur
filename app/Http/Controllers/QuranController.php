@@ -52,6 +52,13 @@ class QuranController extends Controller
             ? $this->quranService->getReadAyahsCount($user, $surah)
             : 0;
 
+        $data['listenedAyahIds'] = $user
+            ? ListenedAyah::where('user_id', $user->id)
+            ->where('surah_id', $surah->id)
+            ->pluck('ayah_id')
+            ->toArray()
+            : [];
+
         $data['userNotes'] = $user
             ? Note::where('user_id', $user->id)
             ->whereIn('ayah_id', $data['ayahs']->pluck('id'))
@@ -326,8 +333,12 @@ class QuranController extends Controller
     // ── GET /quran/search ─────────────────────────────────
     public function search(Request $request): View
     {
-        $query   = trim($request->get('q', ''));
-        $results = $query ? $this->quranService->search($query) : null;
+        $query = trim($request->get('q', ''));
+        $translationSlug = $request->get('translation');
+
+        $results = $query
+            ? $this->quranService->search($query, $translationSlug, $request->user())
+            : null;
 
         return view('quran.search', compact('query', 'results'));
     }
@@ -415,10 +426,11 @@ class QuranController extends Controller
         if ($isFullyListened) {
             $progress = SurahProgress::where('user_id', $user->id)->where('surah_id', $ayah->surah_id)->first();
 
-            if (!$progress?->is_completed) {
+            // ✅ Apna alag flag — is_completed (reading) ko touch nahi karta
+            if (!$progress?->is_audio_completed) {
                 SurahProgress::updateOrCreate(
                     ['user_id' => $user->id, 'surah_id' => $ayah->surah_id],
-                    ['is_completed' => true, 'completed_at' => now()]
+                    ['is_audio_completed' => true, 'audio_completed_at' => now()]
                 );
                 $newlyCompleted = true;
             }

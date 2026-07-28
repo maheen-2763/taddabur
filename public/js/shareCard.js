@@ -108,7 +108,7 @@ async function generateShareCardImage(data) {
     const arabicLineHeight = Math.round(arabicFontSize * 1.85);
     const headerHeight = 100;
     const translationLineHeight = 34;
-    const footerHeight = 100;
+    const footerHeight = 170;
 
     const height =
         headerHeight +
@@ -122,10 +122,13 @@ async function generateShareCardImage(data) {
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, width, height);
 
-    ctx.fillStyle = gold;
-    ctx.fillRect(0, 0, width, 6);
+    const borderGradient = ctx.createLinearGradient(0, 0, width, height);
+    borderGradient.addColorStop(0, emerald);
+    borderGradient.addColorStop(1, gold);
 
-    drawStarChainBorder(ctx, width, height);
+    ctx.lineWidth = 8;
+    ctx.strokeStyle = borderGradient;
+    ctx.strokeRect(4, 4, width - 8, height - 8);
 
     let y = 75;
 
@@ -192,26 +195,27 @@ async function generateShareCardImage(data) {
     ctx.fillStyle = muted;
     ctx.fillText(data.reference || "", padding, y);
 
-    // ── Footer branding: logo + text side-by-side, centered ──
+    y += 55;
+
     const logo = await getLogoImage();
-    const logoSize = 26;
-    const brandText = "Taddabur — تدبّر";
+    const logoSize = 18;
+    const brandText = "Taddabur";
 
-    ctx.font = "bold 16px Georgia, serif";
+    ctx.font = "bold 13px Georgia, serif";
     const textWidth = ctx.measureText(brandText).width;
-    const gap = 8;
-    const totalWidth = logoSize + gap + textWidth;
-    const startX = width / 2 - totalWidth / 2;
-    const footerY = height - 56;
+    const gap = 6;
+    const textX = width - padding - textWidth;
+    const logoX = textX - gap - logoSize;
 
-    ctx.drawImage(logo, startX, footerY, logoSize, logoSize);
+    ctx.globalAlpha = 0.5;
+    ctx.drawImage(logo, logoX, y, logoSize, logoSize);
 
     ctx.fillStyle = emerald;
     ctx.textAlign = "left";
     ctx.textBaseline = "middle";
-    ctx.fillText(brandText, startX + logoSize + gap, footerY + logoSize / 2);
+    ctx.fillText(brandText, textX, y + logoSize / 2);
+    ctx.globalAlpha = 1;
 
-    // Reset baseline for safety (in case function is reused)
     ctx.textBaseline = "alphabetic";
 
     return new Promise((resolve) => {
@@ -248,84 +252,4 @@ async function shareCardImage(blob, filename, fallbackUrl, btn) {
     URL.revokeObjectURL(link.href);
 
     if (btn) flashCopied(btn, "Image Downloaded!");
-}
-
-// ════════════ STAR-CHAIN BORDER (all 4 sides) ════════════
-function drawStar8(ctx, cx, cy, r) {
-    ctx.save();
-    ctx.translate(cx, cy);
-    ctx.strokeStyle = "#c9963a";
-    ctx.lineWidth = 1;
-    for (let rot = 0; rot < 2; rot++) {
-        ctx.rotate(rot === 0 ? 0 : (Math.PI / 180) * 22.5);
-        ctx.beginPath();
-        for (let i = 0; i < 8; i++) {
-            const angle = (Math.PI / 4) * i;
-            const px = Math.cos(angle) * r;
-            const py = Math.sin(angle) * r;
-            if (i === 0) ctx.moveTo(px, py);
-            else ctx.lineTo(px, py);
-        }
-        ctx.closePath();
-        ctx.stroke();
-    }
-    ctx.restore();
-}
-
-// ════════════ DIAMOND-CHAIN BORDER (all 4 sides) ════════════
-function drawDiamond(ctx, cx, cy, size) {
-    ctx.beginPath();
-    ctx.moveTo(cx, cy - size);
-    ctx.lineTo(cx + size, cy);
-    ctx.lineTo(cx, cy + size);
-    ctx.lineTo(cx - size, cy);
-    ctx.closePath();
-    ctx.stroke();
-
-    // Inner dot — chhota accent
-    ctx.beginPath();
-    ctx.arc(cx, cy, 1.6, 0, Math.PI * 2);
-    ctx.fillStyle = "#c9963a";
-    ctx.fill();
-}
-
-function drawDiamondChainBorder(ctx, width, height) {
-    const inset = 20;
-    const spacing = 26;
-    const size = 7;
-
-    ctx.strokeStyle = "#c9963a";
-    ctx.lineWidth = 1;
-
-    // Guide lines top/bottom
-    ctx.beginPath();
-    ctx.moveTo(0, 10);
-    ctx.lineTo(width, 10);
-    ctx.moveTo(0, height - 10);
-    ctx.lineTo(width, height - 10);
-    ctx.strokeStyle = "rgba(201, 150, 58, 0.35)";
-    ctx.lineWidth = 0.5;
-    ctx.stroke();
-
-    // Guide lines left/right
-    ctx.beginPath();
-    ctx.moveTo(10, 0);
-    ctx.lineTo(10, height);
-    ctx.moveTo(width - 10, 0);
-    ctx.lineTo(width - 10, height);
-    ctx.stroke();
-
-    ctx.lineWidth = 1;
-
-    // Top & bottom diamonds
-    for (let x = spacing; x < width - spacing / 2; x += spacing) {
-        drawDiamond(ctx, x, inset, size);
-        drawDiamond(ctx, x, height - inset, size);
-    }
-
-    // Left & right diamonds (avoid corner overlap)
-    for (let y = spacing + inset; y < height - spacing - inset; y += spacing) {
-        drawDiamond(ctx, inset, y, size);
-        drawDiamond(ctx, width - inset, y, size);
-    }
 }

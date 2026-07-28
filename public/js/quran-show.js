@@ -467,21 +467,9 @@ function markAyahListened(ayahId) {
         body: JSON.stringify({ ayah_id: ayahId }),
     })
         .then((r) => r.json())
-        .then((data) => {
-            // ✅ Only show modal the FIRST time it becomes complete
-            //    Re-listening later will NOT show it again
-            if (data.newly_completed) {
-                const modalEl = document.getElementById("completionModal");
-                if (modalEl) {
-                    new bootstrap.Modal(modalEl, {
-                        backdrop: "static",
-                        keyboard: false,
-                    }).show();
-                }
-                updateCompletedBadge();
-            }
-        })
         .catch((err) => console.error("Listened tracking error:", err));
+    // ✅ Ab yahan koi modal/badge trigger nahi — sirf silent background tracking
+    //    "Completed" celebration sirf Mark-as-Read (reading) completion pe hi milegi
 }
 
 function seekAudio(event) {
@@ -801,6 +789,9 @@ function showFeedback(btn, msg) {
 }
 
 function hideBanner() {
+    const surahNumber = window.QURAN_CONFIG.surahNumber;
+    sessionStorage.setItem(`resumeBannerDismissed_${surahNumber}`, "1");
+
     setTimeout(() => {
         const b = document.getElementById("lastReadBanner");
         if (b) {
@@ -826,6 +817,16 @@ document.addEventListener("DOMContentLoaded", function () {
     const picker = document.getElementById("reciterPicker");
     const saved = localStorage.getItem("taddabur_preferred_tafsir");
     const toolbarPicker = document.getElementById("tafsirPicker");
+    const surahNumber = window.QURAN_CONFIG.surahNumber;
+    const dismissed = sessionStorage.getItem(
+        `resumeBannerDismissed_${surahNumber}`,
+    );
+
+    if (dismissed) {
+        const banner = document.getElementById("lastReadBanner");
+        if (banner) banner.remove();
+    }
+
     if (picker) handleReciterChange(picker);
 
     if (saved && toolbarPicker) {

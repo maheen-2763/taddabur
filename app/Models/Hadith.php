@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Helpers\ArabicHelper;
+use Illuminate\Support\Facades\DB;
 
 class Hadith extends Model
 {
@@ -22,6 +24,12 @@ class Hadith extends Model
                     $hadith->attribution_type = null;
                 }
             }
+        });
+        // FTS search index ka normalized Arabic column sync karo
+        static::saved(function (Hadith $hadith) {
+            DB::table('hadiths_fts')
+                ->where('rowid', $hadith->id)
+                ->update(['arabic_normalized' => ArabicHelper::normalizeArabic($hadith->arabic)]);
         });
     }
 

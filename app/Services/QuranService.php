@@ -12,6 +12,7 @@ use App\Models\SurahProgress;
 use App\Models\Tafsir;
 use App\Models\Translation;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Collection;
 use App\Models\UserReadAyah;
 use App\Models\ListenedAyah;
@@ -192,23 +193,25 @@ class QuranService
     // -------------------------------------------------------
     // SEARCH QURAN
     // -------------------------------------------------------
-    public function search(string $query, int $perPage = 20)
+    public function search(string $query, ?string $translationSlug, ?User $user, int $perPage = 20)
     {
         if (strlen(trim($query)) < 3) {
             return null;
         }
 
-        $translation = Translation::where('is_free', true)
-            ->where('is_active', true)
-            ->first();
+        $translation = $this->resolveTranslation(
+            $translationSlug ?? self::DEFAULT_TRANSLATION,
+            $user
+        );
+
+        $escaped = str_replace(['%', '_'], ['\%', '\_'], $query);
 
         return AyahTranslation::where('translation_id', $translation?->id)
-            ->where('text', 'LIKE', "%{$query}%")
+            ->whereRaw("text LIKE ? ESCAPE '\\'", ["%{$escaped}%"])
             ->with(['ayah' => fn($q) => $q->with('surah')])
             ->paginate($perPage)
             ->withQueryString();
     }
-
     // -------------------------------------------------------
     // SAVE READING PROGRESS
     // -------------------------------------------------------

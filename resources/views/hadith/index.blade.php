@@ -7,7 +7,15 @@
 
 @section('content')
     <div class="container-fluid px-4 py-4">
-        <h2 class="heading-font mb-3" style="color:var(--emerald-light)">Hadith Collections</h2>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="heading-font mb-0" style="color:var(--emerald-light)">Hadith Collections</h2>
+
+            <a href="{{ route('hadith.search') }}" class="btn btn-sm"
+                style="color:var(--emerald); border: 1px solid var(--emerald);" title="Search Hadiths">
+                <i class="bi bi-search"></i>
+            </a>
+        </div>
 
         {{-- Browse by grade --}}
         <div class="mb-4">
@@ -44,7 +52,8 @@
                     @foreach ($collections as $c)
                         <div class="col-md-4">
 
-                            <a href="{{ route('hadith.chapters', $c->slug) }}" class="text-decoration-none hadith-nav-link">
+                            <a href="{{ route('hadith.chapters', $c->slug) }}"
+                                class="text-decoration-none hadith-nav-link">
                                 <div class="hadith-collection-card">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div>
