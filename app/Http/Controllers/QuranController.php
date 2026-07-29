@@ -83,6 +83,8 @@ class QuranController extends Controller
 
         $data['isPremium']       = $this->quranService->userIsPremium($user);
         $data['canAccessTafsir'] = $this->quranService->userCanAccessTafsir($user);
+        $data['preferredTafsir']  = $user?->preferred_tafsir;
+        $data['preferredReciter'] = $user?->preferred_reciter;
         $data['upgradeUrl']      = route('subscription.upgrade');
         $data['quranProgress']   = $user ? $this->quranService->getQuranProgress($user) : null;
 
