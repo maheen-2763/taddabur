@@ -13,6 +13,22 @@
     color: white;
 }
 
+/* Dark-mode smooth transition — sirf themed containers pe, universal * nahi */
+body,
+.card-islamic,
+.ayah-card,
+.hadith-card,
+.result-card,
+.reader-toolbar,
+.quran-sidebar,
+.d-reflection-bold,
+.verse-band {
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease,
+        border-color 0.3s ease;
+}
+
 /* ================================================
            CSS VARIABLES — Islamic colour palette
         ================================================ */
