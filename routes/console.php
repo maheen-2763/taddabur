@@ -10,8 +10,10 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 
-Schedule::command('reflection:send')
-    ->dailyAt('05:00');
+Schedule::command('daily:generate-ayah')
+    ->dailyAt('00:05')
+    ->onOneServer()
+    ->appendOutputTo(storage_path('logs/daily-ayah.log'));
 
 Schedule::command(VerifyChapterGaps::class)
     ->weekly()
