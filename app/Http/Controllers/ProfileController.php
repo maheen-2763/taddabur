@@ -15,10 +15,15 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
+
+    public function __construct(private \App\Services\QuranService $quranService) {}
     public function edit(Request $request): View
     {
         return view('profile.edit', [
             'user' => $request->user(),
+            'translations' => $this->quranService->getAllTranslations(),
+            'tafsirs' => $this->quranService->getAllTafsirs(),
+            'reciters' => $this->quranService->getAllReciters(),
         ]);
     }
 
@@ -61,10 +66,10 @@ class ProfileController extends Controller
     public function updatePreferences(Request $request)
     {
         $request->validate([
-            'preferred_translation' => 'nullable|string',
-            'preferred_tafsir'      => 'nullable|string',
-            'preferred_reciter'     => 'nullable|string',
-            'preferred_language'    => 'nullable|string',
+            'preferred_translation' => 'nullable|string|exists:translations,slug',
+            'preferred_tafsir'      => 'nullable|string|exists:tafsirs,slug',
+            'preferred_reciter'     => 'nullable|string|exists:recitations,slug',
+            'preferred_language'    => 'nullable|string|in:en,ur,ar',
         ]);
 
         $request->user()->update($request->only([

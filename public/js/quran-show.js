@@ -129,6 +129,24 @@ function handleReciterChange(select) {
         );
     }
 
+    // ✅ NAYA — DB persist (select.value final/corrected slug hai — free-fallback ke baad)
+    if (
+        window.QURAN_CONFIG?.isLoggedIn &&
+        window.QURAN_CONFIG?.preferencesUrl
+    ) {
+        const CSRF = document.querySelector('meta[name="csrf-token"]').content;
+
+        fetch(window.QURAN_CONFIG.preferencesUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": CSRF,
+                Accept: "application/json",
+            },
+            body: JSON.stringify({ preferred_reciter: select.value }),
+        }).catch(() => {});
+    }
+
     const audio = document.getElementById("audioElement");
     if (currentAyahId && audio && !audio.paused) {
         const card = document.querySelector(
@@ -136,7 +154,7 @@ function handleReciterChange(select) {
         );
         const btn = card?.querySelector('[onclick^="playAudio"]');
         if (btn) {
-            audio.pause(); // pehle rok do, playAudio() apna naya load karega
+            audio.pause();
             btn.click();
         }
     }
@@ -166,6 +184,23 @@ function changeActiveTafsir(slug) {
     // ✅ NAYA — panel ka picker bhi khula hai toh usse bhi sync kar do
     const panelPicker = document.getElementById("tafsirPanelPicker");
     if (panelPicker) panelPicker.value = slug;
+    // ✅ NAYA — DB persist, taaki Dashboard/cross-device bhi isi ko follow kare
+    if (
+        window.QURAN_CONFIG?.isLoggedIn &&
+        window.QURAN_CONFIG?.preferencesUrl
+    ) {
+        const CSRF = document.querySelector('meta[name="csrf-token"]').content;
+
+        fetch(window.QURAN_CONFIG.preferencesUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": CSRF,
+                Accept: "application/json",
+            },
+            body: JSON.stringify({ preferred_tafsir: slug }),
+        }).catch(() => {}); // silent fail — localStorage already updated UI, DB sync non-critical yahan
+    }
 }
 
 let currentTafsirSurah = null;
@@ -176,9 +211,8 @@ function openTafsirPanel(surah, ayahId) {
     currentTafsirAyahId = ayahId;
 
     // ✅ NAYA — panel khulte hi last-used tafsir select kar do
-    const saved = localStorage.getItem("taddabur_preferred_tafsir");
+    const localTafsir = localStorage.getItem("taddabur_preferred_tafsir");
     const panelPicker = document.getElementById("tafsirPanelPicker");
-    if (saved && panelPicker) panelPicker.value = saved;
 
     document.getElementById("tafsirPanel").classList.add("open");
     document.getElementById("tafsirOverlay").classList.add("visible");
@@ -271,7 +305,27 @@ function closeTafsirPanel() {
 function changeTranslation(slug) {
     const url = new URL(location.href);
     url.searchParams.set("translation", slug);
-    location.href = url.toString();
+
+    if (
+        window.QURAN_CONFIG?.isLoggedIn &&
+        window.QURAN_CONFIG?.preferencesUrl
+    ) {
+        const CSRF = document.querySelector('meta[name="csrf-token"]').content;
+
+        fetch(window.QURAN_CONFIG.preferencesUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": CSRF,
+                Accept: "application/json",
+            },
+            body: JSON.stringify({ preferred_translation: slug }),
+        }).finally(() => {
+            location.href = url.toString();
+        });
+    } else {
+        location.href = url.toString();
+    }
 }
 
 // ════════════════════════════════════════════
@@ -815,7 +869,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const cfg = window.QURAN_CONFIG || {};
     const hash = window.location.hash;
     const picker = document.getElementById("reciterPicker");
-    const saved = localStorage.getItem("taddabur_preferred_tafsir");
+    const dbTafsir = window.QURAN_CONFIG?.preferredTafsir;
+    const localTafsir = localStorage.getItem("taddabur_preferred_tafsir");
+    const effectiveTafsir = dbTafsir || localTafsir;
     const toolbarPicker = document.getElementById("tafsirPicker");
     const surahNumber = window.QURAN_CONFIG.surahNumber;
     const dismissed = sessionStorage.getItem(
@@ -827,12 +883,13 @@ document.addEventListener("DOMContentLoaded", function () {
         if (banner) banner.remove();
     }
 
-    if (picker) handleReciterChange(picker);
-
-    if (saved && toolbarPicker) {
-        toolbarPicker.value = saved;
-        window.selectedTafsir = saved;
+    if (effectiveTafsir && toolbarPicker) {
+        toolbarPicker.value = effectiveTafsir;
+        window.selectedTafsir = effectiveTafsir;
+        localStorage.setItem("taddabur_preferred_tafsir", effectiveTafsir); // sync kar do
     }
+
+    if (picker) handleReciterChange(picker);
 
     // ✅ PRIORITY 1 — User arrived via a direct ayah link
     //    (search result, shared link, bookmark)

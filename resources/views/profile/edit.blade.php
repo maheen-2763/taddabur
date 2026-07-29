@@ -43,7 +43,7 @@
         .profile-user-name {
             font-family: 'Cinzel', serif;
             font-size: 18px;
-            color: (var(--ink));
+            color: var(--ink);
             margin-bottom: 0.35rem;
         }
 
@@ -344,7 +344,10 @@
             {{-- ── Avatar & Identity ── --}}
             @php
                 $nameParts = explode(' ', trim($user->name));
-                $initials = strtoupper(substr($nameParts[0], 0, 1) . substr(end($nameParts), 0, 1));
+                $initials =
+                    count($nameParts) > 1
+                        ? strtoupper(substr($nameParts[0], 0, 1) . substr(end($nameParts), 0, 1))
+                        : strtoupper(substr($nameParts[0], 0, 2));
             @endphp
             <div class="profile-avatar-block">
                 <div class="profile-avatar-ring">
@@ -486,6 +489,43 @@
                             </select>
                         </div>
 
+                        {{-- ✅ NAYA — Translation dropdown --}}
+                        <div class="mb-4">
+                            <label class="form-label">Preferred Quran Translation</label>
+                            <select name="preferred_translation" class="form-select">
+                                @foreach ($translations as $t)
+                                    <option value="{{ $t->slug }}"
+                                        {{ $user->preferred_translation === $t->slug ? 'selected' : '' }}>
+                                        {{ $t->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Preferred Tafsir</label>
+                            <select name="preferred_tafsir" class="form-select">
+                                @foreach ($tafsirs as $t)
+                                    <option value="{{ $t->slug }}"
+                                        {{ $user->preferred_tafsir === $t->slug ? 'selected' : '' }}>
+                                        {{ $t->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Preferred Reciter</label>
+                            <select name="preferred_reciter" class="form-select">
+                                @foreach ($reciters as $r)
+                                    <option value="{{ $r->slug }}"
+                                        {{ $user->preferred_reciter === $r->slug ? 'selected' : '' }}>
+                                        {{ $r->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
                         <button type="submit" class="btn btn-emerald">
                             Save Preferences
                         </button>
@@ -519,7 +559,8 @@
                         <div class="mb-3">
                             <label class="form-label">New Password</label>
                             <input type="password" name="password"
-                                class="form-control @error('password') is-invalid @enderror" placeholder="Min 8 characters">
+                                class="form-control @error('password') is-invalid @enderror"
+                                placeholder="Min 8 characters">
                             @error('password')
                                 <div class="text-danger mt-1">{{ $message }}</div>
                             @enderror

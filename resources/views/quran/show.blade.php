@@ -79,7 +79,7 @@
                             <select id="tafsirPicker" class="toolbar-select" onchange="changeActiveTafsir(this.value)">
                                 <option value="">📖 Tafsir</option>
                                 @foreach ($tafsirs as $t)
-                                    <option value="{{ $t->slug }}">
+                                    <option value="{{ $t->slug }}" {{ $preferredTafsir === $t->slug ? 'selected' : '' }}>
                                         {{ $t->name }}
                                         {{ !$isPremium ? '🔒' : '' }}
                                     </option>
@@ -97,6 +97,7 @@
                                 <optgroup label="✓ Verified Word-Sync">
                                     @foreach ($reciters->where('has_verified_timing', true) as $r)
                                         <option value="{{ $r->slug }}" data-free="{{ $r->is_free ? '1' : '0' }}"
+                                            {{ $preferredReciter === $r->slug ? 'selected' : '' }}
                                             title="Exact word-by-word sync available">
                                             {{ $r->name }}
                                             {{ !$r->is_free && !$isPremium ? '🔒' : '' }}
@@ -107,6 +108,7 @@
                                 <optgroup label="Approximate Sync">
                                     @foreach ($reciters->where('has_verified_timing', false) as $r)
                                         <option value="{{ $r->slug }}" data-free="{{ $r->is_free ? '1' : '0' }}"
+                                            {{ $preferredReciter === $r->slug ? 'selected' : '' }}
                                             title="Approximate word-highlighting — exact timing data not available">
                                             {{ $r->name }}
                                             {{ !$r->is_free && !$isPremium ? '🔒' : '' }}
@@ -555,11 +557,13 @@
 
                                 <select id="miniReciterPicker" class="audio-mini-select js-audio-reciter"
                                     onchange="handleMiniReciterChange(this)" title="Change Reciter">
-                                    <option value="" disabled selected></option>
+                                    {{-- ✅ FIX — ab yeh sirf tab default rahega jab koi preference hi na ho --}}
+                                    <option value="" disabled {{ !$preferredReciter ? 'selected' : '' }}></option>
 
                                     <optgroup label="Verified">
                                         @foreach ($reciters->where('has_verified_timing', true) as $r)
                                             <option value="{{ $r->slug }}" data-free="{{ $r->is_free ? '1' : '0' }}"
+                                                {{ $preferredReciter === $r->slug ? 'selected' : '' }}
                                                 title="{{ $r->name }}">
                                                 {{ $r->initials }}
                                             </option>
@@ -568,6 +572,7 @@
                                     <optgroup label="Approximate">
                                         @foreach ($reciters->where('has_verified_timing', false) as $r)
                                             <option value="{{ $r->slug }}" data-free="{{ $r->is_free ? '1' : '0' }}"
+                                                {{ $preferredReciter === $r->slug ? 'selected' : '' }}
                                                 title="{{ $r->name }}">
                                                 {{ $r->initials }}
                                             </option>
@@ -693,6 +698,9 @@
             isLoggedIn: {{ auth()->check() ? 'true' : 'false' }},
             isPremium: {{ $isPremium ? 'true' : 'false' }},
             upgradeUrl: '{{ route('subscription.upgrade') }}',
+            preferencesUrl: '{{ route('profile.preferences') }}',
+            preferredTafsir: @json($preferredTafsir),
+            preferredReciter: @json($preferredReciter),
             defaultReciterSlug: "{{ \App\Services\QuranService::DEFAULT_RECITER }}",
             freeTranslationSlug: '{{ $translations->where('is_free', true)->first()?->slug ?? 'sahih-international' }}',
             lastAyahNumber: {{ $lastAyahNumber ?? 'null' }},
