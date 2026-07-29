@@ -3,19 +3,27 @@
 namespace App\Http\Controllers;
 
 use App\Models\DailyContent;
+use App\Services\QuranService;
+use Illuminate\Support\Facades\Auth;
 
 class ReflectionController extends Controller
 {
+    public function __construct(private QuranService $quranService) {}
+
     public function show(DailyContent $dailyContent)
     {
+        $user = Auth::user();
+
+        $translation = $this->quranService->resolveTranslation(
+            $user?->preferred_translation ?? QuranService::DEFAULT_TRANSLATION,
+            $user
+        );
+
         $dailyContent->load([
             'ayah.surah',
-            'ayah.translations.translation',
+            'ayah.translations' => fn($q) => $q->where('translation_id', $translation?->id),
         ]);
 
-        return view(
-            'reflections.show',
-            compact('dailyContent')
-        );
+        return view('reflections.show', compact('dailyContent'));
     }
 }

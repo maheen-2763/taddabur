@@ -40,7 +40,7 @@ class DashboardService
         $totalAyahsRead = $this->getTotalAyahsRead($user);
 
         return [
-            'dailyContent'      => $this->getDailyContent(),
+            'dailyContent' => $this->getDailyContent($user),
             'quranProgress'     => $quranProgress,
             'quranReadCount' => $quranReadCount,
             'storyProgress'     => $storyProgress,
@@ -68,18 +68,24 @@ class DashboardService
     // --------------------------
     // DAILY CONTENT
     // --------------------------
-    public function getDailyContent(): ?DailyContent
+    public function getDailyContent(User $user): ?DailyContent
     {
-        return DailyContent::with([
+        $translation = $this->quranService->resolveTranslation(
+            $user->preferred_translation ?? \App\Services\QuranService::DEFAULT_TRANSLATION,
+            $user
+        );
+
+        $withRelations = [
             'ayah.surah',
-            'ayah.translations.translation'
-        ])
+            'ayah.translations' => fn($q) => $q->where('translation_id', $translation?->id),
+        ];
+
+        return DailyContent::with($withRelations)
+            ->where('type', 'ayah')   // ✅ sirf ayah-type rows
             ->today()
             ->first()
-            ?? DailyContent::with([
-                'ayah.surah',
-                'ayah.translations.translation'
-            ])
+            ?? DailyContent::with($withRelations)
+            ->where('type', 'ayah')   // ✅ fallback mein bhi
             ->latest('scheduled_for')
             ->first();
     }

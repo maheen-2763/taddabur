@@ -3,20 +3,24 @@
 --}}
 
 @if ($dailyContent?->ayah)
+
+    @php
+        $showBismillahTop = !in_array($dailyContent->ayah->surah->number, [1, 9]) && $dailyContent->ayah->number === 1;
+        $ayahText = $showBismillahTop
+            ? \App\Helpers\ArabicHelper::stripBismillah($dailyContent->ayah->text_arabic)
+            : $dailyContent->ayah->text_arabic;
+    @endphp
     <div class="d-reflection-bold">
 
         <div class="d-reflection-bold-header">
             <h5 class="d-reflection-bold-title">۞ Today's Reflection</h5>
-            <small class="d-reflection-bold-date">
-                {{ \App\Helpers\ArabicHelper::hijriDate() }}
-            </small>
         </div>
 
-        @if ($dailyContent->ayah->surah->number !== 9)
+        @if ($showBismillahTop)
             <div class="bismillah-mini">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيمِ</div>
         @endif
 
-        <p class="arabic">﴿ {{ $dailyContent->ayah->text_arabic }} ﴾</p>
+        <p class="arabic">﴿ {{ $ayahText }} ﴾</p>
 
         <p class="d-reflection-bold-translation">
             "{{ $dailyContent->ayah->translations->first()?->text }}"
