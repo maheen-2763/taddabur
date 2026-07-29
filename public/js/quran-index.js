@@ -104,3 +104,31 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    const revChip = document.getElementById("revelationOrderChip");
+    const juzContainer = document.getElementById("surahListContainer");
+    const revContainer = document.getElementById("revelationOrderContainer");
+
+    if (!revChip || !juzContainer || !revContainer) return;
+
+    const otherChips = document.querySelectorAll(
+        ".js-filter-chip[data-filter]",
+    );
+
+    revChip.addEventListener("click", function () {
+        otherChips.forEach((c) => c.classList.remove("active"));
+        revChip.classList.add("active");
+        juzContainer.style.display = "none";
+        revContainer.style.display = "block";
+    });
+
+    // Purane chips (All/In Progress/Completed) pe click hone par wapas Juz-view pe aa jao
+    otherChips.forEach((chip) => {
+        chip.addEventListener("click", function () {
+            revChip.classList.remove("active");
+            juzContainer.style.display = "block";
+            revContainer.style.display = "none";
+        });
+    });
+});

@@ -16,7 +16,41 @@ class QuranIndexService
         return [
             'juzGroups'      => $this->getJuzGroups($progress),
             'completedCount' => count($progress['completedIds']),
+            'revelationOrderList' => $this->getRevelationOrderList($progress),  // ✅ NAYA
+
         ];
+    }
+    // -------------------------------------------------------
+    // REVELATION ORDER LIST — chronological reading experience
+    // -------------------------------------------------------
+    private function getRevelationOrderList(array $progress): \Illuminate\Support\Collection
+    {
+        $surahs = DB::table('surahs')
+            ->select('id', 'number', 'name_arabic', 'name_english', 'name_transliteration', 'ayah_count', 'revelation_order', 'revelation_type')
+            ->whereNotNull('revelation_order')
+            ->orderBy('revelation_order')
+            ->get();
+
+        return $surahs->map(function ($surah) use ($progress) {
+            $isCompleted = in_array($surah->id, $progress['completedIds']);
+            $readCount   = ($progress['readNumbers'][$surah->id] ?? collect())->count();
+
+            $percent = $isCompleted
+                ? 100
+                : min(99, (int) round(($readCount / max(1, $surah->ayah_count)) * 100));
+
+            return (object) [
+                'id'                   => $surah->id,
+                'number'               => $surah->number,
+                'name_arabic'          => $surah->name_arabic,
+                'name_english'         => $surah->name_english,
+                'name_transliteration' => $surah->name_transliteration,
+                'ayah_count'           => $surah->ayah_count,
+                'revelation_order'     => $surah->revelation_order,
+                'revelation_type'      => $surah->revelation_type,
+                'progress_percent'     => $percent,
+            ];
+        })->values();
     }
 
     private function getProgressMap(?int $userId): array

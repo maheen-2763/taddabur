@@ -39,6 +39,8 @@
             <button class="js-filter-chip chip active" data-filter="all">All</button>
             <button class="js-filter-chip chip" data-filter="progress">In Progress</button>
             <button class="js-filter-chip chip" data-filter="completed">Completed</button>
+            <button class="js-filter-chip chip" id="revelationOrderChip"><i class="bi bi-clock-history me-1"></i> Revelation
+                Order</button>
         </div>
 
         <div id="surahListContainer">
@@ -92,6 +94,34 @@
                     </div>
                 </div>
             @endforeach
+        </div>
+
+        {{-- ✅ NAYA — Revelation-order flat list --}}
+        <div id="revelationOrderContainer" style="display:none">
+
+            <p class="revelation-order-note"
+                style="font-size:0.78rem; color:var(--muted); padding:0.5rem 0 1rem; text-align:center">
+                Traditional chronological order of revelation, based on the narration of Ibn Abbas (Al-Itqan).
+            </p>
+
+            <div class="surah-list">
+                @foreach ($revelationOrderList as $surah)
+                    <a href="{{ route('quran.show', $surah->number) }}" class="surah-row"
+                        data-percent="{{ $surah->progress_percent }}">
+                        <span class="surah-number" title="Revealed #{{ $surah->revelation_order }}">
+                            {{ $surah->revelation_order }}
+                        </span>
+                        <div class="surah-name-ar">{{ $surah->name_arabic }}</div>
+                        <div class="surah-info">
+                            <div class="surah-name-en">{{ $surah->name_transliteration }}</div>
+                            <div class="surah-ayah-count">
+                                {{ ucfirst($surah->revelation_type) }} · {{ $surah->ayah_count }} ayahs
+                            </div>
+                        </div>
+                        <x-progress-ring :percent="$surah->progress_percent" />
+                    </a>
+                @endforeach
+            </div>
         </div>
 
         <p class="no-results-msg" id="noResultsMsg" style="display:none">No Surah Completed Yet.</p>
