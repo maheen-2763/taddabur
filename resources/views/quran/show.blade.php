@@ -246,9 +246,10 @@
                 </div>
             @endif
             {{-- Resume Banner --}}
+            {{-- ✅ NAYA VERSION --}}
             @auth
                 @if ($lastAyahNumber && !$isSurahCompleted)
-                    <div class="resume-banner" id="lastReadBanner">
+                    <div class="resume-banner" id="lastReadBanner" style="visibility:hidden">
                         <span id="readCountText" style="font-size:0.85rem">
                             <i class="bi bi-bookmark-fill me-2" style="color:var(--gold)"></i>
                             {{ $readAyahsCount ?? 0 }} of {{ $surah->ayah_count }} ayahs read in this Surah
@@ -266,6 +267,23 @@
                             </button>
                         </div>
                     </div>
+
+                    <script>
+                        (function() {
+                            const surahNumber = {{ $surah->number }};
+                            const dismissed = sessionStorage.getItem(`resumeBannerDismissed_${surahNumber}`);
+                            const banner = document.getElementById("lastReadBanner");
+
+                            if (!banner) return;
+
+                            if (dismissed) {
+                                banner.remove();
+                            } else {
+                                banner.style.visibility = "visible";
+                            }
+                        })
+                        ();
+                    </script>
                 @endif
             @endauth
 
@@ -707,6 +725,13 @@
             savedFontSizeIndex: {{ auth()->user()?->userPreferences?->quran_font_size_index ?? 2 }}
         };
         window.USER_NOTES = @json($userNotesForJs);
+
+        @if (!empty($highlightAyah))
+            document.addEventListener('DOMContentLoaded', function() {
+                scrollToAyah({{ $highlightAyah }});
+                flashHighlightAyah({{ $highlightAyah }});
+            });
+        @endif
     </script>
     <script src="{{ asset('js/shareCard.js') }}"></script>
     <script src="{{ asset('js/quran-show.js') }}"></script>

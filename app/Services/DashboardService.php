@@ -41,6 +41,7 @@ class DashboardService
 
         return [
             'dailyContent' => $this->getDailyContent($user),
+            'dailyHadith'  => $this->getDailyHadith(),
             'quranProgress'     => $quranProgress,
             'quranReadCount' => $quranReadCount,
             'storyProgress'     => $storyProgress,
@@ -86,6 +87,26 @@ class DashboardService
             ->first()
             ?? DailyContent::with($withRelations)
             ->where('type', 'ayah')   // ✅ fallback mein bhi
+            ->latest('scheduled_for')
+            ->first();
+    }
+
+    // --------------------------
+    // DAILY HADITH
+    // --------------------------
+    public function getDailyHadith(): ?DailyContent
+    {
+        $withRelations = [
+            'hadith.collection',
+            'hadith.chapter',
+        ];
+
+        return DailyContent::with($withRelations)
+            ->where('type', 'hadith')
+            ->today()
+            ->first()
+            ?? DailyContent::with($withRelations)
+            ->where('type', 'hadith')
             ->latest('scheduled_for')
             ->first();
     }

@@ -1,0 +1,308 @@
+/* ════════════════════════════════════════════
+   PROPHET ﷺ NAMES — Timeline / Scroll Design
+════════════════════════════════════════════ */
+
+.pname-wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1rem 4rem;
+}
+
+/* ── HEADER ── */
+.pname-header {
+    text-align: center;
+    padding: 1.5rem 1rem 2.5rem;
+}
+
+.pname-header .arabic-title {
+    font-family: "Amiri", "Scheherazade New", serif;
+    font-size: clamp(1.8rem, 5vw, 2.6rem);
+    color: var(--emerald-dark);
+    direction: rtl;
+    unicode-bidi: isolate;
+    display: block;
+    margin-bottom: 0.4rem;
+}
+
+.pname-header .latin-title {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    color: var(--ink-soft);
+    letter-spacing: 0.04em;
+    display: block;
+    margin-bottom: 0.75rem;
+}
+
+.pname-header .verse-ref {
+    max-width: 520px;
+    margin: 0 auto;
+    font-size: 0.82rem;
+    color: var(--muted);
+    font-style: italic;
+}
+
+/* ── TIER LABEL (section divider) ── */
+.pname-tier-label {
+    text-align: center;
+    margin: 3rem 0 2rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--gold-dark);
+}
+
+.pname-tier-label .arabic {
+    font-family: "Amiri", "Scheherazade New", serif;
+    font-size: 1.6rem;
+    color: var(--gold-dark);
+    display: block;
+    direction: rtl;
+    unicode-bidi: isolate;
+}
+
+.pname-tier-label .latin {
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    letter-spacing: 0.05em;
+}
+
+/* ── TIMELINE CONTAINER — the "rail" ── */
+.pname-timeline {
+    position: relative;
+    padding: 1rem 0;
+}
+
+/* The gold connecting line — center rail */
+.pname-timeline::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    background: linear-gradient(
+        to bottom,
+        transparent,
+        var(--gold-dark) 8%,
+        var(--gold-dark) 92%,
+        transparent
+    );
+    transform: translateX(-50%);
+}
+
+/* ── EACH ITEM — a "station" on the rail ── */
+.pname-item {
+    position: relative;
+    width: 50%;
+    padding: 0 2.5rem 2.5rem;
+    box-sizing: border-box;
+}
+
+.pname-left {
+    left: 0;
+    text-align: right;
+}
+
+.pname-right {
+    left: 50%;
+    text-align: left;
+}
+
+/* Dot marker on the rail */
+.pname-dot {
+    position: absolute;
+    top: 0.4rem;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--gold);
+    border: 3px solid var(--emerald-dark);
+    box-shadow: 0 0 0 4px rgba(201, 150, 58, 0.15);
+    z-index: 2;
+}
+
+.pname-left .pname-dot {
+    right: -8px;
+}
+
+.pname-right .pname-dot {
+    left: -8px;
+}
+
+/* ── THE CARD ── */
+.pname-card {
+    background: linear-gradient(
+        145deg,
+        var(--cream) 0%,
+        var(--cream-dark) 100%
+    );
+    border: 1px solid var(--gold-dark);
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.pname-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(201, 150, 58, 0.2);
+}
+
+.pname-arabic {
+    display: block;
+    font-family: "Amiri", "Scheherazade New", serif;
+    font-size: 1.7rem;
+    color: var(--emerald-dark);
+    direction: rtl;
+    unicode-bidi: isolate;
+    margin-bottom: 0.3rem;
+}
+
+.pname-translit {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    color: var(--gold-dark);
+    margin: 0 0 0.3rem;
+}
+
+.pname-meaning {
+    font-size: 0.88rem;
+    color: var(--ink-soft);
+    margin: 0 0 0.6rem;
+    line-height: 1.5;
+}
+
+.pname-source {
+    font-size: 0.78rem;
+}
+
+.pname-source a {
+    color: var(--emerald);
+    text-decoration: none;
+    border-bottom: 1px dashed var(--emerald);
+}
+
+.pname-source a:hover {
+    color: var(--gold-dark);
+    border-bottom-color: var(--gold-dark);
+}
+
+.pname-source span {
+    color: var(--muted);
+}
+
+/* ════════════════════════════════════════════
+   DARK MODE — established pattern: every new
+   var/class needs an override, or text
+   disappears in dark mode
+════════════════════════════════════════════ */
+[data-bs-theme="dark"] .pname-card {
+    background: linear-gradient(145deg, #1f1f30 0%, #16162a 100%);
+    border-color: var(--gold-dark);
+}
+
+[data-bs-theme="dark"] .pname-arabic {
+    color: var(--emerald-light);
+}
+
+[data-bs-theme="dark"] .pname-header .arabic-title {
+    color: var(--emerald-light);
+}
+
+[data-bs-theme="dark"] .pname-meaning {
+    color: rgba(255, 255, 255, 0.65);
+}
+
+[data-bs-theme="dark"] .pname-header .latin-title,
+[data-bs-theme="dark"] .pname-header .verse-ref {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* ════════════════════════════════════════════
+   MOBILE — rail moves to the left edge, all
+   cards become single-column (no more left/right
+   alternating — not enough width for two columns)
+════════════════════════════════════════════ */
+@media (max-width: 700px) {
+    .pname-timeline::before {
+        left: 20px;
+    }
+
+    .pname-item,
+    .pname-left,
+    .pname-right {
+        width: 100%;
+        left: 0;
+        text-align: left;
+        padding: 0 0 2rem 3rem;
+    }
+
+    .pname-left .pname-dot,
+    .pname-right .pname-dot {
+        left: 12px;
+        right: auto;
+    }
+}
+
+.pname-ref-pills {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: wrap;
+    font-size: 0.78rem;
+}
+
+.pname-ref-icon {
+    margin-right: 2px;
+}
+
+.pname-ref-pill {
+    background: rgba(27, 94, 59, 0.08);
+    color: var(--emerald);
+    border: 1px solid rgba(27, 94, 59, 0.2);
+    border-radius: 50px;
+    padding: 2px 9px;
+    text-decoration: none;
+    font-size: 0.74rem;
+    transition: all 0.2s ease;
+}
+
+.pname-ref-pill:hover {
+    background: var(--emerald);
+    color: white;
+}
+
+/* Quran primary reference — gold accent */
+.pname-ref-primary {
+    border-color: var(--gold-dark);
+    font-weight: 600;
+}
+
+/* ✅ Naya — Hadith reference — thoda distinct tone */
+.pname-ref-hadith {
+    background: rgba(201, 150, 58, 0.08);
+    border-color: var(--gold-dark);
+    color: var(--gold-dark);
+}
+
+.pname-ref-hadith:hover {
+    background: var(--gold);
+    color: white;
+}
+
+.pname-ref-static {
+    font-size: 0.78rem;
+    color: var(--muted);
+}
+
+[data-bs-theme="dark"] .pname-ref-pill {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--emerald-light);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+[data-bs-theme="dark"] .pname-ref-hadith {
+    background: rgba(201, 150, 58, 0.12);
+    color: var(--gold-light);
+}

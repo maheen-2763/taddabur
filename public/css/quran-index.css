@@ -128,15 +128,15 @@
 
 /* ---- Filter chips ---- */
 .filter-chips {
-    display: flex;
-    gap: 8px;
+    flex-wrap: wrap;
+    gap: 6px;
     margin-bottom: 18px;
     justify-content: center;
 }
 
 .chip {
-    padding: 6px 16px;
-    font-size: 0.8rem;
+    padding: 6px 12px;
+    font-size: 0.72rem;
     font-family: var(--font-body);
     border-radius: 999px;
     border: 1px solid var(--border);
@@ -144,6 +144,7 @@
     color: var(--muted);
     cursor: pointer;
     transition: all 0.15s ease;
+    white-space: nowrap;
 }
 
 .chip.active {
@@ -374,6 +375,38 @@
     color: var(--emerald);
     font-weight: 600;
     font-size: 0.75rem;
+}
+
+.filter-chips {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 18px;
+    justify-content: flex-center; /* 👈 right-aligned */
+}
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.chip i {
+    font-size: 0.85rem;
+}
+
+@media (max-width: 560px) {
+    .chip {
+        padding: 8px 10px;
+        gap: 0;
+    }
+
+    .chip-label {
+        display: none;
+    }
+
+    .chip i {
+        font-size: 1rem;
+    }
 }
 
 /* Remove old .continuation-badge rule if still present — replaced by .continuation-marker */

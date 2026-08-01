@@ -24,6 +24,7 @@
             </p>
         </div>
 
+
         {{-- The Allah Medallion — crowning piece above
              the 99 Names grid --}}
         <div class="allah-medallion">
@@ -35,7 +36,8 @@
             @foreach ($rows as $rowIndex => $row)
                 <div class="hex-row {{ $rowIndex % 2 === 1 ? 'hex-row-offset' : '' }}">
                     @foreach ($row as $name)
-                        <div class="hex-cell" data-slug="{{ $name->slug }}">
+                        <div class="hex-cell" data-slug="{{ $name->slug }}" tabindex="0" role="button"
+                            aria-label="{{ $name->transliteration }} - {{ $name->english_name }}">
 
                             {{-- Layer 1: revealed name, glows upward when opened --}}
                             <div class="hex-back">

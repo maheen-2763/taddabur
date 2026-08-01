@@ -23,6 +23,9 @@ use App\Http\Controllers\HadithGradeController;
 use App\Http\Controllers\RazorpayWebhookController;
 use App\Http\Middleware\VerifyCsrfToken;
 use App\Http\Controllers\HadithSearchController;
+use App\Http\Controllers\ProphetNameController;
+use App\Http\Controllers\AboutController;
+use App\Http\Controllers\FeaturesController;
 
 
 // Re-import any missing translations weekly (catches new additions)
@@ -48,10 +51,8 @@ Route::get('/', [HomeController::class, 'index'])
 
 Route::view('/terms', 'legal.terms')->name('terms');
 Route::view('/privacy-policy', 'legal.privacy')->name('privacy');
-Route::view('/about', 'about')->name('about');
-
-
-
+Route::get('/about', [AboutController::class, 'index'])->name('about');
+Route::get('/features', [FeaturesController::class, 'index'])->name('features.index');
 
 
 
@@ -92,6 +93,9 @@ Route::get('/ayah/{surahNumber}/{ayahNumber}/timings/{reciter}', [WordTimingCont
 
 Route::get('/allah-names', [App\Http\Controllers\AllahNameController::class, 'index'])
     ->name('allah-names.index');
+
+// routes/web.php
+Route::get('/prophet-names', [ProphetNameController::class, 'index'])->name('prophet-names.index');
 
 Route::get('/quran/sajdas', [QuranController::class, 'sajdas'])
     ->name('quran.sajdas');

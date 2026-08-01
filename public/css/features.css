@@ -1,0 +1,184 @@
+/* ════════════════════════════════════════════
+   FEATURES PAGE — "Mihrab Arch" Cards
+   Inspired by the mosque niche (mihrab) shape —
+   pointed arch on top, rectangle base.
+════════════════════════════════════════════ */
+
+.feat-wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+}
+
+.feat-header {
+    text-align: center;
+    padding: 1.5rem 1rem 3rem;
+}
+
+.feat-header .arabic-title {
+    font-family: "Amiri", "Scheherazade New", serif;
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    color: var(--emerald-dark);
+    direction: rtl;
+    unicode-bidi: isolate;
+    display: block;
+    margin-bottom: 0.4rem;
+}
+
+.feat-header .latin-title {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    color: var(--gold-dark);
+    letter-spacing: 0.04em;
+    display: block;
+    margin-bottom: 0.6rem;
+}
+
+.feat-header .verse-ref {
+    max-width: 480px;
+    margin: 0 auto;
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-style: italic;
+}
+
+.feat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 2.5rem 1.75rem;
+}
+
+/* ════════════════════════════════════════════
+   THE ARCH — built with border-radius, not
+   clip-path, so the card keeps a soft shadow
+   and stays crisp at every screen size
+════════════════════════════════════════════ */
+.feat-arch {
+    position: relative;
+    padding-top: 28px; /* room for the arch peak */
+}
+
+.feat-arch-inner {
+    position: relative;
+    background: linear-gradient(
+        160deg,
+        var(--cream) 0%,
+        var(--cream-dark) 100%
+    );
+    border: 1.5px solid var(--gold-dark);
+    border-radius: 100px 100px 14px 14px; /* pointed-ish top, square bottom */
+    padding: 2.5rem 1.5rem 1.75rem;
+    text-align: center;
+    height: 100%;
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.feat-arch-inner::before {
+    /* Keystone ornament at the arch peak */
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 14px;
+    height: 14px;
+    background: var(--gold);
+    border: 2px solid var(--gold-dark);
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px var(--cream);
+}
+
+.feat-arch:hover .feat-arch-inner {
+    transform: translateY(-6px);
+    box-shadow: 0 14px 28px rgba(201, 150, 58, 0.22);
+    border-color: var(--gold);
+}
+
+.feat-arch-icon {
+    width: 52px;
+    height: 52px;
+    margin: 0 auto 0.9rem;
+    border-radius: 50%;
+    background: radial-gradient(
+        circle at 40% 30%,
+        var(--gold-light),
+        var(--gold) 70%
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    color: #1a1a2e;
+    box-shadow:
+        inset 0 2px 4px rgba(255, 255, 255, 0.5),
+        0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.feat-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--gold-dark);
+    background: rgba(201, 150, 58, 0.1);
+    border: 1px solid rgba(201, 150, 58, 0.25);
+    padding: 0.2rem 0.7rem;
+    border-radius: 50px;
+    margin-bottom: 0.6rem;
+}
+
+.feat-title {
+    font-family: var(--font-heading);
+    font-size: 1.02rem;
+    color: var(--ink);
+    margin-bottom: 0.5rem;
+}
+
+.feat-desc {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* ════════════════════════════════════════════
+   DARK MODE
+════════════════════════════════════════════ */
+[data-bs-theme="dark"] .feat-arch-inner {
+    background: linear-gradient(160deg, #1f1f30 0%, #16162a 100%);
+    border-color: var(--gold-dark);
+}
+
+[data-bs-theme="dark"] .feat-arch-inner::before {
+    box-shadow: 0 0 0 4px #16162a;
+}
+
+[data-bs-theme="dark"] .feat-title {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+[data-bs-theme="dark"] .feat-header .arabic-title {
+    color: var(--emerald-light);
+}
+
+[data-bs-theme="dark"] .feat-desc {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+[data-bs-theme="dark"] .feat-header .latin-title,
+[data-bs-theme="dark"] .feat-header .verse-ref {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* ════════════════════════════════════════════
+   MOBILE
+════════════════════════════════════════════ */
+@media (max-width: 560px) {
+    .feat-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+}

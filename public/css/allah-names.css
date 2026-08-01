@@ -34,7 +34,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Scheherazade+New:wght@400;700&display=swap");
 
 .honeycomb-wrap {
-    --hex-w: 92px;
+    --hex-w: 110px;
     --hex-h: calc(var(--hex-w) * 1.1547);
     --hex-clip: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
 }
@@ -137,7 +137,7 @@
 .honeycomb-header .arabic-title {
     font-family: "Amiri", "Scheherazade New", serif;
     font-size: clamp(1.8rem, 5vw, 2.6rem);
-    color: var(--emerald-dark);
+    color: var(--emerald-light);
     direction: rtl;
     unicode-bidi: isolate;
     display: block;
@@ -285,15 +285,16 @@
 
 .hex-number {
     font-family: var(--font-heading);
-    font-size: 0.6rem;
-    color: var(--gold-light);
-    opacity: 0.75;
+    font-size: 0.7rem;
+    color: var(--gold-dark);
+    opacity: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 .hex-cover-arabic {
     font-family: "Amiri", "Scheherazade New", serif;
-    font-size: 1rem;
-    color: var(--emerald);
+    font-size: 1.15rem;
+    color: var(--emerald-light);
     direction: rtl;
     unicode-bidi: isolate;
     text-align: center;

@@ -17,32 +17,43 @@ const cfg = window.QURAN_CONFIG || {};
 // ════════════════════════════════════════════
 // SCROLL TO TOP
 // ════════════════════════════════════════════
+let scrollTicking = false;
+
 window.addEventListener("scroll", () => {
     const btn = document.getElementById("scrollTopBtn");
-    if (!btn) return;
-
-    if (window.scrollY > 400) {
-        btn.classList.add("visible");
-    } else {
-        btn.classList.remove("visible");
+    if (btn) {
+        if (window.scrollY > 400) btn.classList.add("visible");
+        else btn.classList.remove("visible");
     }
 
-    updateSidebarActive();
+    // ✅ Naya — sirf agla "frame paint" hone se pehle EK baar chalao
+    if (!scrollTicking) {
+        window.requestAnimationFrame(() => {
+            updateSidebarActive();
+            scrollTicking = false;
+        });
+        scrollTicking = true;
+    }
 });
 
 // ════════════════════════════════════════════
 // SIDEBAR — Highlight current ayah
-// ═══════════════════════════════════════════
+// ════════════════════════════════════════════
 //
 // ✅ FIX: getBoundingClientRect().bottom gives the
 //         REAL position of toolbar's bottom edge on
 //         screen right now — not a hardcoded guess.
-//         offsetHeight was wrong because it doesn't
-//         account for sticky positioning + scroll.
+//
+// ✅ PERFORMANCE FIX: Stop checking all 286 cards
+//    every time — break as soon as we find the
+//    active one (cards are in top-to-bottom order,
+//    so once we pass the trigger line, no need to
+//    keep measuring the rest)
 //
 function updateSidebarActive() {
-    const cards = document.querySelectorAll(".ayah-card");
     if (manualJumpActive) return;
+
+    const cards = document.querySelectorAll(".ayah-card");
 
     const toolbar =
         document.getElementById("readerToolbar") ||
@@ -54,12 +65,22 @@ function updateSidebarActive() {
 
     let activeNum = null;
 
-    cards.forEach((card) => {
+    for (const card of cards) {
         const rect = card.getBoundingClientRect();
+
         if (rect.top <= triggerLine && rect.bottom > triggerLine) {
             activeNum = card.dataset.ayahNumber;
+            break; // 👈 mil gaya — baaki cards check karna band
         }
-    });
+
+        // ✅ Agar card trigger line se neeche nikal chuka hai,
+        //    aur humein abhi tak match nahi mila, toh aage
+        //    ki cards bhi check karne ka fayda nahi (sab
+        //    upar-se-neeche order mein hain)
+        if (rect.top > triggerLine) {
+            break;
+        }
+    }
 
     if (!activeNum) return;
 
@@ -210,9 +231,15 @@ function openTafsirPanel(surah, ayahId) {
     currentTafsirSurah = surah;
     currentTafsirAyahId = ayahId;
 
-    // ✅ NAYA — panel khulte hi last-used tafsir select kar do
     const localTafsir = localStorage.getItem("taddabur_preferred_tafsir");
+    const dbTafsir = window.QURAN_CONFIG?.preferredTafsir;
+    const effectiveTafsir = dbTafsir || localTafsir; // 👈 same priority jo DOMContentLoaded mein hai
     const panelPicker = document.getElementById("tafsirPanelPicker");
+
+    // 👇 YEH LINE MISSING THI — ab add ki
+    if (effectiveTafsir && panelPicker) {
+        panelPicker.value = effectiveTafsir;
+    }
 
     document.getElementById("tafsirPanel").classList.add("open");
     document.getElementById("tafsirOverlay").classList.add("visible");
@@ -874,14 +901,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const effectiveTafsir = dbTafsir || localTafsir;
     const toolbarPicker = document.getElementById("tafsirPicker");
     const surahNumber = window.QURAN_CONFIG.surahNumber;
-    const dismissed = sessionStorage.getItem(
-        `resumeBannerDismissed_${surahNumber}`,
-    );
-
-    if (dismissed) {
-        const banner = document.getElementById("lastReadBanner");
-        if (banner) banner.remove();
-    }
 
     if (effectiveTafsir && toolbarPicker) {
         toolbarPicker.value = effectiveTafsir;
@@ -894,14 +913,20 @@ document.addEventListener("DOMContentLoaded", function () {
     // ✅ PRIORITY 1 — User arrived via a direct ayah link
     //    (search result, shared link, bookmark)
     //    This ALWAYS wins — never overridden by resume logic
-    if (hash && hash.startsWith("#ayah-")) {
-        const num = parseInt(hash.replace("#ayah-", ""));
-        if (num) {
-            setTimeout(() => {
-                scrollToAyah(num);
-                flashHighlightAyah(num);
-            }, 400);
-        }
+    const highlightParam = new URLSearchParams(window.location.search).get(
+        "highlight",
+    );
+    const hashAyah =
+        hash && hash.startsWith("#ayah-")
+            ? parseInt(hash.replace("#ayah-", ""))
+            : null;
+    const targetAyah = parseInt(highlightParam) || hashAyah;
+
+    if (targetAyah) {
+        setTimeout(() => {
+            scrollToAyah(targetAyah);
+            flashHighlightAyah(targetAyah);
+        }, 400);
     }
 });
 

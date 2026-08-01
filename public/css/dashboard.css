@@ -529,11 +529,6 @@
     border-radius: 50px;
 }
 
-.d-explore-arrow {
-    color: var(--emerald);
-    font-size: 0.9rem;
-}
-
 /* ════════════════════════════════════════════
    EMPTY STATE
 ════════════════════════════════════════════ */

@@ -142,8 +142,8 @@
         }
 
         /* ==========================================
-                                                                                                                                                                                                                                                                                                                                               COMING SOON CARDS
-                                                                                                                                                                                                                                                                                                                                            ========================================== */
+                                                                                                                                                                                                                                                                                                                                                           COMING SOON CARDS
+                                                                                                                                                                                                                                                                                                                                                        ========================================== */
 
         .card-coming-soon {
             position: relative;
@@ -448,7 +448,7 @@
                     <small class="text-muted">Prophets</small>
                 </div>
                 <div class="col stats-box">
-                    <span class="stats-number" data-target="30625" data-format="comma">0</span>
+                    <span class="stats-number" data-target="{{ $hadithCount }}" data-format="comma">0</span>
                     <small class="text-muted">Hadiths</small>
                 </div>
                 <div class="col stats-box">
@@ -477,17 +477,7 @@
             </div>
 
             <div class="row g-4">
-                @foreach ([
-            ['icon' => 'bi-book-half', 'title' => 'Full Quran Reader', 'desc' => 'Read all 114 Surahs in Arabic. Clean, distraction-free reading.', 'tier' => null],
-            ['icon' => 'bi-mortarboard', 'title' => 'Scholar Tafsir', 'desc' => 'Deep explanations from Ibn Kathir, Al-Jalalayn and more — ayah by ayah.', 'tier' => 'Requires Basic plan'],
-            ['icon' => 'bi-mic', 'title' => 'Audio Recitations', 'desc' => 'Listen to Mishary Rashid and follow along as you read.', 'tier' => null],
-            ['icon' => 'bi-journal-bookmark', 'title' => 'Prophet Stories', 'desc' => '25 prophets told in beautiful, scholarly chapters. More unlock as you upgrade.', 'tier' => null],
-            ['icon' => 'bi-bookmark-star', 'title' => 'Bookmarks', 'desc' => 'Save ayahs and chapters. Free plan includes 7 bookmarks; Basic & Premium unlimited.', 'tier' => null],
-            ['icon' => 'bi-pencil-square', 'title' => 'Personal Notes', 'desc' => 'Write personal notes on any verse or story.', 'tier' => 'Requires Premium plan'],
-            ['icon' => 'bi-graph-up', 'title' => 'Progress Tracking', 'desc' => 'Track your reading streak and see how much of the Quran you have covered.', 'tier' => null],
-            ['icon' => 'bi-bank', 'title' => 'Four Imams', 'desc' => 'The lives and legacy of Imam Abu Hanifa, Malik, Ash-Shafi\'i, and Ahmad ibn Hanbal.', 'tier' => 'Requires Premium plan'],
-            ['icon' => 'bi-collection', 'title' => 'Hadith Collection', 'desc' => 'Authenticated hadith from Sahih Bukhari and Sahih Muslim, explained in context.', 'tier' => 'Requires Premium plan'],
-        ] as $feature)
+                @foreach (config('features') as $feature)
                     <div class="col-md-6 col-lg-4">
                         <div class="card-islamic p-4 h-100 d-flex gap-3">
                             <div class="feature-icon">
@@ -495,7 +485,7 @@
                             </div>
                             <div>
                                 <h5 class="heading-font mb-1" style="font-size:1rem">{{ $feature['title'] }}</h5>
-                                <p class="text-muted mb-0" style="font-size:0.9rem">{{ $feature['desc'] }}</p>
+                                <p class="text-muted mb-0" style="font-size:0.9rem">{{ $feature['description'] }}</p>
                                 @if ($feature['tier'])
                                     <p class="mb-0 mt-2" style="font-size:0.75rem; color:var(--gold); font-weight:600">
                                         <i class="bi bi-star-fill me-1"></i>{{ $feature['tier'] }}

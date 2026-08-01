@@ -21,6 +21,8 @@ class HomeController extends Controller
 
         $plans = Plan::where('is_active', true)->orderBy('sort_order')->get();
 
-        return view('welcome', compact('allahNames', 'plans'));
+        $hadithCount = (int) str_replace(',', '', config('content_sources.stats.1.number'));
+
+        return view('welcome', compact('allahNames', 'plans', 'hadithCount'));
     }
 }

@@ -200,11 +200,14 @@
 
                 <div class="col-6 col-md-2 mb-3">
                     <h6 class="text-white mb-3"
-                        style="font-family:var(--font-heading); font-size:0.8rem; letter-spacing:0.06em;">About Us</h6>
+                        style="font-family:var(--font-heading); font-size:0.8rem; letter-spacing:0.06em;">COMPANY</h6>
                     <ul class="list-unstyled mb-0" style="font-size:0.875rem;">
-                        <li class="mb-2"> <a href="{{ route('terms') }}">Terms</a></li>
-                        <li class="mb-2"> <a href="{{ route('privacy') }}">Privacy Policy</a></li>
-                        <li class="mb-2"> <a href="{{ route('about') }}">Sources</a></li>
+                        <li class="mb-2"><a href="{{ route('features.index') }}">Features</a></li>
+                        {{-- 👈 naya --}}
+                        <li class="mb-2"><a href="{{ route('about') }}">About & Sources</a></li>
+                        {{-- 👈 "Sources" se better naming --}}
+                        <li class="mb-2"><a href="{{ route('terms') }}">Terms</a></li>
+                        <li class="mb-2"><a href="{{ route('privacy') }}">Privacy Policy</a></li>
                     </ul>
                 </div>
 
@@ -223,7 +226,7 @@
                         <p class="dev-note-arabic">بِسْمِ اللهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
 
                         <p>
-                            Taddabur is built by a single individual developer — a humble effort, not a company or a
+                            Taddabur is built by a single individual Learner — a humble effort, not a company or a
                             team.
                             I'm continuing to improve it, both in content accuracy and in design, In Sha Allah.
                         </p>

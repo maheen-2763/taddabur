@@ -6,8 +6,8 @@
 @push('styles')
     <style>
         /* ════════════════════════════════════
-                                       SEARCH HERO
-                                    ════════════════════════════════════ */
+                                               SEARCH HERO
+                                            ════════════════════════════════════ */
         .search-hero {
             background: linear-gradient(160deg, var(--emerald-dark) 0%, #0f2d18 100%);
             padding: 3rem 1rem 2.5rem;
@@ -92,8 +92,8 @@
         }
 
         /* ════════════════════════════════════
-                                       RESULTS AREA
-                                    ════════════════════════════════════ */
+                                               RESULTS AREA
+                                            ════════════════════════════════════ */
         .results-wrap {
             max-width: 860px;
             margin: 0 auto;
@@ -123,8 +123,8 @@
         }
 
         /* ════════════════════════════════════
-                                       RESULT CARD
-                                    ════════════════════════════════════ */
+                                               RESULT CARD
+                                            ════════════════════════════════════ */
         .result-card {
             background: var(--cream-dark);
             border: 1px solid var(--border);
@@ -241,8 +241,8 @@
         }
 
         /* ════════════════════════════════════
-                                       EMPTY / INITIAL STATES
-                                    ════════════════════════════════════ */
+                                               EMPTY / INITIAL STATES
+                                            ════════════════════════════════════ */
         .search-empty {
             text-align: center;
             padding: 4rem 1rem;
@@ -264,8 +264,8 @@
         }
 
         /* ════════════════════════════════════
-                                       PAGINATION
-                                    ════════════════════════════════════ */
+                                               PAGINATION
+                                            ════════════════════════════════════ */
         .quran-pagination {
             display: flex;
             justify-content: center;

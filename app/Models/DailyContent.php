@@ -15,6 +15,7 @@ class DailyContent extends Model
         'type',
         'ayah_id',
         'story_id',
+        'hadith_id',
         'scheduled_for',
         'reflection',
         'is_sent',
@@ -37,6 +38,11 @@ class DailyContent extends Model
     public function story(): BelongsTo
     {
         return $this->belongsTo(Story::class);
+    }
+
+    public function hadith()
+    {
+        return $this->belongsTo(Hadith::class);
     }
 
     // -------------------------------------------------------

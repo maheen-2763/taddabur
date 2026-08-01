@@ -27,7 +27,7 @@
 
     @if ($bookmarks->isNotEmpty())
         <div class="text-center mt-3">
-            <a href="{{ route('bookmarks.index') }}" class="d-explore-arrow text-decoration-none">
+            <a href="{{ route('bookmarks.index') }}" class="d-explore-allah-names-link">
                 View All <i class="bi bi-arrow-right"></i>
             </a>
         </div>

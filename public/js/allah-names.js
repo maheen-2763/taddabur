@@ -27,26 +27,40 @@ function initHoneycombContainer(container) {
     container.addEventListener("click", function (e) {
         const cell = e.target.closest(".hex-cell");
         if (!cell || !container.contains(cell)) return;
-
-        const wasActive = cell.classList.contains("is-active");
-
-        // Only one open "book" per container at a time
-        container.querySelectorAll(".hex-cell.is-active").forEach((c) => {
-            c.classList.remove("is-active");
-            clearTimeout(c._settleTimer);
-        });
-
-        stopPronunciation();
-
-        if (wasActive) return; // Was already open — just close it
-
-        cell.classList.add("is-active");
-        playPronunciation(cell.dataset.slug);
-
-        cell._settleTimer = setTimeout(() => {
-            cell.classList.remove("is-active");
-        }, 3200);
+        activateCell(cell, container);
     });
+
+    // 👇 NEW — keyboard support (Enter / Space)
+    container.addEventListener("keydown", function (e) {
+        if (e.key !== "Enter" && e.key !== " ") return;
+
+        const cell = e.target.closest(".hex-cell");
+        if (!cell || !container.contains(cell)) return;
+
+        e.preventDefault(); // stop page scroll on Space
+        activateCell(cell, container);
+    });
+}
+
+// 👇 Shared logic extracted — click aur keyboard dono isi ko call karte hain
+function activateCell(cell, container) {
+    const wasActive = cell.classList.contains("is-active");
+
+    container.querySelectorAll(".hex-cell.is-active").forEach((c) => {
+        c.classList.remove("is-active");
+        clearTimeout(c._settleTimer);
+    });
+
+    stopPronunciation();
+
+    if (wasActive) return;
+
+    cell.classList.add("is-active");
+    playPronunciation(cell.dataset.slug);
+
+    cell._settleTimer = setTimeout(() => {
+        cell.classList.remove("is-active");
+    }, 3200);
 }
 
 // ════════════════════════════════════════════

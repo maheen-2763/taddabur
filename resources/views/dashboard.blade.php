@@ -15,6 +15,7 @@
         {{-- Highlight row: Allah's Names + Daily Ayah — equal spacing via dashboard-stack --}}
         <div class="dashboard-stack mt-4">
             <x-dashboard.daily-ayah-bold :dailyContent="$dashboard['dailyContent']" />
+            <x-dashboard.daily-hadith-bold :dailyContent="$dashboard['dailyHadith']" />
             <x-dashboard.allah-names-preview :names="$dashboard['allahNamesPreview']" />
         </div>
 

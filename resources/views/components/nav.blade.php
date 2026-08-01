@@ -39,7 +39,7 @@
                 </li>
 
                 <li class="nav-item dropdown">
-                    <a class="nav-link-islamic nav-link dropdown-toggle {{ request()->routeIs(['stories.*', 'prophets.*', 'scholars.*', 'hadith.*']) ? 'active' : '' }}"
+                    <a class="nav-link-islamic nav-link dropdown-toggle {{ request()->routeIs(['stories.*', 'prophets.*', 'scholars.*', 'hadith.*', 'allah-names.*', 'prophet-names.*']) ? 'active' : '' }}"
                         href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-grid me-1"></i>Features
                     </a>
@@ -68,6 +68,32 @@
                                 <i class="bi bi-collection me-2"></i>Hadith
                             </a>
                         </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <a class="dropdown-item {{ request()->routeIs('allah-names.*') ? 'active' : '' }}"
+                                href="{{ route('allah-names.index') }}">
+                                <i class="bi bi-moon-stars me-2"></i>99 Names of Allah
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item {{ request()->routeIs('prophet-names.*') ? 'active' : '' }}"
+                                href="{{ route('prophet-names.index') }}">
+                                <i class="bi bi-award me-2"></i>Names of the Prophet ﷺ
+                            </a>
+                        </li>
+
+
+                        <hr class="dropdown-divider">
+                        <li><a class="dropdown-item {{ request()->routeIs('features.*') ? 'active' : '' }}"
+                                href="{{ route('features.index') }}"><i class="bi bi-grid-3x3-gap-fill me-2"></i>App
+                                Features</a></li>
+                        <li><a class="dropdown-item {{ request()->routeIs('about') ? 'active' : '' }}"
+                                href="{{ route('about') }}"><i class="bi bi-info-circle me-2"></i>About</a></li>
+
+
+
                     </ul>
                 </li>
 

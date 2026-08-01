@@ -82,7 +82,7 @@
             </div>
         </div>
 
-        <h3 class="heading-font mb-4" style="color:var(--emerald)">{{ $chapter->title }}</h3>
+        <h3 class="heading-font mb-4" style="color:var(--emerald-light)">{{ $chapter->title }}</h3>
 
         <div id="hadithList">
             @forelse ($hadiths as $h)

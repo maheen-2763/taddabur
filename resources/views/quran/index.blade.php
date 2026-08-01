@@ -36,11 +36,22 @@
         </div>
 
         <div class="filter-chips">
-            <button class="js-filter-chip chip active" data-filter="all">All</button>
-            <button class="js-filter-chip chip" data-filter="progress">In Progress</button>
-            <button class="js-filter-chip chip" data-filter="completed">Completed</button>
-            <button class="js-filter-chip chip" id="revelationOrderChip"><i class="bi bi-clock-history me-1"></i> Revelation
-                Order</button>
+            <button class="js-filter-chip chip active" data-filter="all" aria-label="All Surahs">
+                <i class="bi bi-grid-3x3-gap"></i>
+                <span class="chip-label">All</span>
+            </button>
+            <button class="js-filter-chip chip" data-filter="progress" aria-label="In Progress">
+                <i class="bi bi-hourglass-split"></i>
+                <span class="chip-label">In Progress</span>
+            </button>
+            <button class="js-filter-chip chip" data-filter="completed" aria-label="Completed">
+                <i class="bi bi-check-circle"></i>
+                <span class="chip-label">Completed</span>
+            </button>
+            <button class="js-filter-chip chip" id="revelationOrderChip" aria-label="Revelation Order">
+                <i class="bi bi-clock-history"></i>
+                <span class="chip-label">Revelation Order</span>
+            </button>
         </div>
 
         <div id="surahListContainer">
@@ -57,8 +68,7 @@
 
                     <div class="surah-list">
                         @foreach ($group['surahs'] as $surah)
-                            <a href="{{ route('quran.show', $surah->number) }}#ayah-{{ $surah->start_ayah }}"
-                                class="js-surah-row surah-row"
+                            <a href="{{ route('quran.show', $surah->number) }}" class="js-surah-row surah-row"
                                 data-name="{{ strtolower($surah->name_transliteration) }} {{ strtolower($surah->name_english) }} {{ $surah->number }}"
                                 data-percent="{{ $surah->progress_percent }}">
                                 <span class="surah-number">{{ $surah->number }}</span>

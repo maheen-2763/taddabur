@@ -1222,18 +1222,18 @@
     }
 }
 
+.ayah-card.flash-highlight {
+    animation: flashHighlight 3s ease;
+    border-radius: var(--radius);
+}
+
 @keyframes flashHighlight {
     0% {
-        background: rgba(201, 150, 58, 0.35);
+        background: rgba(201, 150, 58, 0.65);
     }
     100% {
         background: transparent;
     }
-}
-
-.ayah-card.flash-highlight {
-    animation: flashHighlight 2s ease;
-    border-radius: var(--radius);
 }
 
 /* ════════════════════════════════════
