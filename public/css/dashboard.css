@@ -48,11 +48,23 @@
 .dashboard-wrap .d-card-title {
     font-family: var(--font-heading);
     font-size: 1rem;
-    color: var(--emerald-light);
+    color: var(--emerald);
     margin-bottom: 1.25rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+}
+
+.d-card .d-card-title {
+    color: var(--emerald);
+}
+
+[data-bs-theme="dark"] .d-card .d-card-title {
+    color: var(--emerald-light);
+}
+
+[data-bs-theme="dark"] .d-card-title {
+    color: var(--emerald-light);
 }
 
 /* ════════════════════════════════════════════
@@ -88,10 +100,11 @@
     margin-bottom: 0.3rem;
 }
 
+/* GREETING / HERO section se yeh line hata do: */
 .d-greeting-name {
     font-family: var(--font-heading);
     font-size: 1.6rem;
-    color: var(--emerald-light);
+    color: var(--emerald);
     margin-bottom: 1rem;
 }
 
@@ -110,7 +123,7 @@
 
 .d-greeting-ayah-wrap .arabic {
     font-size: 1.5rem;
-    color: var(--emerald-light);
+    color: var(--emerald);
     margin-bottom: 0.4rem;
 }
 
@@ -574,4 +587,210 @@
     .d-reflection-subtle .arabic {
         font-size: 1.4rem;
     }
+}
+
+.d-welcome-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.d-welcome-dates {
+    text-align: right;
+    font-size: 0.8rem;
+    color: var(--muted, #94a3b8);
+    direction: rtl;
+}
+
+.d-date-divider {
+    margin: 0 0.35rem;
+    opacity: 0.5;
+}
+
+.d-greeting-dynamic {
+    font-size: 0.9rem;
+    color: var(--muted, #94a3b8);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.d-greeting-icon {
+    color: var(--gold, #d4af37);
+}
+
+.d-greeting-arabic {
+    font-family: var(--font-arabic);
+    color: var(--gold, #d4af37);
+    font-size: 0.95rem;
+}
+
+@media (max-width: 576px) {
+    .d-welcome-header {
+        flex-direction: column;
+    }
+    .d-welcome-dates {
+        text-align: left;
+        direction: ltr; /* mobile pe RTL alignment confuse karta hai chhoti width me */
+    }
+}
+
+[data-bs-theme="dark"] .d-greeting-name {
+    color: var(--emerald-light);
+}
+
+[data-bs-theme="dark"] .d-greeting-ayah-wrap .arabic {
+    color: var(--emerald-light);
+}
+
+[data-bs-theme="dark"] .d-welcome-dates {
+    color: var(--muted);
+}
+
+[data-bs-theme="dark"] .d-greeting-dynamic {
+    color: var(--muted);
+}
+
+[data-bs-theme="dark"] .d-greeting-arabic,
+[data-bs-theme="dark"] .d-greeting-icon {
+    color: var(
+        --gold-light,
+        #e0b84c
+    ); /* dark bg pe zyada bright gold better contrast deta hai */
+}
+
+[data-bs-theme="dark"] .d-greeting-salam {
+    color: var(--muted);
+}
+
+/* Resume Quran card — mobile */
+@media (max-width: 575px) {
+    .d-resume-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.3rem;
+    }
+
+    .d-resume-progress-row {
+        flex-wrap: wrap;
+    }
+
+    .d-flex.justify-content-end {
+        flex-direction: column;
+        gap: 0.5rem !important;
+    }
+
+    .d-flex.justify-content-end .btn {
+        width: 100%;
+    }
+}
+
+/* Story progress card — mobile (title wrap fix jo screenshot 2 me dikha) */
+@media (max-width: 575px) {
+    .d-story-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .d-story-title {
+        font-size: 0.9rem;
+        line-height: 1.3;
+        /* Long titles ko 2 lines tak clamp karo, poora paragraph na bane */
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .d-story-progress-row .btn,
+    .d-story-item a.btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+.d-achievement-icon {
+    font-size: 2.5rem;
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+}
+
+.d-achievement-count i,
+.d-achievement-complete i {
+    color: var(--gold);
+    margin-right: 0.3rem;
+}
+
+/* ════════════════════════════════════════════
+   CONTINUE LEARNING — layout + mobile fix
+════════════════════════════════════════════ */
+.d-story-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.d-story-btn {
+    white-space: nowrap;
+}
+
+@media (max-width: 575px) {
+    .d-story-item-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .d-story-title {
+        font-size: 0.9rem;
+        line-height: 1.35;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .d-story-btn {
+        width: 100%;
+        text-align: center;
+        margin-top: 0.5rem;
+    }
+}
+.d-note-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.d-story-item i.bi {
+    color: var(--gold);
+    margin-right: 0.2rem;
+}
+
+[data-bs-theme="dark"] .d-story-item i.bi {
+    color: var(--gold-light);
+}
+
+/* dashboard.css me add karo */
+.badge-grade {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    padding: 0.15rem 0.5rem;
+    border-radius: 50px;
+    background: rgba(27, 94, 59, 0.1);
+    color: var(--emerald);
+    margin-left: 0.4rem;
+}
+
+[data-bs-theme="dark"] .badge-grade {
+    background: rgba(127, 201, 160, 0.15);
+    color: var(--emerald-light);
 }
