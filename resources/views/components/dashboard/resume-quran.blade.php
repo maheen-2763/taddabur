@@ -1,15 +1,14 @@
 {{-- resources/views/components/dashboard/resume-quran.blade.php --}}
-
 @if ($quranProgress?->lastAyah)
     @php
         $ayah = $quranProgress->lastAyah;
         $surah = $ayah->surah;
-        $ayahPosition = $ayah->number;
         $totalAyahs = $surah->ayah_count;
-        $progress = $totalAyahs ? round(($ayahPosition / $totalAyahs) * 100) : 0;
+        $readCountSafe = $readCount ?? 0;
 
-        // ✅ Same fix as the main reader — strip Bismillah
-        // from ayah 1 of every surah except Al-Fatihah/At-Tawbah
+        // ✅ Progress ab actual "read count" pe based hai, position pe nahi
+        $progress = $totalAyahs ? round(($readCountSafe / $totalAyahs) * 100) : 0;
+
         $displayText = $ayah->text_arabic;
         if (!in_array($surah->number, [1, 9]) && $ayah->number === 1) {
             $displayText = \App\Helpers\ArabicHelper::stripBismillah($displayText);
@@ -19,13 +18,13 @@
     <div class="d-card">
 
         <h5 class="d-card-title">
-            <i class="bi bi-book" style="color:var(--emerald)"></i>
+            <i class="bi bi-book" style="color:var(--emerald-light)"></i>
             Continue Your Quran Journey
         </h5>
 
         <div class="d-resume-meta">
             <small class="d-resume-lastread">
-                {{ $readCount ?? 0 }} of {{ $totalAyahs }} ayahs read
+                {{ $readCountSafe }} of {{ $totalAyahs }} ayahs read
                 @if ($quranProgress->last_read_at)
                     · {{ $quranProgress->last_read_at?->diffForHumans() }}
                 @endif
@@ -40,7 +39,7 @@
 
         <div class="d-resume-progress-row">
             <span class="d-resume-surah-name">Surah : {{ $surah->name_transliteration }}</span>
-            <span class="d-resume-position">Ayah {{ $ayahPosition }} of {{ $totalAyahs }}</span>
+            <span class="d-resume-position">{{ $readCountSafe }} of {{ $totalAyahs }} read</span>
         </div>
 
         <div class="d-progress mb-3">
