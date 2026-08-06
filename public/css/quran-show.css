@@ -1229,7 +1229,7 @@
 
 @keyframes flashHighlight {
     0% {
-        background: rgba(201, 150, 58, 0.65);
+        background: rgba(201, 150, 58, 0.5);
     }
     100% {
         background: transparent;

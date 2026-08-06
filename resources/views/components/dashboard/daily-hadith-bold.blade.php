@@ -5,7 +5,7 @@
     <div class="d-reflection-bold">
 
         <div class="d-reflection-bold-header">
-            <h5 class="d-reflection-bold-title">📖 Hadith of the Day</h5>
+            <h5 class="d-reflection-bold-title"><i class="bi-chat-square-quote-fill"></i> Hadith of the Day</h5>
         </div>
 
         <div class="mb-2">
@@ -34,7 +34,7 @@
             </small>
 
             <a href="{{ route('reflections.show', $dailyContent) }}" class="btn btn-sm hadith-read-more">
-                <i class="bi bi-book me-1"></i> Read Full Hadith
+                <i class="bi bi-book "></i> Read Full Hadith
             </a>
         </div>
 
