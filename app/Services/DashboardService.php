@@ -49,7 +49,7 @@ class DashboardService
             'achievement'       => $this->getAchievement($totalAyahsRead),
 
             // ✅ Correct level — sibling of dailyContent, not nested
-            'allahNamesPreview' => AllahName::inRandomOrder()->take(5)->get(),
+            'allahNamesPreview' => $this->getTodaysAllahNames(),
             'recentNotes' => Note::where('user_id', $user->id)
                 ->latest()
                 ->take(5)
@@ -64,6 +64,16 @@ class DashboardService
                 'completedSurahs' => $this->getCompletedSurahsCount($user),
             ],
         ];
+    }
+
+    private function getTodaysAllahNames()
+    {
+        $today = now()->format('Y-m-d');
+
+        return AllahName::all()
+            ->sortBy(fn($name) => md5($name->id . $today))
+            ->take(5)
+            ->values();
     }
 
     // --------------------------
@@ -138,16 +148,16 @@ class DashboardService
                 'goal' => 0,
                 'title' => 'Beginning the Journey',
                 'arabic' => 'بِدَايَةُ الرِّحْلَة',
-                'icon' => '🕌',
+                'icon' => 'bi-flag',
             ],
-            ['goal' => 10, 'title' => 'First Steps', 'arabic' => 'بِسْمِ اللّٰهِ', 'icon' => '🌱'],
-            ['goal' => 50, 'title' => 'Seeker of Guidance', 'arabic' => 'طَالِبُ الْهُدَى', 'icon' => '🕊️'],
-            ['goal' => 100, 'title' => 'Companion of the Quran', 'arabic' => 'صَاحِبُ الْقُرْآن', 'icon' => '📖'],
-            ['goal' => 500, 'title' => 'Student of Revelation', 'arabic' => 'طَالِبُ الْوَحْي', 'icon' => '🌙'],
-            ['goal' => 1000, 'title' => 'Keeper of Ayat', 'arabic' => 'حَافِظُ الْآيَات', 'icon' => '⭐'],
-            ['goal' => 3000, 'title' => 'Walker of Light', 'arabic' => 'سَالِكُ النُّور', 'icon' => '✨'],
-            ['goal' => 5000, 'title' => 'Bearer of Wisdom', 'arabic' => 'حَامِلُ الْحِكْمَة', 'icon' => '🏆'],
-            ['goal' => 6236, 'title' => 'Quran Completer', 'arabic' => 'خَاتِمُ الْقُرْآن', 'icon' => '👑'],
+            ['goal' => 10, 'title' => 'First Steps', 'arabic' => 'بِسْمِ اللّٰهِ', 'icon' => 'bi-seedling'] ?? 'bi-flower1',
+            ['goal' => 50, 'title' => 'Seeker of Guidance', 'arabic' => 'طَالِبُ الْهُدَى', 'icon' => 'bi-compass'],
+            ['goal' => 100, 'title' => 'Companion of the Quran', 'arabic' => 'صَاحِبُ الْقُرْآن', 'icon' => 'bi-book'],
+            ['goal' => 500, 'title' => 'Student of Revelation', 'arabic' => 'طَالِبُ الْوَحْي', 'icon' => 'bi-moon-stars'],
+            ['goal' => 1000, 'title' => 'Keeper of Ayat', 'arabic' => 'حَافِظُ الْآيَات', 'icon' => 'bi-star'],
+            ['goal' => 3000, 'title' => 'Walker of Light', 'arabic' => 'سَالِكُ النُّور', 'icon' => 'bi-stars'],
+            ['goal' => 5000, 'title' => 'Bearer of Wisdom', 'arabic' => 'حَامِلُ الْحِكْمَة', 'icon' => 'bi-award'],
+            ['goal' => 6236, 'title' => 'Quran Completer', 'arabic' => 'خَاتِمُ الْقُرْآن', 'icon' => 'bi-gem'],
         ];
 
         $current = $levels[0];

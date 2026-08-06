@@ -2,7 +2,7 @@
 
 <div class="d-card">
 
-    <h5 class="d-card-title">✦ Names of Allah</h5>
+    <h5 class="d-card-title"><i class="bi bi-star-half"></i> Today's Names of Allah</h5>
 
     <div class="honeycomb-preview-row">
         @foreach ($names as $name)
