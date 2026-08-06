@@ -1,11 +1,23 @@
 {{-- resources/views/components/dashboard/welcome.blade.php --}}
 
-<div class="d-card">
+<div class="d-card d-welcome-card">
 
-    <div class="d-greeting-salam">السلام عليكم ورحمة الله وبركاته</div>
-    <div class="d-greeting-name">{{ $user->name }} 🌙</div>
-    <div class="d-greeting-date">
-        {{ \App\Helpers\ArabicHelper::hijriDate() }} · {{ now()->format('l, j F Y') }}
+    {{-- Header row: Salam left, Dates right --}}
+    <div class="d-welcome-header">
+        <div class="d-greeting-salam">السلام عليكم ورحمة الله وبركاته</div>
+        <div class="d-welcome-dates">
+            <span class="d-date-hijri">{{ \App\Helpers\ArabicHelper::hijriDate() }}</span>
+            <span class="d-date-divider">·</span>
+            <span class="d-date-gregorian">{{ now()->format('l, j F Y') }}</span>
+        </div>
+    </div>
+
+    <div class="d-greeting-name">{{ $user->name }}</div>
+
+    <div class="d-greeting-dynamic">
+        <i class="bi {{ \App\Helpers\GreetingHelper::getTimeIcon() }} d-greeting-icon"></i>
+        {{ \App\Helpers\GreetingHelper::getTimeBasedGreeting() }}
+        <span class="d-greeting-arabic">بَارَكَ اللّٰهُ فِيكَ</span>
     </div>
 
     <div class="d-greeting-ayah-wrap">
