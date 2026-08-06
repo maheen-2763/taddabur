@@ -15,13 +15,18 @@ Schedule::command('daily:generate-ayah')
     ->onOneServer()
     ->appendOutputTo(storage_path('logs/daily-ayah.log'));
 
+
+Schedule::command('daily:generate-hadith')
+    ->dailyAt('00:05')
+    ->onOneServer()
+    ->appendOutputTo(storage_path('logs/daily-hadith.log'));
+
 Schedule::command(VerifyChapterGaps::class)
     ->weekly()
     ->sundays()
     ->at('02:00')
     ->onOneServer()
     ->appendOutputTo(storage_path('logs/hadith-gaps.log'));
-
 
 Schedule::command('quran:verify-translations')->weekly();
 
