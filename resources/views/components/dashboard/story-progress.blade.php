@@ -3,7 +3,7 @@
 @if ($storyProgress && $storyProgress->isNotEmpty())
     <div class="d-card">
 
-        <h5 class="d-card-title">۞ Continue Learning</h5>
+        <h5 class="d-card-title"><i class="bi bi-journals"></i></i> Continue Learning</h5>
 
         @foreach ($storyProgress as $progress)
             @continue(!$progress->story)
@@ -14,20 +14,21 @@
                 $progressPercent = $progress->story->user_progress['percentage'] ?? 0;
 
                 $categoryIcons = [
-                    'prophet' => '🕌',
-                    'companion' => '🤝',
-                    'general' => '✦',
+                    'prophet' => 'bi-moon-stars-fill',
+                    'companion' => 'bi-people-fill',
+                    'general' => 'bi-book-half',
                 ];
-                $categoryIcon = $categoryIcons[$progress->story->category] ?? '✦';
+                $categoryIcon = $categoryIcons[$progress->story->category] ?? 'bi-book-half';
             @endphp
 
             <div class="d-story-item">
-                <div class="d-flex justify-content-between align-items-start gap-3">
+                <div class="d-story-item-row">
 
                     <div class="flex-grow-1">
 
                         <div class="d-story-title">
-                            {{ $categoryIcon }} {{ $progress->story->title }}
+                            <i class="bi {{ $categoryIcon }}" style="color:var(--gold)"></i>
+                            {{ $progress->story->title }}
                         </div>
 
                         <small class="d-story-meta">{{ ucfirst($progress->story->category) }}</small>
@@ -50,7 +51,7 @@
 
                     @if ($progress->lastChapter)
                         <a href="{{ route('stories.chapter', [$progress->story->slug, $progress->lastChapter->slug]) }}"
-                            class="btn-emerald btn btn-sm flex-shrink-0">
+                            class="btn-emerald btn btn-sm flex-shrink-0 d-story-btn">
                             Continue Story →
                         </a>
                     @endif

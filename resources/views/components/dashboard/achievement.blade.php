@@ -1,15 +1,19 @@
-{{-- resources/views/components/dashboard/achievement.blade.php --}}
-
 <div class="d-card text-center">
 
-    <h5 class="d-card-title justify-content-center">❋ Quran Achievement</h5>
+    <h5 class="d-card-title justify-content-center">
+        <i class="bi bi-flower3" style="color:var(--gold)"></i> Quran Achievement
+    </h5>
 
-    <div class="d-achievement-icon">{{ $achievement['icon'] }}</div>
+    <div class="d-achievement-icon">
+        <i class="bi {{ $achievement['icon'] }}"></i>
+    </div>
 
     <p class="arabic" style="font-size:1.3rem">{{ $achievement['arabic'] }}</p>
 
     <div class="d-achievement-title">{{ $achievement['title'] }}</div>
-    <p class="d-achievement-count">📖 {{ number_format($achievement['ayahsRead']) }} Ayahs Read</p>
+    <p class="d-achievement-count">
+        <i class="bi bi-journal-check"></i> {{ number_format($achievement['ayahsRead']) }} Ayahs Read
+    </p>
 
     @if ($achievement['nextGoal'])
         <hr style="border-color:var(--border)">
@@ -25,7 +29,9 @@
             {{ number_format($achievement['remaining']) }} Ayahs Remaining
         </small>
     @else
-        <div class="d-achievement-complete">👑 Quran Completed</div>
+        <div class="d-achievement-complete">
+            <i class="bi bi-award-fill"></i> Quran Completed
+        </div>
     @endif
 
 </div>

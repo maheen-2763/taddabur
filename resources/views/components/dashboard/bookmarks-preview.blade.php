@@ -2,7 +2,7 @@
 
 <div class="d-card">
     <h3 class="d-card-title">
-        <i class="bi bi-bookmark-fill"></i> Saved Bookmarks
+        <i class="bi bi-bookmarks-fill"></i>Saved Bookmarks
     </h3>
 
     @forelse ($bookmarks as $bookmark)
@@ -21,7 +21,7 @@
     @empty
         <div class="d-empty">
             <i class="bi bi-bookmark d-empty-icon"></i>
-            <p class="d-empty-message">No Bookmarks.</p>
+            <p class="d-empty-message">No Bookmarks yet. Start bookmarking your favorite Ayahs and Hadiths!</p>
         </div>
     @endforelse
 

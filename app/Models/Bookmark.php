@@ -48,7 +48,7 @@ class Bookmark extends Model
     public function getDisplayTitleAttribute(): string
     {
         return match ($this->bookmarkable_type) {
-            Ayah::class         => "Surah {$this->bookmarkable?->surah?->name} — Ayah {$this->bookmarkable?->number}",
+            Ayah::class => "Surah {$this->bookmarkable?->surah?->name_transliteration} — Ayah {$this->bookmarkable?->number}",
             StoryChapter::class => $this->bookmarkable?->title ?? 'Story Chapter',
             Hadith::class       => $this->bookmarkable?->chapter?->title ?? 'Hadith',
             default             => $this->label ?? 'Bookmark',
@@ -73,10 +73,10 @@ class Bookmark extends Model
     public function getTypeIconAttribute(): string
     {
         return match ($this->bookmarkable_type) {
-            Ayah::class         => 'bi-book',
-            StoryChapter::class => 'bi-journal-text',
-            Hadith::class       => 'bi-collection',
-            default             => 'bi-bookmark',
+            Ayah::class         => 'bi-book-fill',
+            Hadith::class        => 'bi-collection-fill',
+            StoryChapter::class => 'bi-journal-bookmark-fill',
+            default             => 'bi-bookmark-fill',
         };
     }
 

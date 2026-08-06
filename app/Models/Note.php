@@ -84,10 +84,10 @@ class Note extends Model
     public function getReferenceIconAttribute(): string
     {
         return match (true) {
-            $this->ayah_id !== null => 'bi-book',
-            $this->hadith_id !== null => 'bi-collection',
-            $this->story_id !== null => 'bi-journal-bookmark',
-            default => 'bi-sticky',
+            $this->ayah_id !== null   => 'bi-book-fill',
+            $this->hadith_id !== null => 'bi-collection-fill',
+            $this->story_id !== null  => 'bi-journal-bookmark-fill',
+            default                   => 'bi-sticky-fill',
         };
     }
 
@@ -111,6 +111,8 @@ class Note extends Model
             route('quran.show', $this->ayah->surah->number) . '#ayah-' . $this->ayah->number,
             $this->hadith_id !== null && $this->hadith =>
             route('hadith.show', [$this->hadith->collection->slug, $this->hadith->chapter->number]) . '?highlight=' . $this->hadith->id,
+            // $this->story_id !== null && $this->story =>
+            // route('stories.chapter', [$this->story->slug, $this->story->chapters->first()?->slug]),
             default => null,
         };
     }
