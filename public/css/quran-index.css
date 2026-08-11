@@ -28,9 +28,13 @@
 .bismillah-calligraphy {
     font-family: var(--font-arabic);
     font-size: clamp(1.8rem, 4vw, 2.4rem);
-    color: var(--gold);
+    color: var(--gold-dark);
     margin-bottom: 6px;
     direction: rtl;
+}
+
+[data-bs-theme="dark"] .bismillah-calligraphy {
+    color: var(--gold-light);
 }
 
 .bismillah-sub {
@@ -54,6 +58,10 @@
     font-size: 1.25rem;
     font-weight: 600;
     color: var(--emerald);
+}
+
+[data-bs-theme="dark"] .stat-num {
+    color: var(--emerald-light);
 }
 
 .stat-label {
@@ -172,17 +180,25 @@
     font-family: var(--font-heading);
     font-size: 0.75rem;
     font-weight: 700;
-    color: var(--gold-dark);
+    color: var(--gold);
     text-transform: uppercase;
     letter-spacing: 0.06em;
     flex-shrink: 0;
 }
 
+[data-bs-theme="dark"] .juz-label {
+    color: var(--gold-light);
+}
+
 .juz-title-ar {
     font-family: var(--font-arabic);
     font-size: 1rem;
-    color: var(--emerald-light);
+    color: var(--emerald);
     direction: rtl;
+}
+
+[data-bs-theme="dark"] .juz-title-ar {
+    color: var(--emerald-light);
 }
 
 .juz-title {
@@ -222,7 +238,7 @@
     height: 26px;
     border-radius: 50%;
     background: var(--cream-dark);
-    color: var(--emerald-light);
+    color: var(--emerald);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -231,12 +247,20 @@
     flex-shrink: 0;
 }
 
+[data-bs-theme="dark"] .surah-number {
+    color: var(--emerald-light);
+}
+
 .surah-name-ar {
     font-size: 1.35rem;
-    color: var(--emerald-light);
+    color: var(--emerald);
     font-family: var(--font-arabic);
     min-width: 70px;
     direction: rtl;
+}
+
+[data-bs-theme="dark"] .surah-name-ar {
+    color: var(--emerald-light);
 }
 
 .surah-info {
@@ -279,10 +303,10 @@
     stroke: var(--border);
 }
 .ring-progress .ring-fill {
-    stroke: var(--gold);
+    stroke: var(--gold-light);
 }
 .ring-complete .ring-fill {
-    stroke: var(--emerald);
+    stroke: var(--emerald-light);
 }
 .ring-text {
     font-size: 9px;
@@ -363,6 +387,10 @@
     margin-right: 4px;
 }
 
+[data-bs-theme="dark"] .continuation-marker {
+    color: var(--gold-light);
+}
+
 .ayah-resume-tag {
     font-size: 0.62rem;
     color: var(--emerald);
@@ -371,10 +399,18 @@
     letter-spacing: 0.02em;
 }
 
+[data-bs-theme="dark"] .ayah-resume-tag {
+    color: var(--emerald-light);
+}
+
 .ayah-status-done {
     color: var(--emerald);
     font-weight: 600;
     font-size: 0.75rem;
+}
+
+[data-bs-theme="dark"] .ayah-status-done {
+    color: var(--emerald-light);
 }
 
 .filter-chips {

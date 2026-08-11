@@ -116,7 +116,8 @@
 
             <div class="surah-list">
                 @foreach ($revelationOrderList as $surah)
-                    <a href="{{ route('quran.show', $surah->number) }}" class="surah-row"
+                    <a href="{{ route('quran.show', $surah->number) }}" class="js-surah-row surah-row"
+                        data-name="{{ strtolower($surah->name_transliteration) }} {{ strtolower($surah->name_english) }} {{ $surah->number }}"
                         data-percent="{{ $surah->progress_percent }}">
                         <span class="surah-number" title="Revealed #{{ $surah->revelation_order }}">
                             {{ $surah->revelation_order }}

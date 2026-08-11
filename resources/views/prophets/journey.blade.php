@@ -9,7 +9,7 @@
     ============================================ --}}
         <div class="journey-header text-center">
             <p class="journey-eyebrow">The Life of</p>
-            <h1 class="journey-title">{{ $prophet->name_english }} ﷺ</h1>
+            <h1 class="journey-title">{{ $prophet->name_english }}</h1>
             <p class="journey-arabic">{{ $prophet->name_arabic }}</p>
             <p class="journey-subtitle">
                 A journey through six parts of his blessed life —
@@ -122,6 +122,10 @@ $isCurrent =
             font-size: 1.5rem;
             direction: rtl;
             margin-bottom: 1rem;
+        }
+
+        [data-bs-theme="dark"] .journey-arabic {
+            color: var(--emerald-light);
         }
 
         .journey-subtitle {

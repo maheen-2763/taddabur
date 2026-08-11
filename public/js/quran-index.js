@@ -4,6 +4,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const chips = document.querySelectorAll(".js-filter-chip");
     const juzSections = document.querySelectorAll(".juz-section");
     const noResultsMsg = document.getElementById("noResultsMsg");
+    const revChip = document.getElementById("revelationOrderChip");
+    const juzContainer = document.getElementById("surahListContainer");
+    const revContainer = document.getElementById("revelationOrderContainer");
 
     let activeFilter = "all";
     let autoCloseTimer = null;
@@ -59,15 +62,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function applyFilters() {
         const query = searchInput.value.trim().toLowerCase();
+        const isRevelationView = revContainer.style.display !== "none";
         let totalVisible = 0;
 
+        // Juz view rows filter (chip + search dono)
         juzSections.forEach((section) => {
             let visibleInSection = 0;
-
             section.querySelectorAll(".js-surah-row").forEach((row) => {
                 const name = row.dataset.name;
                 const percent = parseInt(row.dataset.percent, 10);
-
                 const matchesSearch = name.includes(query);
                 const matchesFilter =
                     activeFilter === "all" ||
@@ -75,23 +78,28 @@ document.addEventListener("DOMContentLoaded", function () {
                         percent > 0 &&
                         percent < 100) ||
                     (activeFilter === "completed" && percent === 100);
-
                 const show = matchesSearch && matchesFilter;
                 row.style.display = show ? "flex" : "none";
                 if (show) visibleInSection++;
             });
-
             section.style.display = visibleInSection > 0 ? "block" : "none";
-            totalVisible += visibleInSection;
+            if (!isRevelationView) totalVisible += visibleInSection;
         });
 
-        // Search khaali hai toh filter-specific message, warna generic "not found"
+        // Revelation Order rows filter (sirf search — chips yahan apply nahi hote)
+        let revVisible = 0;
+        revContainer.querySelectorAll(".js-surah-row").forEach((row) => {
+            const show = row.dataset.name.includes(query);
+            row.style.display = show ? "flex" : "none";
+            if (show) revVisible++;
+        });
+        if (isRevelationView) totalVisible = revVisible;
+
         const query_ = searchInput.value.trim();
         noResultsMsg.textContent =
             query_ !== ""
                 ? "No surah found."
                 : emptyMessages[activeFilter] || "No surah found.";
-
         noResultsMsg.style.display = totalVisible === 0 ? "block" : "none";
     }
 
@@ -103,32 +111,28 @@ document.addEventListener("DOMContentLoaded", function () {
             applyFilters();
         });
     });
-});
 
-document.addEventListener("DOMContentLoaded", function () {
-    const revChip = document.getElementById("revelationOrderChip");
-    const juzContainer = document.getElementById("surahListContainer");
-    const revContainer = document.getElementById("revelationOrderContainer");
+    // Revelation Order toggle
+    if (revChip && juzContainer && revContainer) {
+        const otherChips = document.querySelectorAll(
+            ".js-filter-chip[data-filter]",
+        );
 
-    if (!revChip || !juzContainer || !revContainer) return;
-
-    const otherChips = document.querySelectorAll(
-        ".js-filter-chip[data-filter]",
-    );
-
-    revChip.addEventListener("click", function () {
-        otherChips.forEach((c) => c.classList.remove("active"));
-        revChip.classList.add("active");
-        juzContainer.style.display = "none";
-        revContainer.style.display = "block";
-    });
-
-    // Purane chips (All/In Progress/Completed) pe click hone par wapas Juz-view pe aa jao
-    otherChips.forEach((chip) => {
-        chip.addEventListener("click", function () {
-            revChip.classList.remove("active");
-            juzContainer.style.display = "block";
-            revContainer.style.display = "none";
+        revChip.addEventListener("click", function () {
+            otherChips.forEach((c) => c.classList.remove("active"));
+            revChip.classList.add("active");
+            juzContainer.style.display = "none";
+            revContainer.style.display = "block";
+            applyFilters(); // ✅ view switch hote hi re-filter, taaki noResultsMsg sahi ho
         });
-    });
+
+        otherChips.forEach((chip) => {
+            chip.addEventListener("click", function () {
+                revChip.classList.remove("active");
+                juzContainer.style.display = "block";
+                revContainer.style.display = "none";
+                applyFilters();
+            });
+        });
+    }
 });
