@@ -24,7 +24,6 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Register route aliases
         $middleware->alias([
-            'plan'  => \App\Http\Middleware\PlanMiddleware::class,
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
         ]);
     })

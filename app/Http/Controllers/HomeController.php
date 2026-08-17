@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\AllahName;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Plan;
+use App\Models\Ayah;
+use App\Models\Hadith;
 
 class HomeController extends Controller
 {
@@ -19,10 +20,20 @@ class HomeController extends Controller
             ->take(20)
             ->get();
 
-        $plans = Plan::where('is_active', true)->orderBy('sort_order')->get();
-
         $hadithCount = (int) str_replace(',', '', config('content_sources.stats.1.number'));
 
-        return view('welcome', compact('allahNames', 'plans', 'hadithCount'));
+        $heroAyahs = Ayah::whereHas('surah', fn($q) => $q->where('number', 96))
+            ->whereIn('number', [1, 5])
+            ->with('translations')
+            ->orderBy('number')
+            ->get();
+
+        $reflectionAyah = Ayah::whereHas('surah', fn($q) => $q->where('number', 38))
+            ->where('number', 29)
+            ->with('translations')
+            ->first();
+
+
+        return view('welcome', compact('allahNames', 'hadithCount', 'reflectionAyah', 'heroAyahs'));
     }
 }

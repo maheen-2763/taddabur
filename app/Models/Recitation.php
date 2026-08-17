@@ -60,11 +60,7 @@ class Recitation extends Model
     // Everything else needs a paid plan (Basic or Premium both qualify).
     public function isAccessibleBy(?User $user): bool
     {
-        if ($this->is_free) {
-            return true;
-        }
-
-        return $user?->isPremium() ?? false;
+        return true; // Sab reciters sabke liye accessible hain
     }
 
     const REAL_TIMING_RECITERS = [

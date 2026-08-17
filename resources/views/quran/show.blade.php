@@ -68,56 +68,48 @@
                             <option value="{{ $t->slug }}" data-free="{{ $t->is_free ? '1' : '0' }}"
                                 {{ $translation?->slug === $t->slug ? 'selected' : '' }}>
                                 {{ $t->name }}
-                                {{ !$t->is_free && !$isPremium ? '🔒' : '' }}
                             </option>
                         @endforeach
                     </select>
 
                     {{-- Tafsir --}}
-                    @auth
-                        @if ($tafsirs->count() > 0)
-                            <select id="tafsirPicker" class="toolbar-select" onchange="changeActiveTafsir(this.value)">
-                                <option value="">📖 Tafsir</option>
-                                @foreach ($tafsirs as $t)
-                                    <option value="{{ $t->slug }}" {{ $preferredTafsir === $t->slug ? 'selected' : '' }}>
-                                        {{ $t->name }}
-                                        {{ !$isPremium ? '🔒' : '' }}
+                    @if ($tafsirs->count() > 0)
+                        <select id="tafsirPicker" class="toolbar-select" onchange="changeActiveTafsir(this.value)">
+                            <option value="">📖 Tafsir</option>
+                            @foreach ($tafsirs as $t)
+                                <option value="{{ $t->slug }}" {{ $preferredTafsir === $t->slug ? 'selected' : '' }}>
+                                    {{ $t->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    @endif
+
+
+                    @if ($reciters->count() > 0)
+                        <select id="reciterPicker" class="toolbar-select" onchange="handleReciterChange(this)">
+                            <option value="">🎙 Reciter</option>
+
+                            <optgroup label="✓ Verified Word-Sync">
+                                @foreach ($reciters->where('has_verified_timing', true) as $r)
+                                    <option value="{{ $r->slug }}" data-free="{{ $r->is_free ? '1' : '0' }}"
+                                        {{ $preferredReciter === $r->slug ? 'selected' : '' }}
+                                        title="Exact word-by-word sync available">
+                                        {{ $r->name }}
                                     </option>
                                 @endforeach
-                            </select>
-                        @endif
-                    @endauth
+                            </optgroup>
 
-
-                    @auth
-                        @if ($reciters->count() > 0)
-                            <select id="reciterPicker" class="toolbar-select" onchange="handleReciterChange(this)">
-                                <option value="">🎙 Reciter</option>
-
-                                <optgroup label="✓ Verified Word-Sync">
-                                    @foreach ($reciters->where('has_verified_timing', true) as $r)
-                                        <option value="{{ $r->slug }}" data-free="{{ $r->is_free ? '1' : '0' }}"
-                                            {{ $preferredReciter === $r->slug ? 'selected' : '' }}
-                                            title="Exact word-by-word sync available">
-                                            {{ $r->name }}
-                                            {{ !$r->is_free && !$isPremium ? '🔒' : '' }}
-                                        </option>
-                                    @endforeach
-                                </optgroup>
-
-                                <optgroup label="Approximate Sync">
-                                    @foreach ($reciters->where('has_verified_timing', false) as $r)
-                                        <option value="{{ $r->slug }}" data-free="{{ $r->is_free ? '1' : '0' }}"
-                                            {{ $preferredReciter === $r->slug ? 'selected' : '' }}
-                                            title="Approximate word-highlighting — exact timing data not available">
-                                            {{ $r->name }}
-                                            {{ !$r->is_free && !$isPremium ? '🔒' : '' }}
-                                        </option>
-                                    @endforeach
-                                </optgroup>
-                            </select>
-                        @endif
-                    @endauth
+                            <optgroup label="Approximate Sync">
+                                @foreach ($reciters->where('has_verified_timing', false) as $r)
+                                    <option value="{{ $r->slug }}" data-free="{{ $r->is_free ? '1' : '0' }}"
+                                        {{ $preferredReciter === $r->slug ? 'selected' : '' }}
+                                        title="Approximate word-highlighting — exact timing data not available">
+                                        {{ $r->name }}
+                                    </option>
+                                @endforeach
+                            </optgroup>
+                        </select>
+                    @endif
 
                     {{-- Prev / Next --}}
                     <div class="btn-group btn-group-sm">
@@ -287,21 +279,18 @@
                 @endif
             @endauth
 
-            {{-- Upgrade Banner --}}
-            @auth
-                @if (!$isPremium)
-                    <div class="upgrade-banner">
-                        <span>
-                            <i class="bi bi-stars me-2" style="color:rgba(255,255,255,0.7)"></i>
-                            Unlock all translations, tafsir & reciters
-                        </span>
-                        <a href="{{ route('subscription.upgrade') }}" class="btn btn-sm"
-                            style="background:var(--gold); color:#1A1A2E; border:none; font-size:0.78rem">
-                            Upgrade
-                        </a>
-                    </div>
-                @endif
-            @endauth
+            @guest
+                <div class="upgrade-banner">
+                    <span>
+                        <i class="bi bi-bookmark-star me-2" style="color:rgba(255,255,255,0.7)"></i>
+                        Sign in to save your reading progress & bookmarks
+                    </span>
+                    <a href="{{ route('login') }}" class="btn btn-sm"
+                        style="background:var(--gold); color:#1A1A2E; border:none; font-size:0.78rem">
+                        Sign In
+                    </a>
+                </div>
+            @endguest
 
 
             <div id="ayahList">
@@ -400,36 +389,17 @@
                                         </button>
                                     @endauth
                                     {{-- Tafsir → Opens side panel --}}
-                                    @auth
-                                        @if ($isPremium)
-                                            <button class="ayah-btn"
-                                                onclick="openTafsirPanel({{ $surah->number }}, {{ $ayah->id }})">
-                                                <i class="bi bi-book"></i> <span class="d-none d-sm-inline">Tafsir</span>
-                                            </button>
-                                        @else
-                                            <button class="ayah-btn position-relative" onclick="redirectToUpgrade('Tafsir')">
-                                                <i class="bi bi-book"></i> <span class="d-none d-sm-inline">Tafsir</span>
-                                                <span class="lock-icon">🔒</span>
-                                            </button>
-                                        @endif
-                                    @else
-                                        <a href="{{ route('login') }}" class="ayah-btn">
-                                            <i class="bi bi-book"></i> <span class="d-none d-sm-inline">Tafsir</span>
-                                        </a>
-                                    @endauth
 
+                                    <button class="ayah-btn"
+                                        onclick="openTafsirPanel({{ $surah->number }}, {{ $ayah->id }})">
+                                        <i class="bi bi-book"></i> <span class="d-none d-sm-inline">Tafsir</span>
+                                    </button>
 
                                     {{-- Audio --}}
-                                    @auth
-                                        <button class="ayah-btn" id="audio-btn-{{ $ayah->id }}"
-                                            onclick="playAudio({{ $surah->number }}, {{ $ayah->number }}, {{ $ayah->id }}, this)">
-                                            <i class="bi bi-play-circle"></i> <span class="d-none d-sm-inline">Listen</span>
-                                        </button>
-                                    @else
-                                        <a href="{{ route('login') }}" class="ayah-btn">
-                                            <i class="bi bi-play-circle"></i> <span class="d-none d-sm-inline">Listen</span>
-                                        </a>
-                                    @endauth
+                                    <button class="ayah-btn" id="audio-btn-{{ $ayah->id }}"
+                                        onclick="playAudio({{ $surah->number }}, {{ $ayah->number }}, {{ $ayah->id }}, this)">
+                                        <i class="bi bi-play-circle"></i> <span class="d-none d-sm-inline">Listen</span>
+                                    </button>
 
                                     {{-- Copy --}}
                                     <button class="ayah-btn"
@@ -454,6 +424,7 @@
                                             <span class="d-none d-sm-inline">{{ $isRead ? ' Read' : ' Mark as Read' }}</span>
                                         </button>
                                     @endauth
+
                                     {{-- Note — personal reflection on this ayah --}}
                                     @auth
                                         @if ($isPremium)
@@ -568,38 +539,37 @@
 
                 {{-- RIGHT: Reciter + Time + Close --}}
                 <div class="audio-right-group">
-                    @auth
-                        @if ($reciters->count() > 0)
-                            <div class="mini-reciter-wrap">
-                                <i class="bi bi-mic-fill mini-reciter-icon" id="miniReciterIcon"></i>
+                    @if ($reciters->count() > 0)
+                        <div class="mini-reciter-wrap">
+                            <i class="bi bi-mic-fill mini-reciter-icon" id="miniReciterIcon"></i>
 
-                                <select id="miniReciterPicker" class="audio-mini-select js-audio-reciter"
-                                    onchange="handleMiniReciterChange(this)" title="Change Reciter">
-                                    {{-- ✅ FIX — ab yeh sirf tab default rahega jab koi preference hi na ho --}}
-                                    <option value="" disabled {{ !$preferredReciter ? 'selected' : '' }}></option>
+                            <select id="miniReciterPicker" class="audio-mini-select js-audio-reciter"
+                                onchange="handleMiniReciterChange(this)" title="Change Reciter">
+                                {{-- ✅ FIX — ab yeh sirf tab default rahega jab koi preference hi na ho --}}
+                                <option value="" disabled {{ !$preferredReciter ? 'selected' : '' }}></option>
 
-                                    <optgroup label="Verified">
-                                        @foreach ($reciters->where('has_verified_timing', true) as $r)
-                                            <option value="{{ $r->slug }}" data-free="{{ $r->is_free ? '1' : '0' }}"
-                                                {{ $preferredReciter === $r->slug ? 'selected' : '' }}
-                                                title="{{ $r->name }}">
-                                                {{ $r->initials }}
-                                            </option>
-                                        @endforeach
-                                    </optgroup>
-                                    <optgroup label="Approximate">
-                                        @foreach ($reciters->where('has_verified_timing', false) as $r)
-                                            <option value="{{ $r->slug }}" data-free="{{ $r->is_free ? '1' : '0' }}"
-                                                {{ $preferredReciter === $r->slug ? 'selected' : '' }}
-                                                title="{{ $r->name }}">
-                                                {{ $r->initials }}
-                                            </option>
-                                        @endforeach
-                                    </optgroup>
-                                </select>
-                            </div>
-                        @endif
-                    @endauth
+                                <optgroup label="Verified">
+                                    @foreach ($reciters->where('has_verified_timing', true) as $r)
+                                        <option value="{{ $r->slug }}" data-free="{{ $r->is_free ? '1' : '0' }}"
+                                            {{ $preferredReciter === $r->slug ? 'selected' : '' }}
+                                            title="{{ $r->name }}">
+                                            {{ $r->initials }}
+                                        </option>
+                                    @endforeach
+                                </optgroup>
+                                <optgroup label="Approximate">
+                                    @foreach ($reciters->where('has_verified_timing', false) as $r)
+                                        <option value="{{ $r->slug }}" data-free="{{ $r->is_free ? '1' : '0' }}"
+                                            {{ $preferredReciter === $r->slug ? 'selected' : '' }}
+                                            title="{{ $r->name }}">
+                                            {{ $r->initials }}
+                                        </option>
+                                    @endforeach
+                                </optgroup>
+                            </select>
+                        </div>
+                    @endif
+
 
                     <span id="audioTime" class="audio-time"></span>
 
@@ -715,7 +685,6 @@
             isSurahCompleted: {{ $isSurahCompleted ? 'true' : 'false' }},
             isLoggedIn: {{ auth()->check() ? 'true' : 'false' }},
             isPremium: {{ $isPremium ? 'true' : 'false' }},
-            upgradeUrl: '{{ route('subscription.upgrade') }}',
             preferencesUrl: '{{ route('profile.preferences') }}',
             preferredTafsir: @json($preferredTafsir),
             preferredReciter: @json($preferredReciter),

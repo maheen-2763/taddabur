@@ -142,8 +142,8 @@
         }
 
         /* ==========================================
-                                                                                                                                                                                                                                                                                                                                                           COMING SOON CARDS
-                                                                                                                                                                                                                                                                                                                                                        ========================================== */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       COMING SOON CARDS
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ========================================== */
 
         .card-coming-soon {
             position: relative;
@@ -362,6 +362,57 @@
                 animation: none;
             }
         }
+
+        @media (max-width: 767px) {
+            .hero {
+                min-height: auto;
+                padding: 4rem 0 3rem;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+                margin-top: 0;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .stats-box {
+                padding: 1rem 0.5rem;
+                border-right: 1px solid var(--border);
+            }
+
+            .stats-box:nth-child(2n) {
+                border-right: none;
+            }
+
+            .stats-number {
+                font-size: 1.8rem;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .ayah-card {
+                padding: 1.25rem !important;
+            }
+
+            .quran-ayah {
+                font-size: 1.3rem;
+                padding-right: 1rem;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .reflect-band {
+                padding: 3rem 0;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .prophet-chip {
+                font-size: 0.8rem;
+                padding: 0.35rem 0.85rem;
+            }
+        }
     </style>
 @endpush
 
@@ -381,14 +432,13 @@
                 {{-- Left: Text --}}
                 <div class="col-lg-6">
                     <h1 class="hero-title mb-3">
-                        Read the Quran.<br>
-                        Understand the <span>Tafsir</span>.<br>
-                        Know the Prophets.
+                        One Place to Learn <span>Quran</span>,<br>
+                        Hadith & the <span>Prophets</span>' Way.
                     </h1>
                     <p class="mb-4"
                         style="color: rgba(255,255,255,0.85); font-size:1.1rem; max-width:480px; line-height: 1.6;">
-                        A simple space to read, reflect, and reconnect with the Qur'an — through Tafsir and
-                        the wisdom of the Prophets, so every Muslim can access deep Quranic knowledge.
+                        A quiet space to read, reflect, and return to the Qur'an — with Tafsir, authentic Hadith,
+                        and the stories of the Prophets who lived it before us.
                     </p>
                     <div class="d-flex flex-wrap gap-3">
                         <a href="{{ route('quran.index') }}" class="btn-gold btn btn-lg">
@@ -406,31 +456,39 @@
                 </div>
 
                 {{-- Right: Arabic ayah --}}
-                <div class="col-lg-5 offset-lg-1">
-                    <div class="ayah-card"
-                        style="background:rgba(255,255,255,0.05); border-radius:var(--radius-lg); padding:2rem; border:1px solid rgba(201,150,58,0.2)">
-                        <p class="quran-ayah" lang="ar" dir="rtl" style="margin-bottom:1.5rem;">
-                            اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ
-                        </p>
-                        <p class="quran-ayah-ref">
-                            "Read in the name of your Lord who created." — Al-'Alaq 96:1
-                        </p>
-                        <hr style="border-color:rgba(201,150,58,0.2)">
-                        <p class="quran-ayah" lang="ar" dir="rtl" style="margin-bottom:1.5rem;">
-                            عَلَّمَ الْإِنسَانَ مَا لَمْ يَعْلَمْ
-                        </p>
-                        <p class="quran-ayah-ref">
-                            "Taught man that which he knew not." — Al-'Alaq 96:5
-                        </p>
+                @if ($heroAyahs->count() > 0)
+                    <div class="col-lg-5 offset-lg-1">
+                        <div class="ayah-card"
+                            style="background:rgba(255,255,255,0.05); border-radius:var(--radius-lg); padding:2rem; border:1px solid rgba(201,150,58,0.2)">
+                            @foreach ($heroAyahs as $ayah)
+                                @php
+                                    $ayahText =
+                                        $ayah->number === 1
+                                            ? \App\Helpers\ArabicHelper::stripBismillah($ayah->text_arabic)
+                                            : $ayah->text_arabic;
+                                @endphp
+                                <p class="quran-ayah" lang="ar" dir="rtl" style="margin-bottom:1.5rem;">
+                                    {{ $ayahText }}
+                                </p>
+                                <p class="quran-ayah-ref">
+                                    "{{ $ayah->translations->first()->text }}" — Al-'Alaq 96:{{ $ayah->number }}
+                                </p>
+                                @if (!$loop->last)
+                                    <hr style="border-color:rgba(201,150,58,0.2)">
+                                @endif
+                            @endforeach
+                        </div>
                     </div>
-                </div>
-
+                @endif
             </div>
+
+
+        </div>
         </div>
     </section>
 
     {{-- ============================================================
-     STATS BAR — sacred counts only, no pricing mixed in
+     STATS BAR — sacred counts only
 ============================================================ --}}
     <section class="py-3" style="background:var(--cream-dark); border-bottom:1px solid var(--border)">
         <div class="container">
@@ -466,7 +524,7 @@
         <div class="container">
             <div class="text-center mb-5">
                 <h2 class="heading-font mb-2">Everything You Need to Learn</h2>
-                <p class="text-muted">One platform. Deep knowledge. Affordable for everyone.</p>
+                <p class="text-muted">One platform. Deep knowledge. Completely free for everyone.</p>
                 <div class="divider-ornament">
                     <span class="line"></span>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -506,7 +564,7 @@
         <div class="container">
             <div class="text-center mb-4">
                 <h2 class="heading-font mb-2">Stories of the Prophets</h2>
-                <p class="text-muted">From Adam (AS) to Muhammad ﷺ — every story told in depth.</p>
+                <p class="text-muted">From Adam (AS) to Muhammad (ﷺ) — every story told in depth.</p>
                 <div class="divider-ornament">
                     <span class="line"></span>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -518,7 +576,7 @@
             <div class="d-flex flex-wrap justify-content-center gap-2 mb-4">
                 @foreach (['Adam' => 'AS', 'Nuh' => 'AS', 'Ibrahim' => 'AS', 'Musa' => 'AS', 'Yusuf' => 'AS', 'Isa' => 'AS', 'Dawud' => 'AS', 'Sulayman' => 'AS', 'Yunus' => 'AS', 'Muhammad' => 'ﷺ'] as $name => $honorific)
                     <a href="{{ route('prophets.show', \Illuminate\Support\Str::slug($name)) }}" class="prophet-chip">
-                        {{ $name }} {{ $honorific }} → Stories
+                        {{ $name }} ({{ $honorific }}) → Stories
                     </a>
                 @endforeach
                 <a href="{{ route('prophets.index') }}" class="prophet-chip" style="border-style:dashed">
@@ -559,7 +617,7 @@
                     <div class="card-coming-soon p-4 h-100">
                         <span class="badge-coming-soon">Coming Soon</span>
                         <div class="feature-icon-outline mb-3">
-                            <i class="bi bi-people"></i>
+                            <i class="bi bi-shield-shaded"></i>
                         </div>
                         <h5 class="heading-font mb-1" style="font-size:1rem">Sahaba Stories</h5>
                         <p class="text-muted mb-0" style="font-size:0.9rem">
@@ -596,7 +654,7 @@
     </section>
 
     {{-- ============================================================
-     REFLECTION BAND — a pause before the pricing ask
+    REFLECTION BAND — a moment of reflection before reading
 ============================================================ --}}
     <section class="reflect-band">
         <div class="reflect-band-bg"></div>
@@ -610,80 +668,29 @@
                 <span class="line" style="background:rgba(201,150,58,0.4)"></span>
             </div>
 
-            <div class="reflect-ayah-frame">
-                <p class="quran-ayah" lang="ar" dir="rtl"
-                    style="text-align:center; border-right:none; padding-right:0; display:inline-block; margin-bottom:0; max-width:720px;">
-                    كِتَابٌ أَنزَلْنَاهُ إِلَيْكَ مُبَارَكٌ لِّيَدَّبَّرُوا آيَاتِهِ وَلِيَتَذَكَّرَ أُولُو الْأَلْبَابِ
-                </p>
-            </div>
+            @if ($reflectionAyah)
+                <div class="reflect-ayah-frame">
+                    <p class="quran-ayah" lang="ar" dir="rtl"
+                        style="text-align:center; border-right:none; padding-right:0; display:inline-block; margin-bottom:0; max-width:720px;">
+                        {{ $reflectionAyah->text_arabic }}
+                    </p>
+                </div>
 
-            <p class="mb-1 mt-3"
-                style="color:rgba(255,255,255,0.8); font-size:1.05rem; max-width:600px; margin-inline:auto;">
-                "A blessed Book which We have revealed to you, that they might reflect upon its verses and that
-                those of understanding would be reminded."
-            </p>
-            <p class="quran-ayah-ref" style="text-align:center; margin-bottom:2rem">— Sad 38:29</p>
-            <a href="{{ route('quran.index') }}" class="btn-gold btn btn-lg">
-                <i class="bi bi-book-half me-2"></i>Read Surah Sad Now
-            </a>
+                <p class="mb-1 mt-3"
+                    style="color:rgba(255,255,255,0.8); font-size:1.05rem; max-width:600px; margin-inline:auto;">
+                    "{{ $reflectionAyah->translations->first()->text }}"
+                </p>
+                <p class="quran-ayah-ref" style="text-align:center; margin-bottom:2rem">— Sad 38:29</p>
+                <a href="{{ route('quran.show', 38) }}?highlight=29" class="btn-gold btn btn-lg">
+                    <i class="bi bi-book-half me-2"></i>Read Surah Sad Now
+                </a>
+            @endif
         </div>
 
         <svg class="reflect-band-wave" viewBox="0 0 1200 60" preserveAspectRatio="none"
             xmlns="http://www.w3.org/2000/svg">
             <path d="M0,20 C400,60 800,60 1200,20 L1200,60 L0,60 Z" fill="var(--cream-dark)"></path>
         </svg>
-    </section>
-    {{-- ============================================================
-     PRICING PREVIEW
-============================================================ --}}
-    <section class="py-5" style="background:var(--cream-dark)">
-        <div class="container text-center">
-            <h2 class="heading-font mb-2">Knowledge Should Be Affordable</h2>
-            <p class="text-muted small">
-                Built for learning the Qur'an — not profit-driven complexity.
-            </p>
-            <p class="text-muted mb-4">
-                Simple pricing. No hidden charges. Cancel anytime.
-            </p>
-            <div class="divider-ornament" style="margin-bottom:2rem">
-                <span class="line"></span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z" />
-                </svg>
-                <span class="line"></span>
-            </div>
-            <div class="row justify-content-center g-4">
-                @foreach ($plans as $plan)
-                    <div class="col-md-4">
-                        <div class="card-islamic p-4 h-100 {{ $plan->slug === 'basic' ? 'border-gold' : '' }}"
-                            @if ($plan->slug === 'basic') style="border-color:var(--gold)!important; border-width:2px!important" @endif>
-                            @if ($plan->slug === 'basic')
-                                <div class="badge mb-2" style="background:var(--gold); color:#1A1A2E">Most Popular</div>
-                            @endif
-                            <h4 class="heading-font">{{ $plan->name }}</h4>
-                            <div class="mb-3">
-                                <span style="font-size:1rem; font-family:var(--font-heading); color:var(--gold)">
-                                    {{ $plan->price_monthly == 0 ? 'Free' : '$' . number_format($plan->price_monthly, 2) }}
-                                </span>
-                                <small class="text-muted"> {{ $plan->price_monthly == 0 ? 'forever' : '/ month' }}</small>
-                            </div>
-                            <ul class="list-unstyled text-start mb-4">
-                                @foreach ($plan->features as $f)
-                                    <li class="mb-1">
-                                        <i class="bi bi-check-circle-fill me-2" style="color:var(--emerald-light)"></i>
-                                        {{ $f }}
-                                    </li>
-                                @endforeach
-                            </ul>
-                            <a href="{{ $plan->slug === 'free' ? route('register') : route('subscription.upgrade') }}"
-                                class="{{ $plan->slug === 'basic' ? 'btn-gold' : 'btn-emerald' }} btn w-100">
-                                {{ $plan->slug === 'free' ? 'Start Free' : 'Get ' . $plan->name }}
-                            </a>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
     </section>
 
 @endsection

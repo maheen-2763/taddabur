@@ -35,11 +35,11 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
-    'razorpay' => [
-        'key'            => env('RAZORPAY_KEY'),
-        'secret'         => env('RAZORPAY_SECRET'),
-        'webhook_secret' => env('RAZORPAY_WEBHOOK_SECRET'), // different value, from Dashboard
+
+    'upi' => [
+        'id' => env('UPI_ID'),
     ],
+
 
     'sunnah' => [
         'key' => env('SUNNAH_API_KEY'),

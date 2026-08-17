@@ -53,9 +53,13 @@
         .stat-number {
             font-size: 1.5rem;
             font-weight: 600;
-            color: var(--emerald-light);
+            color: var(--emerald);
             display: block;
             line-height: 1.2;
+        }
+
+        [data-bs-theme="dark"] .stat-number {
+            color: var(--emerald-light)
         }
 
         .stat-label {
@@ -125,6 +129,58 @@
             margin-top: -1.5rem;
             margin-bottom: 1rem;
         }
+
+        .why-free-card {
+            background: linear-gradient(135deg, rgba(201, 150, 58, 0.08), rgba(27, 94, 59, 0.05));
+            border: 1.5px solid rgba(201, 150, 58, 0.4);
+            border-radius: var(--radius);
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            margin-top: 1rem;
+        }
+
+        .why-free-card h4 {
+            color: var(--gold-dark);
+        }
+
+        .why-free-icon {
+            font-size: 1.8rem;
+            color: var(--gold-dark);
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+
+        [data-bs-theme="dark"] .why-free-card {
+            background: linear-gradient(135deg, rgba(201, 150, 58, 0.12), rgba(27, 94, 59, 0.1));
+            border-color: rgba(201, 150, 58, 0.5);
+        }
+
+        .about-hero-arabic {
+            font-family: var(--font-arabic);
+            font-size: 1.8rem;
+            color: var(--emerald);
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        [data-bs-theme="dark"] .about-hero-arabic {
+            color: var(--emerald-light);
+        }
+
+        .about-hero-title {
+            font-family: var(--font-heading);
+            font-size: 1.6rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--gold-dark);
+            margin-bottom: 1rem;
+        }
+
+        [data-bs-theme="dark"] .about-hero-title {
+            color: var(--gold-light);
+        }
     </style>
 @endpush
 
@@ -133,15 +189,19 @@
         <div class="container" style="max-width: 1000px;">
 
             <div class="text-center mb-5">
-                <h1 class="heading-font mb-2">About Taddabur</h1>
-                <p class="text-muted">Built for those who want to read, reflect, and understand — with every source clearly
-                    named.</p>
+                <p lang="ar" dir="rtl" class="about-hero-arabic">
+                    عَنْ تَدَبُّر
+                </p>
+                <h1 class="about-hero-title">About Taddabur</h1>
+                <p class="text-muted">A space to read, reflect, and return to authentic knowledge — with every source
+                    clearly named.</p>
             </div>
 
             <p class="mb-4">
-                Taddabur (تدبّر — "deep reflection") is a platform to read the Quran, understand its meaning through
-                Tafsir, and learn from the lives of the Prophets and study authentic Hadith. We believe transparency
-                about where our content comes from matters as much as the content itself.
+                Taddabur (تَدَبُّر — "deep reflection") is a platform to read the Qur'an with Tafsir, study authentic
+                Hadiths,
+                walk through the lives of the Prophets, and learn from the Four Imams and the Names of Allah. We believe
+                transparency about where our content comes from matters as much as the content itself.
             </p>
 
             {{-- Stats --}}
@@ -163,9 +223,16 @@
                             <span class="source-tag">{{ $source['tag'] }}</span>
                             <h5 class="mb-2">{{ $source['title'] }}</h5>
 
-                            @if (isset($source['reciters']))
+                            @if (isset($source['reciters_verified']))
+                                <p class="text-muted small fw-semibold mb-1 mt-2">✓ Verified Word-Sync</p>
                                 <div class="row row-cols-2 g-1 mb-2">
-                                    @foreach ($source['reciters'] as $reciter)
+                                    @foreach ($source['reciters_verified'] as $reciter)
+                                        <div class="col"><small class="text-muted">• {{ $reciter }}</small></div>
+                                    @endforeach
+                                </div>
+                                <p class="text-muted small fw-semibold mb-1 mt-2">Approximate Sync</p>
+                                <div class="row row-cols-2 g-1 mb-2">
+                                    @foreach ($source['reciters_approximate'] as $reciter)
                                         <div class="col"><small class="text-muted">• {{ $reciter }}</small></div>
                                     @endforeach
                                 </div>
@@ -196,6 +263,12 @@
                     @endforeach
                 </div>
             @endforeach
+
+            <div class="why-free-card">
+                <i class="bi bi-heart-fill why-free-icon"></i>
+                <h4 class="heading-font mb-2">{{ $whyFree['title'] }}</h4>
+                <p class="text-muted mb-0" style="max-width:600px; margin-inline:auto;">{{ $whyFree['text'] }}</p>
+            </div>
 
             {{-- Rooted in Honesty --}}
             <h4 class="heading-font mb-3 mt-3">Rooted in Honesty</h4>

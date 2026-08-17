@@ -333,19 +333,9 @@
                         </div>
 
                         {{-- Same access rules as a normal story card --}}
-                        @if ($accessible)
-                            <a href="{{ route('prophets.journey', $prophet->slug) }}" class="btn-emerald btn btn-sm">
-                                Begin the Journey <i class="bi bi-arrow-right ms-1"></i>
-                            </a>
-                        @else
-                            @auth
-                                <a href="{{ route('subscription.upgrade') }}" class="btn-gold btn btn-sm">
-                                    <i class="bi bi-lock me-1"></i>Upgrade to {{ ucfirst($firstPart->min_plan_slug) }} to Read
-                                </a>
-                            @else
-                                <a href="{{ route('login') }}" class="btn-emerald btn btn-sm">Sign in to Read</a>
-                            @endauth
-                        @endif
+                        <a href="{{ route('prophets.journey', $prophet->slug) }}" class="btn-emerald btn btn-sm">
+                            Begin the Journey <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
 
                     </div>
                 </div>
@@ -424,19 +414,9 @@
                             </div>
 
                             {{-- CTA — single-story branch only, no journey logic needed here --}}
-                            @if ($accessible)
-                                <a href="{{ route('stories.show', $story->slug) }}" class="btn-emerald btn btn-sm">
-                                    Read Story <i class="bi bi-arrow-right ms-1"></i>
-                                </a>
-                            @else
-                                @auth
-                                    <a href="{{ route('subscription.upgrade') }}" class="btn-gold btn btn-sm">
-                                        <i class="bi bi-lock me-1"></i>Upgrade to {{ ucfirst($story->min_plan_slug) }} to Read
-                                    </a>
-                                @else
-                                    <a href="{{ route('login') }}" class="btn-emerald btn btn-sm">Sign in to Read</a>
-                                @endauth
-                            @endif
+                            <a href="{{ route('stories.show', $story->slug) }}" class="btn-emerald btn btn-sm">
+                                Read Story <i class="bi bi-arrow-right ms-1"></i>
+                            </a>
 
                         </div>
                     </div>

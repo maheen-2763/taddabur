@@ -9,7 +9,6 @@ use App\Services\NoteService;
 use App\Services\QuranApiService;
 use App\Services\QuranService;
 use App\Services\StoryService;
-use App\Services\SubscriptionService;
 use Illuminate\Support\ServiceProvider;
 use App\Models\StoryChapter;
 use App\Observers\StoryChapterObserver;
@@ -18,6 +17,8 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Auth\Events\Verified;
 use App\Listeners\SendWelcomeEmail;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\View;
+use App\Models\Hadith;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -30,7 +31,6 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(StoryService::class);
         $this->app->singleton(BookmarkService::class);
         $this->app->singleton(NoteService::class);
-        $this->app->singleton(SubscriptionService::class);
         $this->app->singleton(DashboardService::class);
     }
 
@@ -43,6 +43,10 @@ class AppServiceProvider extends ServiceProvider
         StoryChapter::observe(StoryChapterObserver::class);
         \Illuminate\Support\Facades\Route::bind('surah', function ($value) {
             return \App\Models\Surah::where('number', $value)->firstOrFail();
+        });
+
+        View::composer('layouts.app', function ($view) {
+            $view->with('devNoteHadith', Hadith::find(14516));
         });
 
         Event::listen(Verified::class, SendWelcomeEmail::class);

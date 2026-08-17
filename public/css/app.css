@@ -56,6 +56,10 @@ body,
     --text-primary: #1a2e22;
     --text-secondary: #4a5c52;
     --text-on-badge: #1b5e3b;
+
+    --dev-note-hadith-bg: rgba(0, 0, 0, 0.03);
+    --dev-note-hadith-text: rgba(26, 26, 46, 0.85);
+    --dev-note-hadith-source: rgba(26, 26, 46, 0.55);
 }
 
 [data-bs-theme="dark"] {
@@ -70,6 +74,10 @@ body,
     --text-primary: #e8ede9;
     --text-secondary: #9db3a5;
     --text-on-badge: #d4f0e0;
+
+    --dev-note-hadith-bg: rgba(255, 255, 255, 0.05);
+    --dev-note-hadith-text: rgba(255, 255, 255, 0.85);
+    --dev-note-hadith-source: rgba(255, 255, 255, 0.55);
 }
 
 /* ================================================
@@ -322,7 +330,7 @@ html {
 }
 
 .arabic-name {
-    font-family: "Amiri", serif;
+    font-family: var(--font-arabic);
     font-size: clamp(2rem, 5vw, 3rem);
     direction: rtl;
     color: var(--emerald);
@@ -330,7 +338,7 @@ html {
 }
 
 .arabic-title {
-    font-family: "Amiri", serif;
+    font-family: var(--font-arabic);
     font-size: 1.1rem;
     direction: rtl;
     color: var(--gold);
@@ -339,7 +347,7 @@ html {
 }
 
 .arabic-text {
-    font-family: "Amiri", serif;
+    font-family: var(--font-arabic);
 }
 
 .timeline-item {
@@ -582,7 +590,7 @@ html {
 }
 
 .dev-note-arabic {
-    font-family: "Amiri Quran", "Amiri", serif;
+    font-family: "Amiri Quran", var(--font-arabic);
     font-size: 1.3rem;
     text-align: center;
     direction: rtl;
@@ -659,4 +667,25 @@ html {
 }
 .translation-box p {
     font-size: 1.05rem;
+}
+
+.dev-note-hadith {
+    padding: 0.75rem 1rem;
+    margin: 0.75rem 0;
+    background: var(--dev-note-hadith-bg);
+    border-left: 2px solid var(--gold);
+    border-radius: 4px;
+}
+
+.dev-note-hadith-text {
+    font-size: 0.85rem;
+    font-style: italic;
+    line-height: 1.6;
+    margin-bottom: 0.4rem;
+    color: var(--dev-note-hadith-text);
+}
+
+.dev-note-hadith-source {
+    font-size: 0.78rem;
+    color: var(--dev-note-hadith-source);
 }

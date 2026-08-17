@@ -36,8 +36,8 @@
                 TADDABUR</div>
             <div
                 style="font-family:'Amiri',serif; font-size:{{ round($height * 0.35) }}px;
-                        color:{{ $arabicColor }}; direction:rtl; margin-top:3px;">
-                تدبر</div>
+                        color:{{ $arabicColor }}; direction:rtl; margin-top:3px; line-height:1.2;">
+                تَدَبُّر</div>
         </div>
     </div>
 @else
@@ -55,8 +55,8 @@
                 TADDABUR</div>
             <div
                 style="font-family:'Amiri',serif; font-size:{{ round($height * 0.28) }}px;
-                        color:{{ $arabicColor }}; direction:rtl; margin-top:2px;">
-                تدبر</div>
+                        color:{{ $arabicColor }}; direction:rtl; margin-top:2px; line-height:2;">
+                تَدَبُّر</div>
         </div>
     </div>
 @endif

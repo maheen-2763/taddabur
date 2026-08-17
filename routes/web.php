@@ -8,7 +8,6 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\QuranController;
 use App\Http\Controllers\StoryController;
-use App\Http\Controllers\SubscriptionController;
 use Illuminate\Support\Facades\Schedule;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Auth;
@@ -20,12 +19,12 @@ use App\Http\Controllers\BackupController;
 use App\Http\Controllers\ProphetController;
 use App\Http\Controllers\HadithController;
 use App\Http\Controllers\HadithGradeController;
-use App\Http\Controllers\RazorpayWebhookController;
 use App\Http\Middleware\VerifyCsrfToken;
 use App\Http\Controllers\HadithSearchController;
 use App\Http\Controllers\ProphetNameController;
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\FeaturesController;
+use App\Http\Controllers\SupportController;
 
 
 // Re-import any missing translations weekly (catches new additions)
@@ -37,8 +36,6 @@ Schedule::command('quran:import-translations --all')
     ->emailOutputOnFailure(config('mail.from.address'));
 
 
-Schedule::command('exchange-rate:update')->daily();
-Schedule::command('subscriptions:expire-overdue')->daily();
 // ============================================================
 // PUBLIC ROUTES — No login required
 // ============================================================
@@ -54,39 +51,31 @@ Route::view('/privacy-policy', 'legal.privacy')->name('privacy');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
 Route::get('/features', [FeaturesController::class, 'index'])->name('features.index');
 
-
+Route::get('/support', [SupportController::class, 'index'])->name('support');
 
 // Global — collections index page (all collections mix)
-Route::middleware(['auth', 'plan:has_hadith'])->group(function () {
+Route::middleware('auth')->post('/hadith/{hadith}/toggle-read', [HadithController::class, 'toggleRead'])
+    ->name('hadith.toggle-read');
 
-    Route::get('/hadith/grade/{reliability}', [HadithGradeController::class, 'show'])
-        ->name('hadith.grade');
+Route::get('/hadith/grade/{reliability}', [HadithGradeController::class, 'show'])
+    ->name('hadith.grade');
 
-    // Collection-scoped
-    Route::get('/hadith/{collection:slug}/grade/{reliability}', [HadithGradeController::class, 'showForCollection'])
-        ->name('hadith.grade.collection');
-
-    Route::post('/hadith/{hadith}/toggle-read', [HadithController::class, 'toggleRead'])
-        ->middleware('auth')
-        ->name('hadith.toggle-read'); // ✅ alag naam
-
-    // routes/web.php
-    Route::get('/hadith/search', [HadithSearchController::class, 'search'])->name('hadith.search');
-
-    Route::prefix('hadith')->name('hadith.')->group(function () {
-        Route::get('/', [HadithController::class, 'index'])->name('index');
-        Route::get('/{collection:slug}', [HadithController::class, 'chapters'])->name('chapters');
-        Route::get('/{collection:slug}/{chapter:number}', [HadithController::class, 'show'])->name('show')->scopeBindings();
-        Route::get('/{collection:slug}/{chapter:number}/items', [HadithController::class, 'loadHadiths'])->name('items')->scopeBindings();
-    });
-});
+// Collection-scoped
+Route::get('/hadith/{collection:slug}/grade/{reliability}', [HadithGradeController::class, 'showForCollection'])
+    ->name('hadith.grade.collection');
 
 // routes/web.php
-Route::post('/webhooks/razorpay', [RazorpayWebhookController::class, 'handle'])
-    ->name('webhooks.razorpay')
-    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
+Route::get('/hadith/search', [HadithSearchController::class, 'search'])->name('hadith.search');
 
-// Public Quran browsing (reading only, no tafsir/audio)
+Route::prefix('hadith')->name('hadith.')->group(function () {
+    Route::get('/', [HadithController::class, 'index'])->name('index');
+    Route::get('/{collection:slug}', [HadithController::class, 'chapters'])->name('chapters');
+    Route::get('/{collection:slug}/{chapter:number}', [HadithController::class, 'show'])->name('show')->scopeBindings();
+    Route::get('/{collection:slug}/{chapter:number}/items', [HadithController::class, 'loadHadiths'])->name('items')->scopeBindings();
+});
+
+
+// Public Quran browsing
 Route::get('/quran', [QuranController::class, 'index'])->name('quran.index');
 
 Route::get('/ayah/{surahNumber}/{ayahNumber}/timings/{reciter}', [WordTimingController::class, 'show']);
@@ -108,6 +97,21 @@ Route::get('/quran/search', [QuranController::class, 'search'])
 // ✅ This comes AFTER search
 Route::get('/quran/{surah}', [QuranController::class, 'show'])->name('quran.show');
 
+Route::get('/quran/surah/{surahNumber}/ayahs', [QuranController::class, 'loadAyahs'])
+    ->name('quran.ayahs');
+
+Route::get('/quran/{surah}/{ayah}/tafsir', [QuranController::class, 'tafsir'])
+    ->name('quran.tafsir');
+
+Route::get('/quran/{surah}/{ayah}/tafsir-data', [QuranController::class, 'tafsirData'])
+    ->name('quran.tafsir-data');
+
+Route::get('/quran/{surah}/{ayah}/audio', [QuranController::class, 'audio'])
+    ->name('quran.audio');
+
+Route::get('/quran/{surah}/{ayah}/translation', [QuranController::class, 'translation'])
+    ->name('quran.translation');
+
 // NOTE (fix): pehle iska naam bhi 'quran.tafsir' ban raha tha, jo authenticated
 // group ke andar wale /{surah}/{ayah}/tafsir route ke naam se collide kar raha
 // tha (dono ka final naam same "quran.tafsir" ban jaata, alag URL/controller
@@ -119,7 +123,6 @@ Route::get(
     '/quran/{surah}/{ayah}/tafsir-page',
     [QuranController::class, 'tafsirPage']
 )
-    ->middleware(['auth', 'verified'])
     ->name('quran.tafsir-page');
 
 // Public stories listing (shows free stories only)
@@ -142,8 +145,7 @@ Route::get('/scholars',          [ScholarController::class, 'index'])->name('sch
 Route::get('/scholars/{scholar:slug}', [ScholarController::class, 'show'])->name('scholars.show');
 
 
-// Pricing page
-Route::get('/pricing', [SubscriptionController::class, 'pricing'])->name('pricing');
+
 
 // ============================================================
 // AUTHENTICATED ROUTES — Must be logged in
@@ -165,24 +167,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // QURAN ROUTES
     // --------------------------------------------------------
     Route::prefix('quran')->name('quran.')->group(function () {
-
-        Route::get('/surah/{surahNumber}/ayahs', [QuranController::class, 'loadAyahs'])
-            ->name('ayahs');
-
-        Route::get('/{surah}/{ayah}/tafsir', [QuranController::class, 'tafsir'])
-            ->name('tafsir');
-
-        Route::get('/{surah}/{ayah}/tafsir-data', [QuranController::class, 'tafsirData'])
-            ->name('tafsir-data');
-
-        Route::get('/{surah}/{ayah}/audio', [QuranController::class, 'audio'])
-            ->name('audio');
-
-        Route::get('/{surah}/{ayah}/translation', [QuranController::class, 'translation'])
-            ->name('translation');
-
-        Route::get('/{surah}', [QuranController::class, 'show'])
-            ->name('show');
 
         Route::post('/progress', [QuranController::class, 'saveProgress'])
             ->name('progress.save');
@@ -219,8 +203,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // --------------------------------------------------------
     // NOTES ROUTES — Requires 'has_notes' plan feature
     // --------------------------------------------------------
-    Route::middleware('plan:has_notes')
-        ->prefix('notes')
+    Route::prefix('notes')
         ->name('notes.')
         ->group(function () {
             Route::get('/', [NoteController::class, 'index'])->name('index');
@@ -229,24 +212,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::delete('/{note}', [NoteController::class, 'destroy'])->name('destroy');
         });
 
-    // --------------------------------------------------------
-    // SUBSCRIPTION ROUTES
-    // --------------------------------------------------------
-    Route::prefix('subscription')
-        ->name('subscription.')
-        ->middleware(['auth', 'verified'])
-        ->group(function () {
-            Route::get('/', [SubscriptionController::class, 'index'])->name('index');
-            Route::get('/upgrade', [SubscriptionController::class, 'upgrade'])->name('upgrade');
-            Route::get('/success', [SubscriptionController::class, 'success'])->name('success');
-
-            Route::get('/dashboard', [SubscriptionController::class, 'dashboard'])->name('dashboard');
-            Route::post('/create-order', [SubscriptionController::class, 'createOrder'])->name('create-order');
-            Route::post('/verify', [SubscriptionController::class, 'verifyPayment'])->name('verify');
-            Route::post('/checkout', [SubscriptionController::class, 'checkout'])->name('checkout');
-            Route::post('/cancel', [SubscriptionController::class, 'cancel'])->name('cancel');
-            // Route::post('/resume', [SubscriptionController::class, 'resume'])->name('resume');
-        });
     // --------------------------------------------------------
     // PROFILE ROUTES
     // --------------------------------------------------------
@@ -281,8 +246,6 @@ Route::middleware(['auth', 'admin'])
             ->name('users.index');
         Route::get('/users/{user}', [App\Http\Controllers\Admin\UserController::class, 'show'])
             ->name('users.show');
-        Route::patch('/users/{user}/plan', [App\Http\Controllers\Admin\UserController::class, 'updatePlan'])
-            ->name('users.update-plan');
 
         // ── STORIES ──────────────────────────────────────────
         Route::get('/stories', [App\Http\Controllers\Admin\StoryController::class, 'index'])

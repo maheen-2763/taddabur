@@ -80,6 +80,13 @@
             font-weight: 500;
         }
 
+        [data-bs-theme="dark"] .meta-chip {
+            color: var(--emerald-light);
+        }
+
+
+
+
         .meta-chip-gold {
             background: rgba(180, 130, 40, 0.1);
             color: var(--gold);
@@ -110,7 +117,7 @@
 
         /* ── Progress bar ── */
         .progress-bar-islamic {
-            height: 5px;
+            height: 6px;
             background: var(--border);
             border-radius: 3px;
             overflow: hidden;
@@ -232,22 +239,12 @@
             padding: 1.1rem 1.25rem 1.25rem;
         }
 
-        .story-badge-free {
-            font-size: 0.65rem;
-            padding: 0.18rem 0.55rem;
-            border-radius: 50px;
-            font-weight: 600;
-            background: rgba(27, 94, 59, 0.1);
-            color: var(--emerald-light);
-        }
 
-        .story-badge-premium {
-            font-size: 0.65rem;
-            padding: 0.18rem 0.55rem;
-            border-radius: 50px;
-            font-weight: 600;
-            background: rgba(180, 130, 40, 0.1);
-            color: var(--gold);
+
+        /* [data-bs-theme="dark"] .story-badge-free {
+                                                color: var(--emerald-light);
+                                            } */
+
         }
     </style>
 @endpush
@@ -281,13 +278,6 @@
                         <img src="{{ asset('storage/' . $story->cover_image) }}" alt="{{ $story->title }}">
                         <div class="story-hero-overlay"></div>
                         <div class="story-hero-content">
-                            @if ($story->is_free)
-                                <span class="meta-chip-white mb-2 d-inline-block">Free</span>
-                            @else
-                                <span class="meta-chip-white-gold mb-2 d-inline-block">
-                                    <i class="bi bi-lock-fill me-1"></i>Premium
-                                </span>
-                            @endif
                             <h1 class="heading-font mb-1" style="font-size:clamp(1.5rem,4vw,2rem); color:white">
                                 {{ $story->title }}
                             </h1>
@@ -307,23 +297,6 @@
                                 {{ $story->prophet->name_arabic }}
                             </span>
                         @endif
-
-                        {{-- Badges --}}
-                        <div class="mb-2">
-                            @php $accessible = $story->isAccessibleBy(Auth::user()); @endphp
-
-                            @if ($story->min_plan_slug === 'free')
-                                <span class="story-badge-free">Free</span>
-                            @elseif ($accessible)
-                                <span class="story-badge-free">
-                                    <i class="bi bi-unlock-fill me-1"></i>Unlocked
-                                </span>
-                            @else
-                                <span class="story-badge-premium">
-                                    <i class="bi bi-lock-fill me-1"></i>{{ ucfirst($story->min_plan_slug) }}
-                                </span>
-                            @endif
-                        </div>
 
                         {{-- Title --}}
                         <h1 class="heading-font mb-1"
@@ -403,7 +376,7 @@
                                     <i class="bi bi-check-circle-fill me-1"></i>Completed
                                 </span>
                             @else
-                                <span style="font-size:0.8rem; color:var(--emerald); font-weight:600">
+                                <span style="font-size:0.8rem; color:var(--emerald-light); font-weight:500">
                                     {{ $progressPct }}%
                                 </span>
                             @endif

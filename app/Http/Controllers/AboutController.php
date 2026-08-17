@@ -14,6 +14,7 @@ class AboutController extends Controller
             'accuracy' => config('content_sources.accuracy'),
             'honestyQuote' => config('content_sources.honesty_quote'),
             'auditTimestamp' => config('content_sources.audit_timestamp'),
+            'whyFree' => config('content_sources.why_free'),
         ]);
     }
 }

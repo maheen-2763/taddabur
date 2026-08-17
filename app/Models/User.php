@@ -114,24 +114,17 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function isPremium(): bool
     {
-        return $this->plan !== 'free'
-            && (
-                $this->plan_expires_at === null
-                || $this->plan_expires_at->isFuture()
-            );
+        return true; // App ab completely free hai — sab users ko full access
     }
 
     public function hasActiveSubscription(): bool
     {
-        return $this->isPremium();
+        return true;
     }
 
     public function canAccess(string $feature): bool
     {
-        if (!$this->isPremium()) {
-            return false;
-        }
-        return (bool) data_get($this->planModel, $feature);
+        return true; // Har feature sab ke liye khula hai
     }
 
     public function hasFeature(string $feature): bool

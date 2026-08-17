@@ -4,9 +4,9 @@
 @push('styles')
     <style>
         /* ════════════════════════════════════════
-                                                                                                                                                           UNIVERSAL RESPONSIVE LAYOUT
-                                                                                                                                                           Single grid system that adapts at one breakpoint
-                                                                                                                                                        ═══════════════════════════════════════════ */
+            UNIVERSAL RESPONSIVE LAYOUT
+            Single grid system that adapts at one breakpoint
+                     ═══════════════════════════════════════════ */
         .story-layout {
             display: grid;
             grid-template-columns: 280px minmax(0, 1fr);

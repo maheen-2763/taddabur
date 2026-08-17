@@ -53,7 +53,7 @@
 
             const icon = document.getElementById('theme-icon');
             if (icon) {
-                icon.classList.toggle('bi-moon-fill', next === 'light');
+                icon.classList.toggle('bi-moon-stars-fill', next === 'light');
                 icon.classList.toggle('bi-sun-fill', next === 'dark');
             }
         }
@@ -80,17 +80,6 @@
                 <div class="alert alert-islamic-success d-flex align-items-center gap-2" role="alert">
                     <i class="bi bi-check-circle-fill"></i>
                     {{ session('success') }}
-                </div>
-            @endif
-            @if (session('upgrade_message'))
-                <div class="upgrade-banner d-flex align-items-center justify-content-between">
-                    <div>
-                        <i class="bi bi-star-fill me-2" style="color: var(--gold-light)"></i>
-                        {{ session('upgrade_message') }}
-                    </div>
-                    <a href="{{ route('subscription.upgrade') }}" class="btn-gold btn ms-3">
-                        Upgrade Now
-                    </a>
                 </div>
             @endif
         </div>
@@ -194,7 +183,7 @@
                             <li class="mb-2"><a href="{{ route('login') }}">Sign In</a></li>
                             <li class="mb-2"><a href="{{ route('register') }}">Register</a></li>
                         @endauth
-                        <li class="mb-2"><a href="{{ route('pricing') }}">Pricing</a></li>
+                        <li class="mb-2"><a href="{{ route('support') }}">❤️ Support This Project</a></li>
                     </ul>
                 </div>
 
@@ -223,30 +212,23 @@
                     <button class="dev-note-close" onclick="toggleDevNote()">&times;</button>
 
                     <div class="dev-note-content">
-                        <p class="dev-note-arabic">بِسْمِ اللهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+                        <p class="dev-note-arabic">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</p>
 
                         <p>
-                            Taddabur is built by a single individual Learner — a humble effort, not a company or a
-                            team.
+                            Taddabur is built and maintained by a single individual — not a company or a team.
                             I'm continuing to improve it, both in content accuracy and in design, In Sha Allah.
                         </p>
 
-                        <p>
-                            May Allah accept this from me, and make it a means of benefit for anyone who uses it.
-                            May He forgive every mistake made while building it, and have mercy on me and on the whole
-                            Ummah.
-                        </p>
-
-                        <p>
-                            May our Hereafter be as beautiful as He has promised us in the Qur'an. And may we be
-                            reunited
-                            with our Prophet ﷺ.
-                        </p>
-
-                        <p class="dev-note-signoff">
-                            If this app has helped you in any way, a small dua for me and my family
-                            would mean more than anything. — Ameen 🤲
-                        </p>
+                        @if ($devNoteHadith)
+                            <div class="dev-note-hadith">
+                                <p class="dev-note-hadith-text">
+                                    "{{ $devNoteHadith->english }}"
+                                </p>
+                                <small class="dev-note-hadith-source">
+                                    — {{ $devNoteHadith->collection?->name }}, Hadith {{ $devNoteHadith->number }}
+                                </small>
+                            </div>
+                        @endif
                     </div>
                 </div>
 

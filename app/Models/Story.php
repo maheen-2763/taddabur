@@ -171,10 +171,6 @@ class Story extends Model
 
     public function isAccessibleBy(?User $user): bool
     {
-        $planRanks    = Plan::pluck('sort_order', 'slug'); // ['free'=>1,'basic'=>2,'premium'=>3]
-        $userRank     = $planRanks[$user?->plan ?? 'free'] ?? 1;
-        $requiredRank = $planRanks[$this->min_plan_slug] ?? 99;
-
-        return $userRank >= $requiredRank;
+        return true; // Sab stories sab users ke liye accessible hain ab
     }
 }

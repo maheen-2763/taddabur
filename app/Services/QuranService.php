@@ -158,29 +158,25 @@ class QuranService
     // Can user access premium features (Basic or Premium plan)
     public function userIsPremium(?User $user): bool
     {
-        if (!$user) return false;
-        return $user->isPremium();
+        return true; // Sab content sabke liye free hai, login ho ya na ho
     }
 
     // Can user access tafsir
     public function userCanAccessTafsir(?User $user): bool
     {
-        if (!$user) return false;
-        return $user->canAccess('has_tafsir');
+        return true;
     }
 
     // Can user access premium audio (multiple reciters)
     public function userIsPremiumAudio(?User $user): bool
     {
-        if (!$user) return false;
-        return $user->isPremium();
+        return true;
     }
 
     // Can user access a specific translation
     public function userCanAccessTranslation(?User $user, Translation $translation): bool
     {
-        if ($translation->is_free) return true;
-        return $this->userIsPremium($user);
+        return true;
     }
 
 

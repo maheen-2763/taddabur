@@ -24,23 +24,26 @@ return [
         ],
         [
             'tag' => 'Audio Recitation',
-            'title' => '12 Renowned Reciters',
-            'reciters' => [
+            'title' => '12 Reciters — Verified & Approximate Sync',
+            'reciters_verified' => [
                 'Mishary Rashid Alafasy',
-                'Abdur-Rahman As-Sudais',
-                'Saad Al-Ghamdi',
-                'Abdul Basit Abdul Samad',
-                'Mahmoud Khalil Al-Husary',
-                'Ali Al-Hudhaify',
                 'Saud Al-Shuraim',
-                'Maher Al Muaiqly',
-                'Yasser Al-Dosari',
                 'Muhammad Siddiq Al-Minshawi',
                 'Hani Ar-Rifai',
+                'Abdul Basit Abdul Samad',
+                'Mahmoud Khalil Al-Husary',
+            ],
+            'reciters_approximate' => [
+                'Ali Al-Hudhaify',
+                'Maher Al Muaiqly',
+                'Yasser Al-Dosari',
+                'Abdur-Rahman As-Sudais',
+                'Saad Al-Ghamdi',
                 'Abdullah Basfar',
             ],
-            'description' => 'Recitation audio synced word-by-word with the Quran text as you read.',
+            'description' => 'Word-by-word audio sync uses verified timing data where available. For reciters without verified data, we use an approximate sync — clearly labeled in the app — rather than presenting it as exact. Additional reciters will move to verified sync as accurate timing data becomes available.',
         ],
+
         [
             'tag' => 'Hadith',
             'title' => 'Six Major Collections',
@@ -52,11 +55,6 @@ return [
             'description' => '25 Prophet stories across 101 chapters — every story is built from explicit Quranic statements first; supplementary details from Sahih Bukhari/Muslim are clearly marked where used.',
         ],
         [
-            'tag' => 'Payments',
-            'title' => 'Razorpay',
-            'description' => 'All subscription payments are processed securely by Razorpay. We never store your card or bank details.',
-        ],
-        [
             'tag' => 'Four Imams',
             'title' => 'Founders of the Four Madhabs',
             'description' => "Biography, teachings, students, and notable works of Imam Abu Hanifa, Imam Malik, Imam Shafi'i, and Imam Ahmad ibn Hanbal — drawn from established scholarly sources.",
@@ -65,6 +63,12 @@ return [
             'tag' => 'Names of the Prophet ﷺ',
             'title' => "Qur'an & Sahih Hadith Only",
             'description' => 'Every name and title is drawn directly from explicit Quranic verses or Sahih Bukhari — no external compilation books are used.',
+        ],
+
+        [
+            'tag' => 'Privacy',
+            'title' => 'Your Privacy',
+            'description' => 'We collect only what is needed for your reading progress — no payment information is ever requested or stored, because none is needed.',
         ],
     ],
 
@@ -131,8 +135,19 @@ return [
                 'title' => 'Your Selected Translation, Everywhere',
                 'description' => 'The Daily Ayah widget, search results, and reader all resolve to your preferred translation from a single saved setting — never silently defaulting to a different one across pages.',
             ],
+
+
         ],
     ],
+
+
+
+    'why_free' => [
+        'title' => 'Why Everything Here Is Free',
+        'text' => 'Taddabur does not run on subscriptions or ads. It exists to make authentic Quranic knowledge accessible to every Muslim, regardless of their means — the only requirement is a sincere intention to learn.',
+    ],
+
+
 
     'honesty_quote' => [
         'text' => 'Truthfulness leads to righteousness, and righteousness leads to Paradise. And a man keeps on telling the truth until he becomes a truthful person.',
@@ -143,5 +158,5 @@ return [
         'hadith_label' => 'Sahih Bukhari, Hadith 6094',
     ],
 
-    'audit_timestamp' => 'Hadith module last audited: July 2026',
+    'audit_timestamp' => 'App bugs last audited: August 2026',
 ];

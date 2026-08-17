@@ -97,12 +97,6 @@
                     </ul>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link-islamic nav-link {{ request()->routeIs('pricing') ? 'active' : '' }}"
-                        {{ request()->routeIs('pricing') ? 'aria-current=page' : '' }} href="{{ route('pricing') }}">
-                        <i class="bi bi-gem me-1"></i>Pricing
-                    </a>
-                </li>
             </ul>
 
             {{-- Right side --}}
@@ -125,11 +119,7 @@
                                     <i class="bi bi-person me-2"></i>Profile
                                 </a>
                             </li>
-                            <li>
-                                <a class="dropdown-item small" href="{{ route('subscription.upgrade') }}">
-                                    <i class="bi bi-star me-2" style="color:var(--gold)"></i>Upgrade
-                                </a>
-                            </li>
+
                             <li>
                                 <hr class="dropdown-divider">
                             </li>

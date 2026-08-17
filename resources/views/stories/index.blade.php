@@ -110,22 +110,30 @@
             color: var(--emerald);
         }
 
-        .story-chip-gold {
-            font-size: 0.68rem;
-            padding: 0.2rem 0.55rem;
-            border-radius: 50px;
-            font-weight: 500;
-            background: rgba(180, 130, 40, 0.1);
-            color: var(--gold);
+        [data-bs-theme="dark"] .story-chip {
+            color: var(--emerald-light);
         }
+
+        /* .story-chip-gold {
+                                            font-size: 0.68rem;
+                                            padding: 0.2rem 0.55rem;
+                                            border-radius: 50px;
+                                            font-weight: 500;
+                                            background: rgba(180, 130, 40, 0.1);
+                                            color: var(--gold);
+                                        } */
 
         .story-badge-free {
             font-size: 0.65rem;
             padding: 0.18rem 0.55rem;
             border-radius: 50px;
-            font-weight: 600;
-            background: rgba(27, 94, 59, 0.1);
+            font-weight: 500;
+            background: rgba(5, 130, 65, 0.1);
             color: var(--emerald);
+        }
+
+        [data-bs-theme="dark"] .story-badge-free {
+            color: var(--emerald-light);
         }
 
         .story-badge-premium {
@@ -153,6 +161,12 @@
             background: rgba(27, 94, 59, 0.08);
             color: var(--emerald);
         }
+
+        [data-bs-theme="dark"] .filter-item:hover,
+        [data-bs-theme="dark"] .filter-item.active {
+            color: var(--emerald-light);
+        }
+
 
         /* ── Mobile filter pills ── */
         .filter-pill {
@@ -239,7 +253,7 @@
                                 {{ $p->name_transliteration }}
 
                                 @if ($p->slug === 'muhammad')
-                                    <span style="font-size:0.8rem; color:var(--emerald)">ﷺ</span>
+                                    <span style="font-size:0.8rem; color:var(--emerald-light)">ﷺ</span>
                                 @endif
 
                                 @if ($p->stories_count > 0)
@@ -390,20 +404,9 @@
 
                                         {{-- Badge row --}}
                                         <div class="d-flex justify-content-between align-items-center mb-2">
-                                            @php $accessible = $story->isAccessibleBy(Auth::user()); @endphp
-
-                                            @if ($story->min_plan_slug === 'free')
-                                                <span class="story-badge-free">Free</span>
-                                            @elseif ($accessible)
-                                                <span class="story-badge-free">
-                                                    <i class="bi bi-unlock-fill me-1"></i>Unlocked
-                                                </span>
-                                            @else
-                                                <span class="story-badge-premium">
-                                                    <i
-                                                        class="bi bi-lock-fill me-1"></i>{{ ucfirst($story->min_plan_slug) }}
-                                                </span>
-                                            @endif
+                                            <span class="story-badge-free">
+                                                <i class="bi bi-unlock-fill me-1"></i>Free
+                                            </span>
                                         </div>
 
                                         {{-- ✅ NEW: Progress indicator --}}
@@ -411,11 +414,13 @@
                                             @if (isset($story->user_progress) && $story->user_progress['started'])
                                                 <div class="mb-2">
                                                     <div class="d-flex justify-content-between mb-1">
-                                                        <span style="font-size:0.7rem; color:var(--emerald); font-weight:600">
+                                                        <span
+                                                            style="font-size:0.7rem; color:var(--emerald-light); font-weight:500">
                                                             {{ $story->user_progress['completed'] }}/{{ $story->user_progress['total'] }}
                                                             chapters
                                                         </span>
-                                                        <span style="font-size:0.7rem; color:var(--emerald)">
+                                                        <span
+                                                            style="font-size:0.7rem; color:var(--emerald-light); font-weight:500">
                                                             {{ $story->user_progress['percentage'] }}%
                                                         </span>
                                                     </div>
@@ -455,12 +460,11 @@
                                                 @endif
                                             </div>
 
-                                            @if (!$accessible)
-                                                <span style="font-size:0.75rem; color:var(--gold)">Upgrade →</span>
-                                            @else
-                                                <span style="font-size:0.78rem; color:var(--emerald); font-weight:500">Read
-                                                    →</span>
-                                            @endif
+
+                                            <span
+                                                style="font-size:0.78rem; color:var(--emerald-light); font-weight:500">Read
+                                                →</span>
+
                                         </div>
 
                                     </div>

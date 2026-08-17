@@ -32,12 +32,4 @@
         a source of light.
     </p>
 
-    @if (!$user->isPremium())
-        <div class="mt-3 text-end">
-            <a href="{{ route('subscription.upgrade') }}" class="btn-gold btn btn-sm">
-                Upgrade Plan
-            </a>
-        </div>
-    @endif
-
 </div>

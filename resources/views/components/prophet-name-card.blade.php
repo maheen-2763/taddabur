@@ -20,7 +20,7 @@
             @elseif ($item->all_references)
                 {{-- ✅ Multiple Quran references — pill row --}}
                 <div class="pname-ref-pills">
-                    <span class="pname-ref-icon">📖</span>
+                    <span class="pname-ref-icon"><i class="bi bi-book-half"></i></span>
                     @foreach ($item->all_references as $i => $ref)
                         <a href="{{ route('quran.show', $ref['surah']) }}?highlight={{ $ref['ayah'] }}"
                             class="pname-ref-pill {{ $i === 0 ? 'pname-ref-primary' : '' }}">
@@ -31,14 +31,14 @@
             @elseif ($item->ayah_id)
                 {{-- ✅ Single Quran reference — same pill style --}}
                 <div class="pname-ref-pills">
-                    <span class="pname-ref-icon">📖</span>
+                    <span class="pname-ref-icon"><i class="bi bi-book-half"></i></span>
                     <a href="{{ route('quran.show', $item->ayah->surah->number) }}?highlight={{ $item->ayah->number }}"
                         class="pname-ref-pill pname-ref-primary">
                         {{ $item->source_reference }}
                     </a>
                 </div>
             @else
-                <span class="pname-ref-static">📖 {{ $item->source_reference }}</span>
+                <span class="pname-ref-static"><i class="bi bi-book-half"></i> {{ $item->source_reference }}</span>
             @endif
         </div>
     </div>

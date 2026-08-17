@@ -85,7 +85,6 @@ class QuranController extends Controller
         $data['canAccessTafsir'] = $this->quranService->userCanAccessTafsir($user);
         $data['preferredTafsir']  = $user?->preferred_tafsir;
         $data['preferredReciter'] = $user?->preferred_reciter;
-        $data['upgradeUrl']      = route('subscription.upgrade');
         $data['quranProgress']   = $user ? $this->quranService->getQuranProgress($user) : null;
 
         $data['isSurahCompleted'] = $user
@@ -101,13 +100,7 @@ class QuranController extends Controller
     // ── GET /quran/{surah}/{ayah}/tafsir (AJAX) ──────────
     public function tafsir(Request $request, Surah $surah, Ayah $ayah): JsonResponse
     {
-        if (!$this->quranService->userCanAccessTafsir(Auth::user())) {
-            return response()->json([
-                'error'       => 'upgrade_required',
-                'message'     => 'Tafsir requires a paid plan.',
-                'upgrade_url' => route('subscription.upgrade'),
-            ], 403);
-        }
+
 
         $tafsirSlug = $request->get('tafsir', Auth::user()?->preferred_tafsir ?? 'ibn-kathir-en');
         $tafsir     = Tafsir::where('slug', $tafsirSlug)->first()
@@ -161,11 +154,6 @@ class QuranController extends Controller
     // ── GET /quran/{surah}/{ayah}/tafsir-page ────────────
     public function tafsirPage(Request $request, Surah $surah, Ayah $ayah)
     {
-        if (!$this->quranService->userCanAccessTafsir(Auth::user())) {
-            return redirect()->route('subscription.upgrade')
-                ->with('message', 'Tafsir requires a paid plan.');
-        }
-
         $slug = $request->get('source', QuranService::DEFAULT_TAFSIR);
 
         $tafsirs = Tafsir::where('is_active', true)->orderBy('name')->get();
@@ -198,9 +186,6 @@ class QuranController extends Controller
 
     public function tafsirData(Request $request, Surah $surah, Ayah $ayah)
     {
-        if (!$this->quranService->userCanAccessTafsir(Auth::user())) {
-            return response()->json(['error' => 'premium_required'], 403);
-        }
 
         $slug = $request->get('source', QuranService::DEFAULT_TAFSIR);
         $selectedTafsir = Tafsir::where('slug', $slug)->where('is_active', true)->first();
@@ -257,13 +242,7 @@ class QuranController extends Controller
             ->where('is_active', true)
             ->first() ?? Translation::where('slug', 'sahih-international')->first();
 
-        if (!$this->quranService->userCanAccessTranslation(Auth::user(), $translation)) {
-            return response()->json([
-                'error'       => 'upgrade_required',
-                'message'     => 'This translation requires a paid plan.',
-                'upgrade_url' => route('subscription.upgrade'),
-            ], 403);
-        }
+
 
         $ayahTranslation = AyahTranslation::where('ayah_id', $ayah->id)
             ->where('translation_id', $translation->id)

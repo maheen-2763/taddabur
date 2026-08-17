@@ -354,8 +354,8 @@
                     {{ $initials }}
                 </div>
                 <div class="profile-user-name">{{ $user->name }}</div>
-                <span class="profile-plan-badge badge-{{ $user->plan }}">
-                    {{ strtoupper($user->plan) }}
+                <span class="profile-plan-badge" style="background:var(--emerald); color:#fff">
+                    <i class="bi bi-check-circle-fill me-1"></i>FREE FOREVER
                 </span>
             </div>
 
@@ -419,43 +419,16 @@
 
                 {{-- ── Subscription Info Card ── --}}
                 <div class="card-islamic">
-                    <div class="section-label">Subscription</div>
-
+                    <div class="section-label">Your Plan</div>
                     <div class="subscription-card">
                         <div>
-                            <div class="sub-plan-name">{{ strtoupper($user->plan) }}</div>
-                            <div class="sub-plan-desc">
-                                @if ($user->plan === 'premium')
-                                    Full access — all 24 Prophet stories, Hadith, personal notes, offline downloads
-                                @elseif($user->plan === 'basic')
-                                    All translations & recitations, tafsir, 12 Prophet stories, unlimited bookmarks
-                                @else
-                                    Free tier — 5 Prophet stories, 7 bookmarks
-                                @endif
+                            <div class="sub-plan-name">
+                                <i class="bi bi-check-circle-fill me-1" style="color:var(--emerald)"></i>FREE FOREVER
                             </div>
-                            @if ($user->plan_expires_at)
-                                <div class="sub-plan-desc mt-1">
-                                    <i class="bi bi-calendar3 me-1"></i>
-                                    @if ($user->activeSubscription?->status === 'cancelled')
-                                        Access ends {{ $user->plan_expires_at->format('d M Y') }}
-                                    @else
-                                        Renews {{ $user->plan_expires_at->format('d M Y') }}
-                                    @endif
-                                </div>
-                            @endif
-                        </div>
-
-                        <div class="d-flex gap-2 flex-wrap">
-                            @if ($user->plan !== 'free')
-                                <a href="{{ route('subscription.dashboard') }}" class="btn btn-outline-gold">
-                                    Manage Subscription
-                                </a>
-                            @endif
-                            @if ($user->plan !== 'premium')
-                                <a href="{{ route('pricing') }}" class="btn btn-emerald">
-                                    Upgrade Plan
-                                </a>
-                            @endif
+                            <div class="sub-plan-desc">
+                                Full access to everything — all Prophet stories, Hadith, tafsir, personal notes, unlimited
+                                bookmarks. No restrictions.
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -559,8 +532,7 @@
                         <div class="mb-3">
                             <label class="form-label">New Password</label>
                             <input type="password" name="password"
-                                class="form-control @error('password') is-invalid @enderror"
-                                placeholder="Min 8 characters">
+                                class="form-control @error('password') is-invalid @enderror" placeholder="Min 8 characters">
                             @error('password')
                                 <div class="text-danger mt-1">{{ $message }}</div>
                             @enderror

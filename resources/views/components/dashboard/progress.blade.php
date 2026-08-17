@@ -16,16 +16,9 @@
 {{-- Plan Card --}}
 <div class="d-card">
     <h5 class="d-card-title">Your Plan</h5>
-
-    <span class="d-badge d-badge-{{ $user->plan }}">
-        {{ strtoupper($user->plan) }}
+    <span class="d-badge" style="background:var(--emerald); color:#fff">
+        <i class="bi bi-check-circle-fill me-1"></i>FREE FOREVER
     </span>
-
-    @if (!$user->isPremium())
-        <a href="{{ route('subscription.upgrade') }}" class="btn-gold btn btn-sm w-100 mt-3">
-            Upgrade
-        </a>
-    @endif
 </div>
 
 {{-- Progress Card --}}
