@@ -40,6 +40,14 @@ return [
         'id' => env('UPI_ID'),
     ],
 
+    'razorpay' => [
+        'key' => env('RAZORPAY_KEY'),
+        'secret' => env('RAZORPAY_SECRET'),
+        'webhook_secret' => env('RAZORPAY_WEBHOOK_SECRET'),
+        'qr_id' => env('RAZORPAY_QR_ID'),
+        'qr_image_url' => env('RAZORPAY_QR_IMAGE_URL'),
+    ],
+
 
     'sunnah' => [
         'key' => env('SUNNAH_API_KEY'),

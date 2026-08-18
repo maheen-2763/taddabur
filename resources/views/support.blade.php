@@ -17,40 +17,9 @@
             margin: 0 auto 1rem;
         }
 
-        .support-ayah-arabic {
-            font-family: var(--quran-font, var(--font-arabic));
-            font-size: clamp(1.3rem, 3vw, 1.75rem);
-            line-height: 2.6;
-            direction: rtl;
-            text-align: center;
-            color: rgba(255, 255, 255, 0.9);
-            word-spacing: 0.08em;
-            margin-bottom: 0.75rem;
-            max-width: 600px;
-            margin-inline: auto;
-        }
-
-        .support-ayah-translation {
-            font-family: var(--font-body);
-            font-size: 0.92rem;
-            line-height: 1.85;
-            font-style: italic;
-            color: rgba(255, 255, 255, 0.65);
-            max-width: 480px;
-            margin: 0 auto;
-        }
-
-        .support-ayah-ref {
-            color: var(--gold-light);
-            font-size: 0.85rem;
-            font-style: italic;
-            margin-top: 0.4rem;
-        }
-
         .support-read-context {
             display: inline-block;
             margin-top: 0.75rem;
-            margin-bottom: 2rem;
             font-size: 0.8rem;
             color: var(--gold-light);
             text-decoration: none;
@@ -66,8 +35,6 @@
             color: rgba(255, 255, 255, 0.75);
             font-size: 1rem;
             line-height: 1.8;
-            max-width: 480px;
-            margin: 0 auto;
         }
 
         .support-card {
@@ -75,8 +42,6 @@
             border: 1px solid rgba(201, 150, 58, 0.25);
             border-radius: var(--radius-lg);
             padding: 2.5rem;
-            max-width: 420px;
-            margin: 2rem auto 0;
         }
 
         .qr-box {
@@ -88,28 +53,17 @@
         }
 
         .qr-box img {
-            width: 220px;
-            height: 220px;
+            width: 100%;
+            max-width: 260px;
+            height: auto;
             display: block;
-        }
-
-        .upi-id-tag {
-            font-family: monospace;
-            font-size: 0.9rem;
-            background: rgba(255, 255, 255, 0.08);
-            color: var(--gold-light);
-            padding: 0.4rem 0.9rem;
-            border-radius: 50px;
-            display: inline-block;
-            margin-top: 0.5rem;
+            margin: 0 auto;
         }
 
         .support-covers {
             margin-top: 2.5rem;
             padding-top: 1.5rem;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
-            max-width: 480px;
-            margin-inline: auto;
         }
 
         .support-covers-label {
@@ -219,13 +173,121 @@
                 opacity: 0.5;
             }
         }
+
+        /* Full-width ayah heading */
+        .ayah-full-heading {
+            width: 100%;
+            padding-inline: clamp(1rem, 5vw, 4rem);
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .reader-style-ayah {
+            font-family: var(--quran-font, var(--font-arabic));
+            font-size: clamp(1.6rem, 4vw, 2.6rem);
+            line-height: 2.7;
+            direction: rtl;
+            color: rgba(255, 255, 255, 0.95);
+            word-spacing: 0.1em;
+        }
+
+        .ayah-end-marker {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.9rem;
+            height: 1.9rem;
+            border: 1.5px solid var(--gold-light);
+            border-radius: 50%;
+            font-size: 0.85rem;
+            font-family: var(--font-body);
+            color: var(--gold-light);
+            margin-inline-start: 0.4rem;
+            vertical-align: middle;
+            direction: ltr;
+        }
+
+        .reader-style-translation {
+            font-family: var(--font-body);
+            font-size: 1rem;
+            line-height: 1.9;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 640px;
+            margin: 1.25rem auto 0;
+        }
+
+        .reader-style-ref {
+            color: var(--gold-light);
+            font-size: 0.85rem;
+            font-style: italic;
+            margin-top: 0.5rem;
+        }
+
+        /* Highlighted intro line — not muted */
+        .support-highlight {
+            color: #fff;
+            font-weight: 500;
+            font-size: 1.2rem;
+            max-width: 560px;
+            margin: 0 auto 1.5rem;
+            line-height: 1.6;
+        }
+
+        /* Payment toggle */
+        .payment-toggle {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50px;
+            padding: 0.3rem;
+        }
+
+        .payment-toggle-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            padding: 0.55rem 0.5rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .payment-toggle-btn.active {
+            background: var(--gold-light);
+            color: #0a2a18;
+            font-weight: 600;
+        }
+
+        /* Fixed input styling for dark background */
+        .support-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(201, 150, 58, 0.3);
+            color: #fff;
+            border-radius: 8px;
+            padding: 0.6rem 0.9rem;
+            font-size: 0.9rem;
+        }
+
+        .support-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .support-input:focus {
+            outline: none;
+            border-color: var(--gold-light);
+            background: rgba(255, 255, 255, 0.12);
+        }
     </style>
 @endpush
 
 @section('content')
 
     <section class="support-hero">
-        <div class="container-fluid position-relative" style="max-width:600px">
+        <div class="container-fluid position-relative px-3">
 
             <div class="book-wrap">
                 <svg width="100%" viewBox="0 0 680 380" role="img" aria-label="Open book with rising light">
@@ -274,48 +336,91 @@
 
             <h1 class="heading-font mb-3" style="color:#fff; font-size:2rem">Support Taddabur</h1>
 
-            @if ($lampAyah)
-                <p class="support-ayah-arabic" lang="ar" dir="rtl">
-                    {{ $lampAyah->text_arabic }}
-                </p>
-                <p class="support-ayah-translation mb-1">
-                    "{{ Illuminate\Support\Str::limit($lampAyah->translations->first()->text, 140) }}"
-                </p>
-                <p class="support-ayah-ref">— An-Nur 24:35</p>
-                <a href="{{ route('quran.show', 24) }}?highlight=35" class="support-read-context">
-                    Open this ayah in the Quran Reader →
-                </a>
-            @endif
+            <!-- Full-width Ayah heading -->
+            <div class="ayah-full-heading">
+                @if ($lampAyah)
+                    <p class="reader-style-ayah" lang="ar" dir="rtl">
+                        {{ $lampAyah->text_arabic }}
+                        <span class="ayah-end-marker">35</span>
+                    </p>
+                    <p class="reader-style-translation">
+                        "{{ Illuminate\Support\Str::limit($lampAyah->translations->first()->text, 160) }}"
+                    </p>
+                    <p class="reader-style-ref">— Surah An-Nur, Ayah 35</p>
+                    <a href="{{ route('quran.show', 24) }}?highlight=35" class="support-read-context">
+                        Open this ayah in the Quran Reader →
+                    </a>
+                @endif
+            </div>
 
-            <p class="support-message">
+            <p class="support-highlight">
                 Knowledge, like light, was never meant to stay behind closed doors.
             </p>
-            <p class="support-message mt-2">
-                This page exists simply so the option is here — for anyone who wishes to
-                contribute toward what keeps it running. Everything else stays exactly as
-                it is, either way.
-            </p>
 
-            <div class="support-card">
-                <div class="qr-box">
-                    <img src="{{ $qrDataUri }}" alt="UPI QR Code">
-                </div>
-                <div>
-                    <span class="upi-id-tag">
-                        <i class="bi bi-qr-code me-1"></i>{{ config('services.upi.id') }}
-                    </span>
-                </div>
-                <p class="mt-3 mb-0" style="color:rgba(255,255,255,0.6); font-size:0.85rem">
-                    Scan with any UPI app — Google Pay, PhonePe, Paytm, or your bank's app.
+            <div class="mx-auto mb-4" style="max-width: 480px;">
+                <p class="support-message">
+                    This page exists simply so the option is here — for anyone who wishes to
+                    contribute toward what keeps it running. Everything else stays exactly as
+                    it is, either way.
                 </p>
             </div>
 
-            <div class="support-covers">
-                <p class="support-covers-label">What this helps sustain</p>
-                <p class="support-covers-list">
-                    Keeping the content accurate · Reviewing new sources · Fixing what needs fixing ·
-                    Building what comes next
-                </p>
+            <!-- Payment section -->
+            <div class="mx-auto" style="max-width: 420px; text-align:left">
+
+                <div class="payment-toggle" role="tablist">
+                    <button type="button" class="payment-toggle-btn active" data-target="upi-panel">
+                        <i class="bi bi-qr-code me-1"></i>UPI
+                    </button>
+                    <button type="button" class="payment-toggle-btn" data-target="card-panel">
+                        <i class="bi bi-credit-card me-1"></i>Card / Netbanking
+                    </button>
+                </div>
+
+                <div id="upi-panel" class="payment-panel">
+                    <div class="support-card text-center">
+                        <div class="qr-box">
+                            <img src="{{ $qrDataUri }}" alt="Razorpay UPI QR Code">
+                        </div>
+                        <p class="mt-3 mb-0" style="color:rgba(255,255,255,0.6); font-size:0.85rem">
+                            Scan with any UPI app — Google Pay, PhonePe, Paytm, or your bank's app.
+                        </p>
+                    </div>
+                </div>
+
+                <div id="card-panel" class="payment-panel d-none">
+                    <div class="support-card text-center">
+                        <p class="mb-3" style="color:rgba(255,255,255,0.7); font-size:0.9rem">
+                            Pay via card, netbanking, or wallet
+                        </p>
+
+                        <input type="number" id="donation-amount" placeholder="Amount (₹)" min="1"
+                            class="support-input mb-2">
+                        <input type="text" id="donor-name" placeholder="Your Name (optional)"
+                            class="support-input mb-2">
+                        <textarea id="donor-message" placeholder="Message (optional)" class="support-input mb-2"></textarea>
+
+                        <div class="form-check d-flex justify-content-center align-items-center gap-2 mb-3">
+                            <input type="checkbox" id="donor-public" class="form-check-input" checked>
+                            <label class="form-check-label" for="donor-public"
+                                style="color:rgba(255,255,255,0.6); font-size:0.85rem">
+                                Show my name in donor list
+                            </label>
+                        </div>
+
+                        <button id="razorpay-donate-btn" class="btn btn-outline-light w-100">
+                            <i class="bi bi-credit-card me-1"></i>Donate Now
+                        </button>
+                    </div>
+                </div>
+
+                <div class="support-covers text-center">
+                    <p class="support-covers-label">What this helps sustain</p>
+                    <p class="support-covers-list">
+                        Keeping the content accurate · Reviewing new sources · Fixing what needs fixing ·
+                        Building what comes next
+                    </p>
+                </div>
             </div>
 
             <p class="mt-4 mb-0" style="color:rgba(255,255,255,0.5); font-size:0.85rem">
@@ -373,3 +478,14 @@
     @endif
 
 @endsection
+
+@push('scripts')
+    <script>
+        window.CONFIG = window.CONFIG || {};
+        window.CONFIG.createOrderUrl = "{{ route('donate.create-order') }}";
+        window.CONFIG.verifyUrl = "{{ route('donate.verify') }}";
+        window.CONFIG.csrfToken = "{{ csrf_token() }}";
+    </script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="{{ asset('js/donation.js') }}"></script>
+@endpush

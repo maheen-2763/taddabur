@@ -25,6 +25,8 @@ use App\Http\Controllers\ProphetNameController;
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\FeaturesController;
 use App\Http\Controllers\SupportController;
+use App\Http\Controllers\DonationController;
+use App\Http\Controllers\RazorpayWebhookController;
 
 
 // Re-import any missing translations weekly (catches new additions)
@@ -52,6 +54,14 @@ Route::get('/about', [AboutController::class, 'index'])->name('about');
 Route::get('/features', [FeaturesController::class, 'index'])->name('features.index');
 
 Route::get('/support', [SupportController::class, 'index'])->name('support');
+
+
+// routes/web.php
+Route::post('/donate/create-order', [DonationController::class, 'createOrder'])->name('donate.create-order');
+Route::post('/donate/verify', [DonationController::class, 'verifyPayment'])->name('donate.verify');
+
+// Webhook — CSRF se exempt karna padega, ye Razorpay ke server se aata hai, browser se nahi
+Route::post('/webhooks/razorpay', [RazorpayWebhookController::class, 'handle'])->name('webhooks.razorpay');
 
 // Global — collections index page (all collections mix)
 Route::middleware('auth')->post('/hadith/{hadith}/toggle-read', [HadithController::class, 'toggleRead'])
@@ -305,11 +315,6 @@ Route::get(
     '/reflections/{dailyContent}',
     [ReflectionController::class, 'show']
 )->name('reflections.show');
-
-
-Route::get('/time-test', function () {
-    return view('test');
-});
 
 
 
