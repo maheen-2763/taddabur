@@ -42,6 +42,14 @@ Schedule::command('quran:import-translations --all')
 // PUBLIC ROUTES — No login required
 // ============================================================
 
+Route::get('/test-404', function () {
+    abort(404);
+});
+Route::get('/test-500', function () {
+    abort(500);
+});
+
+
 // Landing page
 
 Route::get('/', [HomeController::class, 'index'])
