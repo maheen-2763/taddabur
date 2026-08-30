@@ -37,10 +37,11 @@ function toggleHadithBookmark(btn, hadithId) {
             if (data.status === "added") {
                 btn.classList.add("bookmarked");
                 btn.innerHTML =
-                    '<i class="bi bi-bookmark-fill"></i> Bookmarked';
+                    '<i class="bi bi-bookmark-fill"></i> <span class="d-none d-sm-inline"> Bookmarked</span>';
             } else {
                 btn.classList.remove("bookmarked");
-                btn.innerHTML = '<i class="bi bi-bookmark"></i> Bookmark';
+                btn.innerHTML =
+                    '<i class="bi bi-bookmark"></i> <span class="d-none d-sm-inline"> Bookmark</span>';
             }
         })
         .catch(() => showFlash("Could not update bookmark.", "error"));
@@ -168,7 +169,8 @@ function saveHadithNote(hadithId) {
 
             const btn = document.getElementById("hadith-note-btn-" + hadithId);
             btn.classList.add("has-note");
-            btn.innerHTML = '<i class="bi bi-pencil-square"></i> Note';
+            btn.innerHTML =
+                '<i class="bi bi-pencil-square"></i> <span class="d-none d-sm-inline"> Note</span>';
 
             closeHadithNoteEditor(hadithId);
             showFlash("✓ Note saved", "success");
@@ -199,7 +201,8 @@ function deleteHadithNote(hadithId) {
             delete window.HADITH_USER_NOTES[hadithId];
             const btn = document.getElementById("hadith-note-btn-" + hadithId);
             btn.classList.remove("has-note");
-            btn.innerHTML = '<i class="bi bi-pencil-square"></i> Add Note';
+            btn.innerHTML =
+                '<i class="bi bi-pencil-square"></i> <span class="d-none d-sm-inline"> Add Note</span>';
             closeHadithNoteEditor(hadithId);
             showFlash("Note deleted", "info");
         })
@@ -228,7 +231,7 @@ function fallbackCopyToClipboard(text) {
 
 function flashCopied(btn, label = "Copied!") {
     const orig = btn.innerHTML;
-    btn.innerHTML = `<i class="bi bi-check"></i> ${label}`;
+    btn.innerHTML = `<i class="bi bi-check"></i> <span class="d-none d-sm-inline"> ${label}</span>`;
     setTimeout(() => (btn.innerHTML = orig), 1500);
 }
 
@@ -236,10 +239,10 @@ function flashCopied(btn, label = "Copied!") {
 function toggleHadithRead(btn, hadithId) {
     apiRequest(`/hadith/${hadithId}/toggle-read`, "POST")
         .then((data) => {
-            btn.classList.toggle("bookmarked", data.is_read);
+            btn.classList.toggle("is-read", data.is_read);
             btn.innerHTML = data.is_read
-                ? '<i class="bi bi-check-circle-fill"></i> Read'
-                : '<i class="bi bi-check-circle"></i> Mark as Read';
+                ? '<i class="bi bi-check-circle-fill"></i> <span class="d-none d-sm-inline"> Read</span>'
+                : '<i class="bi bi-check-circle"></i> <span class="d-none d-sm-inline"> Mark as Read</span>';
         })
         .catch(() => showFlash("Could not update read status.", "error"));
 }

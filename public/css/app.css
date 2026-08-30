@@ -155,6 +155,56 @@ h4,
     background: rgba(255, 255, 255, 0.08);
 }
 
+@media (max-width: 991.98px) {
+    #navMain > .d-flex.align-items-center.gap-2 {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.75rem 0.5rem 0.5rem;
+        margin-top: 0.5rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    #navMain > .d-flex.align-items-center.gap-2 .theme-toggle {
+        flex-shrink: 0;
+    }
+
+    /* ✅ Sign In (guest) — light border, centered, pill-shape jaisa Get Started */
+    #navMain > .d-flex.align-items-center.gap-2 .nav-link-islamic {
+        flex: 1 1 auto;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: var(--radius);
+        margin-bottom: 0.3rem;
+        padding: 0.5rem 0.5rem !important;
+    }
+
+    #navMain > .d-flex.align-items-center.gap-2 .nav-link-islamic:hover {
+        border-color: var(--gold);
+    }
+
+    /* ✅ User badge (logged-in) — thoda aur breathing room + consistent height */
+    #navMain > .d-flex.align-items-center.gap-2 .dropdown {
+        flex: 1 1 auto;
+    }
+
+    #navMain > .d-flex.align-items-center.gap-2 .nav-user-badge {
+        width: 100%;
+        justify-content: center;
+        padding: 0.5rem 1rem;
+    }
+
+    #navMain > .d-flex.align-items-center.gap-2 .nav-user-name {
+        max-width: none; /* mobile pe poori jagah hai, ellipsis-truncate ki zaroorat nahi */
+    }
+
+    #navMain > .d-flex.align-items-center.gap-2 .btn-gold {
+        flex: 1 1 100%;
+        text-align: center;
+        justify-content: center;
+    }
+}
 /* ================================================
            CARDS
         ================================================ */
@@ -688,4 +738,29 @@ html {
 .dev-note-hadith-source {
     font-size: 0.78rem;
     color: var(--dev-note-hadith-source);
+}
+
+/* ── Pagination — match app's emerald theme instead of Bootstrap's default blue ── */
+.pagination .page-item.active .page-link {
+    background-color: var(--emerald);
+    border-color: var(--emerald);
+    color: white;
+}
+
+.pagination .page-link {
+    color: var(--emerald);
+}
+
+.pagination .page-link:hover {
+    color: var(--emerald-dark);
+    background-color: rgba(27, 94, 59, 0.08);
+}
+
+[data-bs-theme="dark"] .pagination .page-link {
+    color: var(--emerald-light);
+}
+
+[data-bs-theme="dark"] .pagination .page-item.active .page-link {
+    background-color: var(--emerald-light);
+    border-color: var(--emerald-light);
 }

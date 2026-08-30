@@ -138,8 +138,8 @@
     font-weight: 400;
 }
 .hadith-disclaimer {
-    font-size: 0.85rem;
-    color: var(--emerald-light);
+    font-size: 0.95rem;
+    color: var(--emerald);
     opacity: 0.6;
     border-left: 2px solid var(--gold);
     padding-left: 10px;
@@ -149,6 +149,10 @@
 .hadith-disclaimer a {
     color: var(--gold-dark);
     text-decoration: underline;
+}
+
+[data-bs-theme="dark"] .hadith-disclaimer {
+    color: var(--emerald-light);
 }
 
 /* Collection Card — hover lift + icon */
@@ -423,7 +427,7 @@
 
 .hadith-breadcrumb .breadcrumb-current {
     color: var(--emerald-light);
-    opacity: 0.7;
+    opacity: 0.9;
 }
 
 /* ════════════ EMPTY STATE ════════════ */
@@ -676,32 +680,27 @@
     background: var(--cream);
 }
 
+.ayah-btn.bookmarked,
+.ayah-btn.has-note,
+.ayah-btn.is-read {
+    background: var(--emerald);
+    color: white;
+    border-color: var(--emerald);
+}
+
 /* ════════════ MARK AS READ BUTTON ════════════ */
-.js-mark-read {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.js-mark-read::before {
-    content: "○";
-    font-size: 0.85rem;
-}
-
-.js-mark-read.bookmarked::before {
-    content: "✓";
-}
 
 .hadith-progress-label {
     font-size: 0.72rem;
-    color: var(--emerald-light);
+    color: var(--emerald);
     opacity: 0.65;
-    margin-top: 2px;
-    letter-spacing: 0.2px;
+    margin-top: 2.5px;
+    letter-spacing: 0.1px;
 }
 
 [data-bs-theme="dark"] .hadith-progress-label {
     opacity: 0.75; /* dark mode mein thoda zyada opacity — kam contrast na lage */
+    color: var(--emerald-light);
 }
 
 .review-flag {
@@ -900,6 +899,32 @@
     }
 }
 
+.hadith-resume-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(212, 175, 55, 0.1);
+    border: 1px solid var(--gold);
+    border-radius: 24px;
+    padding: 8px 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: background 0.15s ease;
+}
+
+.hadith-resume-btn:hover {
+    background: rgba(212, 175, 55, 0.18);
+}
+
+[data-bs-theme="dark"] .hadith-resume-btn {
+    background: rgba(232, 199, 102, 0.1);
+    border-color: var(--gold-light, var(--gold));
+}
+
 a.hadith-back-btn {
     color: var(--emerald-light) !important;
     text-decoration: none !important;
@@ -997,4 +1022,120 @@ a.hadith-resume-btn:hover {
     opacity: 0.8;
     margin-top: 0.75rem;
     margin-bottom: 0.25rem;
+}
+/* ── Mobile: action buttons become icon-only pills ── */
+@media (max-width: 576px) {
+    .hadith-actions {
+        gap: 0.5rem;
+    }
+
+    .ayah-btn {
+        padding: 0.5rem;
+        width: 42px;
+        height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+    }
+
+    .ayah-btn i {
+        margin: 0;
+        font-size: 1.05rem;
+    }
+}
+
+.grade-pill-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.grade-info-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--emerald-light);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.68rem;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.grade-info-btn:hover,
+.grade-info-btn:focus {
+    background: rgba(27, 94, 59, 0.08);
+    border-color: var(--emerald);
+    color: var(--emerald);
+}
+
+.popover {
+    max-width: 260px;
+    border-color: var(--gold);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.popover-body {
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    padding: 0.65rem 0.85rem;
+}
+
+[data-bs-theme="dark"] .popover {
+    background-color: var(--cream-dark);
+}
+
+[data-bs-theme="dark"] .popover-body {
+    color: var(--ink);
+}
+
+.scholar-info-icon-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--emerald-light);
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.scholar-info-icon-btn:hover {
+    background: rgba(27, 94, 59, 0.08);
+    border-color: var(--emerald);
+    color: var(--emerald);
+}
+
+.isnad-type-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.68rem;
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--muted);
+    margin-right: 4px;
+}
+
+[data-bs-theme="dark"] .isnad-type-badge {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.grade-other {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--muted);
+}
+
+[data-bs-theme="dark"] .grade-other {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--ink-soft);
 }

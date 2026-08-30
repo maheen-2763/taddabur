@@ -31,11 +31,6 @@ class StoryService
             ->with('prophet')
             ->orderBy('sort_order');
 
-        // Free plan users only see free stories
-        if (!$user || !$user->isPremium()) {
-            $query->free();
-        }
-
         // Apply filters
         if ($category) {
             $query->ofCategory($category);
@@ -174,12 +169,25 @@ class StoryService
             ->pluck('story_id');
 
         return Story::published()
-            ->when(!$user->isPremium(), fn($q) => $q->free())
             ->whereNotIn('id', $startedIds)
             ->inRandomOrder()
             ->take($limit)
             ->get();
     }
+
+    // -------------------------------------------------------
+    // GET STORY COUNT PER DIFFICULTY LEVEL
+    // Used for sidebar filter counts
+    // -------------------------------------------------------
+    public function getDifficultyCounts(): array
+    {
+        return Story::published()
+            ->selectRaw('difficulty, count(*) as cnt')
+            ->groupBy('difficulty')
+            ->pluck('cnt', 'difficulty')
+            ->toArray();
+    }
+
     public function markChapterComplete(User $user, Story $story, StoryChapter $chapter): ChapterCompletion
     {
         return ChapterCompletion::firstOrCreate([

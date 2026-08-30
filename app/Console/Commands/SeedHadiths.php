@@ -20,6 +20,8 @@ class SeedHadiths extends Command
     private int $chapterMismatchSkipped = 0;
     private array $chapterMismatchNumbers = [];
 
+    private int $preservedManualTranslations = 0;
+
     public function handle(HadithApiService $api)
     {
         $slug = $this->argument('collection');
@@ -77,6 +79,11 @@ class SeedHadiths extends Command
             return 1;
         }
 
+        // ✅ Ab tak DB mein jo existing hadiths hain, unka english text pehle se load kar lo —
+        // taaki agar kisi ka manual fix hai (source empty hone ke bawajood), wo overwrite na ho
+        $existingEnglishByNumber = Hadith::where('collection_id', $collection->id)
+            ->pluck('english', 'number');
+
         $englishByNumber = collect($englishData['hadiths'] ?? [])->keyBy('hadithnumber');
 
         $totalCount = count($arabicData['hadiths']);
@@ -102,10 +109,22 @@ class SeedHadiths extends Command
             }
 
             $englishHadith = $englishByNumber->get($number);
-            $englishText = trim($englishHadith['text'] ?? '');
+            $apiEnglishText = trim($englishHadith['text'] ?? '');
 
-            if ($englishText === '') {
-                Log::warning("Hadith #{$number} ({$slug}): English translation missing.");
+            // ✅ SAFETY FIX — agar source API se translation khaali aaya hai,
+            // lekin DB mein pehle se koi (manually fixed) translation maujood hai,
+            // toh usse overwrite mat karo — wahi existing value rakho.
+            if ($apiEnglishText !== '') {
+                $finalEnglishText = $apiEnglishText;
+            } else {
+                $existingText = $existingEnglishByNumber->get($number);
+                if (!empty($existingText)) {
+                    $finalEnglishText = $existingText;
+                    $this->preservedManualTranslations++;
+                } else {
+                    $finalEnglishText = null;
+                    Log::warning("Hadith #{$number} ({$slug}): English translation missing.");
+                }
             }
 
             $grade = $arabicHadith['grades'][0] ?? null;
@@ -142,7 +161,7 @@ class SeedHadiths extends Command
                 [
                     'chapter_id' => $chapterId,
                     'arabic' => $arabicText,
-                    'english' => $englishText !== '' ? $englishText : null,
+                    'english' => $finalEnglishText,
                     'grade' => $grade['grade'] ?? null,
                     'grade_source' => $grade['name'] ?? null,
                 ]
@@ -159,7 +178,6 @@ class SeedHadiths extends Command
 
         $this->info("✅ {$slug} seeded! Total hadiths in DB: {$finalCount}");
 
-        // ✅ Ab dono clearly separate dikhenge — confusion nahi hoga
         if ($this->emptyTextSkipped > 0) {
             $this->line("ℹ️  {$this->emptyTextSkipped} hadiths ka Arabic text source data me hi khaali tha (genuine gap, code bug nahi).");
             $this->line("   Numbers: " . implode(', ', array_slice($this->emptyTextNumbers, 0, 20)) .
@@ -170,6 +188,11 @@ class SeedHadiths extends Command
             $this->warn("⚠️  {$this->chapterMismatchSkipped} hadiths ka valid text hai lekin chapter match nahi hua (INVESTIGATE karo).");
             $this->warn("   Numbers: " . implode(', ', array_slice($this->chapterMismatchNumbers, 0, 20)) .
                 ($this->chapterMismatchSkipped > 20 ? ' ... (poori list ke liye storage/logs/laravel.log dekho)' : ''));
+        }
+
+        // ✅ Naya summary line — batayega kitne manual-fixes safely preserve hue
+        if ($this->preservedManualTranslations > 0) {
+            $this->info("🛡️  {$this->preservedManualTranslations} hadiths ka manually-added translation preserve kiya gaya (source API mein khaali tha).");
         }
 
         if ($this->emptyTextSkipped === 0 && $this->chapterMismatchSkipped === 0) {

@@ -1,5 +1,4 @@
 <div class="hadith-grade-legend mb-3">
-    <p class="text-muted mb-2" style="font-size:0.85rem">What these grades mean</p>
     <div class="grade-legend-grid">
         <div class="grade-legend-item">
             <span class="grade-badge grade-sahih">Sahih</span>

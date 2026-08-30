@@ -134,7 +134,7 @@
                         </ul>
                     </div>
                 @else
-                    <a href="{{ route('login') }}" class="nav-link-islamic nav-link" style="font-size:0.85rem;">
+                    <a href="{{ route('login') }}" class="nav-link-islamic nav-link">
                         Sign In
                     </a>
                     <a href="{{ route('register') }}" class="btn-gold btn btn-sm">

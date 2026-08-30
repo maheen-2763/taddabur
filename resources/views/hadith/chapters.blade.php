@@ -33,8 +33,47 @@
             @endif
         </div>
 
-        <h2 class="heading-font mb-1" style="color:var(--emerald)">{{ $collection->name }}</h2>
-        <p class="text-muted mb-4">{{ $collection->scholar }}</p>
+        <h2 class="heading-font mb-1" style="color:var(--emerald-light)">{{ $collection->name }}</h2>
+
+        <div class="d-flex align-items-center gap-2 mb-4">
+            <p class="text-muted mb-0" style="font-size:0.92rem;">
+                <i class="bi bi-person-fill" style="font-size:0.8rem; opacity:0.6; margin-right:4px;"></i>
+                {{ $collection->scholar }}
+            </p>
+
+            @if ($collection->scholar_bio)
+                <button type="button" class="scholar-info-icon-btn" data-bs-toggle="collapse" data-bs-target="#scholarBio"
+                    aria-expanded="false" title="About {{ $collection->scholar }}">
+                    <i class="bi bi-info-lg"></i>
+                </button>
+            @endif
+        </div>
+
+        @if ($collection->scholar_bio)
+            <div class="collapse mb-4" id="scholarBio">
+                <div class="hadith-glossary-box">
+                    @if ($collection->scholar_arabic_name)
+                        <p class="mb-1" dir="rtl"
+                            style="font-family:'Amiri',serif; font-size:1.1rem; color:var(--emerald-light);">
+                            {{ $collection->scholar_arabic_name }}
+                        </p>
+                    @endif
+                    @if ($collection->scholar_years)
+                        <p class="mb-2" style="font-size:0.78rem; color:var(--muted);">
+                            {{ $collection->scholar_years }}
+                        </p>
+                    @endif
+                    <p class="mb-0">{{ $collection->scholar_bio }}</p>
+                </div>
+            </div>
+        @endif
+
+        @guest
+            <p class="text-muted mb-3" style="font-size:0.82rem; font-style:italic;">
+                <i class="bi bi-box-arrow-in-right me-1"></i>
+                Sign in to track your progress through this collection.
+            </p>
+        @endguest
 
 
         @unless (in_array($collection->slug, ['bukhari', 'muslim']))

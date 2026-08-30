@@ -115,13 +115,13 @@
         }
 
         /* .story-chip-gold {
-                                            font-size: 0.68rem;
-                                            padding: 0.2rem 0.55rem;
-                                            border-radius: 50px;
-                                            font-weight: 500;
-                                            background: rgba(180, 130, 40, 0.1);
-                                            color: var(--gold);
-                                        } */
+                                                                                            font-size: 0.68rem;
+                                                                                            padding: 0.2rem 0.55rem;
+                                                                                            border-radius: 50px;
+                                                                                            font-weight: 500;
+                                                                                            background: rgba(180, 130, 40, 0.1);
+                                                                                            color: var(--gold);
+                                                                                        } */
 
         .story-badge-free {
             font-size: 0.65rem;
@@ -285,8 +285,14 @@
                             <a href="{{ route('stories.index', array_merge(request()->query(), ['difficulty' => $level])) }}"
                                 class="filter-item mb-1 {{ request('difficulty') === $level ? 'active' : '' }}">
                                 {{ ucfirst($level) }}
+                                @if (request('difficulty') === $level && isset($difficultyCounts[$level]))
+                                    <span class="text-muted" style="font-size:0.72rem">
+                                        ({{ $difficultyCounts[$level] }})
+                                    </span>
+                                @endif
                             </a>
                         @endforeach
+
 
                         @if (request()->hasAny(['difficulty', 'prophet', 'category']))
                             <hr class="my-2" style="border-color:var(--border)">
@@ -315,6 +321,9 @@
                         <a href="{{ route('stories.index', ['difficulty' => $level]) }}"
                             class="filter-pill {{ request('difficulty') === $level ? 'active' : '' }}">
                             {{ ucfirst($level) }}
+                            @if (request('difficulty') === $level && isset($difficultyCounts[$level]))
+                                ({{ $difficultyCounts[$level] }})
+                            @endif
                         </a>
                     @endforeach
                 </div>

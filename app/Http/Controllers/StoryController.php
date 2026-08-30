@@ -53,7 +53,10 @@ class StoryController extends Controller
         // ✅ Service handles prophet listing
         $prophets = $this->storyService->getAllProphets();
 
-        return view('stories.index', compact('stories', 'prophets'));
+        // ✅ NEW — count of published stories per difficulty level
+        $difficultyCounts = $this->storyService->getDifficultyCounts();
+
+        return view('stories.index', compact('stories', 'prophets', 'difficultyCounts'));
     }
 
     // GET /stories/{story:slug}

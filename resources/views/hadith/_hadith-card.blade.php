@@ -1,12 +1,29 @@
 <div class="hadith-card" id="hadith-{{ $h->id }}" data-hadith-id="{{ $h->id }}">
 
+    @php $gradeInfo = \App\Support\HadithGradeParser::parse($h->grade); @endphp
+
     <div class="hadith-card-header">
         <span class="hadith-number-badge">{{ $h->id }}</span>
 
         <span class="hadith-header-badges">
-            @if ($h->grade)
-                <span class="grade-badge grade-{{ Str::slug($h->grade) }}">{{ $h->grade }}</span>
+            @if ($gradeInfo['isnad_type'])
+                <span class="isnad-type-badge" title="Isnad type — see the glossary above">
+                    {{ $gradeInfo['isnad_type'] }}
+                </span>
             @endif
+
+            @if ($gradeInfo['label'])
+                <span class="grade-badge {{ $gradeInfo['css_class'] }}" title="Full grade: {{ $h->grade }}">
+                    {{ $gradeInfo['label'] }}
+                </span>
+            @elseif (!$gradeInfo['isnad_type'] && $h->grade)
+                {{-- ✅ Sirf tab dikhao jab isnad-type BHI nahi mila —
+             warna "Maqtu" jaisa case do baar dikh jayega --}}
+                <span class="grade-badge grade-other" title="{{ $h->grade }}">
+                    {{ $h->grade }}
+                </span>
+            @endif
+
             @if ($h->needs_review)
                 <span class="review-flag" title="This grade is pending scholarly verification">⚠ Under Review</span>
             @endif
@@ -25,12 +42,12 @@
     @endif
 
     <div class="hadith-arabic-zone">
-        <p class="hadith-arabic" dir="rtl">{{ $h->arabic }}</p>
+        <p class="hadith-arabic" dir="rtl">{!! $h->arabic !!}</p>
     </div>
 
     <div class="hadith-divider"></div>
 
-    <p class="hadith-english">{{ $h->english }}</p>
+    <p class="hadith-english">{!! $h->english !!}</p>
 
     <div class="hadith-reference-line">
         {{ $collectionName ?? '' }} › {{ $chapterTitle ?? '' }} › Hadith# {{ $h->number }}
@@ -40,34 +57,44 @@
 
         @auth
             <button class="ayah-btn {{ $isBookmarked ? 'bookmarked' : '' }}" id="hadith-bookmark-{{ $h->id }}"
+                title="{{ $isBookmarked ? 'Remove Bookmark' : 'Bookmark' }}"
                 onclick="toggleHadithBookmark(this, {{ $h->id }})">
                 <i class="bi bi-bookmark{{ $isBookmarked ? '-fill' : '' }}"></i>
-                {{ $isBookmarked ? 'Bookmarked' : 'Bookmark' }}
+                <span class="d-none d-sm-inline">{{ $isBookmarked ? ' Bookmarked' : ' Bookmark' }}</span>
             </button>
         @endauth
 
-        <button class="ayah-btn" onclick="copyHadithText(this, {{ $h->id }})">
-            <i class="bi bi-clipboard"></i> Copy
+        <button class="ayah-btn" title="Copy" onclick="copyHadithText(this, {{ $h->id }})">
+            <i class="bi bi-clipboard"></i> <span class="d-none d-sm-inline">Copy</span>
         </button>
 
-        <button class="ayah-btn"
+        <button class="ayah-btn" title="Share"
             onclick="shareHadith('{{ $collectionSlug ?? $h->collection->slug }}', {{ $h->id }}, this)">
-            <i class="bi bi-share"></i> Share
+            <i class="bi bi-share"></i> <span class="d-none d-sm-inline">Share</span>
         </button>
 
         @auth
             <button class="ayah-btn {{ $hasNote ? 'has-note' : '' }}" id="hadith-note-btn-{{ $h->id }}"
+                title="{{ $hasNote ? 'Edit Note' : 'Add Note' }}"
                 onclick="toggleHadithNoteEditor(this, {{ $h->id }})">
                 <i class="bi bi-pencil-square"></i>
-                {{ $hasNote ? 'Has Note' : 'Add Note' }}
+                <span class="d-none d-sm-inline">{{ $hasNote ? ' Has Note' : ' Add Note' }}</span>
             </button>
-        @endauth
 
-        <button class="ayah-btn js-mark-read {{ $isRead ?? false ? 'bookmarked' : '' }}"
-            id="hadith-read-btn-{{ $h->id }}" onclick="toggleHadithRead(this, {{ $h->id }})">
-            <i class="bi bi-check-circle{{ $isRead ?? false ? '-fill' : '' }}"></i>
-            {{ $isRead ?? false ? 'Read' : 'Mark as Read' }}
-        </button>
+            <button class="ayah-btn js-mark-read {{ $isRead ?? false ? 'is-read' : '' }}"
+                id="hadith-read-btn-{{ $h->id }}"
+                title="{{ $isRead ?? false ? 'Marked as Read' : 'Mark as Read' }}"
+                onclick="toggleHadithRead(this, {{ $h->id }})">
+                <i class="bi bi-check-circle{{ $isRead ?? false ? '-fill' : '' }}"></i>
+                <span class="d-none d-sm-inline">{{ $isRead ?? false ? ' Read' : ' Mark as Read' }}</span>
+            </button>
+        @else
+            <span class="ayah-btn" title="Sign in to track progress"
+                style="opacity:0.7; cursor:default; font-style:italic;">
+                <i class="bi bi-box-arrow-in-right"></i>
+                <span class="d-none d-sm-inline"> Sign in to track progress</span>
+            </span>
+        @endauth
 
     </div>
 

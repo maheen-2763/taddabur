@@ -46,8 +46,9 @@ return [
 
         [
             'tag' => 'Hadith',
-            'title' => 'Six Major Collections',
-            'description' => "Sahih Bukhari, Sahih Muslim, Muwatta Malik, Abu Dawud, Jami' at-Tirmidhi, and Sunan Ibn Majah — English translations sourced via the Fawaz Ahmed Hadith API, using the standard published translation for each collection.",
+            'title' => 'Major Hadith Collections',
+            'description' => "Sahih Bukhari, Sahih Muslim, Muwatta Malik, Sunan Abu Dawud, Jami' at-Tirmidhi, and Sunan Ibn Majah — English translations sourced via the Fawaz Ahmed Hadith API, using the standard published translation for each collection. 
+            (Note: some scholarly traditions include Sunan al-Nasa'i rather than Muwatta Malik as the sixth of the classical 'Kutub al-Sittah' — our selection reflects the collections currently available in the app.)",
         ],
         [
             'tag' => 'Prophet Stories',

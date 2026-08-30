@@ -71,8 +71,6 @@ class HadithController extends Controller
                     ->orderBy('number')
                     ->first();
 
-                /** @var \App\Models\User|null $user */
-                $user = Auth::user();
 
                 if ($user) {
                     // ✅ Single query — sab chapters ka read-count ek saath (N+1 nahi)
