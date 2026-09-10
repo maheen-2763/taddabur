@@ -33,24 +33,46 @@
 
     {{-- // Required columns from parent query: id, number, arabic, english, grade, grade_source, needs_review,
     translation_incomplete, chapter_id (for highlight links) --}}
+    @php
+        $hasArabic = !empty(trim(strip_tags($h->arabic ?? '')));
+        $hasEnglish = !empty(trim(strip_tags($h->english ?? '')));
+    @endphp
 
-    @if ($h->translation_incomplete)
+    @if ($h->translation_incomplete || !$hasArabic || !$hasEnglish)
         <div class="hadith-incomplete-notice">
             <i class="bi bi-exclamation-triangle"></i>
-            Translation not available for this hadith yet.
+            @if (!$hasArabic && !$hasEnglish)
+                This hadith's text is not available yet.
+            @elseif (!$hasArabic)
+                Arabic text not available for this hadith yet.
+            @else
+                Translation not available for this hadith yet.
+            @endif
         </div>
     @endif
 
     <div class="hadith-arabic-zone">
-        <p class="hadith-arabic" dir="rtl">{!! $h->arabic !!}</p>
+        <p class="hadith-arabic" dir="rtl">
+            {!! $hasArabic ? $h->arabic : '<span class="text-muted" style="font-style:italic;">—</span>' !!}
+        </p>
     </div>
 
     <div class="hadith-divider"></div>
 
-    <p class="hadith-english">{!! $h->english !!}</p>
+    <p class="hadith-english">
+        {!! $hasEnglish ? $h->english : '<span class="text-muted" style="font-style:italic;">—</span>' !!}
+    </p>
 
-    <div class="hadith-reference-line">
-        {{ $collectionName ?? '' }} › {{ $chapterTitle ?? '' }} › Hadith# {{ $h->number }}
+    <div class="hadith-reference-line d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <span>{{ $collectionName ?? '' }} › {{ $chapterTitle ?? '' }} › Hadith# {{ $h->number }}</span>
+
+        @if (!empty($showContextLink) && !empty($chapterNumber))
+            <a href="{{ route('hadith.show', [$collectionSlug, $chapterNumber]) }}?highlight={{ $h->id }}"
+                class="hadith-view-in-chapter-btn ayah-btn" title="View in Chapter" style="text-decoration:none;">
+                <i class="bi bi-box-arrow-up-right"></i>
+                <span class="d-none d-sm-inline"> View in Chapter</span>
+            </a>
+        @endif
     </div>
 
     <div class="hadith-actions mt-2">

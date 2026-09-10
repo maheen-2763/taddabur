@@ -17,17 +17,51 @@
 @section('content')
     <div class="container-fluid px-4 py-4">
 
+        {{-- ✅ Breadcrumb --}}
+        <div class="hadith-breadcrumb mb-3">
+            <a href="{{ route('hadith.index') }}">Hadith</a>
+            <span class="breadcrumb-separator">/</span>
+            <span class="breadcrumb-current">Search</span>
+        </div>
+
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h2 class="heading-font mb-0" style="color:var(--emerald-light)">Search Hadiths</h2>
         </div>
 
-        <form action="{{ route('hadith.search') }}" method="GET" class="mb-4">
-            <div class="input-group input-group-lg">
+        <form action="{{ route('hadith.search') }}" method="GET" class="mb-3">
+            <div class="input-group input-group-lg mb-2">
                 <input type="text" name="q" value="{{ $query }}" class="form-control"
                     placeholder="Search in Arabic or English..." autofocus style="border-color: var(--emerald);">
                 <button class="btn" type="submit" style="background: var(--emerald); color: #fff;">
                     <i class="bi bi-search"></i> Search
                 </button>
+            </div>
+
+            {{-- ✅ Advanced filters --}}
+            <div class="search-filters-row mb-3">
+                <select name="collection" class="form-select form-select-sm" style="max-width:200px;"
+                    onchange="this.form.submit()">
+                    <option value="">All Collections</option>
+                    @foreach ($collections as $c)
+                        <option value="{{ $c->slug }}" {{ $selectedCollection === $c->slug ? 'selected' : '' }}>
+                            {{ $c->name }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <select name="grade" class="form-select form-select-sm" style="max-width:180px;"
+                    onchange="this.form.submit()">
+                    <option value="">All Grades</option>
+                    <option value="Sahih" {{ $selectedGrade === 'Sahih' ? 'selected' : '' }}>Sahih only</option>
+                    <option value="Hasan" {{ $selectedGrade === 'Hasan' ? 'selected' : '' }}>Hasan only</option>
+                    <option value="Daif" {{ $selectedGrade === 'Daif' ? 'selected' : '' }}>Da'if only</option>
+                </select>
+
+                @if ($selectedCollection || $selectedGrade)
+                    <a href="{{ route('hadith.search', ['q' => $query]) }}" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-x"></i> Clear filters
+                    </a>
+                @endif
             </div>
         </form>
 
@@ -91,6 +125,8 @@
                     'collectionSlug' => $h->collection_slug,
                     'collectionName' => $h->collection_name,
                     'chapterTitle' => $h->chapter_title,
+                    'chapterNumber' => $h->chapter_number, // ✅ naya
+                    'showContextLink' => true, // ✅ naya — sirf search page se true
                     'isBookmarked' => $isBookmarked,
                     'hasNote' => $hasNote,
                     'isRead' => $isRead,

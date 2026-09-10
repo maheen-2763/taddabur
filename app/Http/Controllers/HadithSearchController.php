@@ -14,6 +14,8 @@ class HadithSearchController extends Controller
     public function search(Request $request)
     {
         $query = trim($request->input('q', ''));
+        $collectionSlug = $request->input('collection');
+        $gradeFilter = $request->input('grade');   // 'sahih', 'hasan', 'daif', etc.
 
         if (mb_strlen($query) < 3) {
             return view('hadith.search', [
@@ -22,15 +24,17 @@ class HadithSearchController extends Controller
                 'bookmarkedIds' => [],
                 'userNotes' => collect(),
                 'readIds' => [],
+                'collections' => \App\Models\HadithCollection::orderBy('name')->get(),
+                'selectedCollection' => $collectionSlug,
+                'selectedGrade' => $gradeFilter,
             ]);
         }
 
         $normalizedQuery = ArabicHelper::normalizeArabic($query);
-
         $safeQuery = '"' . str_replace('"', '""', $query) . '"';
         $safeNormalizedQuery = '"' . str_replace('"', '""', $normalizedQuery) . '"';
 
-        $results = DB::table('hadiths_fts')
+        $queryBuilder = DB::table('hadiths_fts')
             ->select('hadiths.*')
             ->join('hadiths', 'hadiths.id', '=', 'hadiths_fts.rowid')
             ->join('hadith_chapters', 'hadith_chapters.id', '=', 'hadiths.chapter_id')
@@ -41,39 +45,40 @@ class HadithSearchController extends Controller
                 'hadith_collections.slug as collection_slug',
                 'hadith_collections.name as collection_name',
             ])
-            ->whereRaw('hadiths_fts MATCH ?', ["arabic_normalized:{$safeNormalizedQuery} OR english:{$safeQuery}"])
-            ->paginate(self::PER_PAGE)
-            ->withQueryString();
+            ->whereRaw('hadiths_fts MATCH ?', ["arabic_normalized:{$safeNormalizedQuery} OR english:{$safeQuery}"]);
 
-        // ✅ Highlight, applied to the current page's items only
+        // ✅ Collection filter
+        if ($collectionSlug) {
+            $queryBuilder->where('hadith_collections.slug', $collectionSlug);
+        }
+
+        // ✅ Grade filter — uses our parser to correctly match compound grades
+        // (e.g. filtering "Sahih" should also match "Maqtu Sahih")
+        if ($gradeFilter) {
+            $queryBuilder->where('hadiths.grade', 'like', '%' . $gradeFilter . '%');
+        }
+
+        $results = $queryBuilder->paginate(self::PER_PAGE)->withQueryString();
+
         $results->getCollection()->transform(function ($hadith) use ($query) {
             $hadith->arabic_highlighted = $this->highlightMatch($hadith->arabic, $query);
             $hadith->english_highlighted = $this->highlightMatch($hadith->english, $query);
             return $hadith;
         });
 
-        // ✅ Bookmark / Note / Read status — same pattern as HadithController@show
         /** @var \App\Models\User|null $user */
         $user = Auth::user();
-
         $bookmarkedIds = [];
         $userNotes = collect();
         $readIds = [];
 
         if ($user) {
             $hadithIds = $results->pluck('id');
-
             $bookmarkedIds = \App\Models\Bookmark::where('user_id', $user->id)
                 ->where('bookmarkable_type', \App\Models\Hadith::class)
-                ->whereIn('bookmarkable_id', $hadithIds)
-                ->pluck('bookmarkable_id')
-                ->toArray();
-
+                ->whereIn('bookmarkable_id', $hadithIds)->pluck('bookmarkable_id')->toArray();
             $userNotes = \App\Models\Note::where('user_id', $user->id)
-                ->whereIn('hadith_id', $hadithIds)
-                ->get()
-                ->keyBy('hadith_id');
-
+                ->whereIn('hadith_id', $hadithIds)->get()->keyBy('hadith_id');
             $readIds = $user->readHadiths()->whereIn('hadiths.id', $hadithIds)->pluck('hadiths.id')->toArray();
         }
 
@@ -83,6 +88,9 @@ class HadithSearchController extends Controller
             'bookmarkedIds' => $bookmarkedIds,
             'userNotes' => $userNotes,
             'readIds' => $readIds,
+            'collections' => \App\Models\HadithCollection::orderBy('name')->get(),
+            'selectedCollection' => $collectionSlug,
+            'selectedGrade' => $gradeFilter,
         ]);
     }
 

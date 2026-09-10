@@ -4,9 +4,9 @@
 @push('styles')
     <style>
         /* ════════════════════════════════════════
-            UNIVERSAL RESPONSIVE LAYOUT
-            Single grid system that adapts at one breakpoint
-                     ═══════════════════════════════════════════ */
+                    UNIVERSAL RESPONSIVE LAYOUT
+                    Single grid system that adapts at one breakpoint
+                             ═══════════════════════════════════════════ */
         .story-layout {
             display: grid;
             grid-template-columns: 280px minmax(0, 1fr);
@@ -27,7 +27,11 @@
             position: sticky;
             top: 92px;
             align-self: start;
+            height: calc(100vh - 92px - 24px);
+            /* ← ye line add karo */
             max-height: calc(100vh - 92px - 24px);
+            overflow: hidden;
+            /* ← safety net */
         }
 
         @media (max-width: 900px) {
