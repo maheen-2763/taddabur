@@ -35,11 +35,13 @@
                     <p><strong>Isnad</strong> — the chain of narrators connecting a hadith back to its source. This chain is
                         what scholars examine to judge a hadith's reliability.</p>
                     <p><strong>Marfu' ("elevated")</strong> — a narration whose speech, action, or approval is directly
-                        attributed to Prophet Muhammad ﷺ, regardless of who reported it.</p>
+                        attributed to Prophet Muhammad <span class="arabic-symbol">ﷺ</span>, regardless of who reported it.
+                    </p>
                     <p><strong>Mawquf ("stopped")</strong> — a narration whose attribution stops at a Companion (Sahabi) —
-                        it records what a Companion said or did, not something attributed to the Prophet ﷺ himself.</p>
-                    <p><strong>Maqtu' ("severed")</strong> — a narration attributed to a Tabi'i (a Successor who met the
-                        Companions but not the Prophet ﷺ).</p>
+                        it records what a Companion said or did, not something attributed to the Prophet <span
+                            class="arabic-symbol">ﷺ</span> himself.</p>
+                    <p><strong>Maqtu' ("severed")</strong> — a narration attributed to a Tabi'i ( a Successor who met the
+                        Companions but not the Prophet <span class="arabic-symbol">ﷺ</span> ).</p>
 
                     @unless (in_array($collection->slug, ['bukhari', 'muslim']))
                         <hr class="my-2" style="border-color: rgba(0,0,0,0.08);">

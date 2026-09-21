@@ -50,7 +50,7 @@
                 {!! $ornament !!}
             </span>
             <span dir="rtl"
-                style="font-family:'Amiri',serif; font-weight:580; font-size:{{ round($height * 0.42) }}px;
+                style="font-family:'Amiri',serif; font-weight:590; font-size:{{ round($height * 0.42) }}px;
                         color:{{ $arabicColor }}; unicode-bidi:isolate; line-height:1;">
                 تَدَبُّر</span>
         </div>
@@ -74,7 +74,7 @@
             </span>
             <span dir="rtl"
                 style="font-family:'Amiri',serif; font-size:{{ round($height * 0.4) }}px;
-            font-weight:580; color:{{ $arabicColor }}; unicode-bidi:isolate; line-height:1;">
+            font-weight:590; color:{{ $arabicColor }}; unicode-bidi:isolate; line-height:1;">
                 تَدَبُّر</span>
         </div>
     </div>

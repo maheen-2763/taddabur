@@ -10,7 +10,7 @@
 
         <div class="pname-header">
             <span class="arabic-title">أَسْمَاءُ النَّبِيِّ ﷺ</span>
-            <span class="latin-title">Names & Titles of the Prophet Muhammad ﷺ</span>
+            <span class="latin-title">Names & Titles of the Prophet Muhammad <span class="arabic-symbol">ﷺ</span></span>
             <p class="verse-ref">Verified directly from the Qur'an and Sahih Hadith — no external compilations.</p>
         </div>
 

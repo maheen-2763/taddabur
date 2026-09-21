@@ -92,7 +92,7 @@
         .prophet-card-name {
             font-family: var(--font-heading);
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 580;
             color: var(--ink);
             margin-bottom: 0.15rem;
             line-height: 1.3;
@@ -111,6 +111,12 @@
             margin-bottom: 0.6rem;
             line-height: 1.4;
         }
+
+        [data-bs-theme="dark"] .prophet-card-title {
+            color: var(--emerald-light);
+
+        }
+
 
         .prophet-card-summary {
             font-size: 0.82rem;
@@ -141,6 +147,13 @@
             background: rgba(27, 94, 59, 0.08);
             color: var(--emerald);
         }
+
+        [data-bs-theme="dark"] .prophet-chip-quran {
+            color: var(--emerald-light);
+
+        }
+
+
 
         .prophet-chip-soon {
             background: rgba(180, 130, 40, 0.08);
@@ -176,7 +189,7 @@
             {{-- Decorative divider --}}
             <div class="d-flex align-items-center justify-content-center gap-3 mt-3">
                 <div style="width:40px; height:1px; background:var(--gold); opacity:0.4"></div>
-                <span style="font-family:'Amiri',serif; font-size:1.4rem; color:var(--gold); opacity:0.7">﷽</span>
+                <span style="font-family:'Amiri',serif; font-size:1.4rem; color:var(--gold); opacity:0.8">﷽</span>
                 <div style="width:40px; height:1px; background:var(--gold); opacity:0.4"></div>
             </div>
         </div>
@@ -199,7 +212,7 @@
                                     {{ $prophet->order }} of 25
                                 </span>
                                 <div class="prophet-card-cover-arabic">
-                                    {{ $prophet->name_arabic }}
+                                    {!! \App\Helpers\ArabicHelper::wrapHonorifics($prophet->name_arabic) !!}
                                 </div>
                                 @if ($prophet->title_arabic)
                                     <div class="prophet-card-cover-title">
@@ -213,21 +226,22 @@
                         <div class="prophet-card-body">
 
                             <div class="prophet-card-name">
-                                {{ $prophet->display_name }}
+                                {!! \App\Helpers\ArabicHelper::wrapHonorifics($prophet->display_name) !!}
                             </div>
                             <div class="prophet-card-english">
-                                {{ $prophet->name_english }}
+                                {!! \App\Helpers\ArabicHelper::wrapHonorifics($prophet->name_english) !!}
                             </div>
 
                             @if ($prophet->title)
                                 <div class="prophet-card-title">
-                                    {{ $prophet->title }}
+                                    {!! \App\Helpers\ArabicHelper::wrapHonorifics($prophet->title) !!}
                                 </div>
                             @endif
 
+                            {{-- summary --}}
                             @if ($prophet->summary)
                                 <div class="prophet-card-summary">
-                                    {{ Str::limit($prophet->summary, 95) }}
+                                    {!! \App\Helpers\ArabicHelper::wrapHonorifics(Str::limit($prophet->summary, 95)) !!}
                                 </div>
                             @endif
 
@@ -253,7 +267,7 @@
                                     @endif
                                 </div>
 
-                                <span style="font-size:0.8rem; color:var(--emerald); font-weight:500">
+                                <span style="font-size:0.8rem; color:var(--emerald-light); font-weight:500">
                                     View <i class="bi bi-arrow-right ms-1"></i>
                                 </span>
                             </div>

@@ -64,4 +64,15 @@ class ArabicHelper
 
         return $text;
     }
+
+    public static function wrapHonorifics(?string $text): string
+    {
+        if (!$text) return '';
+
+        return str_replace(
+            'ﷺ',
+            '<span class="arabic-symbol">ﷺ</span>',
+            $text
+        );
+    }
 }

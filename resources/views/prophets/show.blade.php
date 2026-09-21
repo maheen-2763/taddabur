@@ -106,7 +106,7 @@
                 <i class="bi bi-grid me-1"></i>All Prophets
             </a>
             <span class="mx-2 text-muted">/</span>
-            <span class="text-muted">{{ $prophet->display_name }}</span>
+            <span class="text-muted">{!! $prophet->display_name_html !!}</span>
         </nav>
 
         {{-- ═══════════════════════════════════════════════
@@ -115,7 +115,7 @@
         <div class="prophet-hero mb-5">
 
             {{-- Arabic watermark --}}
-            <span class="arabic-watermark">{{ $prophet->name_arabic }}</span>
+            <span class="arabic-watermark">{!! $prophet->name_arabic_html !!}</span>
 
             <div class="row g-0">
 
@@ -139,10 +139,10 @@
                             style="color:white;
                                font-size:clamp(1.8rem,4vw,2.6rem);
                                line-height:1.2">
-                            {{ $prophet->display_name }}
+                            {!! $prophet->display_name_html !!}
                         </h1>
                         <p style="color:rgba(255,255,255,0.6); font-size:0.9rem; margin:0">
-                            {{ $prophet->name_english }}
+                            {!! $prophet->display_name_html !!}
                         </p>
                     </div>
 
@@ -154,7 +154,7 @@
                                 color:white;
                                 line-height:1.4;
                                 margin-bottom:0.4rem">
-                            {{ $prophet->name_arabic }}
+                            {!! $prophet->name_arabic_html !!}
                         </div>
                         @if ($prophet->title_arabic)
                             <div
@@ -185,7 +185,7 @@
                               font-size:0.9rem;
                               font-style:italic;
                               margin-bottom:1.25rem">
-                            {{ $prophet->title }}
+                            {!! $prophet->title_html !!}
                         </p>
                     @endif
 
@@ -196,7 +196,7 @@
                               line-height:1.8;
                               font-size:0.9rem;
                               margin:0">
-                            {{ $prophet->summary }}
+                            {!! $prophet->summary_html !!}
                         </p>
                     @endif
 
@@ -270,7 +270,8 @@
                 <div style="font-size:3rem; opacity:0.3; margin-bottom:1rem">📖</div>
                 <h5 class="heading-font mb-2">Coming Soon, In Shaa Allah</h5>
                 <p class="text-muted small" style="max-width:400px; margin:0 auto 1.5rem">
-                    We are preparing authentic, Quran-sourced stories for {{ $prophet->display_name }}.
+                    We are preparing authentic, Quran-sourced stories for <span
+                        class="text-muted">{!! $prophet->display_name_html !!}</span>.
                     Check back soon.
                 </p>
                 <a href="{{ route('prophets.index') }}" class="btn-emerald btn">

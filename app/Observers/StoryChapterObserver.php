@@ -3,6 +3,8 @@
 namespace App\Observers;
 
 use App\Models\StoryChapter;
+use Illuminate\Support\Facades\Cache;
+
 
 class StoryChapterObserver
 {
@@ -14,16 +16,19 @@ class StoryChapterObserver
     public function created(StoryChapter $chapter): void
     {
         $this->recalculate($chapter);
+        Cache::forget('stories_stats');
     }
 
     public function updated(StoryChapter $chapter): void
     {
         $this->recalculate($chapter);
+        Cache::forget('stories_stats');
     }
 
     public function deleted(StoryChapter $chapter): void
     {
         $this->recalculate($chapter);
+        Cache::forget('stories_stats');
     }
 
     /**

@@ -11,7 +11,7 @@
             @if ($item->hadith_id)
                 {{-- ✅ Hadith reference — same pill family, emerald tone --}}
                 <div class="pname-ref-pills">
-                    <span class="pname-ref-icon">📗</span>
+                    <span class="pname-ref-icon"><i class="bi bi-chat-square-quote-fill"></i></span>
                     <a href="{{ route('hadith.show', ['collection' => $item->hadith->collection->slug, 'chapter' => $item->hadith->chapter->number]) }}?highlight={{ $item->hadith_id }}"
                         class="pname-ref-pill pname-ref-hadith">
                         {{ $item->source_reference }}

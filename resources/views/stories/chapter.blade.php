@@ -4,9 +4,9 @@
 @push('styles')
     <style>
         /* ════════════════════════════════════════
-                    UNIVERSAL RESPONSIVE LAYOUT
-                    Single grid system that adapts at one breakpoint
-                             ═══════════════════════════════════════════ */
+                                                                                UNIVERSAL RESPONSIVE LAYOUT
+                                                                                Single grid system that adapts at one breakpoint
+                                                                                         ═══════════════════════════════════════════ */
         .story-layout {
             display: grid;
             grid-template-columns: 280px minmax(0, 1fr);
@@ -69,7 +69,7 @@
 
         .chapter-nav-item.active {
             background: rgba(27, 94, 59, 0.08);
-            color: var(--emerald);
+            color: var(--emerald-light);
             font-weight: 600;
         }
 
@@ -121,6 +121,15 @@
             transition: width 0.5s ease;
         }
 
+        .chapter-count {
+            color: var(--gold-dark)
+        }
+
+        [data-bs-theme="dark"] .chapter-count {
+            color: var(--gold-light);
+        }
+
+
         /* ── Reading content ── */
         .story-content {
             font-family: var(--font-body);
@@ -148,8 +157,14 @@
             border-radius: 0 var(--radius) var(--radius) 0;
             padding: 1.1rem 1.5rem;
             margin: 1.5rem 0;
-            color: var(--ink-soft);
+            color: var(--gold-dark);
         }
+
+        [data-bs-theme="dark"] .story-content blockquote {
+            color: var(--gold-light);
+        }
+
+
 
         .story-content blockquote p:first-child {
             font-family: 'Amiri', 'Scheherazade New', serif;
@@ -333,8 +348,8 @@
 
                 {{-- Chapter header --}}
                 <div class="mb-4">
-                    <span
-                        style="color:var(--gold); font-size:0.78rem; font-family:var(--font-heading); letter-spacing:0.05em">
+                    <span class="chapter-count";
+                        style="font-size:0.78rem; font-family:var(--font-heading); letter-spacing:0.05em">
                         CHAPTER {{ $chapter->order }} OF {{ $allChapters->count() }}
                     </span>
                     <h1 class="heading-font mt-1 mb-0" style="font-size:clamp(1.5rem,4vw,2.2rem)">

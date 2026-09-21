@@ -24,6 +24,7 @@
     </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Scheherazade+New&display=swap" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Amiri:ital@0;1&family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,500;1,400&display=swap"
@@ -183,7 +184,8 @@
                             <li class="mb-2"><a href="{{ route('login') }}">Sign In</a></li>
                             <li class="mb-2"><a href="{{ route('register') }}">Register</a></li>
                         @endauth
-                        <li class="mb-2"><a href="{{ route('support') }}">❤️ Support This Project</a></li>
+                        <li class="mb-2"><a href="{{ route('support') }}"><i class="bi bi-heart-fill me-1"
+                                    style="color:var(--support)"></i>Support This Project</a></li>
                     </ul>
                 </div>
 
@@ -194,45 +196,45 @@
                         <li class="mb-2"><a href="{{ route('features.index') }}">Features</a></li>
                         {{-- 👈 naya --}}
                         <li class="mb-2"><a href="{{ route('about') }}">About & Sources</a></li>
-                        {{-- 👈 "Sources" se better naming --}}
+
                         <li class="mb-2"><a href="{{ route('terms') }}">Terms</a></li>
                         <li class="mb-2"><a href="{{ route('privacy') }}">Privacy Policy</a></li>
                     </ul>
                 </div>
-
-                {{-- Developer note trigger --}}
-                <button class="dev-note-trigger" onclick="toggleDevNote()" aria-label="A note from the developer"
-                    title="A note from the developer">
-                    <i class="bi bi-feather"></i>
-                </button>
-
-                {{-- Developer note modal --}}
-                <div class="dev-note-overlay" id="devNoteOverlay" onclick="toggleDevNote()"></div>
-                <div class="dev-note-modal" id="devNoteModal">
-                    <button class="dev-note-close" onclick="toggleDevNote()">&times;</button>
-
-                    <div class="dev-note-content">
-                        <p class="dev-note-arabic">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</p>
-
-                        <p>
-                            Taddabur is built and maintained by a single individual — not a company or a team.
-                            I'm continuing to improve it, both in content accuracy and in design, In Sha Allah.
-                        </p>
-
-                        @if ($devNoteHadith)
-                            <div class="dev-note-hadith">
-                                <p class="dev-note-hadith-text">
-                                    "{{ $devNoteHadith->english }}"
-                                </p>
-                                <small class="dev-note-hadith-source">
-                                    — {{ $devNoteHadith->collection?->name }}, Hadith {{ $devNoteHadith->number }}
-                                </small>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-
             </div>
+
+            {{-- Developer note trigger --}}
+            <button class="dev-note-trigger" onclick="toggleDevNote()" aria-label="A note from the developer"
+                title="A note from the developer">
+                <i class="bi bi-feather"></i>
+            </button>
+
+            {{-- Developer note modal --}}
+            <div class="dev-note-overlay" id="devNoteOverlay" onclick="toggleDevNote()"></div>
+            <div class="dev-note-modal" id="devNoteModal">
+                <button class="dev-note-close" onclick="toggleDevNote()">&times;</button>
+
+                <div class="dev-note-content">
+                    <p class="dev-note-arabic">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</p>
+
+                    <p>
+                        Taddabur is built and maintained by a single individual — not a company or a team.
+                        I'm continuing to improve it, both in content accuracy and in design, In Sha Allah.
+                    </p>
+
+                    @if ($devNoteHadith)
+                        <div class="dev-note-hadith">
+                            <p class="dev-note-hadith-text">
+                                "{{ $devNoteHadith->english }}"
+                            </p>
+                            <small class="dev-note-hadith-source">
+                                — {{ $devNoteHadith->collection?->name }}, Hadith {{ $devNoteHadith->number }}
+                            </small>
+                        </div>
+                    @endif
+                </div>
+            </div>
+
 
             <div class="row mt-2 pt-3" style="border-top:1px solid rgba(201,150,58,0.15);">
                 <div class="col-12 text-center">

@@ -115,13 +115,13 @@
         }
 
         /* .story-chip-gold {
-                                                                                            font-size: 0.68rem;
-                                                                                            padding: 0.2rem 0.55rem;
-                                                                                            border-radius: 50px;
-                                                                                            font-weight: 500;
-                                                                                            background: rgba(180, 130, 40, 0.1);
-                                                                                            color: var(--gold);
-                                                                                        } */
+                                                                                                    font-size: 0.68rem;
+                                                                                                    padding: 0.2rem 0.55rem;
+                                                                                                    border-radius: 50px;
+                                                                                                    font-weight: 500;
+                                                                                                    background: rgba(180, 130, 40, 0.1);
+                                                                                                    color: var(--gold);
+                                                                                                } */
 
         .story-badge-free {
             font-size: 0.65rem;
@@ -253,7 +253,8 @@
                                 {{ $p->name_transliteration }}
 
                                 @if ($p->slug === 'muhammad')
-                                    <span style="font-size:0.8rem; color:var(--emerald-light)">ﷺ</span>
+                                    <span class="arabic-symbol"
+                                        style="font-size:0.8rem; color:var(--emerald-light)">ﷺ</span>
                                 @endif
 
                                 @if ($p->stories_count > 0)

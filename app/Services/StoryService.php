@@ -39,7 +39,7 @@ class StoryService
         if ($difficulty) {
             $query->where('difficulty', $difficulty);
         }
-        if ($prophet && !$difficulty) {
+        if ($prophet) {
             $query->whereHas('prophet', function ($q) use ($prophet) {
                 $q->where('slug', $prophet);
             });

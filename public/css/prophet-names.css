@@ -206,6 +206,14 @@
     color: var(--emerald-light);
 }
 
+[data-bs-theme="dark"] .pname-translit {
+    color: var(--gold-light);
+}
+
+[data-bs-theme="dark"] .pname-tier-label .arabic {
+    color: var(--gold-light);
+}
+
 [data-bs-theme="dark"] .pname-header .arabic-title {
     color: var(--emerald-light);
 }
@@ -264,19 +272,19 @@
     border-radius: 50px;
     padding: 2px 9px;
     text-decoration: none;
-    font-size: 0.74rem;
+    font-size: 0.65rem;
     transition: all 0.2s ease;
 }
 
 .pname-ref-pill:hover {
-    background: var(--emerald);
+    background: var(--gold-light);
     color: white;
 }
 
 /* Quran primary reference — gold accent */
 .pname-ref-primary {
     border-color: var(--gold-dark);
-    font-weight: 600;
+    font-weight: 550;
 }
 
 /* ✅ Naya — Hadith reference — thoda distinct tone */
@@ -284,10 +292,11 @@
     background: rgba(201, 150, 58, 0.08);
     border-color: var(--gold-dark);
     color: var(--gold-dark);
+    font-size: 0.65rem;
 }
 
 .pname-ref-hadith:hover {
-    background: var(--gold);
+    background: var(--gold-light);
     color: white;
 }
 

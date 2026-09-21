@@ -34,6 +34,7 @@ body,
            CSS VARIABLES — Islamic colour palette
         ================================================ */
 :root {
+    --support: #f26a8d;
     --gold: #c9963a;
     --gold-light: #e8be6d;
     --gold-dark: #9a6f2b;
@@ -232,6 +233,12 @@ h4,
     margin: 2rem 0;
 }
 
+.arabic-symbol {
+    font-family:
+        "Scheherazade New", "Traditional Arabic", "Noto Naskh Arabic", serif;
+    font-style: normal !important;
+}
+
 /* ================================================
            BUTTONS
         ================================================ */
@@ -265,7 +272,7 @@ h4,
 }
 
 .btn-emerald:hover {
-    background: var(--emerald-light);
+    background: var(--gold);
     color: #fff;
 }
 

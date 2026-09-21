@@ -3,6 +3,7 @@
 
 namespace App\Providers;
 
+
 use App\Services\BookmarkService;
 use App\Services\DashboardService;
 use App\Services\NoteService;
@@ -16,6 +17,8 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Auth\Events\Verified;
 use App\Listeners\SendWelcomeEmail;
+use App\Models\Story;
+use App\Observers\StoryObserver;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\View;
 use App\Models\Hadith;
@@ -58,6 +61,8 @@ class AppServiceProvider extends ServiceProvider
         if (config('app.force_https', false)) {
             URL::forceScheme('https');
         }
+        Story::observe(StoryObserver::class);
+
         StoryChapter::observe(StoryChapterObserver::class);
         \Illuminate\Support\Facades\Route::bind('surah', function ($value) {
             return \App\Models\Surah::where('number', $value)->firstOrFail();

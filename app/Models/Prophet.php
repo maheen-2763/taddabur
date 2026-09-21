@@ -29,7 +29,6 @@ class Prophet extends Model
     ];
 
     protected $casts = [
-        'mentioned_in_quran' => 'boolean',
         'timeline' => 'array',
     ];
 
@@ -61,7 +60,7 @@ class Prophet extends Model
     {
         return $this->slug === 'muhammad'
             ? 'ﷺ'
-            : 'عليه السلام';
+            : '(AS)';
     }
 
     // Full display name with correct honorific
@@ -94,5 +93,24 @@ class Prophet extends Model
             StoryChapter::class,
             Story::class
         );
+    }
+
+    public function getNameArabicHtmlAttribute(): string
+    {
+        return \App\Helpers\ArabicHelper::wrapHonorifics($this->name_arabic);
+    }
+    public function getSummaryHtmlAttribute(): string
+    {
+        return \App\Helpers\ArabicHelper::wrapHonorifics($this->summary);
+    }
+
+    public function getTitleHtmlAttribute(): string
+    {
+        return \App\Helpers\ArabicHelper::wrapHonorifics($this->title);
+    }
+
+    public function getDisplayNameHtmlAttribute(): string
+    {
+        return \App\Helpers\ArabicHelper::wrapHonorifics($this->display_name);
     }
 }

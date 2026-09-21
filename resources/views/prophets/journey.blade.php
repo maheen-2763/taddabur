@@ -9,8 +9,8 @@
     ============================================ --}}
         <div class="journey-header text-center">
             <p class="journey-eyebrow">The Life of</p>
-            <h1 class="journey-title">{{ $prophet->name_english }}</h1>
-            <p class="journey-arabic">{{ $prophet->name_arabic }}</p>
+            <h1 class="journey-title">{!! $prophet->display_name_html !!}</h1>
+            <p class="journey-arabic">{!! $prophet->name_arabic_html !!}</p>
             <p class="journey-subtitle">
                 A journey through six parts of his blessed life —
                 complete each part to unlock the next.

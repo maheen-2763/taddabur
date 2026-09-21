@@ -27,45 +27,44 @@
                 <li class="nav-item">
                     <a class="nav-link-islamic nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
                         href="{{ route('dashboard') }}">
-                        <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                        <i class="bi {{ config('icons.dashboard') }} me-1"></i>Dashboard
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link-islamic nav-link {{ request()->routeIs('quran.*') ? 'active' : '' }}"
-                        {{ request()->routeIs('quran.*') ? 'aria-current=page' : '' }}
                         href="{{ route('quran.index') }}">
-                        <i class="bi bi-book me-1"></i>Quran
+                        <i class="bi {{ config('icons.quran') }} me-1"></i>Quran
                     </a>
                 </li>
 
                 <li class="nav-item dropdown">
                     <a class="nav-link-islamic nav-link dropdown-toggle {{ request()->routeIs(['stories.*', 'prophets.*', 'scholars.*', 'hadith.*', 'allah-names.*', 'prophet-names.*']) ? 'active' : '' }}"
                         href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-grid me-1"></i>Features
+                        <i class="bi {{ config('icons.features') }} me-1"></i>Features
                     </a>
                     <ul class="dropdown-menu nav-dropdown-menu">
                         <li>
                             <a class="dropdown-item {{ request()->routeIs('stories.*') ? 'active' : '' }}"
                                 href="{{ route('stories.index') }}">
-                                <i class="bi bi-journal-text me-2"></i>Stories
+                                <i class="bi {{ config('icons.stories') }} me-2"></i>Stories
                             </a>
                         </li>
                         <li>
                             <a class="dropdown-item {{ request()->routeIs('prophets.*') ? 'active' : '' }}"
                                 href="{{ route('prophets.index') }}">
-                                <i class="bi bi-stars me-2"></i>Prophets
+                                <i class="bi {{ config('icons.prophets') }} me-2"></i>Prophets
                             </a>
                         </li>
                         <li>
                             <a class="dropdown-item {{ request()->routeIs('scholars.*') ? 'active' : '' }}"
                                 href="{{ route('scholars.index') }}">
-                                <i class="bi bi-mortarboard me-2"></i>Four Imams
+                                <i class="bi {{ config('icons.four_imams') }} me-2"></i>Four Imams
                             </a>
                         </li>
                         <li>
                             <a class="dropdown-item {{ request()->routeIs('hadith.*') ? 'active' : '' }}"
                                 href="{{ route('hadith.index') }}">
-                                <i class="bi bi-collection me-2"></i>Hadith
+                                <i class="bi {{ config('icons.hadith') }} me-2"></i>Hadith
                             </a>
                         </li>
                         <li>
@@ -74,26 +73,29 @@
                         <li>
                             <a class="dropdown-item {{ request()->routeIs('allah-names.*') ? 'active' : '' }}"
                                 href="{{ route('allah-names.index') }}">
-                                <i class="bi bi-moon-stars me-2"></i>99 Names of Allah
-                            </a>
+                                <i class="bi {{ config('icons.allah_names') }} me-2"></i>99 Names of Allah <span
+                                    class="arabic-symbol">ﷻ</span> </a>
                         </li>
                         <li>
                             <a class="dropdown-item {{ request()->routeIs('prophet-names.*') ? 'active' : '' }}"
                                 href="{{ route('prophet-names.index') }}">
-                                <i class="bi bi-award me-2"></i>Names of the Prophet ﷺ
+                                <i class="bi {{ config('icons.prophet_names') }} me-2"></i>Names of the Prophet <span
+                                    class="arabic-symbol">ﷺ</span>
                             </a>
                         </li>
-
-
                         <hr class="dropdown-divider">
-                        <li><a class="dropdown-item {{ request()->routeIs('features.*') ? 'active' : '' }}"
-                                href="{{ route('features.index') }}"><i class="bi bi-grid-3x3-gap-fill me-2"></i>App
-                                Features</a></li>
-                        <li><a class="dropdown-item {{ request()->routeIs('about') ? 'active' : '' }}"
-                                href="{{ route('about') }}"><i class="bi bi-info-circle me-2"></i>About</a></li>
-
-
-
+                        <li>
+                            <a class="dropdown-item {{ request()->routeIs('features.*') ? 'active' : '' }}"
+                                href="{{ route('features.index') }}">
+                                <i class="bi {{ config('icons.app_features') }} me-2"></i>App Features
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item {{ request()->routeIs('about') ? 'active' : '' }}"
+                                href="{{ route('about') }}">
+                                <i class="bi {{ config('icons.about') }} me-2"></i>About
+                            </a>
+                        </li>
                     </ul>
                 </li>
 
@@ -135,10 +137,10 @@
                     </div>
                 @else
                     <a href="{{ route('login') }}" class="nav-link-islamic nav-link">
-                        Sign In
+                        <i class="bi bi-box-arrow-in-right me-1"></i>Sign In
                     </a>
                     <a href="{{ route('register') }}" class="btn-gold btn btn-sm">
-                        Get Started
+                        Get Started <i class="bi bi-arrow-right-circle-fill ms-1"></i>
                     </a>
                 @endauth
             </div>

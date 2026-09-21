@@ -139,6 +139,19 @@ return [
 
 
         ],
+
+        'Prophet Data Integrity' => [
+            [
+                'tag' => 'Quran Mention Counts',
+                'title' => 'Manually Verified, Word by Word',
+                'description' => 'Each prophet\'s Quran-mention count is manually verified against corpus.quran.com\'s word-by-word Arabic index — not estimated from secondary sources — to ensure accuracy for every one of the 25 prophets.',
+            ],
+            [
+                'tag' => 'Muhammad ﷺ Mention Count',
+                'title' => 'Name-Based Count with Scholarly Note',
+                'description' => 'Prophet Muhammad ﷺ is mentioned by the name "Muhammad" 4 times in the Quran. He is also referred to as "Ahmad" once (Surah As-Saff 61:6), in a prophecy by Isa (AS) — understood by scholarly consensus (ijma) to refer to him as well.',
+            ],
+        ],
     ],
 
 
