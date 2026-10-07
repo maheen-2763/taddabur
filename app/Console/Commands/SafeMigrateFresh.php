@@ -13,15 +13,6 @@ class SafeMigrateFresh extends Command
 
     public function handle()
     {
-        $dbPath = database_path('taddabur.sqlite');   // 👈 exact filename confirm kar lena apni config/database.php se
-
-        // ✅ Guard 1 — DB file exist hi nahi karti to aage mat badho
-        if (!file_exists($dbPath)) {
-            $this->error("Database file nahi mili: {$dbPath}");
-            return 1;
-        }
-
-        // ✅ Guard 2 — Double confirmation, kyunki ye IRREVERSIBLE hai
         $this->warn('⚠️  Ye command SAARA data delete karega — users, bookmarks, notes, reads, sab kuch.');
         $this->warn('⚠️  Ye sirf full dev-reset ke liye hai, kisi single collection ko re-seed karne ke liye NAHI.');
 
@@ -30,39 +21,23 @@ class SafeMigrateFresh extends Command
             return 0;
         }
 
-        if ($this->option('no-interaction') === false && !$this->confirm('Sach mein? Ye undo nahi ho sakta (backup ke alawa). Type "yes" to continue:')) {
+        if (!$this->confirm('Sach mein? Ye undo nahi ho sakta (backup ke alawa). Type "yes" to continue:')) {
             $this->info('Cancelled — koi change nahi hua.');
             return 0;
         }
 
-        // ✅ Backup folder khud na bana ho to bana do
-        $backupDir = storage_path('app/backups');
-        if (!is_dir($backupDir)) {
-            mkdir($backupDir, 0755, true);
-        }
+        // ✅ Naya backup command call karo (DB + storage dono backup hoga)
+        $backupExitCode = $this->call('db:backup', ['--label' => 'pre-fresh-reset']);
 
-        $filename = 'taddabur_backup_' . now()->format('Ymd_His') . '.sqlite';
-        $backupPath = $backupDir . '/' . $filename;
-
-        // ✅ Guard 3 — copy() fail hone pe turant rok do, aage mat badho
-        if (!copy($dbPath, $backupPath)) {
+        // ✅ Guard — backup fail hua to migrate:fresh mat chalao
+        if ($backupExitCode !== 0) {
             $this->error('Backup fail ho gaya — migrate:fresh NAHI chalaya. Data safe hai.');
             return 1;
         }
 
-        $this->info("✅ Backup ban gaya: {$filename} (" . round(filesize($backupPath) / 1024 / 1024, 2) . " MB)");
-
-        // ✅ Fix — pehle migrate:fresh, USKE BAAD Backup-record save karo
-        // (warna record khud hi turant wipe ho jata tha)
         $this->call('migrate:fresh', ['--seed' => true]);
 
-        Backup::create([
-            'filename' => $filename,
-            'size' => round(filesize($backupPath) / 1024 / 1024, 2) . ' MB',
-            'created_by' => Auth::id() ?? null,
-        ]);
-
-        $this->info('✅ migrate:fresh complete + backup record saved.');
+        $this->info('✅ migrate:fresh complete.');
 
         return 0;
     }

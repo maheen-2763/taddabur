@@ -11,6 +11,19 @@ return [
         ['number' => '4', 'label' => 'Scholars (Four Imams)'],
     ],
 
+    'quran' => [
+        'label' => "Qur'an",
+        'color' => 'success',
+    ],
+    'hadith' => [
+        'label' => 'Hadith',
+        'color' => 'info',
+    ],
+    'tradition' => [
+        'label' => 'Scholarly Tradition',
+        'color' => 'warning',
+    ],
+
     'sources' => [
         [
             'tag' => 'Quran Text & Translations',
@@ -151,8 +164,26 @@ return [
                 'title' => 'Name-Based Count with Scholarly Note',
                 'description' => 'Prophet Muhammad ﷺ is mentioned by the name "Muhammad" 4 times in the Quran. He is also referred to as "Ahmad" once (Surah As-Saff 61:6), in a prophecy by Isa (AS) — understood by scholarly consensus (ijma) to refer to him as well.',
             ],
+            [
+                'tag' => 'Summary Source Transparency',
+                'title' => 'Quran vs. Tradition, Clearly Separated',
+                'description' => 'Every prophet\'s summary was individually reviewed to separate explicit Quranic statements from details drawn from Islamic tradition and tafsir — such as names (Sarah, Hajar, Bilqis), places (Sodom, Jerusalem), and sequences (birth order) that the Quran itself does not state. These are clearly marked wherever they appear, rather than presented as direct Quranic fact.',
+            ],
+            [
+                'tag' => 'Diacritics Audit',
+                'title' => 'Arabic Names & Titles, Verified',
+                'description' => 'Arabic diacritics (tashkeel) for all 25 prophet names and titles are checked against corpus.quran.com and standard Arabic sources to ensure correct pronunciation guidance.',
+            ],
+
+            [
+                'tag' => 'Timeline Source Transparency',
+                'title' => 'Quran, Hadith & Tradition — Clearly Labeled',
+                'description' => 'Every event in each prophet\'s life-journey timeline is individually tagged as coming from the Quran, authentic Hadith, or Islamic tradition/tafsir — so readers always know the origin of what they are reading, event by event.',
+            ],
         ],
     ],
+
+
 
 
 
@@ -172,5 +203,5 @@ return [
         'hadith_label' => 'Sahih Bukhari, Hadith 6094',
     ],
 
-    'audit_timestamp' => 'App bugs last audited: August 2026',
+    'audit_timestamp' => 'App bugs last audited: September 2026',
 ];

@@ -80,6 +80,22 @@ class StoryService
     // -------------------------------------------------------
     public function saveStoryProgress(User $user, Story $story, StoryChapter $chapter): ReadingProgress
     {
+
+        $existing = ReadingProgress::where('user_id', $user->id)
+            ->where('story_id', $story->id)
+            ->first();
+
+
+        // ✅ Agar user ek purana chapter revisit kar raha hai (jo already
+        // stored last_chapter se pehle/same order ka hai), to last_chapter_id
+        // ko peeche mat dhakelo — sirf streak/date update karo
+        if ($existing && $existing->lastChapter && $existing->lastChapter->order >= $chapter->order) {
+            $existing->last_read_at = now();
+            $existing->save();
+            $existing->updateStreak();
+            return $existing;
+        }
+
         $progress = ReadingProgress::updateOrCreate(
             [
                 'user_id'  => $user->id,
@@ -116,6 +132,17 @@ class StoryService
     // -------------------------------------------------------
     // GET ALL PROPHETS WITH STORY COUNTS
     // -------------------------------------------------------
+    // Prophet Index page ke liye — paginated
+    public function getAllProphetsPaginated(int $perPage = 12): LengthAwarePaginator
+    {
+        return Prophet::withCount(['stories' => function ($q) {
+            $q->published();
+        }])
+            ->orderBy('order')
+            ->paginate($perPage);
+    }
+
+    // Sidebar filter jaisi jagah ke liye — poori list, bina pagination
     public function getAllProphets(): Collection
     {
         return Prophet::withCount(['stories' => function ($q) {
@@ -126,12 +153,39 @@ class StoryService
     }
 
     // -------------------------------------------------------
+    // GET THE ACTUAL DIFFICULTY LEVEL(S) A PROPHET'S STORIES EXIST AT
+    // Used when a prophet+difficulty combo returns empty —
+    // tells the user which level to check instead
+    // -------------------------------------------------------
+    public function getAvailableDifficultyForProphet(string $prophetSlug): ?string
+    {
+        return Story::published()
+            ->whereHas('prophet', fn($q) => $q->where('slug', $prophetSlug))
+            ->value('difficulty');
+    }
+
+    // -------------------------------------------------------
+    // GET THE CHAPTER USER SHOULD CONTINUE FROM
+    // First chapter (in order) that isn't completed yet.
+    // Independent of "last visited" — revisiting old chapters
+    // won't break the continue-point.
+    // -------------------------------------------------------
+    public function getContinueChapter(Story $story, array $completedChapterIds): ?StoryChapter
+    {
+        return $story->chapters->first(
+            fn($chapter) => !in_array($chapter->id, $completedChapterIds)
+        );
+    }
+
+
+    // -------------------------------------------------------
     // GET PROPHET'S STORIES (filtered by user plan)
     // -------------------------------------------------------
     public function getStoriesForProphet(Prophet $prophet, ?User $user): Collection
     {
         return Story::published()
             ->where('prophet_id', $prophet->id)
+            ->withCount('chapters')   // ✅ sirf count, pura chapters data nahi
             ->orderBy('sort_order')
             ->get();
     }

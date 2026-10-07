@@ -7,8 +7,11 @@
         .prophet-hero {
             border-radius: var(--radius);
             overflow: hidden;
+            /* ✅ already hai, good */
             background: linear-gradient(150deg, var(--emerald-dark) 0%, var(--emerald) 100%);
             position: relative;
+            max-width: 100%;
+            /* ✅ add karo */
         }
 
         .prophet-hero::before {
@@ -67,6 +70,13 @@
             font-weight: 500;
         }
 
+        [data-bs-theme="dark"] .meta-chip {
+            color: var(--emerald-light);
+        }
+
+
+
+
         /* ── Story card ── */
         .story-card-inner {
             border-radius: var(--radius);
@@ -90,9 +100,213 @@
             position: absolute;
             bottom: -1rem;
             right: 1.5rem;
-            line-height: 1;
+            line-height: 2.1;
             pointer-events: none;
             user-select: none;
+        }
+
+        /* ── Mobile responsiveness ── */
+        @media (max-width: 991px) {
+            .arabic-watermark {
+                font-size: 5rem;
+                bottom: -0.5rem;
+                right: 1rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .prophet-hero .col-lg-6:first-child {
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .prophet-hero .col-lg-6 {
+                padding: 1.5rem !important;
+            }
+
+            .arabic-watermark {
+                display: none;
+                /* clutters small screens, hides text underneath */
+            }
+
+            .stat-item {
+                padding: 0.4rem 0.9rem;
+            }
+
+            .stat-number {
+                font-size: 1.5rem;
+            }
+
+            .stat-label {
+                font-size: 0.62rem;
+            }
+
+            /* Arabic name block on hero */
+            div[style*="font-size:2.8rem"] {
+                font-size: 2rem !important;
+            }
+
+            h1.heading-font {
+                font-size: 1.6rem !important;
+            }
+        }
+
+        /* ── Timeline source pills (matches Quran-card pill style) ── */
+        .source-pill {
+            display: inline-block;
+            font-size: 0.65rem;
+            font-weight: 580;
+            padding: 0.10rem 0.55rem;
+            border-radius: 50px;
+            letter-spacing: 0.03em;
+            margin-left: 0.35rem;
+            vertical-align: middle;
+            border: 1px solid transparent;
+        }
+
+        .source-pill-quran {
+            background: rgba(143, 217, 168, 0.15);
+            color: #8FD9A8;
+            border-color: rgba(143, 217, 168, 0.3);
+        }
+
+        .source-pill-hadith {
+            background: rgba(143, 199, 232, 0.15);
+            color: #8FC7E8;
+            border-color: rgba(143, 199, 232, 0.3);
+        }
+
+        .source-pill-tradition {
+            background: rgba(230, 190, 110, 0.15);
+            color: var(--gold-light);
+            border-color: rgba(230, 190, 110, 0.3);
+        }
+
+        @media (max-width: 576px) {
+            .prophet-hero .col-lg-6:first-child {
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .prophet-hero .col-lg-6 {
+                padding: 1.5rem !important;
+            }
+
+            .arabic-watermark {
+                display: none;
+            }
+
+            .stat-item {
+                padding: 0.4rem 0.7rem;
+                border-right: none !important;
+                /* ✅ wrap hone pe border ajeeb nahi lagega */
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                flex: 1 1 33%;
+                /* ✅ 3 stats ek row mein equal-width rahenge */
+            }
+
+            .stat-number {
+                font-size: 1.4rem;
+            }
+
+            .stat-label {
+                font-size: 0.6rem;
+            }
+
+            div[style*="font-size:2.8rem"] {
+                font-size: 1.8rem !important;
+            }
+
+            h1.heading-font {
+                font-size: 1.6rem !important;
+            }
+
+            /* ✅ NEW — Timeline events stack better on mobile */
+            .prophet-hero .d-flex.flex-column.gap-2>.d-flex.align-items-start {
+                flex-wrap: wrap;
+            }
+
+            .source-pill {
+                margin-left: 0;
+                margin-top: 0.25rem;
+                display: inline-block;
+            }
+
+            /* ✅ NEW — Period badge doesn't overflow on small screens */
+            .period-badge {
+                font-size: 0.7rem !important;
+                white-space: normal;
+            }
+
+            /* ✅ NEW — Story cards tighter on mobile */
+            .story-card-inner {
+                padding: 1.1rem;
+            }
+
+            .story-card-inner h5 {
+                font-size: 0.92rem !important;
+            }
+
+            .meta-chip {
+                font-size: 0.72rem;
+                padding: 0.22rem 0.6rem;
+            }
+
+            /* ✅ NEW — breadcrumb doesn't wrap awkwardly */
+            nav[aria-label="breadcrumb"] {
+                font-size: 0.78rem !important;
+            }
+        }
+
+        /* ✅ NEW — Extra-small phones */
+        @media (max-width: 360px) {
+            .prophet-hero .col-lg-6 {
+                padding: 1.1rem !important;
+            }
+
+            div[style*="font-size:2.8rem"] {
+                font-size: 1.5rem !important;
+            }
+
+            h1.heading-font {
+                font-size: 1.35rem !important;
+            }
+
+            .stat-number {
+                font-size: 1.2rem;
+            }
+        }
+
+        /* ── Timeline (Grid-based for reliable mobile wrapping) ── */
+        .timeline-item {
+            display: grid;
+            grid-template-columns: 14px 1fr;
+            column-gap: 0.5rem;
+            align-items: start;
+            border-bottom: 0.1rem solid var(--gold-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--gold-light);
+            margin-top: 5px;
+            opacity: 0.85;
+            justify-self: center;
+        }
+
+
+
+        @media (max-width: 576px) {
+            .timeline-item {
+                margin-bottom: 0.75rem;
+                row-gap: 0.15rem;
+            }
+
+            .source-pill {
+                margin-left: 0;
+                margin-top: 0.3rem;
+            }
         }
     </style>
 @endpush
@@ -102,7 +316,7 @@
 
         {{-- Breadcrumb --}}
         <nav aria-label="breadcrumb" class="mb-4" style="font-size:0.85rem">
-            <a href="{{ route('prophets.index') }}" class="text-decoration-none" style="color:var(--emerald)">
+            <a href="{{ route('prophets.index') }}" class="text-decoration-none" style="color:var(--emerald-light)">
                 <i class="bi bi-grid me-1"></i>All Prophets
             </a>
             <span class="mx-2 text-muted">/</span>
@@ -120,10 +334,10 @@
             <div class="row g-0">
 
                 {{-- LEFT: Identity --}}
-                <div class="col-lg-6 p-4 p-md-5">
+                <div class="col-lg-6 p-4 p-md-5 d-flex flex-column justify-content-center">
 
                     {{-- Order pill --}}
-                    <span class="badge mb-3"
+                    <span class="badge mb-3 align-self-start"
                         style="background:rgba(255,255,255,0.12);
                            color:rgba(255,255,255,0.85);
                            font-size:0.75rem;
@@ -142,9 +356,20 @@
                             {!! $prophet->display_name_html !!}
                         </h1>
                         <p style="color:rgba(255,255,255,0.6); font-size:0.9rem; margin:0">
-                            {!! $prophet->display_name_html !!}
+                            {!! \App\Helpers\ArabicHelper::wrapHonorifics($prophet->name_english) !!}
                         </p>
                     </div>
+
+                    {{-- ✅ NEW — Time Period --}}
+                    @if ($prophet->period)
+                        <div class="mb-4">
+                            <span class="period-badge" data-bs-toggle="tooltip" data-bs-placement="top"
+                                title="{{ \App\Helpers\PeriodGlossary::explain($prophet->period) }}"
+                                style="font-size:0.75rem; color:rgba(255,255,255,0.55); background:rgba(255,255,255,0.08); padding:0.3rem 0.8rem; border-radius:50px; display:inline-flex; align-items:center; gap:0.4rem; cursor:help; border-bottom:1px dotted rgba(255,255,255,0.3)">
+                                <i class="bi bi-clock-history"></i>{{ $prophet->period }}
+                            </span>
+                        </div>
+                    @endif
 
                     {{-- Arabic name + title --}}
                     <div class="mb-4" style="text-align:right; direction:rtl">
@@ -234,16 +459,13 @@
                     {{-- Timeline --}}
                     @if (!empty($prophet->timeline))
                         <p
-                            style="font-size:0.7rem;
-                              color:rgba(255,255,255,0.45);
-                              text-transform:uppercase;
-                              letter-spacing:0.1em;
-                              margin-bottom:0.75rem">
+                            style="font-size:0.7rem; color:rgba(255,255,255,0.45); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.75rem">
                             Life Journey
                         </p>
-                        <div class="d-flex flex-column gap-2">
+                        <div>
                             @foreach ($prophet->timeline as $event)
-                                <div class="d-flex align-items-start gap-2">
+                                @php $sourceMeta = config('content_sources.' . ($event['source'] ?? 'tradition')); @endphp
+                                <div class="timeline-item">
                                     <div class="timeline-dot"></div>
                                     <div>
                                         <span style="font-size:0.83rem; color:rgba(255,255,255,0.88); font-weight:500">
@@ -251,6 +473,9 @@
                                         </span>
                                         <span style="font-size:0.78rem; color:rgba(255,255,255,0.45)">
                                             · {{ $event['period'] }}
+                                        </span>
+                                        <span class="source-pill source-pill-{{ $event['source'] ?? 'tradition' }}">
+                                            {{ $sourceMeta['label'] }}
                                         </span>
                                     </div>
                                 </div>
@@ -390,7 +615,8 @@
 
                             {{-- Summary --}}
                             @if ($story->summary)
-                                <p class="text-muted mb-3" style="font-size:0.85rem; line-height:1.65">
+                                <p class="mb-3"
+                                    style="font-size:0.92rem; line-height:1.8; color:var(--ink-soft); font-weight:400">
                                     {{ Str::limit($story->summary, 120) }}
                                 </p>
                             @endif
@@ -403,7 +629,7 @@
                                     </span>
                                 @endif
                                 <span class="meta-chip">
-                                    <i class="bi bi-journal-text me-1"></i>
+                                    <i class="bi bi-journals me-1"></i>
                                     {{ $story->chapters->count() }}
                                     {{ Str::plural('Chapter', $story->chapters->count()) }}
                                 </span>
@@ -425,7 +651,7 @@
             </div>
 
             <div class="mt-3">
-                <a href="{{ route('prophets.index') }}" class="text-decoration-none" style="color:var(--emerald)">
+                <a href="{{ route('prophets.index') }}" class="text-decoration-none" style="color:var(--emerald-light)">
                     <i class="bi bi-arrow-left me-1"></i>All Prophets
                 </a>
             </div>

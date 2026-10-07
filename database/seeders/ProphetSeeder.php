@@ -26,7 +26,7 @@ class ProphetSeeder extends Seeder
                 'period'              => 'Beginning of humanity',
                 'mentioned_in_quran'  => 'Al-Baqarah 2:31-37, Al-A\'raf 7:19-25',
                 'quran_mentions_count' => '24',
-                'summary'             => 'Adam (AS) was the first human being and the first prophet. Allah created him from clay and breathed life into him, then taught him the names of all things. He and Hawwa (Eve) lived in Paradise until the trial with Iblis.',
+                'summary' => 'Adam (AS) was the first human being and the first prophet. Allah created him from clay and breathed life into him, then taught him the names of all things. He and his wife — known in Islamic tradition as Hawwa (Eve), though the Quran does not name her — lived in Paradise until the trial with Iblis.',
             ],
             [
                 'order'               => 2,
@@ -96,7 +96,7 @@ class ProphetSeeder extends Seeder
                 'period'              => 'circa 1800 BCE',
                 'mentioned_in_quran'  => 'Al-Baqarah 2:124-132, Ibrahim 14:35-41',
                 'quran_mentions_count' => '69',
-                'summary'             => 'Ibrahim (AS) is one of the greatest prophets and is called "Khalilullah" (Friend of Allah). He smashed the idols of his people, was thrown into fire by Nimrod but emerged unharmed, built the Ka\'bah with his son Ismail, and was tested with the command to sacrifice his son.',
+                'summary' => 'Ibrahim (AS) is one of the greatest prophets and is called "Khalilullah" (Friend of Allah). He smashed the idols of his people and was thrown into fire by a tyrant king — not named in the Quran, but identified in Islamic tradition as Nimrod — and emerged unharmed by Allah\'s command. He built the Ka\'bah with his son Ismail, and was tested with the command to sacrifice his son. The Quran does not name which son, but the majority of scholars hold it was Ismail (AS).',
             ],
             [
                 'order'               => 7,
@@ -110,7 +110,7 @@ class ProphetSeeder extends Seeder
                 'period'              => 'circa 1800 BCE',
                 'mentioned_in_quran'  => 'Hud 11:77-83, Al-A\'raf 7:80-84',
                 'quran_mentions_count' => '27',
-                'summary'             => 'Lut (AS) was the nephew of Ibrahim (AS) and was sent to the people of Sodom who had fallen into grave sins. When they rejected his message, Allah destroyed their city.',
+                'summary' => 'Lut (AS) was sent to a people who had fallen into grave immorality. The Quran always mentions him alongside Ibrahim (AS), and Islamic tradition holds that he was Ibrahim\'s nephew — though the Quran does not state this relationship directly. Their city is traditionally known as Sodom, a name the Quran itself does not use. When the people rejected Lut\'s message, Allah destroyed their city.',
             ],
             [
                 'order'               => 8,
@@ -124,7 +124,7 @@ class ProphetSeeder extends Seeder
                 'period'              => 'circa 1750 BCE',
                 'mentioned_in_quran'  => 'As-Saffat 37:100-111, Al-Baqarah 2:127',
                 'quran_mentions_count' => '12',
-                'summary'             => 'Ismail (AS) was the firstborn son of Ibrahim (AS). As an infant, he and his mother Hajar were left in the barren valley of Makkah. He helped his father build the Ka\'bah and was willing to be sacrificed when Allah tested Ibrahim.',
+                'summary' => 'Ismail (AS) was a son of Ibrahim (AS) — Islamic tradition holds he was the firstborn, though the Quran does not state the birth order. As an infant, he and his mother — known in tradition as Hajar, a name the Quran does not mention — were left in a barren valley, traditionally identified as Makkah. He helped his father build the Ka\'bah and was willing to be sacrificed when Allah tested Ibrahim.',
             ],
             [
                 'order'               => 9,
@@ -138,7 +138,7 @@ class ProphetSeeder extends Seeder
                 'period'              => 'circa 1750 BCE',
                 'mentioned_in_quran'  => 'Hud 11:71, Al-Anbiya 21:72',
                 'quran_mentions_count' => '17',
-                'summary'             => 'Ishaq (AS) was the second son of Ibrahim (AS) born to Sarah in her old age as a miraculous gift from Allah. He continued the prophetic lineage.',
+                'summary' => 'Ishaq (AS) was a son of Ibrahim (AS) — Islamic tradition holds he was the second son, though the Quran does not state the birth order. He was born to Ibrahim\'s wife, known in tradition as Sarah though the Quran does not name her, in her old age as a miraculous gift from Allah after angels gave her glad tidings. He continued the prophetic lineage.',
             ],
             [
                 'order'               => 10,
@@ -147,12 +147,12 @@ class ProphetSeeder extends Seeder
                 'name_transliteration' => 'Yaqub',
                 'slug'                => 'yaqub',
                 'title'               => 'Israel — Servant of Allah',
-                'title_arabic'           => 'إِسرَائِيل',
+                'title_arabic'           => 'إِسْرَائِيل',
                 'title_transliteration'  => 'Isra\'il',
                 'period'              => 'circa 1700 BCE',
                 'mentioned_in_quran'  => 'Al-Baqarah 2:132, Yusuf 12:4-6',
                 'quran_mentions_count' => '16',
-                'summary'             => 'Yaqub (AS) was the son of Ishaq (AS). He was also known as Israel. His 12 sons became the 12 tribes of Israel. His story is deeply intertwined with that of his beloved son Yusuf.',
+                'summary' => 'Yaqub (AS) was the son of Ishaq (AS), and the Quran itself confirms he was also known as Israel. Islamic tradition holds that his twelve sons became the ancestors of the twelve tribes of Israel, though the Quran does not list them by name in this context. His story is deeply intertwined with that of his beloved son Yusuf.',
             ],
             [
                 'order'               => 11,
@@ -180,13 +180,13 @@ class ProphetSeeder extends Seeder
                 'period'              => 'Ancient times',
                 'mentioned_in_quran'  => 'Al-Anbiya 21:83-84, Sad 38:41-44',
                 'quran_mentions_count' => '4',
-                'summary'             => 'Ayyub (AS) was tested with severe illness, loss of wealth and family for years. He never complained against Allah. When he called upon Allah in humility, he was completely restored. His name is synonymous with sabr (patience).',
+                'summary' => 'Ayyub (AS) was tested with prolonged hardship — described in the Quran as a severe affliction, understood in tafsir to include illness, along with the loss of his family. He never complained against Allah. When he called upon Allah in humility, his family was restored and multiplied. His name is synonymous with sabr (patience).',
             ],
             [
                 'order'               => 13,
                 'name_arabic'         => 'شُعَيْب',
                 'name_english'        => 'Jethro',
-                'name_transliteration' => 'Shu\'ayb',
+                'name_transliteration' => 'Shuayb',
                 'slug'                => 'shuayb',
                 'title'               => 'Prophet to Midian',
                 'title_arabic'           => 'خَطِيبُ الْأَنْبِيَاء',
@@ -208,7 +208,7 @@ class ProphetSeeder extends Seeder
                 'period'              => 'circa 1300 BCE',
                 'mentioned_in_quran'  => 'Al-Baqarah 2:49-61, Ta-Ha 20:9-98',
                 'quran_mentions_count' => '136',
-                'summary'             => 'Musa (AS) is the most mentioned prophet in the Quran. Born in Egypt under Pharaoh\'s oppression, raised in Pharaoh\'s palace, he fled to Midian, received prophethood at the burning bush, returned to free the Israelites, parted the Red Sea, and received the Torah on Mount Sinai.',
+                'summary' => 'Musa (AS) is the most mentioned prophet in the Quran. Born in Egypt under Pharaoh\'s oppression, raised in Pharaoh\'s palace, he fled to Midian, received prophethood at the burning bush, returned to free the Israelites, and parted the sea — traditionally identified as the Red Sea, though the Quran simply calls it "the sea." He received the Torah on Mount Sinai.',
             ],
             [
                 'order'               => 15,
@@ -222,7 +222,7 @@ class ProphetSeeder extends Seeder
                 'period'              => 'circa 1300 BCE',
                 'mentioned_in_quran'  => 'Ta-Ha 20:29-36, Al-A\'raf 7:142',
                 'quran_mentions_count' => '20',
-                'summary'             => 'Harun (AS) was the elder brother of Musa (AS) and was granted prophethood to assist him. He was known for his eloquence and was left in charge of the Israelites while Musa went to receive the Torah.',
+                'summary' => 'Harun (AS) was a brother of Musa (AS) — Islamic tradition holds he was the elder brother, though the Quran does not state the age order — and was granted prophethood to assist him. He was known for his eloquence and was left in charge of the Israelites while Musa went to receive the Torah.',
             ],
             [
                 'order'               => 16,
@@ -250,7 +250,7 @@ class ProphetSeeder extends Seeder
                 'period'              => 'circa 1000 BCE',
                 'mentioned_in_quran'  => 'Al-Baqarah 2:251, Sad 38:17-26',
                 'quran_mentions_count' => '16',
-                'summary'             => 'Dawud (AS) was both a prophet and a great king. As a young man he defeated the giant Jalut (Goliath). Allah gave him the Zabur (Psalms) and made iron soft in his hands. He had a beautiful voice that caused birds and mountains to praise Allah with him.',
+                'summary' => 'Dawud (AS) was both a prophet and a great king. He defeated the giant Jalut (Goliath) — tradition holds this happened in his youth, though the Quran does not specify his age. Allah gave him the Zabur (Psalms) and made iron soft in his hands. The Quran describes birds and mountains joining him in glorifying Allah, which tradition attributes to his extraordinarily beautiful voice.',
             ],
             [
                 'order'               => 18,
@@ -264,7 +264,7 @@ class ProphetSeeder extends Seeder
                 'period'              => 'circa 970 BCE',
                 'mentioned_in_quran'  => 'An-Naml 27:15-44, Sad 38:30-40',
                 'quran_mentions_count' => '17',
-                'summary'             => 'Sulayman (AS) was given extraordinary gifts — he could speak to animals and birds, command the jinn, and the wind was made subservient to him. He built the great temple in Jerusalem. His encounter with the Queen of Sheba (Bilqis) is one of the most famous Quranic narratives.',
+                'summary' => 'Sulayman (AS) was given extraordinary gifts — he could speak to animals and birds, command the jinn, and the wind was made subservient to him. He built a great structure traditionally identified with the Temple in Jerusalem, though the Quran does not name the location. His encounter with the Queen of Saba (Sheba) — known in tradition as Bilqis, a name the Quran does not mention — is one of the most famous Quranic narratives.',
             ],
             [
                 'order'               => 19,
@@ -292,7 +292,7 @@ class ProphetSeeder extends Seeder
                 'period'              => 'circa 850 BCE',
                 'mentioned_in_quran'  => 'Al-An\'am 6:86, Sad 38:48',
                 'quran_mentions_count' => '2',
-                'summary'             => 'Al-Yasa\' (AS) is mentioned among the prophets who were guided by Allah and chosen above the nations. He was the successor of Ilyas (AS).',
+                'summary' => 'Al-Yasa\' (AS) is mentioned in the Quran among the prophets who were guided by Allah and chosen above the nations. Islamic tradition holds that he was the successor of Ilyas (AS), though the Quran does not state this relationship directly.',
             ],
             [
                 'order'               => 21,
@@ -320,7 +320,7 @@ class ProphetSeeder extends Seeder
                 'period'              => 'circa 1st century BCE',
                 'mentioned_in_quran'  => 'Maryam 19:2-11, Ali \'Imran 3:37-41',
                 'quran_mentions_count' => '7',
-                'summary'             => 'Zakariyya (AS) was the guardian of Maryam (Mary). In his old age, seeing the miraculous provision Maryam received from Allah, he prayed for a child. Allah gave him Yahya (John the Baptist) as a miracle.',
+                'summary' => 'Zakariyya (AS) was the guardian of Maryam (Mary). In his old age, seeing the miraculous provision Maryam received from Allah, he prayed for a child. Allah gave him Yahya (known in English as John) as a miracle.',
             ],
             [
                 'order'               => 23,
@@ -348,13 +348,13 @@ class ProphetSeeder extends Seeder
                 'period'              => 'circa 4 BCE – 30 CE',
                 'mentioned_in_quran'  => 'Ali \'Imran 3:45-55, Maryam 19:16-34',
                 'quran_mentions_count' => '25',
-                'summary'             => 'Isa (AS) was born miraculously to the virgin Maryam. He spoke from the cradle, healed the sick, raised the dead, and was given the Injeel (Gospel). He is one of the five greatest prophets. Muslims believe he was not crucified but raised to the heavens by Allah and will return before the Day of Judgement.',
+                'summary' => 'Isa (AS) was born miraculously to the virgin Maryam. By Allah\'s permission, he spoke from the cradle, healed the sick, and raised the dead — the Quran is clear that these miracles happened through Allah\'s power, not his own. He was given the Injeel (Gospel), and is one of the five greatest prophets. Muslims believe he was not crucified but raised to the heavens by Allah, and — as narrated in Sahih Bukhari, Hadith 3448 — will descend again before the Day of Judgement.',
             ],
             [
                 'order'               => 25,
                 'name_arabic'         => 'مُحَمَّد ﷺ',
                 'name_english'        => 'Muhammad ﷺ',
-                'name_transliteration' => 'Muhammad ',
+                'name_transliteration' => 'Muhammad',
                 'slug'                => 'muhammad',
                 'title'               => 'Messenger of Allah ﷺ — Seal of the Prophets • Mercy to All Worlds',
                 'title_arabic'           => 'حَبِيبُ اللَّه',
@@ -362,7 +362,7 @@ class ProphetSeeder extends Seeder
                 'period'              => '570 CE – 632 CE',
                 'mentioned_in_quran'  => 'Surah Aal-Imran 3:144, Surah Al-Ahzab 33:40, Surah Muhammad 47:2, Surah Al-Fath 48:29, among many others',
                 'quran_mentions_count' => '4',
-                'summary'             => 'Muhammad ﷺ is the final and greatest prophet, sent as a mercy to all of mankind. Born in Makkah, he received the first revelation at age 40 in the Cave of Hira. Over 23 years, the Quran was revealed to him. He faced persecution in Makkah, made Hijra to Madinah, and united the Arab tribes under Islam before returning to Makkah in triumph. He is the best of all creation. He is mentioned by name "Muhammad" four times in the Quran, and once as "Ahmad" (61:6) in a prophecy by Isa (AS) — understood by scholarly consensus to refer to him as well.',
+                'summary' => 'Muhammad ﷺ is the final and greatest prophet — the Quran calls him the Seal of the Prophets (33:40) — sent as a mercy to all of mankind (21:107). According to the seerah (his biography as preserved in Islamic history), he was born in Makkah, received his first revelation at age 40 in the Cave of Hira, and the Quran was revealed to him over 23 years. He faced persecution in Makkah, made Hijra to Madinah, and united the Arab tribes under Islam before returning to Makkah in triumph. He is described in authentic hadith as the best of all creation. He is mentioned by name "Muhammad" four times in the Quran, and once as "Ahmad" (61:6) in a prophecy by Isa (AS) — understood by scholarly consensus to refer to him as well.',
             ],
         ];
 

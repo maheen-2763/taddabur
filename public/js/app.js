@@ -75,3 +75,15 @@ function toggleDevNote() {
         ? "hidden"
         : "";
 }
+
+// ════════════════════════════════════════════
+// BOOTSTRAP TOOLTIPS — global init
+// Works for ANY element with data-bs-toggle="tooltip",
+// anywhere in the app (Prophet periods, Hadith grades, etc.)
+// ════════════════════════════════════════════
+document.addEventListener("DOMContentLoaded", function () {
+    const tooltipTriggerList = document.querySelectorAll(
+        '[data-bs-toggle="tooltip"]',
+    );
+    tooltipTriggerList.forEach((el) => new bootstrap.Tooltip(el));
+});

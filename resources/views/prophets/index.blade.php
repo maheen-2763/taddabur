@@ -51,20 +51,21 @@
 
         .prophet-card-cover-arabic {
             font-family: 'Amiri', 'Scheherazade New', serif;
-            font-size: 2.6rem;
+            font-size: 2.5rem;
             color: white;
             line-height: 1.3;
             text-align: center;
+            margin-bottom: 0.3rem;
             position: relative;
             z-index: 1;
         }
 
         .prophet-card-cover-title {
             font-family: 'Amiri', 'Scheherazade New', serif;
-            font-size: 0.85rem;
+            font-size: 0.95rem;
             color: var(--gold-light);
             text-align: center;
-            margin-top: 0.50rem;
+            margin-top: 0.45rem;
             position: relative;
             z-index: 1;
         }
@@ -159,6 +160,82 @@
             background: rgba(180, 130, 40, 0.08);
             color: var(--gold);
         }
+
+
+        /* ── Mobile responsiveness ── */
+        @media (max-width: 576px) {
+            .prophets-header {
+                padding: 2rem 0 1.5rem;
+            }
+
+            .prophet-card-cover {
+                height: 130px;
+            }
+
+            .prophet-card-cover-arabic {
+                font-size: 2rem;
+            }
+
+            .prophet-card-cover-title {
+                font-size: 0.75rem;
+            }
+
+            .prophet-card-cover-order {
+                font-size: 0.62rem;
+                top: 0.5rem;
+                left: 0.5rem;
+                padding: 0.15rem 0.5rem;
+            }
+
+            .prophet-card-body {
+                padding: 0.9rem 1rem 1rem;
+            }
+
+            .prophet-card-name {
+                font-size: 0.92rem;
+            }
+
+            .prophet-card-summary {
+                font-size: 0.78rem;
+                -webkit-line-clamp: 3;
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+
+            .prophet-card-footer {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+
+            .prophet-chip {
+                font-size: 0.65rem;
+                padding: 0.15rem 0.5rem;
+            }
+        }
+
+        /* ── Extra-small screens (very old/small phones) ── */
+        @media (max-width: 360px) {
+            .prophet-card-cover-arabic {
+                font-size: 1.7rem;
+            }
+
+            h1.heading-font {
+                font-size: 1.6rem !important;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .pagination {
+                font-size: 0.8rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .page-link {
+                padding: 0.4rem 0.65rem;
+            }
+        }
     </style>
 @endpush
 
@@ -172,7 +249,7 @@
             <p
                 style="color:var(--gold);
                   font-family:var(--font-heading);
-                  font-size:0.78rem;
+                  font-size:1rem;
                   letter-spacing:0.14em;
                   text-transform:uppercase;
                   margin-bottom:0.5rem">
@@ -181,9 +258,10 @@
             <h1 class="heading-font mb-3" style="font-size:clamp(2rem,5vw,3rem)">
                 The 25 Prophets of Islam
             </h1>
-            <p class="text-muted mx-auto" style="max-width:520px; line-height:1.8; font-size:0.95rem">
-                Explore the lives of the prophets mentioned in the Quran —
-                their trials, miracles, and timeless lessons for every believer.
+            <p class="text-muted mx-auto" style="max-width:520px; line-height:1.8; font-size:1rem">
+                Explore the lives of the prophets sent by Allah — their trials,
+                miracles, and timeless lessons. Every detail is clearly marked as
+                coming from the Quran, authentic Hadith, or scholarly tradition.
             </p>
 
             {{-- Decorative divider --}}
@@ -250,7 +328,7 @@
                                 <div class="d-flex gap-2 flex-wrap">
                                     @if ($prophet->quran_mentions_count > 0)
                                         <span class="prophet-chip prophet-chip-quran">
-                                            <i class="bi bi-book me-1"></i>
+                                            <i class="bi bi-book-half me-1"></i>
                                             {{ $prophet->quran_mentions_count }}x in Qur'an
                                         </span>
                                     @endif
@@ -262,6 +340,7 @@
                                         </span>
                                     @else
                                         <span class="prophet-chip prophet-chip-soon">
+                                            <i class="bi bi-hourglass-split me-1"></i>
                                             Coming soon
                                         </span>
                                     @endif
@@ -276,6 +355,10 @@
                     </a>
                 </div>
             @endforeach
+        </div>
+        {{-- ✅ NEW — Pagination --}}
+        <div class="d-flex justify-content-center mt-5">
+            {{ $prophets->links() }}
         </div>
 
     </div>

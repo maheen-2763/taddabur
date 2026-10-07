@@ -56,7 +56,20 @@ class StoryController extends Controller
         // ✅ NEW — count of published stories per difficulty level
         $difficultyCounts = $this->storyService->getDifficultyCounts();
 
-        return view('stories.index', compact('stories', 'prophets', 'difficultyCounts'));
+        // ✅ NEW — smart logic: prophet+difficulty combo returned nothing?
+        // find out which difficulty this prophet's story actually exists at
+        $actualDifficulty = null;
+        $prophet = null;
+
+        if ($request->get('prophet')) {
+            $prophet = Prophet::where('slug', $request->get('prophet'))->first();
+
+            if ($request->get('difficulty') && $stories->isEmpty()) {
+                $actualDifficulty = $this->storyService->getAvailableDifficultyForProphet($request->get('prophet'));
+            }
+        }
+
+        return view('stories.index', compact('stories', 'prophets', 'difficultyCounts', 'actualDifficulty', 'prophet'));
     }
 
     // GET /stories/{story:slug}
@@ -86,7 +99,15 @@ class StoryController extends Controller
         $totalChapters = $story->chapters->count();
         $isStoryCompleted = $user && $totalChapters > 0 && count($completedChapterIds) === $totalChapters;
 
-        return view('stories.show', compact('story', 'progress', 'completedChapterIds', 'isStoryCompleted', 'totalChapters'));
+
+        // ✅ Naya — sirf tab 'continue' maano jab user ne genuinely kuch start kiya ho
+        $hasStarted = $progress && $progress->last_chapter_id;
+
+        $continueChapter = (!$isStoryCompleted && $hasStarted)
+            ? $this->storyService->getContinueChapter($story, $completedChapterIds)
+            : null;
+
+        return view('stories.show', compact('story', 'progress', 'completedChapterIds', 'isStoryCompleted', 'totalChapters', 'continueChapter'));
     }
 
 
@@ -130,7 +151,7 @@ class StoryController extends Controller
     public function prophets(): View
     {
         // ✅ Service handles prophet listing with story counts
-        $prophets = $this->storyService->getAllProphets();
+        $prophets = $this->storyService->getAllProphetsPaginated();
 
         return view('prophets.index', compact('prophets'));
     }
@@ -168,16 +189,14 @@ class StoryController extends Controller
         ]);
     }
     //wipes the progress, then sends the user straight to Chapter 1 to begin again.
-    public function resetProgress(Story $story)
+    public function resetProgress(Story $story): RedirectResponse
     {
         $user = Auth::user();
 
         $this->storyService->resetStoryProgress($user, $story);
 
-        $firstChapter = $story->chapters()->orderBy('order')->first();
-
         return redirect()
-            ->route('stories.chapter', [$story->slug, $firstChapter->slug])
-            ->with('success', 'Progress reset. Starting fresh, In shaa Allah.');
+            ->route('stories.show', $story->slug)
+            ->with('success', 'Progress reset. Start whenever you\'re ready, In Shaa Allah.');
     }
 }
