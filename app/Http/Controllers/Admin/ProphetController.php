@@ -16,30 +16,28 @@ class ProphetController extends Controller
         return view('admin.prophets.index', compact('prophets'));
     }
 
+
     public function edit(Prophet $prophet): View
     {
-        return view('admin.prophets.edit', compact('prophet'));
+        $total = Prophet::count();
+
+        return view('admin.prophets.edit', compact('prophet', 'total'));
     }
+
+
 
     public function update(Request $request, Prophet $prophet)
     {
-        $request->validate([
-            'summary'              => 'required|string',
-            'title'                => 'nullable|string',
-            'title_arabic'         => 'nullable|string',
-            'title_transliteration' => 'nullable|string',
-            'period'               => 'nullable|string',
-            'mentioned_in_quran'   => 'nullable|string',
+        $data = $request->validate([
+            'summary'               => ['required', 'string'],
+            'title'                 => ['nullable', 'string', 'max:255'],
+            'title_arabic'          => ['nullable', 'string', 'max:255'],
+            'title_transliteration' => ['nullable', 'string', 'max:255'],
+            'period'                => ['nullable', 'string', 'max:255'],
+            'mentioned_in_quran'    => ['nullable', 'string', 'max:1000'],
         ]);
 
-        $prophet->update($request->only([
-            'title',
-            'title_arabic',
-            'title_transliteration',
-            'summary',
-            'period',
-            'mentioned_in_quran',
-        ]));
+        $prophet->update($data);
 
         return back()->with('success', 'Prophet updated.');
     }

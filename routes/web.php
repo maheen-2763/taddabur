@@ -255,6 +255,8 @@ Route::middleware(['auth', 'admin'])
         Route::get('/backups', [BackupController::class, 'index'])->name('backups');
         Route::get('/backups/{backup}/download', [BackupController::class, 'download'])->name('backups.download');
 
+        Route::post('/backups/run', [BackupController::class, 'run'])->name('backups.run');
+
         // Dashboard
         Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])
             ->name('dashboard');
@@ -278,6 +280,8 @@ Route::middleware(['auth', 'admin'])
             ->name('stories.update');
         Route::delete('/stories/{story}', [App\Http\Controllers\Admin\StoryController::class, 'destroy'])
             ->name('stories.destroy');
+        Route::patch('/stories/{story}/restore', [App\Http\Controllers\Admin\StoryController::class, 'restore'])
+            ->name('stories.restore');
 
         // ── CHAPTERS (nested under stories) ──────────────────
         // ⚠️ These MUST come before /chapters/{chapter} routes
@@ -302,6 +306,9 @@ Route::middleware(['auth', 'admin'])
         Route::patch('/prophets/{prophet}', [App\Http\Controllers\Admin\ProphetController::class, 'update'])
             ->name('prophets.update');
 
+        Route::get('/donations', [App\Http\Controllers\Admin\DonorController::class, 'index'])
+            ->name('donations.index');
+
 
         Route::resource(
             'daily-reflections',
@@ -318,6 +325,8 @@ Route::middleware(['auth', 'admin'])
             [AdminDailyReflectionController::class, 'ayahs']
         )->name('daily-reflections.ayahs');
     });
+
+
 
 Route::get(
     '/reflections/{dailyContent}',

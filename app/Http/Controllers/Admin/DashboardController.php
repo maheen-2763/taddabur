@@ -4,320 +4,346 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Ayah;
-use App\Models\AllahName;
-use App\Models\Bookmark;
-use App\Models\Hadith;
+use App\Models\Complaint;
+use App\Models\Donor;
 use App\Models\Note;
-use App\Models\Prophet;
-use App\Models\Story;
-use App\Models\Subscription;
-use App\Models\User;
 use App\Models\Review;
+use App\Models\Story;
+use App\Models\User;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use App\Models\Backup;
+use Illuminate\Support\Facades\Storage;
 
 class DashboardController extends Controller
 {
+    private const EXPECTED_SURAHS      = 114;
+    private const EXPECTED_AYAHS       = 6236;
+    private const EXPECTED_JUZS        = 30;
+    private const EXPECTED_ALLAH_NAMES = 99;
+
+    // Donor.status ki "paid" value — tinker se verify karna (neeche instructions)
+    private const DONATION_PAID_STATUS = DonorController::PAID_STATUS;
+
     public function index(): View
     {
-        // ═══════════════════════════════════════════════
-        // USERS  (your original queries — untouched)
-        // ═══════════════════════════════════════════════
+        $users     = $this->users();
+        $sources   = $this->sources();
+        $feedback  = $this->feedback();
+        $donations = $this->donations();
 
-        $totalUsers   = User::count();
-        $freeUsers    = User::where('plan', 'free')->count();
-        $basicUsers   = User::where('plan', 'basic')->count();
-        $premiumUsers = User::where('plan', 'premium')->count();
+        return view('admin.dashboard', [
+            'users'      => $users,
+            'quran'      => $this->quran(),
+            'library'    => $this->library(),
+            'topSurahs'  => $this->mostReadSurahs(),
+            'topReaders' => $this->topReaders(),
+            'feedback'   => $feedback,
+            'donations'  => $donations,
+            'sources'    => $sources,
+            'alerts'     => $this->alerts($sources, $feedback, $donations),
+        ]);
+    }
 
-        // Verified vs unverified
-        $verifiedUsers = User::whereNotNull('email_verified_at')->count();
+    private function users(): array
+    {
+        $total    = User::count();
+        $verified = User::whereNotNull('email_verified_at')->count();
 
-        // New registrations this calendar month
-        $newUsersMonth = User::whereMonth('created_at', now()->month)
-            ->whereYear('created_at',  now()->year)
-            ->count();
+        $perDay = User::where('created_at', '>=', now()->subDays(6)->startOfDay())
+            ->pluck('created_at')
+            ->countBy(fn($date) => $date->toDateString());
 
-        // 7-day sparkline — oldest day first, today last
-        $dailySignups = collect(range(6, 0))
-            ->map(fn($d) => User::whereDate('created_at', now()->subDays($d))->count())
-            ->values()
-            ->toArray();
+        // Active = pichhle 7 din mein koi bhi real activity
+        $since  = now()->subDays(7);
+        $active = DB::query()->fromSub(
+            DB::table('user_read_ayahs')->where('created_at', '>=', $since)->select('user_id')
+                ->union(DB::table('listened_ayahs')->where('created_at', '>=', $since)->select('user_id'))
+                ->union(DB::table('chapter_completions')->where('created_at', '>=', $since)->select('user_id'))
+                ->union(DB::table('hadith_reads')->where('read_at', '>=', $since)->select('user_id'))
+                ->union(DB::table('reading_progress')->where('updated_at', '>=', $since)->select('user_id')),
+            'activity'
+        )->count();
 
-        // ═══════════════════════════════════════════════
-        // REVENUE  (your original calculation — untouched)
-        // plan_expires_at lives on users table
-        // ═══════════════════════════════════════════════
+        return [
+            'total'        => $total,
+            'verified'     => $verified,
+            'unverified'   => $total - $verified,
+            'verifiedRate' => $total > 0 ? (int) round($verified / $total * 100) : 0,
+            'newThisMonth' => User::whereYear('created_at', now()->year)
+                ->whereMonth('created_at', now()->month)
+                ->count(),
+            'daily'        => collect(range(6, 0))->map(fn($i) => [
+                'label' => now()->subDays($i)->format('d M'),
+                'count' => $perDay[now()->subDays($i)->toDateString()] ?? 0,
+            ])->all(),
+            'active7d'     => $active,
+            'recent'       => User::latest()->take(10)
+                ->get(['id', 'name', 'email', 'email_verified_at', 'created_at']),
+        ];
+    }
 
-        $monthlyRevenue = ($basicUsers * 1.99) + ($premiumUsers * 3.99);
+    private function quran(): array
+    {
+        $bookmarks = DB::table('bookmarks')->count();
+        $totalUsers = User::count();
 
-        // Expiring soon — your original query, untouched
-        $expiringSoon = User::where('plan', '!=', 'free')
-            ->whereBetween('plan_expires_at', [now(), now()->addDays(7)])
-            ->count();
+        $topBookmarked = DB::table('bookmarks')
+            ->join('ayahs', 'ayahs.id', '=', 'bookmarks.bookmarkable_id')
+            ->join('surahs', 'surahs.id', '=', 'ayahs.surah_id')
+            ->where('bookmarks.bookmarkable_type', (new Ayah)->getMorphClass())
+            ->select('surahs.name_transliteration', DB::raw('COUNT(*) as total'))
+            ->groupBy('surahs.id', 'surahs.name_transliteration')
+            ->orderByDesc('total')
+            ->first();
 
-        // Churned in last 30 days — users whose plan_expires_at passed recently
-        $churned = User::where('plan', '!=', 'free')
-            ->whereBetween('plan_expires_at', [now()->subDays(30), now()])
-            ->count();
+        return [
+            'surahs'              => DB::table('surahs')->count(),
+            'ayahs'               => Ayah::count(),
+            'juzs'                => DB::table('juzs')->count(),
+            'bookmarks'           => $bookmarks,
+            'notes'               => Note::count(),
+            'read'                => DB::table('user_read_ayahs')->count(),
+            'listened'            => DB::table('listened_ayahs')->count(),
+            'chapters'            => DB::table('chapter_completions')->count(),
+            'hadithReads'         => DB::table('hadith_reads')->count(),
+            'avgBookmarks'        => $totalUsers > 0 ? round($bookmarks / $totalUsers, 1) : 0,
+            'mostBookmarkedSurah' => $topBookmarked?->name_transliteration,
+        ];
+    }
 
-        // ═══════════════════════════════════════════════
-        // ACTIVE USERS
-        // Proxy via reading_progress until user_sessions is live
-        // ═══════════════════════════════════════════════
+    private function library(): array
+    {
+        return [
+            'prophets'    => DB::table('prophets')->count(),
+            'stories'     => Story::count(),
+            'published'   => Story::where('is_published', true)->count(),
+            'chapters'    => DB::table('story_chapters')->whereIn('story_id', Story::select('id'))->count(),
+            'hadiths'     => DB::table('hadiths')->count(),
+            'collections' => DB::table('hadith_collections')->count(),
+            'allahNames'  => DB::table('allah_names')->count(),
+            'scholars'    => DB::table('scholars')->count(),
+        ];
+    }
 
-        $activeUsers7d = DB::table('reading_progress')
-            ->where('updated_at', '>=', now()->subDays(7))
-            ->distinct('user_id')
-            ->count('user_id');
+    private function mostReadSurahs(): Collection
+    {
+        return DB::table('user_read_ayahs')
+            ->join('ayahs', 'ayahs.id', '=', 'user_read_ayahs.ayah_id')
+            ->join('surahs', 'surahs.id', '=', 'ayahs.surah_id')
+            ->select('surahs.number', 'surahs.name_transliteration as name', DB::raw('COUNT(*) as reads'))
+            ->groupBy('surahs.id', 'surahs.number', 'surahs.name_transliteration')
+            ->orderByDesc('reads')
+            ->limit(7)
+            ->get();
+    }
 
-        // Session time — null until user_sessions migration is run
-        $hasSessionTable   = DB::getSchemaBuilder()->hasTable('user_sessions');
-        $avgSessionMin     = null;
-        $avgSessionFree    = null;
-        $avgSessionPremium = null;
-
-        if ($hasSessionTable) {
-            $base = fn() => DB::table('user_sessions')
-                ->where('user_sessions.created_at', '>=', now()->subDays(30));
-
-            $avgSessionMin = round($base()->avg('duration_minutes') ?? 0);
-
-            $avgSessionFree = round(
-                $base()
-                    ->join('users', 'users.id', '=', 'user_sessions.user_id')
-                    ->where('users.plan', 'free')
-                    ->avg('user_sessions.duration_minutes') ?? 0
-            );
-
-            $avgSessionPremium = round(
-                $base()
-                    ->join('users', 'users.id', '=', 'user_sessions.user_id')
-                    ->where('users.plan', 'premium')
-                    ->avg('user_sessions.duration_minutes') ?? 0
-            );
-        }
-
-        // ═══════════════════════════════════════════════
-        // QURAN CONTENT
-        // Your Ayah model used directly (as in your original)
-        // Real table names from your migrations:
-        //   ayah_tafsirs, ayah_translations, recitations
-        // ═══════════════════════════════════════════════
-
-        $totalAyahs        = Ayah::count();                          // your original
-        $totalTafsir       = DB::table('ayah_tafsirs')->count();
-        $totalTranslations = DB::table('ayah_translations')->count();
-        $totalReciters     = DB::table('recitations')->count();
-        $totalBookmarks    = Bookmark::count();
-        $totalNotes        = Note::count();
-        $totalHadiths    =   Hadith::count();
-
-        $avgBookmarks = $totalUsers > 0
-            ? round($totalBookmarks / $totalUsers, 1)
-            : 0;
-
-        $avgNotesPremium = $premiumUsers > 0
-            ? round(
-                Note::whereHas('user', fn($q) => $q->where('plan', 'premium'))->count()
-                    / $premiumUsers,
-                1
+    private function topReaders(): Collection
+    {
+        return DB::table('user_read_ayahs')
+            ->join('users', 'users.id', '=', 'user_read_ayahs.user_id')
+            ->where('user_read_ayahs.created_at', '>=', now()->subDays(30))
+            ->select(
+                'users.id',
+                'users.name',
+                'users.email',
+                DB::raw('COUNT(*) as ayahs_read'),
+                DB::raw('COUNT(DISTINCT DATE(user_read_ayahs.created_at)) as active_days')
             )
-            : 0;
+            ->groupBy('users.id', 'users.name', 'users.email')
+            ->orderByDesc('ayahs_read')
+            ->limit(5)
+            ->get();
+    }
 
-        // Most bookmarked surah name
-        // $mostBookmarkedSurah = DB::table('bookmarks')
-        //     ->join('surahs', 'surahs.number', '=', 'bookmarks.surah_number')
-        //     ->select('surahs.name_simple', DB::raw('count(*) as total'))
-        //     ->groupBy('surahs.number', 'surahs.name_simple')
-        //     ->orderByDesc('total')
-        //     ->first()
-        //     ?->name_simple;
+    private function feedback(): array
+    {
+        return [
+            'openComplaints' => Complaint::where('status', 'open')->count(),
+            'complaints'     => Complaint::with('user:id,name')->latest()->limit(5)->get(),
+            'reviewCount'    => Review::count(),
+            'avgRating'      => round((float) Review::avg('rating'), 1),
+            'breakdown'      => Review::select('rating', DB::raw('COUNT(*) as total'))
+                ->groupBy('rating')
+                ->pluck('total', 'rating'),
+            'reviews'        => Review::with('user:id,name')->latest()->limit(3)->get(),
+        ];
+    }
 
-        // // Most read surahs — reading_progress → surahs join
-        // $mostReadSurahs = DB::table('reading_progress')
-        //     ->join('surahs', 'surahs.number', '=', 'reading_progress.surah_number')
-        //     ->select(
-        //         'surahs.name_simple as name',
-        //         'reading_progress.surah_number as number',
-        //         DB::raw('COUNT(DISTINCT reading_progress.user_id) as reads')
-        //     )
-        //     ->groupBy('reading_progress.surah_number', 'surahs.name_simple')
-        //     ->orderByDesc('reads')
-        //     ->limit(7)
-        //     ->get()
-        //     ->toArray();
+    private function donations(): array
+    {
+        $paid = fn() => Donor::where('status', self::DONATION_PAID_STATUS);
 
-        // ═══════════════════════════════════════════════
-        // BONUS QURAN ENGAGEMENT
-        // From your extra tables: user_read_ayahs,
-        // listened_ayahs, chapter_completions, juzs
-        // ═══════════════════════════════════════════════
+        return [
+            'paidStatus' => self::DONATION_PAID_STATUS,
+            'attempts'   => Donor::count(),
+            'paidCount'  => $paid()->count(),
+            'paidTotal'  => (float) $paid()->sum('amount'),
+            'byStatus'   => Donor::select('status', DB::raw('COUNT(*) as total'))
+                ->groupBy('status')
+                ->pluck('total', 'status'),
+            'recent'     => Donor::latest()->limit(5)->get(),
+        ];
+    }
 
-        $totalReadAyahs          = DB::table('user_read_ayahs')->count();
-        $totalListenedAyahs      = DB::table('listened_ayahs')->count();
-        $totalChapterCompletions = DB::table('chapter_completions')->count();
-        $totalJuzs               = DB::table('juzs')->count();
+    private function alerts(array $sources, array $feedback, array $donations): array
+    {
+        $alerts = [];
 
-        // ═══════════════════════════════════════════════
-        // CONTENT LIBRARY
-        // ═══════════════════════════════════════════════
-
-        $totalStories    = Story::count();                           // your original
-        $totalProphets   = Prophet::count();
-        $totalAllahNames = AllahName::count();
-
-        $totalSahabas = DB::getSchemaBuilder()->hasTable('sahabas')
-            ? DB::table('sahabas')->count()
-            : 0;
-
-        $totalScholars = DB::getSchemaBuilder()->hasTable('scholars')
-            ? DB::table('scholars')->count()
-            : 0;
-
-        // ═══════════════════════════════════════════════
-        // TOP ENGAGED USERS
-        // Uses user_sessions when available,
-        // falls back to user_read_ayahs count
-        // ═══════════════════════════════════════════════
-
-        if ($hasSessionTable) {
-            $topEngagedUsers = DB::table('user_sessions')
-                ->join('users', 'users.id', '=', 'user_sessions.user_id')
-                ->select(
-                    'users.id',
-                    'users.name',
-                    'users.email',
-                    'users.plan',
-                    DB::raw('SUM(user_sessions.duration_minutes) as total_minutes'),
-                    DB::raw('COUNT(user_sessions.id) as sessions')
-                )
-                ->where('user_sessions.created_at', '>=', now()->subDays(30))
-                ->groupBy('users.id', 'users.name', 'users.email', 'users.plan')
-                ->orderByDesc('total_minutes')
-                ->limit(5)
-                ->get();
-        } else {
-            // Fallback: ranked by ayahs read this month
-            $topEngagedUsers = DB::table('user_read_ayahs')
-                ->join('users', 'users.id', '=', 'user_read_ayahs.user_id')
-                ->select(
-                    'users.id',
-                    'users.name',
-                    'users.email',
-                    'users.plan',
-                    DB::raw('COUNT(user_read_ayahs.id) as total_minutes'),
-                    DB::raw('COUNT(DISTINCT DATE(user_read_ayahs.created_at)) as sessions')
-                )
-                ->where('user_read_ayahs.created_at', '>=', now()->subDays(30))
-                ->groupBy('users.id', 'users.name', 'users.email', 'users.plan')
-                ->orderByDesc('total_minutes')
-                ->limit(5)
-                ->get();
+        $failedChecks = collect($sources['checks'])->where('ok', false)->count();
+        if ($failedChecks > 0) {
+            $alerts[] = ['danger', "{$failedChecks} Quran data integrity check(s) failed", '#data-sources'];
         }
 
-        // ═══════════════════════════════════════════════
-        // RECENT DATA  (your originals — untouched)
-        // ═══════════════════════════════════════════════
+        foreach (['tafsirs' => 'Tafsir', 'translations' => 'Translation'] as $key => $label) {
+            $partial = $sources[$key]->filter(fn($row) => $row->is_active && $row->percent < 100)->count();
+            if ($partial > 0) {
+                $alerts[] = ['warning', "{$partial} active {$label} source(s) do not cover all ayahs", '#data-sources'];
+            }
+        }
 
-        $recentUsers = User::latest()->take(10)->get();              // was take(5)
+        $needsReview = (int) $sources['hadith']->sum('needs_review');
+        if ($needsReview > 0) {
+            $alerts[] = ['warning', number_format($needsReview) . ' hadiths are marked "needs review"', '#data-sources'];
+        }
 
-        $totalSubs  = Subscription::count();                         // your original
-        $recentSubs = Subscription::with(['user', 'plan'])
-            ->latest()
-            ->take(15)                                               // was take(5)
+        $partialReciters = $sources['reciters']->where('sync', 'partial')->count();
+        if ($partialReciters > 0) {
+            $alerts[] = ['warning', "{$partialReciters} reciter(s) have incomplete word timings", '#data-sources'];
+        }
+
+        if ($feedback['openComplaints'] > 0) {
+            $alerts[] = ['danger', "{$feedback['openComplaints']} open complaint(s)", '#feedback'];
+        }
+
+        $notCompleted = $donations['attempts'] - $donations['paidCount'];
+        if ($notCompleted > 0) {
+            $alerts[] = ['info', "{$notCompleted} donation attempt(s) not completed (pending or failed)", route('admin.donations.index')];
+        }
+
+        $latest = Backup::latest()->first();
+        if (! $latest) {
+            $alerts[] = ['warning', 'No backup recorded yet', route('admin.backups')];
+        } elseif (! Storage::exists('backups/' . basename($latest->filename))) {
+            $alerts[] = ['danger', 'Latest backup file is missing on disk', route('admin.backups')];
+        } elseif ($latest->created_at->lt(now()->subDays(7))) {
+            $alerts[] = ['warning', 'Last backup is older than 7 days', route('admin.backups')];
+        }
+
+        return $alerts;
+    }
+
+    private function sources(): array
+    {
+        $totalAyahs = Ayah::count();
+
+        $surahMismatch = DB::table('surahs')
+            ->leftJoin('ayahs', 'ayahs.surah_id', '=', 'surahs.id')
+            ->groupBy('surahs.id', 'surahs.ayah_count')
+            ->havingRaw('COUNT(ayahs.id) != surahs.ayah_count')
+            ->select('surahs.id')
+            ->get()
+            ->count();
+
+        $checks = collect([
+            ['label' => 'Surahs',                         'actual' => DB::table('surahs')->count(),          'expected' => self::EXPECTED_SURAHS],
+            ['label' => 'Ayahs',                          'actual' => $totalAyahs,                           'expected' => self::EXPECTED_AYAHS],
+            ['label' => 'Sum of surah ayah counts',       'actual' => (int) DB::table('surahs')->sum('ayah_count'), 'expected' => self::EXPECTED_AYAHS],
+            ['label' => 'Surahs with ayah count mismatch', 'actual' => $surahMismatch,                       'expected' => 0],
+            ['label' => 'Juz divisions',                  'actual' => DB::table('juzs')->count(),            'expected' => self::EXPECTED_JUZS],
+            ['label' => 'Asma-ul-Husna (Allah names)',    'actual' => DB::table('allah_names')->count(),     'expected' => self::EXPECTED_ALLAH_NAMES],
+        ])->map(fn($c) => $c + ['ok' => $c['actual'] === $c['expected']])->all();
+
+        $hadith = DB::table('hadith_collections')
+            ->leftJoin('hadiths', 'hadiths.collection_id', '=', 'hadith_collections.id')
+            ->select(
+                'hadith_collections.id',
+                'hadith_collections.name',
+                'hadith_collections.scholar',
+                'hadith_collections.total_hadith',
+                DB::raw('COUNT(hadiths.id) as actual'),
+                DB::raw('COALESCE(SUM(CASE WHEN hadiths.needs_review = 1 THEN 1 ELSE 0 END), 0) as needs_review'),
+                DB::raw('COALESCE(SUM(CASE WHEN hadiths.translation_incomplete = 1 THEN 1 ELSE 0 END), 0) as incomplete')
+            )
+            ->groupBy(
+                'hadith_collections.id',
+                'hadith_collections.name',
+                'hadith_collections.scholar',
+                'hadith_collections.total_hadith'
+            )
+            ->orderBy('hadith_collections.id')
             ->get();
 
-        // ═══════════════════════════════════════════════
-        // COMPLAINTS & REVIEWS
-        // Returns empty safely if tables not yet migrated
-        // ═══════════════════════════════════════════════
+        return [
+            'totalAyahs'   => $totalAyahs,
+            'checks'       => $checks,
+            'translations' => $this->coverage(
+                'translations',
+                'ayah_translations',
+                'translation_id',
+                ['id', 'name', 'author', 'language_name', 'source', 'is_active', 'sort_order'],
+                $totalAyahs
+            ),
+            'tafsirs'      => $this->coverage(
+                'tafsirs',
+                'ayah_tafsirs',
+                'tafsir_id',
+                ['id', 'name', 'scholar', 'language_name', 'source', 'is_active', 'sort_order'],
+                $totalAyahs
+            ),
+            'hadith'       => $hadith,
+            'reciters'     => $this->reciterSync($totalAyahs),
+        ];
+    }
 
-        $hasComplaints    = DB::getSchemaBuilder()->hasTable('complaints');
-        $openComplaints   = $hasComplaints
-            ? DB::table('complaints')->where('status', 'open')->count()
-            : 0;
-        $recentComplaints = $hasComplaints
-            ? \App\Models\Complaint::with('user')->latest()->limit(5)->get()
-            : collect();
+    private function reciterSync(int $totalAyahs): Collection
+    {
+        $timings = DB::table('reciter_word_timings')
+            ->select(
+                'reciter_id',
+                DB::raw('COUNT(*) as timing_rows'),
+                DB::raw('COUNT(DISTINCT surah_number * 1000 + ayah_number) as ayahs_covered')
+            )
+            ->groupBy('reciter_id')
+            ->get()
+            ->keyBy('reciter_id');
 
-        $hasReviews      = DB::getSchemaBuilder()->hasTable('reviews');
-        $avgRating       = $hasReviews ? round(DB::table('reviews')->avg('rating'), 1) : 0;
-        $totalReviews    = $hasReviews ? DB::table('reviews')->count() : 0;
-        $ratingBreakdown = $hasReviews
-            ? DB::table('reviews')
-            ->select('rating', DB::raw('count(*) as total'))
-            ->groupBy('rating')
-            ->pluck('total', 'rating')
-            ->toArray()
-            : [];
-        $recentReviews = $hasReviews
-            ? Review::with('user')->latest()->limit(3)->get()->toArray()
-            : [];
+        return DB::table('recitations')
+            ->orderBy('sort_order')
+            ->get(['id', 'name', 'style', 'is_active'])
+            ->map(function ($reciter) use ($timings, $totalAyahs) {
+                $t = $timings->get($reciter->id);
 
-        // ═══════════════════════════════════════════════
-        // PASS TO VIEW
-        // ═══════════════════════════════════════════════
+                $reciter->timing_rows   = (int) ($t->timing_rows ?? 0);
+                $reciter->ayahs_covered = (int) ($t->ayahs_covered ?? 0);
+                $reciter->coverage      = $totalAyahs > 0 ? round($reciter->ayahs_covered / $totalAyahs * 100, 1) : 0;
+                $reciter->missing_ayahs = max(0, $totalAyahs - $reciter->ayahs_covered);
+                $reciter->sync          = match (true) {
+                    $reciter->ayahs_covered >= $totalAyahs && $totalAyahs > 0 => 'word',
+                    $reciter->ayahs_covered > 0                               => 'partial',
+                    default                                                   => 'approximate',
+                };
 
-        return view('admin.dashboard', compact(
-            // Users
-            'totalUsers',
-            'freeUsers',
-            'basicUsers',
-            'premiumUsers',
-            'verifiedUsers',
-            'newUsersMonth',
-            'dailySignups',
-            'activeUsers7d',
-            'avgSessionMin',
-            'avgSessionFree',
-            'avgSessionPremium',
-            'churned',
+                return $reciter;
+            });
+    }
 
-            // Revenue
-            'monthlyRevenue',
-            'expiringSoon',
+    /** Har translation/tafsir ki ayah-coverage (kitni ayahs ke liye entry maujood hai). */
+    private function coverage(string $table, string $pivot, string $foreignKey, array $columns, int $totalAyahs): Collection
+    {
+        $qualified = array_map(fn($c) => "{$table}.{$c}", $columns);
 
-            // Quran content
-            'totalAyahs',
-            'totalTafsir',
-            'totalTranslations',
-            'totalReciters',
-            'totalBookmarks',
-            'totalHadiths',
-            'totalNotes',
-            'avgBookmarks',
-            'avgNotesPremium',
-            // 'mostBookmarkedSurah',
-            // 'mostReadSurahs',
+        return DB::table($table)
+            ->leftJoin($pivot, "{$pivot}.{$foreignKey}", '=', "{$table}.id")
+            ->select(array_merge($qualified, [DB::raw("COUNT({$pivot}.id) as entries")]))
+            ->groupBy($qualified)
+            ->orderBy("{$table}.sort_order")
+            ->get()
+            ->map(function ($row) use ($totalAyahs) {
+                $row->percent = $totalAyahs > 0 ? round($row->entries / $totalAyahs * 100, 1) : 0;
 
-            // Bonus quran engagement
-            'totalReadAyahs',
-            'totalListenedAyahs',
-            'totalChapterCompletions',
-            'totalJuzs',
-
-            // Content library
-            'totalStories',
-            'totalProphets',
-            'totalAllahNames',
-            'totalSahabas',
-            'totalScholars',
-
-            // Subscriptions
-            'totalSubs',
-            'recentSubs',
-
-            // Engagement
-            'topEngagedUsers',
-            'recentUsers',
-
-            // Feedback
-            'openComplaints',
-            'recentComplaints',
-            'avgRating',
-            'totalReviews',
-            'ratingBreakdown',
-            'recentReviews',
-        ));
+                return $row;
+            });
     }
 }

@@ -23,6 +23,7 @@ class Surah extends Model
         'slug',
         'juz_start',
         'juz_end',
+        'revelation_order'
 
     ];
 

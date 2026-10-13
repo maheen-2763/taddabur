@@ -4,112 +4,111 @@
 
 @section('content')
 
-    <div class="container-fluid">
+    <div class="row justify-content-center">
 
-        <div class="mb-4">
-            <h1 class="page-title">
-                Create Daily Reflection
-            </h1>
+        <div class="col-lg-8">
+            <h5 class="mb-1" style="font-family:var(--font-heading)">Create Daily Reflection</h5>
 
             <p class="text-muted">
                 Schedule a Quran reflection for a specific day.
             </p>
         </div>
 
-        <div class="card card-islamic">
-            <div class="card-body">
+        <div class="admin-table p-4">
 
-                <form action="{{ route('admin.daily-reflections.store') }}" method="POST">
+            <form action="{{ route('admin.daily-reflections.store') }}" method="POST">
 
-                    @csrf
+                @csrf
 
-                    <div class="mb-3">
-                        <label class="form-label">Surah</label>
+                @include('admin.partials.errors')
 
-                        <select id="surah-select" class="form-select" required>
+                <div class="mb-3">
+                    <label class="form-label">Surah</label>
 
-                            <option value="">
-                                Select Surah
+                    <select id="surah-select" class="form-select" required>
+
+                        <option value="">
+                            Select Surah
+                        </option>
+
+                        @foreach ($surahs as $surah)
+                            <option value="{{ $surah->id }}">
+                                {{ $surah->number }}.
+                                {{ $surah->name_transliteration }}
                             </option>
+                        @endforeach
 
-                            @foreach ($surahs as $surah)
-                                <option value="{{ $surah->id }}">
-                                    {{ $surah->number }}.
-                                    {{ $surah->name_transliteration }}
-                                </option>
-                            @endforeach
+                    </select>
+                </div>
 
-                        </select>
-                    </div>
-
-                    {{-- Ayah --}}
-                    <div class="mb-3">
+                {{-- Ayah --}}
+                <div class="mb-3">
 
 
-                        <label class="form-label">
-                            Ayah
-                        </label>
+                    <label class="form-label">
+                        Ayah
+                    </label>
 
-                        <select id="ayah-select" name="ayah_id" class="form-select" required>
+                    <select id="ayah-select" name="ayah_id" class="form-select @error('ayah_id') is-invalid @enderror"
+                        required>
 
-                            <option value="">
-                                Select Ayah
-                            </option>
+                        <option value="">
+                            Select Ayah
+                        </option>
 
-                        </select>
+                    </select>
 
-                        @error('ayah_id')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                        @enderror
+                    @error('ayah_id')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
 
-                    </div>
+                </div>
 
-                    {{-- Date --}}
-                    <div class="mb-3">
+                {{-- Date --}}
+                <div class="mb-3">
 
-                        <label class="form-label">
-                            Scheduled Date
-                        </label>
+                    <label class="form-label">
+                        Scheduled Date
+                    </label>
 
-                        <input type="date" name="scheduled_for" value="{{ old('scheduled_for') }}"
-                            class="form-control @error('scheduled_for') is-invalid @enderror" required>
+                    <input type="date" name="scheduled_for" value="{{ old('scheduled_for') }}"
+                        class="form-control @error('scheduled_for') is-invalid @enderror" required>
 
-                        @error('scheduled_for')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                        @enderror
+                    @error('scheduled_for')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
 
-                    </div>
+                </div>
 
-                    {{-- Reflection --}}
-                    <div class="mb-4">
+                {{-- Reflection --}}
+                <div class="mb-4">
 
-                        <label class="form-label">
-                            Reflection
-                        </label>
+                    <label class="form-label">
+                        Reflection
+                    </label>
 
-                        <textarea rows="8" name="reflection" class="form-control @error('reflection') is-invalid @enderror" required>{{ old('reflection') }}</textarea>
+                    <textarea rows="8" name="reflection" class="form-control @error('reflection') is-invalid @enderror" required>{{ old('reflection') }}</textarea>
 
-                        @error('reflection')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                        @enderror
+                    @error('reflection')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
 
-                    </div>
+                </div>
 
-                    <button type="submit" class="btn btn-islamic">
+                <button type="submit" class="btn-admin-primary">
 
-                        Save Reflection
+                    Save Reflection
 
-                    </button>
+                </button>
 
-                </form>
+            </form>
 
-            </div>
         </div>
 
     </div>
@@ -117,39 +116,30 @@
 @endsection
 @push('scripts')
     <script>
-        document
-            .getElementById('surah-select')
-            .addEventListener('change', async function() {
+        const surahSelect = document.getElementById('surah-select');
+        const ayahSelect = document.getElementById('ayah-select');
+        const ayahUrl = @json(route('admin.daily-reflections.ayahs', ['surah' => '__ID__']));
 
-                let surahId = this.value;
+        surahSelect.addEventListener('change', async () => {
+            ayahSelect.innerHTML = '<option value="">Select Ayah</option>';
+            if (!surahSelect.value) return;
 
-                let ayahSelect =
-                    document.getElementById('ayah-select');
-
-                ayahSelect.innerHTML =
-                    '<option>Loading...</option>';
-
-                let response =
-                    await fetch(
-                        `/admin/ayahs/${surahId}`
-                    );
-
-                let ayahs =
-                    await response.json();
-
-                ayahSelect.innerHTML =
-                    '<option value="">Select Ayah</option>';
-
-                ayahs.forEach(ayah => {
-
-                    ayahSelect.innerHTML += `
-                <option value="${ayah.id}">
-                    Ayah ${ayah.number}
-                </option>
-            `;
-
+            ayahSelect.disabled = true;
+            try {
+                const response = await fetch(ayahUrl.replace('__ID__', surahSelect.value), {
+                    headers: {
+                        'Accept': 'application/json'
+                    },
                 });
+                if (!response.ok) throw new Error(response.status);
 
-            });
+                const ayahs = await response.json();
+                ayahSelect.append(...ayahs.map(a => new Option(`Ayah ${a.number}`, a.id)));
+            } catch (e) {
+                ayahSelect.innerHTML = '<option value="">Failed to load ayahs - page refresh karein</option>';
+            } finally {
+                ayahSelect.disabled = false;
+            }
+        });
     </script>
 @endpush

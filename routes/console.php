@@ -9,6 +9,7 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
+Schedule::command('backup:run --keep=14')->dailyAt('02:00')->timezone('Asia/Kolkata')->withoutOverlapping();
 
 Schedule::command('daily:generate-ayah')
     ->dailyAt('00:05')

@@ -19,6 +19,8 @@ return Application::configure(basePath: dirname(__DIR__))
         \App\Console\Commands\ImportQuran::class,
         \App\Console\Commands\ImportTranslations::class,
         \App\Console\Commands\ImportTafsir::class,
+        \App\Console\Commands\RunBackup::class,
+        \App\Console\Commands\VerifyBackup::class,
     ])
     ->withMiddleware(function (Middleware $middleware) {
 

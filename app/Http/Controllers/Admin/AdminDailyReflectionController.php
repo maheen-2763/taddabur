@@ -78,10 +78,7 @@ class AdminDailyReflectionController extends Controller
                 'exists:ayahs,id',
             ],
 
-            'reflection' => [
-                'required',
-                'min:50',
-            ],
+            'reflection' => ['required', 'string', 'min:50', 'max:5000']
         ]);
 
         DailyContent::create([
@@ -99,33 +96,6 @@ class AdminDailyReflectionController extends Controller
             );
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(DailyContent $dailyContent)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(DailyContent $dailyContent)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, DailyContent $dailyContent)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(DailyContent $dailyReflection)
     {
         $dailyReflection->delete();

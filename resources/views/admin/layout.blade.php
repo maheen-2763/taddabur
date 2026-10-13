@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="robots" content="noindex, nofollow">
     <title>Admin — @yield('title', 'Dashboard') | Taddabur</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
@@ -140,15 +141,7 @@
             flex-shrink: 0;
         }
 
-        .sidebar-badge {
-            margin-left: auto;
-            background: rgba(201, 150, 58, 0.2);
-            color: var(--gold-light);
-            font-size: 0.65rem;
-            padding: 1px 7px;
-            border-radius: 20px;
-            font-family: var(--font-heading);
-        }
+
 
         .sidebar-divider {
             border: none;
@@ -225,12 +218,6 @@
             margin: 4px 0 2px;
         }
 
-        .stat-inr {
-            font-size: 0.72rem;
-            color: #999;
-            margin-top: 1px;
-        }
-
         /* ══ SECTION CARDS ═══════════════════════════ */
         .admin-card {
             background: white;
@@ -303,11 +290,14 @@
             font-size: 0.65rem;
         }
 
-        .badge-premium {
+
+        .badge-admin {
             background: var(--gold);
-            color: #1A1A2E;
+            color: var(--ink);
             font-size: 0.65rem;
+            letter-spacing: 0.05em;
         }
+
 
         /* ══ BUTTONS ═════════════════════════════════ */
         .btn-admin-primary {
@@ -363,9 +353,6 @@
             background: var(--gold);
         }
 
-        .progress-bar-emerald {
-            background: var(--emerald-light);
-        }
 
         /* ══ FLASH ═══════════════════════════════════ */
         .alert-admin-success {
@@ -373,25 +360,6 @@
             border: 1px solid var(--emerald-light);
             color: var(--emerald);
             border-radius: var(--radius);
-        }
-
-        /* ══ CHATBOT TEASER ══════════════════════════ */
-        .chatbot-card {
-            background: linear-gradient(135deg, var(--emerald-dark) 0%, #0a2a18 100%);
-            border-radius: var(--radius);
-            border: 1px solid rgba(201, 150, 58, 0.25);
-            padding: 1.5rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .chatbot-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 0 L40 20 L20 40 L0 20 Z' fill='none' stroke='rgba(201,150,58,0.06)' stroke-width='0.8'/%3E%3C/svg%3E");
-            background-size: 40px 40px;
-            pointer-events: none;
         }
 
         /* ══ SCROLLBAR ═══════════════════════════════ */
@@ -432,42 +400,19 @@
             </a>
 
             <div class="sidebar-label">Quran</div>
-            <a href="{{ route('quran.index') ?? '#' }}"
-                class="sidebar-link {{ request()->routeIs('admin.quran.*') ? 'active' : '' }}">
-                <i class="bi bi-book"></i> Surahs & Ayahs
+            <a href="{{ route('quran.index') }}" class="sidebar-link" target="_blank" rel="noopener">
+                <i class="bi bi-book"></i> Quran (Public View)
             </a>
-            {{-- <a href="{{ route('admin.tafsir.index') ?? '#' }}"
-                class="sidebar-link {{ request()->routeIs('admin.tafsir.*') ? 'active' : '' }}">
-                <i class="bi bi-mortarboard"></i> Tafsir
-            </a>
-            <a href="{{ route('admin.translations.index') ?? '#' }}"
-                class="sidebar-link {{ request()->routeIs('admin.translations.*') ? 'active' : '' }}">
-                <i class="bi bi-translate"></i> Translations
-            </a>
-            <a href="{{ route('admin.reciters.index') ?? '#' }}"
-                class="sidebar-link {{ request()->routeIs('admin.reciters.*') ? 'active' : '' }}">
-                <i class="bi bi-mic"></i> Reciters
-            </a> --}}
 
             <div class="sidebar-label">Content</div>
             <a href="{{ route('admin.stories.index') }}"
-                class="sidebar-link {{ request()->routeIs('admin.stories.*') ? 'active' : '' }}">
+                class="sidebar-link {{ request()->routeIs('admin.stories.*', 'admin.chapters.*') ? 'active' : '' }}">
                 <i class="bi bi-journal-text"></i> Stories
             </a>
             <a href="{{ route('admin.prophets.index') }}"
                 class="sidebar-link {{ request()->routeIs('admin.prophets.*') ? 'active' : '' }}">
                 <i class="bi bi-stars"></i> Prophets
             </a>
-            {{-- <a href="{{ route('admin.sahabas.index') ?? '#' }}"
-                class="sidebar-link {{ request()->routeIs('admin.sahabas.*') ? 'active' : '' }}">
-                <i class="bi bi-people"></i> Sahabas
-                <span class="sidebar-badge">Soon</span>
-            </a>
-            <a href="{{ route('admin.imams.index') ?? '#' }}"
-                class="sidebar-link {{ request()->routeIs('admin.imams.*') ? 'active' : '' }}">
-                <i class="bi bi-bank"></i> Four Imams
-                <span class="sidebar-badge">Soon</span>
-            </a> --}}
             <a href="{{ route('admin.daily-reflections.index') }}"
                 class="sidebar-link {{ request()->routeIs('admin.daily-reflections.*') ? 'active' : '' }}">
                 <i class="bi bi-calendar-check"></i> Daily Content
@@ -478,31 +423,24 @@
                 class="sidebar-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
                 <i class="bi bi-people-fill"></i> All Users
             </a>
-            <a href="#" class="sidebar-link {{ request()->routeIs('admin.complaints.*') ? 'active' : '' }}">
-                <i class="bi bi-chat-left-text"></i> Complaints
-            </a>
-            <a href="#" class="sidebar-link {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}">
-                <i class="bi bi-star-half"></i> Reviews
-            </a>
 
-            <div class="sidebar-label">Revenue</div>
-            <a href="#" class="sidebar-link {{ request()->routeIs('admin.subscriptions.*') ? 'active' : '' }}">
-                <i class="bi bi-credit-card"></i> Subscriptions
+            <div class="sidebar-label">Insights</div>
+            <a href="{{ route('admin.donations.index') }}"
+                class="sidebar-link {{ request()->routeIs('admin.donations.*') ? 'active' : '' }}">
+                <i class="bi bi-heart"></i> Donations
             </a>
-            <a href="#" class="sidebar-link {{ request()->routeIs('admin.payments.*') ? 'active' : '' }}">
-                <i class="bi bi-receipt"></i> Payments
-            </a>
-
-            <div class="sidebar-label">Support</div>
-            <a href="#ai-chatbot" class="sidebar-link">
-                <i class="bi bi-robot"></i> AI Chatbot
-                <span class="sidebar-badge">Soon</span>
+            <a href="{{ route('admin.dashboard') }}#data-sources" class="sidebar-link">
+                <i class="bi bi-shield-check"></i> Data Sources
             </a>
 
             <hr class="sidebar-divider mx-3">
 
             <div class="sidebar-label">System</div>
-            <a href="{{ route('home') }}" class="sidebar-link" target="_blank">
+            <a href="{{ route('admin.backups') }}"
+                class="sidebar-link {{ request()->routeIs('admin.backups*') ? 'active' : '' }}">
+                <i class="bi bi-hdd"></i> Backups
+            </a>
+            <a href="{{ route('home') }}" class="sidebar-link" target="_blank" rel="noopener">
                 <i class="bi bi-box-arrow-up-right"></i> View Site
             </a>
             <form action="{{ route('logout') }}" method="POST">
@@ -526,7 +464,7 @@
             </div>
             <div class="d-flex align-items-center gap-3">
                 <span style="font-size:0.82rem; color:#888">{{ auth()->user()->name }}</span>
-                <span class="badge badge-premium" style="font-size:0.68rem; letter-spacing:0.05em;">ADMIN</span>
+                <span class="badge badge-admin">ADMIN</span>
             </div>
         </div>
 

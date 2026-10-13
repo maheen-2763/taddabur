@@ -5,23 +5,30 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Prophet;
 use App\Models\Story;
+use App\Support\ListInput;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class StoryController extends Controller
 {
-    // List all stories
+    private const CATEGORIES   = ['prophet', 'companion', 'general'];
+    private const DIFFICULTIES = ['beginner', 'intermediate', 'advanced'];
+
     public function index(): View
     {
         $stories = Story::withTrashed()
-            ->with('prophet')
+            ->with('prophet:id,name_transliteration')
+            ->withCount('chapters')
             ->orderBy('sort_order')
+            ->orderBy('id')
             ->paginate(20);
 
         return view('admin.stories.index', compact('stories'));
     }
 
-    // Show create form
     public function create(): View
     {
         $prophets = Prophet::orderBy('order')->get();
@@ -29,30 +36,22 @@ class StoryController extends Controller
         return view('admin.stories.create', compact('prophets'));
     }
 
-    // Store new story
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
-        $request->validate([
-            'title'      => 'required|string|max:255',
-            'category'   => 'required|in:prophet,companion,general',
-            'summary'    => 'required|string',
-            'difficulty' => 'required|in:beginner,intermediate,advanced',
-        ]);
+        $data = $request->validate($this->rules());
 
         $story = Story::create([
-            'prophet_id'        => $request->prophet_id,
-            'title'             => $request->title,
-            'slug'              => \Illuminate\Support\Str::slug($request->title),
-            'category'          => $request->category,
-            'summary'           => $request->summary,
-            'difficulty'        => $request->difficulty,
-            'is_free'           => $request->boolean('is_free'),
+            'prophet_id'        => $data['prophet_id'] ?? null,
+            'title'             => $data['title'],
+            'slug'              => $this->uniqueSlug($data['title']),
+            'category'          => $data['category'],
+            'summary'           => $data['summary'],
+            'difficulty'        => $data['difficulty'],
+            'is_free'           => true, // Taddabur hamesha free hai
             'is_published'      => $request->boolean('is_published'),
-            'sort_order'        => $request->sort_order ?? 0,
-            'read_time_minutes' => $request->read_time_minutes,
-            'tags'              => $request->tags
-                ? explode(',', $request->tags)
-                : [],
+            'sort_order'        => $data['sort_order'] ?? 0,
+            'read_time_minutes' => $data['read_time_minutes'],
+            'tags'              => ListInput::parse($data['tags'] ?? null),
         ]);
 
         return redirect()
@@ -60,7 +59,6 @@ class StoryController extends Controller
             ->with('success', 'Story created! Now add chapters.');
     }
 
-    // Show edit form
     public function edit(Story $story): View
     {
         $prophets = Prophet::orderBy('order')->get();
@@ -68,37 +66,68 @@ class StoryController extends Controller
         return view('admin.stories.edit', compact('story', 'prophets'));
     }
 
-    // Update story
-    public function update(Request $request, Story $story)
+    public function update(Request $request, Story $story): RedirectResponse
     {
-        $request->validate([
-            'title'   => 'required|string|max:255',
-            'summary' => 'required|string',
-        ]);
+        $data = $request->validate($this->rules());
 
+        // Slug update nahi karte: public URLs stable rehne chahiye.
         $story->update([
-            'prophet_id'        => $request->prophet_id,
-            'title'             => $request->title,
-            'category'          => $request->category,
-            'summary'           => $request->summary,
-            'difficulty'        => $request->difficulty,
-            'is_free'           => $request->boolean('is_free'),
+            'prophet_id'        => $data['prophet_id'] ?? null,
+            'title'             => $data['title'],
+            'category'          => $data['category'],
+            'summary'           => $data['summary'],
+            'difficulty'        => $data['difficulty'],
+            'is_free'           => true,
             'is_published'      => $request->boolean('is_published'),
-            'sort_order'        => $request->sort_order ?? $story->sort_order,
-            'read_time_minutes' => $request->read_time_minutes,
-            'tags'              => $request->tags
-                ? explode(',', $request->tags)
-                : $story->tags,
+            'sort_order'        => $data['sort_order'] ?? $story->sort_order,
+            'read_time_minutes' => $data['read_time_minutes'],
+            'tags'              => ListInput::parse($data['tags'] ?? null),
         ]);
 
         return back()->with('success', 'Story updated successfully.');
     }
 
-    // Soft delete story
-    public function destroy(Story $story)
+    public function destroy(Story $story): RedirectResponse
     {
-        $story->delete();
+        $story->delete(); // soft delete
 
-        return back()->with('success', 'Story deleted.');
+        return redirect()
+            ->route('admin.stories.index')
+            ->with('success', 'Story hidden (soft deleted). You can restore it from this list.');
+    }
+
+    public function restore(int $story): RedirectResponse
+    {
+        Story::onlyTrashed()->findOrFail($story)->restore();
+
+        return redirect()
+            ->route('admin.stories.index')
+            ->with('success', 'Story restored.');
+    }
+
+    private function rules(): array
+    {
+        return [
+            'title'             => ['required', 'string', 'max:255'],
+            'prophet_id'        => ['nullable', 'integer', 'exists:prophets,id'],
+            'category'          => ['required', Rule::in(self::CATEGORIES)],
+            'difficulty'        => ['required', Rule::in(self::DIFFICULTIES)],
+            'summary'           => ['required', 'string'],
+            'read_time_minutes' => ['required', 'integer', 'min:1', 'max:600'],
+            'sort_order'        => ['nullable', 'integer', 'min:0'],
+            'tags'              => ['nullable', 'string', 'max:500'],
+        ];
+    }
+
+    private function uniqueSlug(string $title): string
+    {
+        $base = Str::slug($title) ?: 'story';
+        $slug = $base;
+
+        for ($i = 2; Story::withTrashed()->where('slug', $slug)->exists(); $i++) {
+            $slug = "{$base}-{$i}";
+        }
+
+        return $slug;
     }
 }

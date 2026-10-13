@@ -61,4 +61,6 @@ return [
         'content_base'  => env('QF_CONTENT_BASE', 'https://apis.quran.foundation'),
     ],
 
+    'backup' => ['zip_password' => env('BACKUP_ZIP_PASSWORD')],
+
 ];

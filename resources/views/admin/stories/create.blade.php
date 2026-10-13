@@ -16,7 +16,7 @@
             <div class="admin-table p-4">
                 <form action="{{ route('admin.stories.store') }}" method="POST">
                     @csrf
-
+                    @include('admin.partials.errors')
                     <div class="row g-3">
                         <div class="col-12">
                             <label class="form-label fw-medium">Story Title *</label>
@@ -43,24 +43,26 @@
                         <div class="col-md-6">
                             <label class="form-label fw-medium">Category *</label>
                             <select name="category" class="form-select" required>
-                                <option value="prophet">Prophet</option>
-                                <option value="companion">Companion</option>
-                                <option value="general">General</option>
+                                @foreach (['prophet' => 'Prophet', 'companion' => 'Companion', 'general' => 'General'] as $value => $label)
+                                    <option value="{{ $value }}" @selected(old('category', 'prophet') === $value)>{{ $label }}
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label fw-medium">Difficulty *</label>
                             <select name="difficulty" class="form-select" required>
-                                <option value="beginner">Beginner</option>
-                                <option value="intermediate">Intermediate</option>
-                                <option value="advanced">Advanced</option>
+                                @foreach (['beginner' => 'Beginner', 'intermediate' => 'Intermediate', 'advanced' => 'Advanced'] as $value => $label)
+                                    <option value="{{ $value }}" @selected(old('difficulty', 'beginner') === $value)>{{ $label }}
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label fw-medium">Read Time (minutes)</label>
-                            <input type="number" name="read_time_minutes" class="form-control"
+                            <input type="number" name="read_time_minutes" class="form-control required min-[1]:"
                                 value="{{ old('read_time_minutes', 10) }}">
                         </div>
 
