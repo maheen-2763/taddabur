@@ -21,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
         \App\Console\Commands\ImportTafsir::class,
         \App\Console\Commands\RunBackup::class,
         \App\Console\Commands\VerifyBackup::class,
+        \App\Console\Commands\RecalculateContentStats::class,
     ])
     ->withMiddleware(function (Middleware $middleware) {
 

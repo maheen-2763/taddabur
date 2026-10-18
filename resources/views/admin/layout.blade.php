@@ -277,19 +277,6 @@
             background: #FAFAFA;
         }
 
-        /* ══ BADGES ══════════════════════════════════ */
-        .badge-free {
-            background: #6B7280;
-            color: white;
-            font-size: 0.65rem;
-        }
-
-        .badge-basic {
-            background: var(--emerald-light);
-            color: white;
-            font-size: 0.65rem;
-        }
-
 
         .badge-admin {
             background: var(--gold);

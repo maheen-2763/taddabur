@@ -6,28 +6,29 @@ use App\Models\DailyContent;
 use App\Models\Hadith;
 use App\Models\HadithCollection;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Builder;
 
 class GenerateDailyHadith extends Command
 {
     protected $signature = 'daily:generate-hadith';
-    protected $description = 'Pick next hadith in sequence (Bukhari then Muslim) and schedule it as today\'s Daily Hadith.';
+    protected $description = "Pick next eligible hadith in sequence (Bukhari then Muslim) as today's Daily Hadith.";
 
-    // ✅ Sirf yeh do collections — dono 100% authentic, koi grade-filter ki zaroorat nahi
+    // Order yahi rahega: pehle Bukhari, phir Muslim
     private const ALLOWED_COLLECTIONS = ['Sahih Bukhari', 'Sahih Muslim'];
 
     public function handle(): int
     {
-        $alreadyExists = DailyContent::where('type', 'hadith')->today()->exists();
+        if (DailyContent::where('type', 'hadith')->today()->exists()) {
+            $this->info("Today's hadith already exists, skipping.");
 
-        if ($alreadyExists) {
-            $this->info('Today\'s hadith already exists — skipping.');
             return self::SUCCESS;
         }
 
         $nextHadith = $this->determineNextHadith();
 
-        if (!$nextHadith) {
-            $this->error('Could not determine next hadith — check collection/chapter data.');
+        if (! $nextHadith) {
+            $this->error('Could not determine next hadith. Check collection/chapter data.');
+
             return self::FAILURE;
         }
 
@@ -39,31 +40,44 @@ class GenerateDailyHadith extends Command
             'is_sent'       => false,
         ]);
 
-        $this->info("✅ Daily hadith set: {$nextHadith->collection->name} #{$nextHadith->number}");
+        $this->info("Daily hadith set: {$nextHadith->collection->name} #{$nextHadith->number}");
 
         return self::SUCCESS;
     }
 
     private function determineNextHadith(): ?Hadith
     {
-        $lastContent = DailyContent::where('type', 'hadith')
-            ->whereNotNull('hadith_id')
-            ->orderByDesc('scheduled_for')
-            ->orderByDesc('id')
-            ->with('hadith.collection')
-            ->first();
+        $idsByName = HadithCollection::whereIn('name', self::ALLOWED_COLLECTIONS)->pluck('id', 'name');
 
-        // ✅ Pehli baar — Bukhari se shuru karo
-        if (!$lastContent || !$lastContent->hadith) {
-            return $this->firstHadithInCollection(self::ALLOWED_COLLECTIONS[0]);
+        // Collection ids allowed order mein
+        $ordered = collect(self::ALLOWED_COLLECTIONS)
+            ->map(fn(string $name) => $idsByName[$name] ?? null)
+            ->filter()
+            ->values();
+
+        if ($ordered->isEmpty()) {
+            return null;
         }
 
-        $lastHadith     = $lastContent->hadith;
-        $lastCollection = $lastHadith->collection;
+        // Sirf auto rows (reflection NULL) sequence tay karti hain
+        $lastAuto = DailyContent::where('type', 'hadith')
+            ->whereNotNull('hadith_id')
+            ->whereNull('reflection')
+            ->whereHas('hadith', fn($q) => $q->whereIn('collection_id', $ordered))
+            ->orderByDesc('scheduled_for')
+            ->orderByDesc('id')
+            ->with('hadith')
+            ->first();
 
-        // Case 1: Same collection me agla hadith
-        $next = Hadith::where('collection_id', $lastHadith->collection_id)
-            ->where('id', '>', $lastHadith->id)
+        if (! $lastAuto?->hadith) {
+            return $this->firstEligible($ordered->first());
+        }
+
+        $last = $lastAuto->hadith;
+
+        $next = $this->eligible()
+            ->where('collection_id', $last->collection_id)
+            ->where('id', '>', $last->id)
             ->orderBy('id')
             ->first();
 
@@ -71,23 +85,27 @@ class GenerateDailyHadith extends Command
             return $next;
         }
 
-        // Case 2: Collection khatam — agli allowed collection pe jao (wrap-around bhi)
-        $currentIndex = array_search($lastCollection->name, self::ALLOWED_COLLECTIONS);
-        $nextIndex    = ($currentIndex + 1) % count(self::ALLOWED_COLLECTIONS);
+        // Collection khatam: agli collection (wrap-around)
+        $index = $ordered->search($last->collection_id);
 
-        return $this->firstHadithInCollection(self::ALLOWED_COLLECTIONS[$nextIndex]);
+        return $this->firstEligible($ordered[($index + 1) % $ordered->count()]);
     }
 
-    private function firstHadithInCollection(string $collectionName): ?Hadith
+    private function firstEligible(int $collectionId): ?Hadith
     {
-        $collection = HadithCollection::where('name', $collectionName)->first();
-
-        if (!$collection) {
-            return null;
-        }
-
-        return Hadith::where('collection_id', $collection->id)
+        return $this->eligible()
+            ->where('collection_id', $collectionId)
             ->orderBy('id')
             ->first();
+    }
+
+    /** Daily pick mein sirf poori aur reviewed hadith aani chahiye. */
+    private function eligible(): Builder
+    {
+        return Hadith::query()
+            ->whereNotNull('english')
+            ->whereRaw("TRIM(english) != ''")
+            ->where(fn($q) => $q->where('needs_review', false)->orWhereNull('needs_review'))
+            ->where(fn($q) => $q->where('translation_incomplete', false)->orWhereNull('translation_incomplete'));
     }
 }

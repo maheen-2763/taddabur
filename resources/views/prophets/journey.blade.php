@@ -12,8 +12,8 @@
             <h1 class="journey-title">{!! $prophet->display_name_html !!}</h1>
             <p class="journey-arabic">{!! $prophet->name_arabic_html !!}</p>
             <p class="journey-subtitle">
-                A journey through six parts of his blessed life —
-                complete each part to unlock the next.
+                A journey through {{ $stories->count() }} {{ \Illuminate\Support\Str::plural('part', $stories->count()) }}
+                of his blessed life — complete each part to unlock the next.
             </p>
         </div>
 
@@ -55,7 +55,7 @@ $isCurrent =
 
                     {{-- Card content --}}
                     <div class="journey-card">
-                        <p class="journey-part-label">Part {{ $partNumber }} of 6</p>
+                        <p class="journey-part-label">Part {{ $partNumber }} of {{ $stories->count() }}</p>
                         <h3 class="journey-card-title">{{ $story->title }}</h3>
                         <p class="journey-card-summary">{{ $story->summary }}</p>
 
@@ -296,39 +296,3 @@ $isCurrent =
         }
     </style>
 @endpush
-
-
-{{-- @php $accessible = $firstPart->isAccessibleBy(Auth::user()); @endphp
-
-<div class="d-flex justify-content-between align-items-start mb-2">
-    <h5 class="heading-font mb-0" style="font-size:1rem">
-        The Complete Life of {{ $prophet->name_transliteration }}
-    </h5>
-    @if ($firstPart->min_plan_slug === 'free')
-        <span class="badge bg-success ms-2 flex-shrink-0" style="font-size:0.7rem">Free</span>
-    @elseif ($accessible)
-        <span class="badge bg-success ms-2 flex-shrink-0" style="font-size:0.7rem">
-            <i class="bi bi-unlock-fill me-1"></i>Unlocked
-        </span>
-    @else
-        <span class="badge ms-2 flex-shrink-0" style="background:var(--gold); color:#1A1A2E; font-size:0.7rem">
-            <i class="bi bi-stars me-1"></i>{{ ucfirst($firstPart->min_plan_slug) }}
-        </span>
-    @endif
-</div>
-
-{{-- ... summary + meta chips same ... --}}
-
-{{-- @if ($accessible)
-    <a href="{{ route('prophets.journey', $prophet->slug) }}" class="btn-emerald btn btn-sm">
-        Begin the Journey <i class="bi bi-arrow-right ms-1"></i>
-    </a>
-@else
-    @auth
-        <a href="{{ route('subscription.upgrade') }}" class="btn-gold btn btn-sm">
-            <i class="bi bi-lock me-1"></i>Upgrade to {{ ucfirst($firstPart->min_plan_slug) }} to Read
-        </a>
-    @else
-        <a href="{{ route('login') }}" class="btn-emerald btn btn-sm">Sign in to Read</a>
-    @endauth
-@endif --}}

@@ -8,7 +8,6 @@ use App\Models\ReadingProgress;
 use App\Models\Story;
 use App\Models\StoryChapter;
 use App\Models\User;
-use App\Models\Plan;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use App\Models\ChapterCompletion;
@@ -80,34 +79,15 @@ class StoryService
     // -------------------------------------------------------
     public function saveStoryProgress(User $user, Story $story, StoryChapter $chapter): ReadingProgress
     {
+        $progress = ReadingProgress::firstOrCreate([
+            'user_id'  => $user->id,
+            'story_id' => $story->id,
+        ]);
 
-        $existing = ReadingProgress::where('user_id', $user->id)
-            ->where('story_id', $story->id)
-            ->first();
-
-
-        // ✅ Agar user ek purana chapter revisit kar raha hai (jo already
-        // stored last_chapter se pehle/same order ka hai), to last_chapter_id
-        // ko peeche mat dhakelo — sirf streak/date update karo
-        if ($existing && $existing->lastChapter && $existing->lastChapter->order >= $chapter->order) {
-            $existing->last_read_at = now();
-            $existing->save();
-            $existing->updateStreak();
-            return $existing;
-        }
-
-        $progress = ReadingProgress::updateOrCreate(
-            [
-                'user_id'  => $user->id,
-                'story_id' => $story->id,
-            ],
-            [
-                'last_chapter_id' => $chapter->id,
-                'last_read_date'  => today(),
-            ]
-        );
-
-        $progress->updateStreak();
+        $progress->updateStreak();                 // purani last_read_at se streak
+        $progress->last_chapter_id = $chapter->id; // hamesha sabse recent chapter
+        $progress->last_read_at    = now();
+        $progress->save();
 
         return $progress;
     }

@@ -19,6 +19,7 @@
                 <form action="{{ route('admin.chapters.update', $chapter) }}" method="POST">
                     @csrf
                     @method('PATCH')
+                    @include('admin.partials.errors')
 
                     <div class="row g-3">
                         <div class="col-md-8">

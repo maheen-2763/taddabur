@@ -14,7 +14,7 @@
                         {{-- ✅ Fixed --}}
                         {{ $prophet->display_name }}
                     </h5>
-                    <small class="text-muted">Prophet #{{ $prophet->order }} of 25</small>
+                    <small class="text-muted">Prophet #{{ $prophet->order }} of {{ $total }}</small>
                 </div>
             </div>
 
@@ -102,6 +102,7 @@
                 <form action="{{ route('admin.prophets.update', $prophet) }}" method="POST">
                     @csrf
                     @method('PATCH')
+                    @include('admin.partials.errors')
 
                     <div class="row g-3">
 

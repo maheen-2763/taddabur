@@ -20,16 +20,7 @@
                 <form action="{{ route('admin.chapters.store', $story) }}" method="POST">
                     @csrf
 
-                    {{-- ADD THIS --}}
-                    @if ($errors->any())
-                        <div class="alert alert-danger">
-                            <ul class="mb-0">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
+                    @include('admin.partials.errors')
 
                     <div class="row g-3">
                         <div class="col-md-8">
@@ -63,9 +54,9 @@
                             <button type="submit" class="btn btn-admin-primary">
                                 <i class="bi bi-check-lg me-1"></i>Save Chapter
                             </button>
-                            <a href="{{ route('admin.chapters.create', $story) }}" class="btn btn-admin-gold">
-                                <i class="bi bi-plus-lg me-1"></i>Add Another Chapter
-                            </a>
+                            <button type="submit" name="after" value="another" class="btn btn-admin-gold">
+                                <i class="bi bi-plus-lg me-1"></i>Save & Add Another
+                            </button>
                         </div>
                     </div>
                 </form>
@@ -85,7 +76,8 @@
                                 <tr>
                                     <td style="width:40px; color:#999">{{ $chapter->order }}</td>
                                     <td style="font-size:0.9rem">{{ $chapter->title }}</td>
-                                    <td style="font-size:0.8rem; color:#999">{{ $chapter->read_time }}</td>
+                                    <td style="font-size:0.8rem; color:#999">
+                                        {{ $chapter->read_time }}</td>
                                     <td>
                                         <div class="d-flex gap-1">
                                             <a href="{{ route('admin.chapters.edit', $chapter) }}"

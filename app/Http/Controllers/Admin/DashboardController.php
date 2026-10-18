@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use App\Models\Backup;
 use Illuminate\Support\Facades\Storage;
+use App\Models\DailyContent;
 
 class DashboardController extends Controller
 {
@@ -229,6 +230,14 @@ class DashboardController extends Controller
             $alerts[] = ['danger', 'Latest backup file is missing on disk', route('admin.backups')];
         } elseif ($latest->created_at->lt(now()->subDays(7))) {
             $alerts[] = ['warning', 'Last backup is older than 7 days', route('admin.backups')];
+        }
+
+        foreach (['ayah', 'hadith'] as $type) {
+            $exists = DailyContent::where('type', $type)->whereDate('scheduled_for', today())->exists();
+
+            if (! $exists) {
+                $alerts[] = ['danger', "Today's daily {$type} has not been generated", route('admin.daily-reflections.index')];
+            }
         }
 
         return $alerts;

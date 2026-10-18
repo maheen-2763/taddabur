@@ -12,6 +12,7 @@ class ReflectionController extends Controller
 
     public function show(DailyContent $dailyContent)
     {
+        abort_if($dailyContent->scheduled_for->gt(today()), 404);
         if ($dailyContent->type === 'ayah') {
             $user = Auth::user();
             $translation = $this->quranService->resolveTranslation(

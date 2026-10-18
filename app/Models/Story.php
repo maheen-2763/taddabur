@@ -104,11 +104,7 @@ class Story extends Model
             : asset('images/default-story.png');
     }
 
-    // Total word count across all chapters
-    public function getWordCountAttribute(): int
-    {
-        return $this->chapters()->sum('word_count');
-    }
+
 
     public function getChapterCountAttribute(): int
     {

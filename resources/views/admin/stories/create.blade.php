@@ -22,9 +22,6 @@
                             <label class="form-label fw-medium">Story Title *</label>
                             <input type="text" name="title" class="form-control" value="{{ old('title') }}" required
                                 placeholder="e.g. The Story of Musa (AS)">
-                            @error('title')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
                         </div>
 
                         <div class="col-md-6">
@@ -62,7 +59,7 @@
 
                         <div class="col-md-6">
                             <label class="form-label fw-medium">Read Time (minutes)</label>
-                            <input type="number" name="read_time_minutes" class="form-control required min-[1]:"
+                            <input type="number" name="read_time_minutes" class="form-control" required min="1"
                                 value="{{ old('read_time_minutes', 10) }}">
                         </div>
 
@@ -84,15 +81,6 @@
                                 value="{{ old('sort_order', 0) }}">
                         </div>
 
-                        <div class="col-md-4 d-flex align-items-end">
-                            <div class="form-check">
-                                <input type="checkbox" name="is_free" value="1" class="form-check-input" id="isFree"
-                                    {{ old('is_free') ? 'checked' : '' }}>
-                                <label class="form-check-label" for="isFree">
-                                    Free story (visible to all users)
-                                </label>
-                            </div>
-                        </div>
 
                         <div class="col-md-4 d-flex align-items-end">
                             <div class="form-check">

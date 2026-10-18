@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+
+use Closure;
 use App\Http\Controllers\Controller;
 use App\Models\Prophet;
 use App\Models\Story;
@@ -68,7 +70,7 @@ class StoryController extends Controller
 
     public function update(Request $request, Story $story): RedirectResponse
     {
-        $data = $request->validate($this->rules());
+        $data = $request->validate($this->rules($story));
 
         // Slug update nahi karte: public URLs stable rehne chahiye.
         $story->update([
@@ -105,10 +107,20 @@ class StoryController extends Controller
             ->with('success', 'Story restored.');
     }
 
-    private function rules(): array
+    private function rules(?Story $story = null): array
     {
         return [
-            'title'             => ['required', 'string', 'max:255'],
+            'title'             => [
+                'required',
+                'string',
+                'max:255',
+                function (string $attribute, mixed $value, Closure $fail) use ($story) {
+                    if ($this->titleExists((string) $value, $story?->id)) {
+                        $fail('There is a story available for this title. If it has been deleted earlier restore it from stories list page.
+                        ');
+                    }
+                },
+            ],
             'prophet_id'        => ['nullable', 'integer', 'exists:prophets,id'],
             'category'          => ['required', Rule::in(self::CATEGORIES)],
             'difficulty'        => ['required', Rule::in(self::DIFFICULTIES)],
@@ -117,6 +129,21 @@ class StoryController extends Controller
             'sort_order'        => ['nullable', 'integer', 'min:0'],
             'tags'              => ['nullable', 'string', 'max:500'],
         ];
+    }
+
+    /** Case, spaces aur punctuation ignore karke title compare karta hai (deleted stories bhi count hoti hain). */
+    private function titleExists(string $title, ?int $ignoreId = null): bool
+    {
+        $needle = Str::slug($title);
+
+        if ($needle === '') {
+            return false;
+        }
+
+        return Story::withTrashed()
+            ->when($ignoreId, fn($q) => $q->where('id', '!=', $ignoreId))
+            ->pluck('title')
+            ->contains(fn($existing) => Str::slug($existing) === $needle);
     }
 
     private function uniqueSlug(string $title): string

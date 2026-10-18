@@ -10,22 +10,22 @@ use Illuminate\Console\Command;
 class GenerateDailyAyah extends Command
 {
     protected $signature = 'daily:generate-ayah';
-    protected $description = 'Pick the next ayah in revelation-order sequence and schedule it as today\'s Daily Ayah.';
+    protected $description = "Pick the next ayah in revelation-order sequence and schedule it as today's Daily Ayah.";
 
     public function handle(): int
     {
-        // ✅ Idempotent — agar aaj ke liye already ban chuka hai, dobara mat banao
-        $alreadyExists = DailyContent::where('type', 'ayah')->today()->exists();
+        // Idempotent: aaj ki row (auto ya admin override) pehle se hai to kuch mat karo
+        if (DailyContent::where('type', 'ayah')->today()->exists()) {
+            $this->info("Today's ayah already exists, skipping.");
 
-        if ($alreadyExists) {
-            $this->info('Today\'s ayah already exists — skipping.');
             return self::SUCCESS;
         }
 
         $nextAyah = $this->determineNextAyah();
 
-        if (!$nextAyah) {
-            $this->error('Could not determine next ayah — check revelation_order data.');
+        if (! $nextAyah) {
+            $this->error('Could not determine next ayah. Check revelation_order data.');
+
             return self::FAILURE;
         }
 
@@ -37,57 +37,50 @@ class GenerateDailyAyah extends Command
             'is_sent'       => false,
         ]);
 
-        $this->info("✅ Daily ayah set: Surah {$nextAyah->surah->number}:{$nextAyah->number}");
+        $this->info("Daily ayah set: Surah {$nextAyah->surah->number}:{$nextAyah->number}");
 
         return self::SUCCESS;
     }
 
     private function determineNextAyah(): ?Ayah
     {
-        // Pichli baar jo ayah schedule hui thi, uski based pe "agli" nikalo
-        $lastContent = DailyContent::where('type', 'ayah')
+        // Sirf auto-generated rows (reflection NULL) sequence tay karti hain,
+        // taaki admin ka override sequence na bigaade.
+        $lastAuto = DailyContent::where('type', 'ayah')
             ->whereNotNull('ayah_id')
+            ->whereNull('reflection')
             ->orderByDesc('scheduled_for')
             ->orderByDesc('id')
             ->with('ayah.surah')
             ->first();
 
-        // ✅ Pehli baar chal raha hai — sabse pehli revelation-order surah se shuru karo
-        if (!$lastContent || !$lastContent->ayah) {
-            $firstSurah = Surah::where('revelation_order', 1)->first();
-            return Ayah::where('surah_id', $firstSurah->id)
-                ->orderBy('number')
-                ->first();
+        if (! $lastAuto?->ayah) {
+            return $this->firstAyahOfRevelationOrder(1);
         }
 
-        $lastAyah  = $lastContent->ayah;
+        $lastAyah  = $lastAuto->ayah;
         $lastSurah = $lastAyah->surah;
 
-        // Case 1: Same surah mein agli ayah maujood hai
-        $nextInSameSurah = Ayah::where('surah_id', $lastSurah->id)
+        $nextInSurah = Ayah::where('surah_id', $lastSurah->id)
             ->where('number', $lastAyah->number + 1)
             ->first();
 
-        if ($nextInSameSurah) {
-            return $nextInSameSurah;
+        if ($nextInSurah) {
+            return $nextInSurah;
         }
 
-        // Case 2: Surah khatam ho gayi — revelation-order mein agli surah pe jao
-        $nextRevelationOrder = $lastSurah->revelation_order + 1;
+        // Surah khatam: revelation order mein agli surah (114 ke baad wapas 1)
+        $nextOrder = $lastSurah->revelation_order >= 114 ? 1 : $lastSurah->revelation_order + 1;
 
-        // ✅ Wrap-around — 114 ke baad wapas 1 pe (cycle complete, phir se shuru)
-        if ($nextRevelationOrder > 114) {
-            $nextRevelationOrder = 1;
-        }
+        return $this->firstAyahOfRevelationOrder($nextOrder);
+    }
 
-        $nextSurah = Surah::where('revelation_order', $nextRevelationOrder)->first();
+    private function firstAyahOfRevelationOrder(int $order): ?Ayah
+    {
+        $surah = Surah::where('revelation_order', $order)->first();
 
-        if (!$nextSurah) {
-            return null;
-        }
-
-        return Ayah::where('surah_id', $nextSurah->id)
-            ->orderBy('number')
-            ->first();
+        return $surah
+            ? Ayah::where('surah_id', $surah->id)->orderBy('number')->first()
+            : null;
     }
 }

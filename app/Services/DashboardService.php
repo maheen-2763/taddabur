@@ -9,6 +9,7 @@ use App\Models\Note;
 use App\Models\UserReadAyah;
 use App\Models\SurahProgress;
 use App\Models\AllahName;
+use App\Models\Story;
 
 class DashboardService
 {
@@ -59,7 +60,7 @@ class DashboardService
             'stats' => [
                 'streak'          => $this->getCurrentStreak($user),
                 'totalAyahsRead'  => $totalAyahsRead,        // ✅ reused
-                'storyCount'      => $storyProgress->count(), // ✅ reused, no new query
+                'storyCount'      => $this->getCompletedStoriesCount($user),
                 'quranProgress'   => $quranProgress?->quran_progress_percentage ?? 0, // ✅ reused
                 'completedSurahs' => $this->getCompletedSurahsCount($user),
             ],
@@ -97,8 +98,21 @@ class DashboardService
             ->first()
             ?? DailyContent::with($withRelations)
             ->where('type', 'ayah')   // ✅ fallback mein bhi
+            ->whereDate('scheduled_for', '<=', today())
             ->latest('scheduled_for')
             ->first();
+    }
+
+    private function getCompletedStoriesCount(User $user): int
+    {
+        return Story::published()
+            ->whereHas('chapters')
+            ->whereRaw(
+                '(SELECT COUNT(*) FROM chapter_completions cc WHERE cc.user_id = ? AND cc.story_id = stories.id)
+             >= (SELECT COUNT(*) FROM story_chapters sc WHERE sc.story_id = stories.id)',
+                [$user->id]
+            )
+            ->count();
     }
 
     // --------------------------
@@ -117,6 +131,7 @@ class DashboardService
             ->first()
             ?? DailyContent::with($withRelations)
             ->where('type', 'hadith')
+            ->whereDate('scheduled_for', '<=', today())
             ->latest('scheduled_for')
             ->first();
     }
@@ -126,9 +141,16 @@ class DashboardService
     // --------------------------
     public function getCurrentStreak(User $user): int
     {
-        return ReadingProgress::where('user_id', $user->id)
+        $progress = ReadingProgress::where('user_id', $user->id)
             ->whereNull('story_id')
-            ->value('reading_streak_days') ?? 0;
+            ->first(['reading_streak_days', 'last_read_at']);
+
+        // Streak tabhi valid hai jab aakhri padhai aaj ya kal ki ho
+        if (! $progress?->last_read_at || $progress->last_read_at->lt(now()->subDay()->startOfDay())) {
+            return 0;
+        }
+
+        return (int) $progress->reading_streak_days;
     }
 
     // --------------------------
@@ -150,7 +172,7 @@ class DashboardService
                 'arabic' => 'بِدَايَةُ الرِّحْلَة',
                 'icon' => 'bi-flag',
             ],
-            ['goal' => 10, 'title' => 'First Steps', 'arabic' => 'بِسْمِ اللّٰهِ', 'icon' => 'bi-seedling'] ?? 'bi-flower1',
+            ['goal' => 10, 'title' => 'First Steps', 'arabic' => 'بِسْمِ اللّٰهِ', 'icon' => 'bi-flower1'],
             ['goal' => 50, 'title' => 'Seeker of Guidance', 'arabic' => 'طَالِبُ الْهُدَى', 'icon' => 'bi-compass'],
             ['goal' => 100, 'title' => 'Companion of the Quran', 'arabic' => 'صَاحِبُ الْقُرْآن', 'icon' => 'bi-book'],
             ['goal' => 500, 'title' => 'Student of Revelation', 'arabic' => 'طَالِبُ الْوَحْي', 'icon' => 'bi-moon-stars'],

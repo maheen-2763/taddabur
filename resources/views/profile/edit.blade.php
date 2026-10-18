@@ -47,25 +47,6 @@
             margin-bottom: 0.35rem;
         }
 
-        /* ── Plan Badge ── */
-        .badge-free {
-            background: rgba(108, 117, 125, 0.15);
-            color: #6c757d;
-            border: 1px solid rgba(108, 117, 125, 0.35);
-        }
-
-        .badge-basic {
-            background: rgba(13, 110, 253, 0.12);
-            color: #0d6efd;
-            border: 1px solid rgba(13, 110, 253, 0.35);
-        }
-
-        .badge-premium {
-            background: rgba(201, 150, 58, 0.15);
-            color: var(--gold, #C9963A);
-            border: 1px solid rgba(201, 150, 58, 0.4);
-        }
-
         .profile-plan-badge {
             display: inline-block;
             padding: 4px 16px;
@@ -319,6 +300,9 @@
             line-height: 1.6;
         }
 
+
+
+
         /* ── Alert ── */
         .alert-islamic-success {
             background: rgba(25, 135, 84, 0.1);
@@ -553,18 +537,18 @@
                 {{-- ── Danger Zone ── --}}
                 <div class="danger-zone">
                     <div class="danger-zone-label">Danger Zone</div>
-                    <div class="danger-zone-label">
+                    <div class="danger-zone-text">
                         Permanently deletes your account and removes all reading progress,
                         bookmarks, and notes. This action cannot be undone.
                     </div>
 
-                    <form action="{{ route('profile.destroy') }}" method="POST" class="d-inline danger-zone-label"
+                    <form action="{{ route('profile.destroy') }}" method="POST" class="d-block danger-zone-label"
                         onsubmit="return confirm('Are you absolutely sure? This will permanently delete your account and remove all reading progress, bookmarks, and notes. This cannot be undone.')">
                         @csrf
                         @method('DELETE')
 
                         <div class="mb-3">
-                            <label for="delete_password" class="form-label danger-zone-label">Confirm your
+                            <label for="delete_password" class="form-label">Confirm your
                                 password</label>
                             <input type="password" id="delete_password" name="password"
                                 class="form-control @error('password', 'userDeletion') is-invalid @enderror"

@@ -65,8 +65,12 @@ Route::get('/support', [SupportController::class, 'index'])->name('support');
 
 
 // routes/web.php
-Route::post('/donate/create-order', [DonationController::class, 'createOrder'])->name('donate.create-order');
-Route::post('/donate/verify', [DonationController::class, 'verifyPayment'])->name('donate.verify');
+Route::post('/donate/create-order', [DonationController::class, 'createOrder'])
+    ->middleware('throttle:10,1')
+    ->name('donate.create-order');
+Route::post('/donate/verify', [DonationController::class, 'verifyPayment'])
+    ->middleware('throttle:20,1')
+    ->name('donate.verify');
 
 // Webhook — CSRF se exempt karna padega, ye Razorpay ke server se aata hai, browser se nahi
 Route::post('/webhooks/razorpay', [RazorpayWebhookController::class, 'handle'])->name('webhooks.razorpay');
@@ -146,7 +150,6 @@ Route::get(
 // Public stories listing (shows free stories only)
 Route::get('/stories', [StoryController::class, 'index'])->name('stories.index');
 Route::get('/stories/{story:slug}', [StoryController::class, 'show'])->name('stories.show');
-//Route::get('/stories/{story:slug}/{chapter}', [StoryController::class, 'chapter'])->name('stories.chapter');
 Route::get(
     '/stories/{story:slug}/{chapter:slug}',
     [StoryController::class, 'chapter']
@@ -201,7 +204,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('stories')->name('stories.')->group(function () {
 
         // Mark chapter as read (AJAX)
-        Route::post('/{story}/chapters/{chapter}/complete', [StoryController::class, 'markComplete'])
+        Route::post('/{story}/chapters/{chapter}/complete', [StoryController::class, 'markComplete'])->middleware('auth')
             ->name('chapter.complete');
     });
 
@@ -218,9 +221,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/{bookmark}', [BookmarkController::class, 'destroy'])->name('destroy');
     });
 
-    // --------------------------------------------------------
-    // NOTES ROUTES — Requires 'has_notes' plan feature
-    // --------------------------------------------------------
+    // --------------
+    // NOTES ROUTES
+    // --------------
     Route::prefix('notes')
         ->name('notes.')
         ->group(function () {
@@ -267,36 +270,21 @@ Route::middleware(['auth', 'admin'])
         Route::get('/users/{user}', [App\Http\Controllers\Admin\UserController::class, 'show'])
             ->name('users.show');
 
-        // ── STORIES ──────────────────────────────────────────
-        Route::get('/stories', [App\Http\Controllers\Admin\StoryController::class, 'index'])
-            ->name('stories.index');
-        Route::get('/stories/create', [App\Http\Controllers\Admin\StoryController::class, 'create'])
-            ->name('stories.create');
-        Route::post('/stories', [App\Http\Controllers\Admin\StoryController::class, 'store'])
-            ->name('stories.store');
-        Route::get('/stories/{story}/edit', [App\Http\Controllers\Admin\StoryController::class, 'edit'])
-            ->name('stories.edit');
-        Route::patch('/stories/{story}', [App\Http\Controllers\Admin\StoryController::class, 'update'])
-            ->name('stories.update');
-        Route::delete('/stories/{story}', [App\Http\Controllers\Admin\StoryController::class, 'destroy'])
-            ->name('stories.destroy');
-        Route::patch('/stories/{story}/restore', [App\Http\Controllers\Admin\StoryController::class, 'restore'])
-            ->name('stories.restore');
+        // ── STORIES ──
+        Route::get('/stories', [App\Http\Controllers\Admin\StoryController::class, 'index'])->name('stories.index');
+        Route::get('/stories/create', [App\Http\Controllers\Admin\StoryController::class, 'create'])->name('stories.create');
+        Route::post('/stories', [App\Http\Controllers\Admin\StoryController::class, 'store'])->name('stories.store');
+        Route::get('/stories/{story:id}/edit', [App\Http\Controllers\Admin\StoryController::class, 'edit'])->name('stories.edit');
+        Route::patch('/stories/{story:id}', [App\Http\Controllers\Admin\StoryController::class, 'update'])->name('stories.update');
+        Route::delete('/stories/{story:id}', [App\Http\Controllers\Admin\StoryController::class, 'destroy'])->name('stories.destroy');
+        Route::patch('/stories/{story}/restore', [App\Http\Controllers\Admin\StoryController::class, 'restore'])->name('stories.restore');
 
-        // ── CHAPTERS (nested under stories) ──────────────────
-        // ⚠️ These MUST come before /chapters/{chapter} routes
-        Route::get('/stories/{story}/chapters/create', [App\Http\Controllers\Admin\ChapterController::class, 'create'])
-            ->name('chapters.create');
-        Route::post('/stories/{story}/chapters', [App\Http\Controllers\Admin\ChapterController::class, 'store'])
-            ->name('chapters.store');
-
-        // ── CHAPTERS (standalone) ─────────────────────────────
-        Route::get('/chapters/{chapter}/edit', [App\Http\Controllers\Admin\ChapterController::class, 'edit'])
-            ->name('chapters.edit');
-        Route::patch('/chapters/{chapter}', [App\Http\Controllers\Admin\ChapterController::class, 'update'])
-            ->name('chapters.update');
-        Route::delete('/chapters/{chapter}', [App\Http\Controllers\Admin\ChapterController::class, 'destroy'])
-            ->name('chapters.destroy');
+        // ── CHAPTERS ──
+        Route::get('/stories/{story:id}/chapters/create', [App\Http\Controllers\Admin\ChapterController::class, 'create'])->name('chapters.create');
+        Route::post('/stories/{story:id}/chapters', [App\Http\Controllers\Admin\ChapterController::class, 'store'])->name('chapters.store');
+        Route::get('/chapters/{chapter:id}/edit', [App\Http\Controllers\Admin\ChapterController::class, 'edit'])->name('chapters.edit');
+        Route::patch('/chapters/{chapter:id}', [App\Http\Controllers\Admin\ChapterController::class, 'update'])->name('chapters.update');
+        Route::delete('/chapters/{chapter:id}', [App\Http\Controllers\Admin\ChapterController::class, 'destroy'])->name('chapters.destroy');
 
         // Prophets
         Route::get('/prophets', [App\Http\Controllers\Admin\ProphetController::class, 'index'])
@@ -319,11 +307,8 @@ Route::middleware(['auth', 'admin'])
             'store',
             'destroy',
         ]);
-
-        Route::get(
-            'ayahs/{surah}',
-            [AdminDailyReflectionController::class, 'ayahs']
-        )->name('daily-reflections.ayahs');
+        Route::get('ayahs/{surah:id}', [AdminDailyReflectionController::class, 'ayahs'])
+            ->name('daily-reflections.ayahs');
     });
 
 

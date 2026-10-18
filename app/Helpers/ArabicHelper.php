@@ -69,10 +69,7 @@ class ArabicHelper
     {
         if (!$text) return '';
 
-        return str_replace(
-            'ﷺ',
-            '<span class="arabic-symbol">ﷺ</span>',
-            $text
-        );
+        // Pehle escape (XSS se bachav), phir ﷺ ko span mein wrap karo
+        return str_replace('ﷺ', '<span class="arabic-symbol">ﷺ</span>', e($text));
     }
 }

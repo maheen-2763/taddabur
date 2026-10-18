@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Story;
 use App\Models\StoryChapter;
 use App\Support\ListInput;
+use App\Support\ReadingStats;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -15,7 +16,7 @@ class ChapterController extends Controller
 {
     public function create(Story $story): View
     {
-        $nextOrder = ($story->chapters()->max('order') ?? 0) + 1;
+        $nextOrder = ($story->chapters()->reorder()->max('order') ?? 0) + 1;
 
         return view('admin.chapters.create', compact('story', 'nextOrder'));
     }
@@ -25,12 +26,15 @@ class ChapterController extends Controller
         $data = $request->validate($this->rules($story->id), $this->messages());
 
         StoryChapter::create([
-            'story_id'         => $story->id,
-            'title'            => $data['title'],
-            'content'          => $data['content'],
-            'order'            => $data['order'],
-            'quran_references' => ListInput::parse($data['quran_references'] ?? null),
+            'story_id'          => $story->id,
+            'title'             => $data['title'],
+            'content'           => $data['content'],
+            'order'             => $data['order'],
+            'quran_references'  => ListInput::parse($data['quran_references'] ?? null),
+            'read_time_minutes' => ReadingStats::minutes(ReadingStats::words($data['content'])),
         ]);
+
+        ReadingStats::syncStory($story);
 
         $target = $request->input('after') === 'another'
             ? route('admin.chapters.create', $story)
@@ -51,24 +55,29 @@ class ChapterController extends Controller
         $data = $request->validate($this->rules($chapter->story_id, $chapter->id), $this->messages());
 
         $chapter->update([
-            'title'            => $data['title'],
-            'content'          => $data['content'],
-            'order'            => $data['order'],
-            'quran_references' => ListInput::parse($data['quran_references'] ?? null),
+            'title'             => $data['title'],
+            'content'           => $data['content'],
+            'order'             => $data['order'],
+            'quran_references'  => ListInput::parse($data['quran_references'] ?? null),
+            'read_time_minutes' => ReadingStats::minutes(ReadingStats::words($data['content'])),
         ]);
 
+        ReadingStats::syncStory($chapter->story);
+
         return redirect()
-            ->route('admin.stories.edit', $chapter->story_id)
+            ->route('admin.stories.edit', $chapter->story)
             ->with('success', 'Chapter updated.');
     }
 
     public function destroy(StoryChapter $chapter): RedirectResponse
     {
-        $storyId = $chapter->story_id;
+        $story = $chapter->story;
         $chapter->delete();
 
+        ReadingStats::syncStory($story);
+
         return redirect()
-            ->route('admin.stories.edit', $storyId)
+            ->route('admin.stories.edit', $story)
             ->with('success', 'Chapter deleted.');
     }
 
@@ -91,6 +100,6 @@ class ChapterController extends Controller
 
     private function messages(): array
     {
-        return ['order.unique' => 'In this story the following chapter order is already present.'];
+        return ['order.unique' => 'In this story the following chapter order entered is already available.'];
     }
 }

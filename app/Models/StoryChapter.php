@@ -60,12 +60,8 @@ class StoryChapter extends Model
     // Estimated reading time for this chapter
     public function getReadTimeAttribute(): string
     {
-        $words = str_word_count(
-            strip_tags(
-                html_entity_decode($this->content)
-            )
-        );
-        $minutes = ceil($words / 200); // average reading speed
+        $minutes = $this->read_time_minutes
+            ?: \App\Support\ReadingStats::minutes(\App\Support\ReadingStats::words($this->content));
 
         return $minutes . ' min read';
     }
@@ -98,8 +94,8 @@ class StoryChapter extends Model
     protected static function booted()
     {
         static::creating(function ($chapter) {
-            if (!$chapter->slug) {
-                $chapter->slug = Str::slug($chapter->title);
+            if (! $chapter->slug) {
+                $chapter->slug = static::uniqueSlug($chapter->title);
             }
         });
 
@@ -108,5 +104,17 @@ class StoryChapter extends Model
                 $chapter->slug = Str::slug($chapter->title);
             }
         });
+    }
+
+    protected static function uniqueSlug(string $title): string
+    {
+        $base = Str::slug($title) ?: 'chapter';
+        $slug = $base;
+
+        for ($i = 2; static::where('slug', $slug)->exists(); $i++) {
+            $slug = "{$base}-{$i}";
+        }
+
+        return $slug;
     }
 }

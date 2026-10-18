@@ -13,6 +13,7 @@ class ProphetController extends Controller
     public function journey(Prophet $prophet, StoryService $storyService)
     {
         $stories = $storyService->getProphetJourney($prophet, Auth::user());
+        abort_if($stories->isEmpty(), 404);
 
         return view('prophets.journey', compact('prophet', 'stories'));
     }

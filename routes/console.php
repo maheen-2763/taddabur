@@ -12,13 +12,12 @@ Artisan::command('inspire', function () {
 Schedule::command('backup:run --keep=14')->dailyAt('02:00')->timezone('Asia/Kolkata')->withoutOverlapping();
 
 Schedule::command('daily:generate-ayah')
-    ->dailyAt('00:05')
+    ->hourlyAt(5)
     ->onOneServer()
     ->appendOutputTo(storage_path('logs/daily-ayah.log'));
 
-
 Schedule::command('daily:generate-hadith')
-    ->dailyAt('00:05')
+    ->hourlyAt(5)
     ->onOneServer()
     ->appendOutputTo(storage_path('logs/daily-hadith.log'));
 

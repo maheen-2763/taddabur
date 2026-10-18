@@ -74,15 +74,10 @@ class StoryController extends Controller
 
     // GET /stories/{story:slug}
 
-    public function show(Story $story): View|RedirectResponse
+    public function show(Story $story): View
     {
         $user = Auth::user();
 
-        if (!$this->storyService->userCanAccessStory($user, $story)) {
-            return redirect()
-                ->route('subscription.upgrade')
-                ->with('upgrade_message', "Upgrade to {$story->min_plan_slug} plan to unlock \"{$story->title}\".");
-        }
 
         $story->load(['chapters' => fn($q) => $q->orderBy('order'), 'prophet']);
 
@@ -113,17 +108,11 @@ class StoryController extends Controller
 
 
     // GET /stories/{story:slug}/{chapter}
-    public function chapter(Story $story, StoryChapter $chapter): View | RedirectResponse
+    public function chapter(Story $story, StoryChapter $chapter): View
     {
         abort_if($chapter->story_id !== $story->id, 404);
 
         $user = Auth::user();
-
-        if (!$this->storyService->userCanAccessStory($user, $story)) {
-            return redirect()
-                ->route('subscription.upgrade')
-                ->with('upgrade_message', 'Upgrade to continue reading.');
-        }
 
         $data = $this->storyService->getChapterWithContext($story, $chapter);
         $totalChapters = $data['allChapters']->count();
@@ -171,6 +160,8 @@ class StoryController extends Controller
     // POST /stories/{story}/chapters/{chapter}/complete (AJAX)
     public function markComplete(Story $story, StoryChapter $chapter): JsonResponse
     {
+        abort_if($chapter->story_id !== $story->id, 404);
+
         $user = Auth::user();
 
         $this->storyService->markChapterComplete($user, $story, $chapter);

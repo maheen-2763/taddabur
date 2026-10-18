@@ -5,7 +5,7 @@
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h5 class="mb-0" style="font-family:var(--font-heading)">
-            All 25 Prophets
+            All {{ $prophets->count() }} Prophets
         </h5>
         <small class="text-muted">Click Edit to update prophet info</small>
     </div>

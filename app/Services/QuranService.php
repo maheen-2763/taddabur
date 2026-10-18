@@ -109,12 +109,6 @@ class QuranService
                 ->first();
         }
 
-        // Plan check — free user requesting premium translation
-        if ($translation && !$translation->is_free && !$this->userIsPremium($user)) {
-            $translation = Translation::where('is_free', true)
-                ->where('is_active', true)
-                ->first();
-        }
 
         return $translation;
     }
@@ -145,10 +139,11 @@ class QuranService
     // -------------------------------------------------------
     public function getAllReciters(): Collection
     {
+        // has_verified_timing DB column nahi, model accessor hai, isliye PHP mein sort
         return Recitation::where('is_active', true)
-            ->orderByDesc('has_verified_timing')
-            ->orderBy('name')
-            ->get();
+            ->get()
+            ->sortBy([['has_verified_timing', 'desc'], ['name', 'asc']])
+            ->values();
     }
 
     // -------------------------------------------------------

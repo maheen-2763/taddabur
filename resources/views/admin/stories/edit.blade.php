@@ -20,6 +20,7 @@
                 <form action="{{ route('admin.stories.update', $story) }}" method="POST">
                     @csrf
                     @method('PATCH')
+                    @include('admin.partials.errors')
 
                     <div class="row g-3">
                         <div class="col-12">
@@ -36,8 +37,7 @@
                             <select name="prophet_id" class="form-select">
                                 <option value="">— None —</option>
                                 @foreach ($prophets as $prophet)
-                                    <option value="{{ $prophet->id }}"
-                                        {{ $story->prophet_id == $prophet->id ? 'selected' : '' }}>
+                                    <option value="{{ $prophet->id }}" @selected(old('prophet_id', $story->prophet_id) == $prophet->id)>
                                         {{ $prophet->name_transliteration }} (AS)
                                     </option>
                                 @endforeach
@@ -47,24 +47,20 @@
                         <div class="col-md-6">
                             <label class="form-label fw-medium">Category *</label>
                             <select name="category" class="form-select" required>
-                                <option value="prophet" {{ $story->category === 'prophet' ? 'selected' : '' }}>Prophet
-                                </option>
-                                <option value="companion" {{ $story->category === 'companion' ? 'selected' : '' }}>Companion
-                                </option>
-                                <option value="general" {{ $story->category === 'general' ? 'selected' : '' }}>General
-                                </option>
+                                @foreach (['prophet' => 'Prophet', 'companion' => 'Companion', 'general' => 'General'] as $value => $label)
+                                    <option value="{{ $value }}" @selected(old('category', $story->category) === $value)>{{ $label }}
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label fw-medium">Difficulty *</label>
                             <select name="difficulty" class="form-select" required>
-                                <option value="beginner" {{ $story->difficulty === 'beginner' ? 'selected' : '' }}>
-                                    Beginner</option>
-                                <option value="intermediate" {{ $story->difficulty === 'intermediate' ? 'selected' : '' }}>
-                                    Intermediate</option>
-                                <option value="advanced" {{ $story->difficulty === 'advanced' ? 'selected' : '' }}>
-                                    Advanced</option>
+                                @foreach (['beginner' => 'Beginner', 'intermediate' => 'Intermediate', 'advanced' => 'Advanced'] as $value => $label)
+                                    <option value="{{ $value }}" @selected(old('difficulty', $story->difficulty) === $value)>{{ $label }}
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
 
@@ -91,15 +87,6 @@
                                 value="{{ old('sort_order', $story->sort_order) }}">
                         </div>
 
-                        <div class="col-md-4 d-flex align-items-end">
-                            <div class="form-check">
-                                <input type="checkbox" name="is_free" value="1" class="form-check-input" id="isFree"
-                                    {{ $story->is_free ? 'checked' : '' }}>
-                                <label class="form-check-label" for="isFree">
-                                    Free story
-                                </label>
-                            </div>
-                        </div>
 
                         <div class="col-md-4 d-flex align-items-end">
                             <div class="form-check">
@@ -154,7 +141,8 @@
                                 <tr>
                                     <td class="text-muted">{{ $chapter->order }}</td>
                                     <td style="font-size:0.9rem">{{ $chapter->title }}</td>
-                                    <td style="font-size:0.8rem; color:#999">{{ $chapter->read_time }}</td>
+                                    <td style="font-size:0.8rem; color:#999">
+                                        {{ $chapter->read_time }}
                                     <td>
                                         <div class="d-flex gap-1">
                                             <a href="{{ route('admin.chapters.edit', $chapter) }}"
@@ -177,10 +165,10 @@
             <div class="mt-4 p-3" style="border:1px solid #dc3545; border-radius:12px; background:rgba(220,53,69,0.05)">
                 <h6 class="text-danger mb-2">Danger Zone</h6>
                 <p class="text-muted mb-2" style="font-size:0.85rem">
-                    Deleting this story will also remove all its chapters.
+                    Story will get hide (soft delete). Chapters will be safe and can be restored from Stories list
                 </p>
                 <form action="{{ route('admin.stories.destroy', $story) }}" method="POST"
-                    onsubmit="return confirm('Are you sure? This cannot be undone.')">
+                    onsubmit="return confirm('Hide this story from the app?')">
                     @csrf @method('DELETE')
                     <button class="btn btn-sm btn-danger">
                         <i class="bi bi-trash me-1"></i>Delete Story

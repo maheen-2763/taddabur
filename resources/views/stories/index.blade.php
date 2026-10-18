@@ -454,7 +454,7 @@
                             All
                         </a>
                         @foreach (['beginner', 'intermediate', 'advanced'] as $level)
-                            <a href="{{ route('stories.index', ['difficulty' => $level]) }}"
+                            <a href="{{ route('stories.index', array_merge(request()->query(), ['difficulty' => $level])) }}"
                                 class="filter-pill {{ request('difficulty') === $level ? 'active' : '' }}">
                                 {{ ucfirst($level) }}
                                 @if (request('difficulty') === $level && isset($difficultyCounts[$level]))

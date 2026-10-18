@@ -512,21 +512,17 @@
                 which would wrongly include unpublished/hidden parts.
             ───────────────────────────────────────────── --}}
             <div class="d-flex align-items-center justify-content-between mb-4">
-                <h3 class="heading-font mb-0">
-                    The Life of {{ $prophet->name_transliteration }}
-                </h3>
+                <h5 class="heading-font mb-2" style="font-size:1rem">
+                    The Complete Life of {{ $prophet->name_transliteration }}
+                </h5>
                 <span class="text-muted small">{{ $stories->count() }} parts</span>
             </div>
 
-            @php
-                $firstPart = $stories->first();
-            @endphp
 
             <div class="row row-cols-1 g-4">
                 <div class="col">
                     <div class="story-card-inner">
 
-                        @php $accessible = $firstPart->isAccessibleBy(Auth::user()); @endphp
 
                         <div class="d-flex justify-content-between align-items-start mb-2">
                             <h5 class="heading-font mb-0" style="font-size:1rem">
@@ -587,13 +583,12 @@
 
             <div class="row row-cols-1 row-cols-md-2 g-4">
                 @foreach ($stories as $story)
-                    @php $accessible = $story->isAccessibleBy(Auth::user()); @endphp
                     <div class="col">
                         <div class="story-card-inner">
 
                             {{-- Title + badge --}}
                             <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h5 class="heading-font mb-0" style="font-size:1rem">
+                                <h5 class="heading-font mb-2" style="font-size:1rem">
                                     <a href="{{ route('stories.show', $story->slug) }}" class="text-decoration-none"
                                         style="color:var(--ink)">
                                         {{ $story->title }}

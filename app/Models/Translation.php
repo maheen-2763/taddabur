@@ -28,10 +28,6 @@ class Translation extends Model
         'is_active' => 'boolean',
     ];
 
-    public function isAdmin(): bool
-    {
-        return $this->is_admin;
-    }
     // -------------------------------------------------------
     // RELATIONSHIPS
     // -------------------------------------------------------

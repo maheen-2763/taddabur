@@ -23,7 +23,7 @@
                     <div class="card-body p-5">
 
                         <div class="mb-4">
-                            <span class="badge badge-basic">
+                            <span class="badge" style="background:var(--emerald); color:#fff">
                                 {{ $isAyah ? 'Daily Reflection' : 'Hadith of the Day' }}
                             </span>
                         </div>
@@ -67,9 +67,19 @@
                                 </p>
                             </div>
 
-                            <div class="translation-box mb-4">
-                                <p class="mb-0 fst-italic">{{ $hadith?->english }}</p>
-                            </div>
+                            @if ($hadith?->english)
+                                <div class="translation-box mb-4">
+                                    <p class="mb-0 fst-italic">{{ $hadith->english }}</p>
+                                </div>
+                            @endif
+
+                            @if ($hadith?->grade)
+                                <p class="text-muted small mb-4">
+                                    <i class="bi bi-patch-check"></i> Grade: {{ $hadith->grade }}@if ($hadith->grade_source)
+                                        ({{ $hadith->grade_source }})
+                                    @endif
+                                </p>
+                            @endif
 
                             @if ($hadith?->narrator_chain)
                                 <p class="text-muted small mb-5">
