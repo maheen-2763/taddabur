@@ -29,9 +29,8 @@
                             <select name="prophet_id" class="form-select">
                                 <option value="">— None —</option>
                                 @foreach ($prophets as $prophet)
-                                    <option value="{{ $prophet->id }}"
-                                        {{ old('prophet_id') == $prophet->id ? 'selected' : '' }}>
-                                        {{ $prophet->name_transliteration }} (AS)
+                                    <option value="{{ $prophet->id }}" {{ old('prophet_id') == $prophet->id ? 'selected' : '' }}>
+                                        {{ $prophet->display_name }}
                                     </option>
                                 @endforeach
                             </select>
@@ -77,8 +76,7 @@
 
                         <div class="col-md-4">
                             <label class="form-label fw-medium">Sort Order</label>
-                            <input type="number" name="sort_order" class="form-control"
-                                value="{{ old('sort_order', 0) }}">
+                            <input type="number" name="sort_order" class="form-control" value="{{ old('sort_order', 0) }}">
                         </div>
 
 

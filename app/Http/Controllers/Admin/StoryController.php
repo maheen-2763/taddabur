@@ -22,7 +22,7 @@ class StoryController extends Controller
     public function index(): View
     {
         $stories = Story::withTrashed()
-            ->with('prophet:id,name_transliteration')
+            ->with('prophet:id,name_transliteration,slug')
             ->withCount('chapters')
             ->orderBy('sort_order')
             ->orderBy('id')

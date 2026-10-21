@@ -28,7 +28,7 @@
                             <div style="font-size:0.9rem; font-weight:500">{{ $story->title }}</div>
                             <small class="text-muted">{{ ucfirst($story->difficulty) }}</small>
                         </td>
-                        <td style="font-size:0.85rem">{{ $story->prophet?->name_transliteration ?? '—' }}</td>
+                        <td style="font-size:0.85rem">{{ $story->prophet?->display_name ?? '—' }}</td>
                         <td><span class="badge bg-secondary">{{ $story->chapters_count }} chapters</span></td>
                         <td>
                             @if ($story->trashed())
@@ -50,8 +50,8 @@
                                 <div class="d-flex gap-1">
                                     <a href="{{ route('admin.stories.edit', $story) }}"
                                         class="btn btn-sm btn-admin-primary">Edit</a>
-                                    <a href="{{ route('admin.chapters.create', $story) }}"
-                                        class="btn btn-sm btn-admin-gold">+ Chapter</a>
+                                    <a href="{{ route('admin.chapters.create', $story) }}" class="btn btn-sm btn-admin-gold">+
+                                        Chapter</a>
                                 </div>
                             @endif
                         </td>

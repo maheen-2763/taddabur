@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Donor;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Response;
-use Razorpay\Api\Api;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
+use Razorpay\Api\Api;
+use Throwable;
 
 class DonationController extends Controller
 {
@@ -20,72 +22,84 @@ class DonationController extends Controller
         );
     }
 
-    // Step A: Frontend se amount aata hai, hum Razorpay order banate hain
-    public function createOrder(Request $request)
+    // Step A: frontend se amount aata hai, hum Razorpay order banate hain
+    public function createOrder(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'amount' => 'required|integer|min:1|max:100000', // rupees
-            'name' => 'nullable|string|max:100',
-            'message' => 'nullable|string|max:500',
-            'is_public' => 'boolean',
+            'amount'    => ['required', 'integer', 'min:1', 'max:100000'], // rupees
+            'name'      => ['nullable', 'string', 'max:60'],
+            'message'   => ['nullable', 'string', 'max:250'],
+            'is_public' => ['nullable', 'boolean'],
         ]);
 
-        // Amount hamesha paise mein bhejna padta hai (₹1 = 100 paise)
+        $name = trim((string) ($validated['name'] ?? ''));
+
+        // Naam ke bina public list mein dikhane ka matlab nahi. Default hamesha private.
+        $isPublic = $name !== '' && (bool) ($validated['is_public'] ?? false);
+
+        // Razorpay ko amount paise mein chahiye (₹1 = 100 paise)
         $amountInPaise = $validated['amount'] * 100;
 
-        $order = $this->razorpay->order->create([
-            'amount' => $amountInPaise,
-            'currency' => 'INR',
-            'receipt' => 'don_' . uniqid(),
-        ]);
+        try {
+            $order = $this->razorpay->order->create([
+                'amount'   => $amountInPaise,
+                'currency' => 'INR',
+                'receipt'  => 'don_' . uniqid(),
+            ]);
+        } catch (Throwable $e) {
+            report($e);
 
-        // Pending donor record banao — abhi tak paisa confirm nahi hua
-        $donor = Donor::create([
-            'name' => $validated['name'] ?? 'Anonymous',
-            'amount' => $validated['amount'],
-            'message' => $validated['message'] ?? null,
-            'is_public' => $validated['is_public'] ?? true,
+            return response()->json([
+                'message' => 'Could not start the payment. Please try again in a moment.',
+            ], 502);
+        }
+
+        // Pending record: paisa abhi confirm nahi hua
+        Donor::create([
+            'name'              => $name !== '' ? $name : 'Anonymous',
+            'amount'            => $validated['amount'],
+            'message'           => $validated['message'] ?? null,
+            'is_public'         => $isPublic,
             'razorpay_order_id' => $order['id'],
-            'payment_method' => 'razorpay',
-            'status' => 'pending',
+            'payment_method'    => 'razorpay',
+            'status'            => 'pending',
         ]);
 
-        return Response::json([
+        return response()->json([
             'order_id' => $order['id'],
-            'amount' => $amountInPaise,
-            'key' => Config::get('services.razorpay.key'),
-            'donor_id' => $donor->id,
+            'amount'   => $amountInPaise,
+            'key'      => Config::get('services.razorpay.key'),
         ]);
     }
 
-    // Step B: Payment ke baad frontend ye call karta hai — lekin ye sirf UI update ke liye,
-    // asli confirmation webhook se hi aayega (neeche dekho)
-    public function verifyPayment(Request $request)
+    // Step B: payment ke baad frontend ye call karta hai. Ye sirf signature check karta hai.
+    // Final status webhook se hi confirm hota hai.
+    public function verifyPayment(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'razorpay_order_id' => 'required|string',
-            'razorpay_payment_id' => 'required|string',
-            'razorpay_signature' => 'required|string',
+            'razorpay_order_id'   => ['required', 'string', 'max:64'],
+            'razorpay_payment_id' => ['required', 'string', 'max:64'],
+            'razorpay_signature'  => ['required', 'string', 'max:128'],
         ]);
 
-        $attributes = [
-            'razorpay_order_id' => $validated['razorpay_order_id'],
-            'razorpay_payment_id' => $validated['razorpay_payment_id'],
-            'razorpay_signature' => $validated['razorpay_signature'],
-        ];
+        $donor = Donor::where('razorpay_order_id', $validated['razorpay_order_id'])->first();
+
+        if (! $donor) {
+            return response()->json(['verified' => false], 404);
+        }
 
         try {
-            $this->razorpay->utility->verifyPaymentSignature($attributes);
-        } catch (\Exception $e) {
-            return Response::json(['verified' => false], 400);
+            $this->razorpay->utility->verifyPaymentSignature($validated);
+        } catch (Throwable $e) {
+            Log::warning('Donation signature verification failed', [
+                'order_id' => $validated['razorpay_order_id'],
+            ]);
+
+            return response()->json(['verified' => false], 400);
         }
 
-        // Signature sahi hai — lekin final status webhook confirm karega
-        $donor = Donor::where('razorpay_order_id', $validated['razorpay_order_id'])->first();
-        if ($donor) {
-            $donor->update(['razorpay_payment_id' => $validated['razorpay_payment_id']]);
-        }
+        $donor->update(['razorpay_payment_id' => $validated['razorpay_payment_id']]);
 
-        return Response::json(['verified' => true]);
+        return response()->json(['verified' => true]);
     }
 }

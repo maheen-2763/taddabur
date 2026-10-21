@@ -16,7 +16,7 @@ class AdminDailyReflectionController extends Controller
     public function index(): View
     {
         $dailyContents = DailyContent::query()
-            ->with(['ayah.surah'])
+            ->with(['ayah.surah', 'hadith.collection', 'story:id,title'])
             ->latest('scheduled_for')
             ->paginate(20);
 

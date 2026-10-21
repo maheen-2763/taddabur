@@ -3,63 +3,108 @@
 namespace App\Http\Controllers;
 
 use App\Models\Donor;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 
 class RazorpayWebhookController extends Controller
 {
-    public function handle(Request $request)
+    public function handle(Request $request): JsonResponse
     {
-        $webhookSecret = Config::get('services.razorpay.webhook_secret');
-        $signature = $request->header('X-Razorpay-Signature');
-        $payload = $request->getContent();
+        $secret    = (string) Config::get('services.razorpay.webhook_secret');
+        $signature = (string) $request->header('X-Razorpay-Signature');
+        $payload   = $request->getContent();
 
-        // Signature verify karo — proof ki ye asli Razorpay hai, koi fake request nahi
-        $expectedSignature = hash_hmac('sha256', $payload, $webhookSecret);
-        if (!hash_equals($expectedSignature, $signature)) {
+        // Secret khali ho to koi bhi khali key se valid signature bana sakta hai. Isliye rok do.
+        if ($secret === '') {
+            Log::error('Razorpay webhook: webhook secret is not configured');
+
+            return response()->json(['status' => 'not configured'], 500);
+        }
+
+        if (! hash_equals(hash_hmac('sha256', $payload, $secret), $signature)) {
             Log::warning('Razorpay webhook: invalid signature');
-            return Response::json(['status' => 'invalid signature'], 400);
+
+            return response()->json(['status' => 'invalid signature'], 400);
         }
 
-        $data = json_decode($payload, true);
-        $event = $data['event'] ?? null;
+        $data = json_decode($payload, true) ?? [];
 
-        if ($event === 'payment.captured') {
-            $payment = $data['payload']['payment']['entity'];
+        match ($data['event'] ?? null) {
+            'payment.captured' => $this->paymentCaptured($data),
+            'payment.failed'   => $this->paymentFailed($data),
+            'qr_code.credited' => $this->qrCredited($data),
+            default            => null,
+        };
 
-            $donor = Donor::where('razorpay_order_id', $payment['order_id'])->first();
+        return response()->json(['status' => 'ok']);
+    }
 
-            if ($donor && $donor->status !== 'success') {
-                $donor->update([
-                    'razorpay_payment_id' => $payment['id'],
-                    'status' => 'success',
-                ]);
-            }
+    private function paymentCaptured(array $data): void
+    {
+        $payment = data_get($data, 'payload.payment.entity');
+        $orderId = $payment['order_id'] ?? null;
+
+        // QR payments ke paas order_id nahi hota, wo qr_code.credited se handle hote hain
+        if (! $payment || ! $orderId) {
+            return;
         }
 
-        if ($event === 'qr_code.credited') {
-            $payment = $data['payload']['payment']['entity'];
+        $donor = Donor::where('razorpay_order_id', $orderId)->first();
 
-            Donor::firstOrCreate(
-                ['razorpay_payment_id' => $payment['id']],
-                [
-                    'name' => 'Anonymous',
-                    'amount' => $payment['amount'] / 100,
-                    'payment_method' => 'razorpay_qr',
-                    'status' => 'success',
-                    'is_public' => true,
-                ]
-            );
+        if (! $donor || $donor->status === Donor::STATUS_PAID) {
+            return; // anjaan order, ya pehle se paid (duplicate webhook)
         }
 
-        if ($event === 'payment.failed') {
-            $payment = $data['payload']['payment']['entity'];
-            Donor::where('razorpay_order_id', $payment['order_id'])
-                ->update(['status' => 'failed']);
+        // Sanity check: captured amount hamare order se match kare
+        if ((int) ($payment['amount'] ?? 0) !== (int) round($donor->amount * 100)) {
+            Log::error('Razorpay webhook: amount mismatch', [
+                'order_id' => $orderId,
+                'expected' => (int) round($donor->amount * 100),
+                'received' => $payment['amount'] ?? null,
+            ]);
+
+            return;
         }
 
-        return Response::json(['status' => 'ok']);
+        $donor->update([
+            'razorpay_payment_id' => $payment['id'],
+            'status'              => Donor::STATUS_PAID,
+        ]);
+    }
+
+    private function paymentFailed(array $data): void
+    {
+        $orderId = data_get($data, 'payload.payment.entity.order_id');
+
+        if (! $orderId) {
+            return;
+        }
+
+        // Sirf pending rows. Pehle ka failed attempt kisi successful payment ko overwrite na kare.
+        Donor::where('razorpay_order_id', $orderId)
+            ->where('status', 'pending')
+            ->update(['status' => 'failed']);
+    }
+
+    private function qrCredited(array $data): void
+    {
+        $payment = data_get($data, 'payload.payment.entity');
+
+        if (! $payment || empty($payment['id'])) {
+            return;
+        }
+
+        Donor::firstOrCreate(
+            ['razorpay_payment_id' => $payment['id']],
+            [
+                'name'           => 'Anonymous',
+                'amount'         => ($payment['amount'] ?? 0) / 100,
+                'payment_method' => 'razorpay_qr',
+                'status'         => Donor::STATUS_PAID,
+                'is_public'      => false, // QR par koi consent nahi, isliye private
+            ]
+        );
     }
 }

@@ -33,16 +33,20 @@
                             @if ($content->ayah)
                                 {{ $content->ayah->surah?->name_transliteration }}
                                 {{ $content->ayah->surah?->number }}:{{ $content->ayah->number }}
-                            @elseif ($content->hadith_id)
-                                Hadith #{{ $content->hadith_id }}
-                            @elseif ($content->story_id)
-                                Story #{{ $content->story_id }}
+                            @elseif ($content->hadith)
+                                {{ $content->hadith->collection?->name }} #{{ $content->hadith->number }}
+                            @elseif ($content->story)
+                                {{ $content->story->title }}
                             @else
                                 —
                             @endif
                         </td>
                         <td class="text-muted" style="max-width:320px">
-                            {{ \Illuminate\Support\Str::limit((string) $content->reflection, 100) ?: '—' }}
+                            @if ($content->reflection)
+                                {{ \Illuminate\Support\Str::limit($content->reflection, 100) }}
+                            @else
+                                <span class="fst-italic">Auto-generated (no reflection)</span>
+                            @endif
                         </td>
                         <td>
                             <span class="badge {{ $content->is_sent ? 'bg-success' : 'bg-warning text-dark' }}">

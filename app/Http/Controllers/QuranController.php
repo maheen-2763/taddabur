@@ -281,18 +281,12 @@ class QuranController extends Controller
     public function audio(Request $request, Surah $surah, Ayah $ayah): JsonResponse
     {
         $requestedReciter = $request->get('reciter', QuranService::DEFAULT_RECITER);
-        $recitation       = Recitation::where('slug', $requestedReciter)->where('is_active', true)->first();
 
-        if ($recitation && !$recitation->isAccessibleBy(Auth::user())) {
-            $requestedReciter = QuranService::DEFAULT_RECITER;
-            $recitation = Recitation::where('slug', $requestedReciter)->where('is_active', true)->first();
-        }
+        $recitation = Recitation::where('slug', $requestedReciter)->where('is_active', true)->first()
+            ?? Recitation::where('slug', QuranService::DEFAULT_RECITER)->where('is_active', true)->first()
+            ?? Recitation::where('is_active', true)->orderBy('sort_order')->first();
 
-        if (!$recitation) {
-            $recitation = Recitation::where('is_free', true)->where('is_active', true)->first();
-        }
-
-        if (!$recitation) {
+        if (! $recitation) {
             return response()->json(['error' => 'No reciter available.'], 404);
         }
 

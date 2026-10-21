@@ -22,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
         \App\Console\Commands\RunBackup::class,
         \App\Console\Commands\VerifyBackup::class,
         \App\Console\Commands\RecalculateContentStats::class,
+        \App\Console\Commands\ReconcileDonations::class
     ])
     ->withMiddleware(function (Middleware $middleware) {
 

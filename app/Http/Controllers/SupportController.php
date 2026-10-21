@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Ayah;
 use App\Models\Donor;
-use App\Models\Hadith;
 use Illuminate\Contracts\View\View;
 
 class SupportController extends Controller
@@ -13,14 +11,15 @@ class SupportController extends Controller
     {
         $qrDataUri = config('services.razorpay.qr_image_url');
 
-        $lampAyah = Ayah::whereHas('surah', fn($q) => $q->where('number', 24))
-            ->where('number', 35)
-            ->with('translations')
-            ->first();
+        // Sirf confirmed payments, jinhone khud naam dikhana chuna. Same naam ek hi baar.
+        $donors = Donor::supporters()
+            ->latest()
+            ->limit(60)
+            ->get(['id', 'name'])
+            ->unique(fn(Donor $donor) => mb_strtolower(trim($donor->name)))
+            ->take(20)
+            ->values();
 
-        $donors = Donor::public()->latest()->take(20)->get();
-        $gratitudeHadith = Hadith::find(1450);
-
-        return view('support', compact('qrDataUri', 'lampAyah', 'donors', 'gratitudeHadith'));
+        return view('support', compact('qrDataUri', 'donors'));
     }
 }

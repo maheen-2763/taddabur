@@ -524,7 +524,7 @@
                 @if ($story->prophet)
                     <span class="breadcrumb-separator">/</span>
                     <a href="{{ route('stories.index', ['prophet' => $story->prophet->slug]) }}" class="breadcrumb-link">
-                        {{ $story->prophet->name_transliteration }}
+                        {!! $story->prophet->display_name_html !!}
                     </a>
                 @endif
                 <span class="breadcrumb-separator">/</span>
@@ -536,8 +536,8 @@
             <div class="row g-5">
 
                 {{-- ══════════════════════════════════════
-             LEFT — Story info + chapters
-        ═══════════════════════════════════════ --}}
+                LEFT — Story info + chapters
+                ═══════════════════════════════════════ --}}
                 <div class="col-lg-8">
 
                     {{-- Hero --}}
@@ -576,23 +576,21 @@
                             @endif
 
                             {{-- Title --}}
-                            <h1 class="heading-font mb-1"
-                                style="font-size:clamp(1.4rem,3.5vw,1.9rem);
-                               color:white;
-                               line-height:1.25;
-                               position:relative;
-                               z-index:1">
+                            <h1 class="heading-font mb-1" style="font-size:clamp(1.4rem,3.5vw,1.9rem);
+                                                                       color:white;
+                                                                       line-height:1.25;
+                                                                       position:relative;
+                                                                       z-index:1">
                                 {{ $story->title }}
                             </h1>
 
                             {{-- Prophet name --}}
                             @if ($story->prophet)
-                                <p
-                                    style="color:rgba(255,255,255,0.65);
-                                  font-size:0.88rem;
-                                  margin:0;
-                                  position:relative;
-                                  z-index:1">
+                                <p style="color:rgba(255,255,255,0.65);
+                                                                                              font-size:0.88rem;
+                                                                                              margin:0;
+                                                                                              position:relative;
+                                                                                              z-index:1">
                                     {!! $story->prophet->display_name_html !!}
                                 </p>
                             @endif
@@ -742,8 +740,8 @@
                 </div>
 
                 {{-- ══════════════════════════════════════
-             RIGHT — Sticky sidebar
-        ═══════════════════════════════════════ --}}
+                RIGHT — Sticky sidebar
+                ═══════════════════════════════════════ --}}
                 <div class="col-lg-4">
                     <div class="sidebar-sticky-wrap">
 
@@ -763,8 +761,7 @@
                                             {{ $story->prophet->title_arabic }}
                                         </div>
                                     @endif
-                                    <div class="heading-font mt-2"
-                                        style="color:rgba(255,255,255,0.85); font-size:0.95rem">
+                                    <div class="heading-font mt-2" style="color:rgba(255,255,255,0.85); font-size:0.95rem">
                                         {!! $story->prophet->display_name_html !!}
                                     </div>
                                 </div>
@@ -777,16 +774,16 @@
                                         <a href="{{ route('stories.index', ['prophet' => $story->prophet->slug]) }}"
                                             class="btn btn-outline-secondary w-100 mb-2" style="font-size:0.82rem">
                                             <i class="bi bi-journal-text me-1"></i>
-                                            All Stories of {{ $story->prophet->name_transliteration }}
+                                            All Stories of {!! $story->prophet->display_name_html !!}
                                         </a>
                                     @endif
 
-                                    <a href="{{ route('prophets.show', $story->prophet->slug) }}"
-                                        class="btn-emerald btn w-100" style="font-size:0.82rem">
+                                    <a href="{{ route('prophets.show', $story->prophet->slug) }}" class="btn-emerald btn w-100"
+                                        style="font-size:0.82rem">
                                         <i class="bi bi-person-badge me-1"></i>
                                         Learn More About {{ $story->prophet->name_transliteration }}
                                         @if ($story->prophet->slug === 'muhammad')
-                                            <bdi><span class="arabic-symbol">(ﷺ)</span></bdi>
+                                            <bdi><span class="arabic-symbol">ﷺ</span></bdi>
                                         @else
                                             <span class="honorific"
                                                 style="color:white">{{ $story->prophet->honorific ?? 'AS' }}</span>

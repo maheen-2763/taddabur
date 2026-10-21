@@ -427,23 +427,15 @@
 
                                     {{-- Note — personal reflection on this ayah --}}
                                     @auth
-                                        @if ($isPremium)
-                                            <button class="ayah-btn {{ isset($userNotes[$ayah->id]) ? 'has-note' : '' }}"
-                                                id="note-btn-{{ $ayah->id }}"
-                                                onclick="toggleNoteEditor(this, {{ $ayah->id }})">
-                                                <i class="bi bi-pencil-square"></i>
-                                                <span class="d-none d-sm-inline">
-                                                    {{ isset($userNotes[$ayah->id]) ? ' Note' : ' Add Note' }}
-                                                </span>
-                                            </button>
-                                        @else
-                                            <button class="ayah-btn position-relative" onclick="redirectToUpgrade('Notes')">
-                                                <i class="bi bi-pencil-square"></i>
-                                                <span class="d-none d-sm-inline"> Note</span>
-                                                <span class="lock-icon">🔒</span>
-                                            </button>
-                                        @endif
-                                    @endauth
+    <button class="ayah-btn {{ isset($userNotes[$ayah->id]) ? 'has-note' : '' }}"
+        id="note-btn-{{ $ayah->id }}"
+        onclick="toggleNoteEditor(this, {{ $ayah->id }})">
+        <i class="bi bi-pencil-square"></i>
+        <span class="d-none d-sm-inline">
+            {{ isset($userNotes[$ayah->id]) ? ' Note' : ' Add Note' }}
+        </span>
+    </button>
+@endauth
                                 </div>
                                 {{-- Note Banner — personal reflection editor --}}
                                 @auth

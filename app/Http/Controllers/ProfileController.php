@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use App\Models\User;
+use App\Models\Backup;
+use Illuminate\Support\Facades\DB;
 
 class ProfileController extends Controller
 {
@@ -56,7 +58,14 @@ class ProfileController extends Controller
 
         Auth::logout();
 
-        $user->delete();
+        DB::transaction(function () use ($user) {
+            // Jin tables par foreign key cascade nahi hai, unka data yahin hatao
+            DB::table('listened_ayahs')->where('user_id', $user->id)->delete();
+            DB::table('sessions')->where('user_id', $user->id)->delete();
+            Backup::where('created_by', $user->id)->update(['created_by' => null]);
+
+            $user->delete();
+        });
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

@@ -324,8 +324,8 @@
         </nav>
 
         {{-- ═══════════════════════════════════════════════
-         HERO CARD
-    ════════════════════════════════════════════════ --}}
+        HERO CARD
+        ════════════════════════════════════════════════ --}}
         <div class="prophet-hero mb-5">
 
             {{-- Arabic watermark --}}
@@ -337,22 +337,20 @@
                 <div class="col-lg-6 p-4 p-md-5 d-flex flex-column justify-content-center">
 
                     {{-- Order pill --}}
-                    <span class="badge mb-3 align-self-start"
-                        style="background:rgba(255,255,255,0.12);
-                           color:rgba(255,255,255,0.85);
-                           font-size:0.75rem;
-                           padding:0.4rem 0.9rem;
-                           border-radius:50px;
-                           letter-spacing:0.05em">
+                    <span class="badge mb-3 align-self-start" style="background:rgba(255,255,255,0.12);
+                                       color:rgba(255,255,255,0.85);
+                                       font-size:0.75rem;
+                                       padding:0.4rem 0.9rem;
+                                       border-radius:50px;
+                                       letter-spacing:0.05em">
                         Prophet {{ $prophet->order }} of 25
                     </span>
 
                     {{-- Name block --}}
                     <div class="mb-4">
-                        <h1 class="heading-font mb-1"
-                            style="color:white;
-                               font-size:clamp(1.8rem,4vw,2.6rem);
-                               line-height:1.2">
+                        <h1 class="heading-font mb-1" style="color:white;
+                                           font-size:clamp(1.8rem,4vw,2.6rem);
+                                           line-height:1.2">
                             {!! $prophet->display_name_html !!}
                         </h1>
                         <p style="color:rgba(255,255,255,0.6); font-size:0.9rem; margin:0">
@@ -373,31 +371,28 @@
 
                     {{-- Arabic name + title --}}
                     <div class="mb-4" style="text-align:right; direction:rtl">
-                        <div
-                            style="font-family:'Amiri','Scheherazade New',serif;
-                                font-size:2.8rem;
-                                color:white;
-                                line-height:1.4;
-                                margin-bottom:0.4rem">
+                        <div style="font-family:'Amiri','Scheherazade New',serif;
+                                            font-size:2.8rem;
+                                            color:white;
+                                            line-height:1.4;
+                                            margin-bottom:0.4rem">
                             {!! $prophet->name_arabic_html !!}
                         </div>
                         @if ($prophet->title_arabic)
-                            <div
-                                style="font-family:'Amiri','Scheherazade New',serif;
-                                    font-size:1.1rem;
-                                    color:var(--gold-light);
-                                    line-height:1.6;
-                                    margin-bottom:0.2rem">
+                            <div style="font-family:'Amiri','Scheherazade New',serif;
+                                                            font-size:1.1rem;
+                                                            color:var(--gold-light);
+                                                            line-height:1.6;
+                                                            margin-bottom:0.2rem">
                                 {{ $prophet->title_arabic }}
                             </div>
                         @endif
                         @if ($prophet->title_transliteration)
-                            <div
-                                style="font-size:0.75rem;
-                                    color:rgba(255,255,255,0.45);
-                                    direction:ltr;
-                                    text-align:right;
-                                    margin-bottom:0">
+                            <div style="font-size:0.75rem;
+                                                            color:rgba(255,255,255,0.45);
+                                                            direction:ltr;
+                                                            text-align:right;
+                                                            margin-bottom:0">
                                 {{ $prophet->title_transliteration }}
                             </div>
                         @endif
@@ -405,22 +400,20 @@
 
                     {{-- English title --}}
                     @if ($prophet->title)
-                        <p
-                            style="color:var(--gold-light);
-                              font-size:0.9rem;
-                              font-style:italic;
-                              margin-bottom:1.25rem">
+                        <p style="color:var(--gold-light);
+                                                      font-size:0.9rem;
+                                                      font-style:italic;
+                                                      margin-bottom:1.25rem">
                             {!! $prophet->title_html !!}
                         </p>
                     @endif
 
                     {{-- Summary --}}
                     @if ($prophet->summary)
-                        <p
-                            style="color:rgba(255,255,255,0.75);
-                              line-height:1.8;
-                              font-size:0.9rem;
-                              margin:0">
+                        <p style="color:rgba(255,255,255,0.75);
+                                                      line-height:1.8;
+                                                      font-size:0.9rem;
+                                                      margin:0">
                             {!! $prophet->summary_html !!}
                         </p>
                     @endif
@@ -488,8 +481,8 @@
         </div>
 
         {{-- ═══════════════════════════════════════════════
-         STORIES SECTION
-    ════════════════════════════════════════════════ --}}
+        STORIES SECTION
+        ════════════════════════════════════════════════ --}}
         @if ($stories->isEmpty())
             <div class="text-center py-5">
                 <div style="font-size:3rem; opacity:0.3; margin-bottom:1rem">📖</div>
@@ -504,43 +497,21 @@
                 </a>
             </div>
         @elseif ($stories->count() > 1)
-            {{-- ─────────────────────────────────────────
-                MULTI-PART PROPHET (currently only Muhammad ﷺ)
-                Show ONE Journey card instead of looping every part.
-                Uses $stories (already filtered by published +
-                premium status) — NOT $prophet->stories()->count(),
-                which would wrongly include unpublished/hidden parts.
-            ───────────────────────────────────────────── --}}
+            {{-- MULTI-PART PROPHET (abhi sirf Muhammad ﷺ): ek Journey card, har part ka alag card nahi.
+            $stories controller se published stories hi aati hain. --}}
             <div class="d-flex align-items-center justify-content-between mb-4">
-                <h5 class="heading-font mb-2" style="font-size:1rem">
-                    The Complete Life of {{ $prophet->name_transliteration }}
-                </h5>
+                <h3 class="heading-font mb-0">
+                    The Life of {!! $prophet->display_name_html !!} </h3>
                 <span class="text-muted small">{{ $stories->count() }} parts</span>
             </div>
-
 
             <div class="row row-cols-1 g-4">
                 <div class="col">
                     <div class="story-card-inner">
 
-
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h5 class="heading-font mb-0" style="font-size:1rem">
-                                The Complete Life of {{ $prophet->name_transliteration }}
-                            </h5>
-                            @if ($firstPart->min_plan_slug === 'free')
-                                <span class="badge bg-success ms-2 flex-shrink-0" style="font-size:0.7rem">Free</span>
-                            @elseif ($accessible)
-                                <span class="badge bg-success ms-2 flex-shrink-0" style="font-size:0.7rem">
-                                    <i class="bi bi-unlock-fill me-1"></i>Unlocked
-                                </span>
-                            @else
-                                <span class="badge ms-2 flex-shrink-0"
-                                    style="background:var(--gold); color:#1A1A2E; font-size:0.7rem">
-                                    <i class="bi bi-stars me-1"></i>{{ ucfirst($firstPart->min_plan_slug) }}
-                                </span>
-                            @endif
-                        </div>
+                        <h5 class="heading-font mb-2" style="font-size:1rem">
+                            The Complete Life of {!! $prophet->display_name_html !!}
+                        </h5>
 
                         <p class="text-muted mb-3" style="font-size:0.85rem; line-height:1.65">
                             A {{ $stories->count() }}-part journey through his blessed life — from
@@ -554,7 +525,6 @@
                             </span>
                         </div>
 
-                        {{-- Same access rules as a normal story card --}}
                         <a href="{{ route('prophets.journey', $prophet->slug) }}" class="btn-emerald btn btn-sm">
                             Begin the Journey <i class="bi bi-arrow-right ms-1"></i>
                         </a>
@@ -569,14 +539,10 @@
                 </a>
             </div>
         @else
-            {{-- ─────────────────────────────────────────
-                 NORMAL PROPHET — single Story record
-                 (24 of the 25 prophets, everything unchanged)
-            ───────────────────────────────────────────── --}}
+            {{-- NORMAL PROPHET: ek hi Story --}}
             <div class="d-flex align-items-center justify-content-between mb-3">
                 <h3 class="heading-font mb-0">
-                    Stories of {{ $prophet->name_transliteration }}
-                </h3>
+                    Stories of {!! $prophet->display_name_html !!} </h3>
                 <span class="text-muted small">{{ $stories->count() }}
                     {{ Str::plural('story', $stories->count()) }}</span>
             </div>
@@ -586,47 +552,27 @@
                     <div class="col">
                         <div class="story-card-inner">
 
-                            {{-- Title + badge --}}
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h5 class="heading-font mb-2" style="font-size:1rem">
-                                    <a href="{{ route('stories.show', $story->slug) }}" class="text-decoration-none"
-                                        style="color:var(--ink)">
-                                        {{ $story->title }}
-                                    </a>
-                                </h5>
-                                @if ($story->min_plan_slug === 'free')
-                                    <span class="badge bg-success ms-2 flex-shrink-0" style="font-size:0.7rem">Free</span>
-                                @elseif ($accessible)
-                                    <span class="badge bg-success ms-2 flex-shrink-0" style="font-size:0.7rem">
-                                        <i class="bi bi-unlock-fill me-1"></i>Unlocked
-                                    </span>
-                                @else
-                                    <span class="badge ms-2 flex-shrink-0"
-                                        style="background:var(--gold); color:#1A1A2E; font-size:0.7rem">
-                                        <i class="bi bi-stars me-1"></i>{{ ucfirst($story->min_plan_slug) }}
-                                    </span>
-                                @endif
-                            </div>
+                            <h5 class="heading-font mb-2" style="font-size:1rem">
+                                <a href="{{ route('stories.show', $story->slug) }}" class="text-decoration-none"
+                                    style="color:var(--ink)">
+                                    {{ $story->title }}
+                                </a>
+                            </h5>
 
-                            {{-- Summary --}}
                             @if ($story->summary)
-                                <p class="mb-3"
-                                    style="font-size:0.92rem; line-height:1.8; color:var(--ink-soft); font-weight:400">
+                                <p class="mb-3" style="font-size:0.92rem; line-height:1.8; color:var(--ink-soft); font-weight:400">
                                     {{ Str::limit($story->summary, 120) }}
                                 </p>
                             @endif
 
-                            {{-- Meta chips --}}
                             <div class="d-flex gap-2 flex-wrap mb-3">
                                 @if ($story->difficulty)
-                                    <span class="meta-chip">
-                                        {{ ucfirst($story->difficulty) }}
-                                    </span>
+                                    <span class="meta-chip">{{ ucfirst($story->difficulty) }}</span>
                                 @endif
                                 <span class="meta-chip">
                                     <i class="bi bi-journals me-1"></i>
-                                    {{ $story->chapters->count() }}
-                                    {{ Str::plural('Chapter', $story->chapters->count()) }}
+                                    {{ $story->chapters_count }}
+                                    {{ Str::plural('Chapter', $story->chapters_count) }}
                                 </span>
                                 @if ($story->read_time_minutes)
                                     <span class="meta-chip">
@@ -635,7 +581,6 @@
                                 @endif
                             </div>
 
-                            {{-- CTA — single-story branch only, no journey logic needed here --}}
                             <a href="{{ route('stories.show', $story->slug) }}" class="btn-emerald btn btn-sm">
                                 Read Story <i class="bi bi-arrow-right ms-1"></i>
                             </a>

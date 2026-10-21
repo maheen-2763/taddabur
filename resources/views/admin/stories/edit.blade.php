@@ -25,8 +25,8 @@
                     <div class="row g-3">
                         <div class="col-12">
                             <label class="form-label fw-medium">Story Title *</label>
-                            <input type="text" name="title" class="form-control"
-                                value="{{ old('title', $story->title) }}" required>
+                            <input type="text" name="title" class="form-control" value="{{ old('title', $story->title) }}"
+                                required>
                             @error('title')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
@@ -38,7 +38,7 @@
                                 <option value="">— None —</option>
                                 @foreach ($prophets as $prophet)
                                     <option value="{{ $prophet->id }}" @selected(old('prophet_id', $story->prophet_id) == $prophet->id)>
-                                        {{ $prophet->name_transliteration }} (AS)
+                                        {{ $prophet->display_name }}
                                     </option>
                                 @endforeach
                             </select>
@@ -48,7 +48,8 @@
                             <label class="form-label fw-medium">Category *</label>
                             <select name="category" class="form-select" required>
                                 @foreach (['prophet' => 'Prophet', 'companion' => 'Companion', 'general' => 'General'] as $value => $label)
-                                    <option value="{{ $value }}" @selected(old('category', $story->category) === $value)>{{ $label }}
+                                    <option value="{{ $value }}" @selected(old('category', $story->category) === $value)>
+                                        {{ $label }}
                                     </option>
                                 @endforeach
                             </select>
@@ -58,7 +59,8 @@
                             <label class="form-label fw-medium">Difficulty *</label>
                             <select name="difficulty" class="form-select" required>
                                 @foreach (['beginner' => 'Beginner', 'intermediate' => 'Intermediate', 'advanced' => 'Advanced'] as $value => $label)
-                                    <option value="{{ $value }}" @selected(old('difficulty', $story->difficulty) === $value)>{{ $label }}
+                                    <option value="{{ $value }}" @selected(old('difficulty', $story->difficulty) === $value)>
+                                        {{ $label }}
                                     </option>
                                 @endforeach
                             </select>
@@ -72,7 +74,8 @@
 
                         <div class="col-12">
                             <label class="form-label fw-medium">Summary *</label>
-                            <textarea name="summary" class="form-control" rows="3" required>{{ old('summary', $story->summary) }}</textarea>
+                            <textarea name="summary" class="form-control" rows="3"
+                                required>{{ old('summary', $story->summary) }}</textarea>
                         </div>
 
                         <div class="col-12">

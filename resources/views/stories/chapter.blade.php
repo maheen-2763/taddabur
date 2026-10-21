@@ -550,6 +550,16 @@
             background: rgba(27, 94, 59, 0.06);
             color: var(--emerald-light);
         }
+
+        .story-content .arabic-symbol {
+            font-size: 1.1em;
+            color: var(--emerald);
+            unicode-bidi: isolate;
+        }
+
+        [data-bs-theme="dark"] .story-content .arabic-symbol {
+            color: var(--emerald-light);
+        }
     </style>
 @endpush
 
@@ -842,15 +852,15 @@
                 banner.className = 'completion-card';
                 banner.id = 'completionCard';
                 banner.innerHTML = `
-                                                                                        <div class="cc-arabic">الْحَمْدُ لِلَّٰهِ</div>
-                                                                                        <h5 class="heading-font mt-2 mb-1 cc-title">Story Completed</h5>
-                                                                                        <p class="cc-text"></p>
-                                                                                        <p class="cc-stats"></p>
-                                                                                        <div class="cc-actions">
-                                                                                            <a href="${storiesIndexUrl}" class="btn cc-btn-gold">Explore More Stories</a>
-                                                                                            <a href="${storyShowUrl}" class="btn cc-btn-ghost">Back to Story</a>
-                                                                                        </div>
-                                                                                    `;
+                                                                                                                <div class="cc-arabic">الْحَمْدُ لِلَّٰهِ</div>
+                                                                                                                <h5 class="heading-font mt-2 mb-1 cc-title">Story Completed</h5>
+                                                                                                                <p class="cc-text"></p>
+                                                                                                                <p class="cc-stats"></p>
+                                                                                                                <div class="cc-actions">
+                                                                                                                    <a href="${storiesIndexUrl}" class="btn cc-btn-gold">Explore More Stories</a>
+                                                                                                                    <a href="${storyShowUrl}" class="btn cc-btn-ghost">Back to Story</a>
+                                                                                                                </div>
+                                                                                                            `;
                 banner.querySelector('.cc-text').textContent = `You have completed ${storyTitle}.`;
                 banner.querySelector('.cc-stats').textContent = storyStats;
                 article.appendChild(banner);
@@ -864,25 +874,25 @@
                 const toast = document.createElement('div');
                 toast.className = 'chapter-complete-toast';
                 toast.innerHTML = `
-                                                                                                                                                                                            <span class="toast-ar">الْحَمْدُ لِلَّٰهِ</span>
-                                                                                                                                                                                            <span class="toast-txt">Chapter completed</span>
-                                                                                                                                                                                        `;
+                                                                                                                                                                                                                    <span class="toast-ar">الْحَمْدُ لِلَّٰهِ</span>
+                                                                                                                                                                                                                    <span class="toast-txt">Chapter completed</span>
+                                                                                                                                                                                                                `;
                 toast.style.cssText =
                     `
-                                                                                                                                                                                                                                                                                position: fixed;
-                                                                                                                                                                                                                                                                                top: 80px;
-                                                                                                                                                                                                                                                                                left: 50%;
-                                                                                                                                                                                                                                                                                transform: translateX(-50%) translateY(-12px);
-                                                                                                                                                                                                                                                                                background: linear-gradient(135deg, var(--emerald-dark), var(--emerald));
-                                                                                                                                                                                                                                                                                padding: 0.75rem 1.5rem;
-                                                                                                                                                                                                                                                        border-radius: 50px;
-                                                                                                                                                                                                                                                                                                                                                                                    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-                                                                                                                                                                                                                                                                                                                                                                                    z-index: 9999;
-                                                                                                                                                                                                                                                                                                                                                                                    display: flex;
-                                                                                                                                                                                                                                                                                                                                                                                    align-items: center;
-                                                                                                                                                                                                                                                                                                                                                                                    opacity: 0;
-                                                                                                                                                                                                                                                                                                                                                                                    transition: opacity 0.35s ease, transform 0.35s ease;
-                                                                                                                                                                                                                                                                                                                                                                                `;
+                                                                                                                                                                                                                                                                                                        position: fixed;
+                                                                                                                                                                                                                                                                                                        top: 80px;
+                                                                                                                                                                                                                                                                                                        left: 50%;
+                                                                                                                                                                                                                                                                                                        transform: translateX(-50%) translateY(-12px);
+                                                                                                                                                                                                                                                                                                        background: linear-gradient(135deg, var(--emerald-dark), var(--emerald));
+                                                                                                                                                                                                                                                                                                        padding: 0.75rem 1.5rem;
+                                                                                                                                                                                                                                                                                border-radius: 50px;
+                                                                                                                                                                                                                                                                                                                                                                                                            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+                                                                                                                                                                                                                                                                                                                                                                                                            z-index: 9999;
+                                                                                                                                                                                                                                                                                                                                                                                                            display: flex;
+                                                                                                                                                                                                                                                                                                                                                                                                            align-items: center;
+                                                                                                                                                                                                                                                                                                                                                                                                            opacity: 0;
+                                                                                                                                                                                                                                                                                                                                                                                                            transition: opacity 0.35s ease, transform 0.35s ease;
+                                                                                                                                                                                                                                                                                                                                                                                                        `;
                 document.body.appendChild(toast);
 
                 requestAnimationFrame(() => {

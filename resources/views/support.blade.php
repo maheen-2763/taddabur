@@ -6,7 +6,7 @@
     <style>
         .support-hero {
             background: linear-gradient(160deg, var(--emerald-dark) 0%, #0a2a18 100%);
-            padding: 5rem 0 4rem;
+            padding: 4rem 0 3.5rem;
             position: relative;
             overflow: hidden;
             text-align: center;
@@ -15,20 +15,6 @@
         .book-wrap {
             max-width: 260px;
             margin: 0 auto 1rem;
-        }
-
-        .support-read-context {
-            display: inline-block;
-            margin-top: 0.75rem;
-            font-size: 0.8rem;
-            color: var(--gold-light);
-            text-decoration: none;
-            border-bottom: 1px dashed rgba(201, 150, 58, 0.5);
-        }
-
-        .support-read-context:hover {
-            color: #fff;
-            border-color: #fff;
         }
 
         .support-message {
@@ -174,56 +160,6 @@
             }
         }
 
-        /* Full-width ayah heading */
-        .ayah-full-heading {
-            width: 100%;
-            padding-inline: clamp(1rem, 5vw, 4rem);
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .reader-style-ayah {
-            font-family: var(--quran-font, var(--font-arabic));
-            font-size: clamp(1.6rem, 4vw, 2.6rem);
-            line-height: 2.7;
-            direction: rtl;
-            color: rgba(255, 255, 255, 0.95);
-            word-spacing: 0.1em;
-        }
-
-        .ayah-end-marker {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 1.9rem;
-            height: 1.9rem;
-            border: 1.5px solid var(--gold-light);
-            border-radius: 50%;
-            font-size: 0.85rem;
-            font-family: var(--font-body);
-            color: var(--gold-light);
-            margin-inline-start: 0.4rem;
-            vertical-align: middle;
-            direction: ltr;
-        }
-
-        .reader-style-translation {
-            font-family: var(--font-body);
-            font-size: 1rem;
-            line-height: 1.9;
-            color: rgba(255, 255, 255, 0.7);
-            max-width: 640px;
-            margin: 1.25rem auto 0;
-        }
-
-        .reader-style-ref {
-            color: var(--gold-light);
-            font-size: 0.85rem;
-            font-style: italic;
-            margin-top: 0.5rem;
-        }
-
-        /* Highlighted intro line — not muted */
         .support-highlight {
             color: #fff;
             font-weight: 500;
@@ -233,7 +169,6 @@
             line-height: 1.6;
         }
 
-        /* Payment toggle */
         .payment-toggle {
             display: flex;
             gap: 0.5rem;
@@ -261,7 +196,6 @@
             font-weight: 600;
         }
 
-        /* Fixed input styling for dark background */
         .support-input {
             width: 100%;
             background: rgba(255, 255, 255, 0.08);
@@ -281,6 +215,25 @@
             border-color: var(--gold-light);
             background: rgba(255, 255, 255, 0.12);
         }
+
+        .support-legal-links a {
+            color: rgba(255, 255, 255, 0.5);
+            text-decoration: underline;
+        }
+
+        .donate-status {
+            font-size: 0.85rem;
+            min-height: 1.2rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .donate-status-error {
+            color: #ff9b9b;
+        }
+
+        .donate-status-success {
+            color: #8fd9a8;
+        }
     </style>
 @endpush
 
@@ -299,17 +252,16 @@
                             <stop offset="100%" stop-color="#C9963A" stop-opacity="0" />
                         </radialGradient>
                     </defs>
-                    <ellipse class="book-glow" cx="340" cy="240" rx="220" ry="130"
-                        fill="url(#bookGlowGrad)" />
+                    <ellipse class="book-glow" cx="340" cy="240" rx="220" ry="130" fill="url(#bookGlowGrad)" />
                     <g id="rays">
-                        <line class="ray" x1="300" y1="220" x2="298" y2="140" stroke="#C9963A"
-                            stroke-width="1.5" stroke-linecap="round" opacity="0.6" />
-                        <line class="ray" x1="325" y1="205" x2="322" y2="110" stroke="#E8B85C"
-                            stroke-width="2" stroke-linecap="round" opacity="0.75" />
-                        <line class="ray" x1="355" y1="205" x2="359" y2="110" stroke="#E8B85C"
-                            stroke-width="2" stroke-linecap="round" opacity="0.75" />
-                        <line class="ray" x1="382" y1="220" x2="386" y2="140" stroke="#C9963A"
-                            stroke-width="1.5" stroke-linecap="round" opacity="0.6" />
+                        <line class="ray" x1="300" y1="220" x2="298" y2="140" stroke="#C9963A" stroke-width="1.5"
+                            stroke-linecap="round" opacity="0.6" />
+                        <line class="ray" x1="325" y1="205" x2="322" y2="110" stroke="#E8B85C" stroke-width="2"
+                            stroke-linecap="round" opacity="0.75" />
+                        <line class="ray" x1="355" y1="205" x2="359" y2="110" stroke="#E8B85C" stroke-width="2"
+                            stroke-linecap="round" opacity="0.75" />
+                        <line class="ray" x1="382" y1="220" x2="386" y2="140" stroke="#C9963A" stroke-width="1.5"
+                            stroke-linecap="round" opacity="0.6" />
                     </g>
                     <path d="M340 235 L340 285" stroke="#1B5E3B" stroke-width="2" />
                     <path
@@ -335,23 +287,6 @@
             </div>
 
             <h1 class="heading-font mb-3" style="color:#fff; font-size:2rem">Support Taddabur</h1>
-
-            <!-- Full-width Ayah heading -->
-            <div class="ayah-full-heading">
-                @if ($lampAyah)
-                    <p class="reader-style-ayah" lang="ar" dir="rtl">
-                        {{ $lampAyah->text_arabic }}
-                        <span class="ayah-end-marker">35</span>
-                    </p>
-                    <p class="reader-style-translation">
-                        "{{ Illuminate\Support\Str::limit($lampAyah->translations->first()->text, 160) }}"
-                    </p>
-                    <p class="reader-style-ref">— Surah An-Nur, Ayah 35</p>
-                    <a href="{{ route('quran.show', 24) }}?highlight=35" class="support-read-context">
-                        Open this ayah in the Quran Reader →
-                    </a>
-                @endif
-            </div>
 
             <p class="support-highlight">
                 Knowledge, like light, was never meant to stay behind closed doors.
@@ -379,12 +314,19 @@
 
                 <div id="upi-panel" class="payment-panel">
                     <div class="support-card text-center">
-                        <div class="qr-box">
-                            <img src="{{ $qrDataUri }}" alt="Razorpay UPI QR Code">
-                        </div>
-                        <p class="mt-3 mb-0" style="color:rgba(255,255,255,0.6); font-size:0.85rem">
-                            Scan with any UPI app — Google Pay, PhonePe, Paytm, or your bank's app.
-                        </p>
+                        @if ($qrDataUri)
+                            <div class="qr-box">
+                                <img src="{{ $qrDataUri }}" alt="Razorpay UPI QR code">
+                            </div>
+                            <p class="mt-3 mb-0" style="color:rgba(255,255,255,0.6); font-size:0.85rem">
+                                Scan with any UPI app — Google Pay, PhonePe, Paytm, or your bank's app.
+                            </p>
+                        @else
+                            <p class="mb-0" style="color:rgba(255,255,255,0.7); font-size:0.9rem">
+                                The UPI QR code is unavailable right now.
+                                Please use the Card / Netbanking option instead.
+                            </p>
+                        @endif
                     </div>
                 </div>
 
@@ -394,23 +336,30 @@
                             Pay via card, netbanking, or wallet
                         </p>
 
-                        <input type="number" id="donation-amount" placeholder="Amount (₹)" min="1"
+                        <label for="donation-amount" class="visually-hidden">Amount in rupees</label>
+                        <input type="number" id="donation-amount" placeholder="Amount (₹)" min="1" max="100000" step="1"
+                            inputmode="numeric" class="support-input mb-2">
+
+                        <label for="donor-name" class="visually-hidden">Your name (optional)</label>
+                        <input type="text" id="donor-name" placeholder="Your Name (optional)" maxlength="60"
                             class="support-input mb-2">
-                        <input type="text" id="donor-name" placeholder="Your Name (optional)"
-                            class="support-input mb-2">
-                        <textarea id="donor-message" placeholder="Message (optional)" class="support-input mb-2"></textarea>
+
+                        <label for="donor-message" class="visually-hidden">Message (optional)</label>
+                        <textarea id="donor-message" placeholder="Message (optional)" maxlength="250"
+                            class="support-input mb-2"></textarea>
 
                         <div class="form-check d-flex justify-content-center align-items-center gap-2 mb-3">
-                            <input type="checkbox" id="donor-public" class="form-check-input" checked>
+                            <input type="checkbox" id="donor-public" class="form-check-input">
                             <label class="form-check-label" for="donor-public"
                                 style="color:rgba(255,255,255,0.6); font-size:0.85rem">
-                                Show my name in donor list
+                                Show my name in the supporters list
                             </label>
                         </div>
 
                         <button id="razorpay-donate-btn" class="btn btn-outline-light w-100">
                             <i class="bi bi-credit-card me-1"></i>Donate Now
                         </button>
+                        <p id="donate-status" class="donate-status mt-3 mb-0" role="status" aria-live="polite"></p>
                     </div>
                 </div>
 
@@ -427,48 +376,39 @@
                 JazakAllahu Khair, either way. 🤲
             </p>
 
-            <p class="text-center mt-3" style="font-size:0.8rem">
+            <p class="text-center mt-3 mb-0" style="font-size:0.8rem">
                 <a href="{{ route('about') }}" style="color:rgba(255,255,255,0.5); text-decoration:underline">
                     Learn how Taddabur is built and sourced
                 </a>
             </p>
 
-            <p class="text-center mt-4 mb-0" style="color:rgba(255,255,255,0.35); font-size:0.78rem">
-                You can simply close this page — that's okay too.
+            <p class="support-legal-links text-center mt-2 mb-0" style="font-size:0.75rem">
+                <a href="{{ route('privacy') }}">Privacy Policy</a>
+                <span style="color:rgba(255,255,255,0.3)"> · </span>
+                <a href="{{ route('terms') }}">Terms</a>
             </p>
         </div>
     </section>
 
-    @if ($donors->isNotEmpty())
+    @php
+        $supporters = $donors->filter(fn($donor) => filled(trim((string) $donor->name)))->values();
+    @endphp
+
+    @if ($supporters->isNotEmpty())
         <section class="supporters-strip">
             <div class="container-fluid" style="max-width:700px">
-                <p class="text-muted small mb-1"
-                    style="letter-spacing:0.05em; text-transform:uppercase; font-size:0.75rem">
+                <p class="text-muted small mb-1" style="letter-spacing:0.05em; text-transform:uppercase; font-size:0.75rem">
                     With Gratitude
                 </p>
                 <h5 class="heading-font mb-3" style="color:var(--gold-dark)">Those Who Helped Keep This Free</h5>
                 <div class="supporters-grid">
-                    @foreach ($donors as $donor)
+                    @foreach ($supporters as $donor)
                         <span class="supporter-chip">
                             <i class="bi bi-heart-fill me-1" style="font-size:0.65rem; color:var(--gold)"></i>
                             {{ $donor->name }}
                         </span>
                     @endforeach
                 </div>
-
-                @if ($gratitudeHadith)
-                    <div class="mt-4 pt-3"
-                        style="border-top:1px solid var(--border); max-width:520px; margin-inline:auto">
-                        <p
-                            style="font-size:0.85rem; font-style:italic; color:var(--ink); line-height:1.7; margin-bottom:0.3rem">
-                            "Every day two angels come down from Heaven and one of them says, 'O Allah! Compensate every
-                            person who spends in Your Cause.'"
-                        </p>
-                        <small class="text-muted">
-                            — Sahih Bukhari, Hadith {{ $gratitudeHadith->number }} (excerpt)
-                        </small>
-                    </div>
-                @endif
 
                 <p class="text-muted mt-3 mb-0" style="font-size:0.8rem; direction:rtl" lang="ar">
                     جَزَاكُمُ اللَّهُ خَيْرًا
@@ -482,9 +422,9 @@
 @push('scripts')
     <script>
         window.CONFIG = window.CONFIG || {};
-        window.CONFIG.createOrderUrl = "{{ route('donate.create-order') }}";
-        window.CONFIG.verifyUrl = "{{ route('donate.verify') }}";
-        window.CONFIG.csrfToken = "{{ csrf_token() }}";
+        window.CONFIG.createOrderUrl = @json(route('donate.create-order'));
+        window.CONFIG.verifyUrl = @json(route('donate.verify'));
+        window.CONFIG.csrfToken = @json(csrf_token());
     </script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="{{ asset('js/donation.js') }}"></script>
