@@ -42,14 +42,6 @@ Schedule::command('quran:import-translations --all')
 // PUBLIC ROUTES — No login required
 // ============================================================
 
-Route::get('/test-404', function () {
-    abort(404);
-});
-Route::get('/test-500', function () {
-    abort(500);
-});
-
-
 // Landing page
 
 Route::get('/', [HomeController::class, 'index'])
@@ -328,6 +320,13 @@ if (app()->environment('local')) {
             'reset'   => new \App\Mail\ResetPasswordMail(url('/reset-password/demo?email=' . $user->email), $user->name, 60),
             default   => abort(404),
         };
+    });
+
+    Route::get('/test-404', function () {
+        abort(404);
+    });
+    Route::get('/test-500', function () {
+        abort(500);
     });
 }
 

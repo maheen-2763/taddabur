@@ -39,9 +39,7 @@
           <tr>
             <td align="center" bgcolor="#0f3d24"
               style="background-color:#0f3d24;padding:32px 24px 24px;border-radius:12px 12px 0 0;">
-              <div dir="rtl"
-                style="font-family:'Traditional Arabic','Noto Naskh Arabic','Amiri',Georgia,serif;font-size:24px;line-height:1.7;color:#e3c27a;">
-                بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+              @include('mails.partials.arabic-image', ['file' => 'bismillah', 'alt' => 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ', 'width' => 230, 'align' => 'center', 'color' => '#e3c27a', 'size' => 24])
               <div style="height:16px;line-height:16px;font-size:0;">&nbsp;</div>
               @if (file_exists(public_path('images/mail-logo.png')))
                 <img

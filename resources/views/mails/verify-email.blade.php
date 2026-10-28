@@ -12,9 +12,7 @@
 @endsection
 
 @section('verse')
-  <div dir="rtl"
-    style="font-family:'Traditional Arabic','Noto Naskh Arabic','Amiri',Georgia,serif;font-size:24px;line-height:1.9;text-align:right;color:#14301f;">
-    وَقُل رَّبِّ زِدْنِى عِلْمًا</div>
+  @include('mails.partials.arabic-image', ['file' => 'ayah-20-114', 'alt' => 'وَقُل رَّبِّ زِدْنِى عِلْمًا', 'width' => 235])
   <div style="font-size:14px;line-height:1.6;font-style:italic;color:#5c5846;margin-top:6px;">"And say: My Lord, increase
     me in knowledge."</div>
   <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#9a6f1c;margin-top:4px;">Ta-Ha 20:114</div>

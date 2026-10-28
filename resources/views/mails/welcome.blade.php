@@ -30,8 +30,9 @@
 @endsection
 
 @section('verse')
-  <div style="font-size:15px;line-height:1.7;font-style:italic;color:#14301f;">"Read! In the name of your Lord who
-    created."</div>
+  @include('mails.partials.arabic-image', ['file' => 'ayah-96-1', 'alt' => 'ٱقْرَأْ بِٱسْمِ رَبِّكَ ٱلَّذِى خَلَقَ', 'width' => 310])
+  <div style="margin-top:8px;font-size:15px;line-height:1.7;font-style:italic;color:#14301f;">"Read! In the name of your
+    Lord who created."</div>
   <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#9a6f1c;margin-top:6px;">Al-&lsquo;Alaq 96:1
   </div>
 @endsection
