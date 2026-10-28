@@ -3,9 +3,10 @@
 namespace App\Listeners;
 
 use App\Mail\WelcomeEmail;
+use App\Models\User;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\Mail;
-use App\Models\User;
+use Throwable;
 
 class SendWelcomeEmail
 {
@@ -14,17 +15,21 @@ class SendWelcomeEmail
         /** @var User $user */
         $user = $event->user;
 
-        // Atomic: sirf tab update karega jab abhi tak NULL ho — 
-        // isse do simultaneous requests mein sirf EK hi safal hoga
-        $updated = User::where('id', $user->id)
+        // Atomic claim: sirf ek request welcome mail bhejegi.
+        $claimed = User::where('id', $user->id)
             ->whereNull('welcome_email_sent_at')
             ->update(['welcome_email_sent_at' => now()]);
 
-        // Agar update 0 rows pe hua, matlab dusri request already bhej chuki hai — skip karo
-        if ($updated === 0) {
+        if ($claimed === 0) {
             return;
         }
 
-        Mail::to($user->email)->send(new WelcomeEmail($user));
+        try {
+            Mail::to($user->email)->send(new WelcomeEmail($user));
+        } catch (Throwable $e) {
+            // Verification pura ho chuka hai; mail error se user ko 500 nahi dikhna chahiye.
+            report($e);
+            User::where('id', $user->id)->update(['welcome_email_sent_at' => null]);
+        }
     }
 }

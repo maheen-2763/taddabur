@@ -66,7 +66,7 @@ return [
         [
             'tag' => 'Prophet Stories',
             'title' => 'Quran-grounded narratives',
-            'description' => '25 Prophet stories across 101 chapters — every story is built from explicit Quranic statements first; supplementary details from Sahih Bukhari/Muslim are clearly marked where used.',
+            'description' => '25 Prophet stories across 136 chapters — every story is built from explicit Quranic statements first; supplementary details from Sahih Bukhari/Muslim are clearly marked where used.',
         ],
         [
             'tag' => 'Four Imams',
@@ -82,7 +82,7 @@ return [
         [
             'tag' => 'Privacy',
             'title' => 'Your Privacy',
-            'description' => 'We collect only what is needed for your reading progress — no payment information is ever requested or stored, because none is needed.',
+            'description' => 'We collect only what is needed for your reading progress — We never see or store your card or bank details. Donations are processed by Razorpay.',
         ],
     ],
 

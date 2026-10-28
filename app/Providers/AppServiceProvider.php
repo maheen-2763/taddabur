@@ -28,6 +28,14 @@ use League\Flysystem\Filesystem;
 use Masbug\Flysystem\GoogleDriveAdapter;
 use Google\Client as GoogleClient;
 use Google\Service\Drive as GoogleServiceDrive;
+use App\Mail\{ResetPasswordMail, VerifyEmailMail};
+use Illuminate\Auth\Notifications\{ResetPassword, VerifyEmail};
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Password;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -75,5 +83,32 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(Verified::class, SendWelcomeEmail::class);
 
         Paginator::useBootstrapFive();
+
+        Password::defaults(fn() => Password::min(8)->letters()->numbers());
+
+        VerifyEmail::toMailUsing(fn($user, string $url) => (new VerifyEmailMail($url, $user->name))->to($user->email));
+
+        ResetPassword::toMailUsing(function ($user, string $token) {
+            $url = url(route('password.reset', [
+                'token' => $token,
+                'email' => $user->getEmailForPasswordReset(),
+            ], false));
+            $broker = config('auth.defaults.passwords');
+
+            return (new ResetPasswordMail($url, $user->name, (int) config("auth.passwords.$broker.expire", 60)))
+                ->to($user->email);
+        });
+
+        RateLimiter::for('login', fn(Request $r) => Limit::perMinute(20)->by($r->ip()));
+        RateLimiter::for('register', fn(Request $r) => Limit::perHour(10)->by($r->ip()));
+        RateLimiter::for('password-email', fn(Request $r) => [
+            Limit::perMinute(3)->by($r->ip()),
+            Limit::perHour(5)->by(Str::lower((string) $r->input('email'))),
+        ]);
+        RateLimiter::for('password-reset', fn(Request $r) => Limit::perMinute(5)->by($r->ip()));
+        RateLimiter::for('verification-send', fn(Request $r) => [
+            Limit::perMinute(1)->by($r->user()?->id ?: $r->ip()),
+            Limit::perHour(6)->by($r->user()?->id ?: $r->ip()),
+        ]);
     }
 }

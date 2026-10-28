@@ -20,6 +20,7 @@ class StoryChapter extends Model
         'order',
         'quran_references',
         'hadith_references',
+        'sources',
         'image',
         'slug',
         'read_time_minutes'
@@ -27,6 +28,7 @@ class StoryChapter extends Model
 
     protected $casts = [
         'quran_references'  => 'array',
+        'sources' => 'array',
         'hadith_references' => 'array',
     ];
 

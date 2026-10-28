@@ -11,17 +11,27 @@ use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
 {
-    /**
-     * Display the login view.
-     */
-    public function create(): View
+    public function create(Request $request): View
     {
-        return view('auth.login');
+        $lock = $request->session()->get('login_lock');
+        $seconds = 0;
+        $email = '';
+
+        if (is_array($lock)) {
+            $seconds = max(0, (int) ($lock['until'] ?? 0) - time());
+            $email = (string) ($lock['email'] ?? '');
+
+            if ($seconds === 0) {
+                $request->session()->forget('login_lock');
+            }
+        }
+
+        return view('auth.login', [
+            'lockSeconds' => $seconds,
+            'lockEmail' => $email,
+        ]);
     }
 
-    /**
-     * Handle an incoming authentication request.
-     */
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
@@ -34,15 +44,11 @@ class AuthenticatedSessionController extends Controller
         return redirect()->intended(route('dashboard'));
     }
 
-    /**
-     * Destroy an authenticated session.
-     */
     public function destroy(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
 
         return redirect('/');

@@ -24,6 +24,14 @@ class PasswordController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
+        try {
+            \Illuminate\Support\Facades\Mail::to($request->user()->email)->send(
+                new \App\Mail\PasswordChangedMail($request->user()->name, now()->format('d M Y, H:i T'))
+            );
+        } catch (\Throwable $e) {
+            report($e);
+        }
+
         return back()->with('status', 'password-updated');
     }
 }

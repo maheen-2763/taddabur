@@ -4,11 +4,9 @@
 
 @push('styles')
     <style>
-        /* ================================================
-                                                                                                                                                                                   AUTH BACKGROUND
-                                                                                                                                                                                ================================================ */
         .auth-section {
             min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -24,63 +22,22 @@
             background-size: 60px 60px;
             pointer-events: none;
             z-index: 0;
-            animation: patternDrift 60s linear infinite;
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .auth-pattern {
-                animation: none;
-            }
-        }
-
-        @keyframes patternDrift {
-            0% {
-                background-position: 0 0;
-            }
-
-            100% {
-                background-position: 120px 60px;
-            }
         }
 
         .auth-watermark {
             position: fixed;
-            top: 30%;
-            right: 10%;
-            transform: translate(50%, -50%);
+            top: 55%;
+            right: 3%;
+            transform: translateY(-50%);
             font-family: var(--font-arabic);
-            font-size: clamp(9rem, 16vw, 16rem);
+            font-size: clamp(8rem, 13vw, 14rem);
             line-height: 1;
             color: rgba(201, 150, 58, 0.16);
             pointer-events: none;
             z-index: 0;
             user-select: none;
-            animation: watermark-breathe 6s ease-in-out infinite;
         }
 
-        @keyframes watermark-breathe {
-
-            0%,
-            100% {
-                transform: translate(-50%, -50%) scale(1);
-                opacity: 0.16;
-            }
-
-            50% {
-                transform: translate(-50%, -50%) scale(1.05);
-                opacity: 0.24;
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .auth-watermark {
-                animation: none;
-            }
-        }
-
-        /* ================================================
-                                                                                                                                                                                   WRAPPER
-                                                                                                                                                                                ================================================ */
         .auth-wrapper {
             position: relative;
             z-index: 1;
@@ -88,9 +45,6 @@
             max-width: 440px;
         }
 
-        /* ================================================
-                                                                                                                                                                BRAND HEADER
-                                                                                                                                                               ================================================ */
         .auth-bismillah {
             font-family: var(--font-arabic);
             font-size: 1.4rem;
@@ -98,17 +52,7 @@
             opacity: 0.85;
         }
 
-        .auth-tagline {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 0.8rem;
-            letter-spacing: 0.04em;
-        }
 
-
-
-        /* ================================================
-                                                                                                                                                       CARD
-                                                                                                                                                                                ================================================ */
         .auth-card {
             position: relative;
             background: var(--cream);
@@ -143,9 +87,7 @@
             border-top: none;
         }
 
-        /* ================================================
-                                                                                                                                                                                   FORM ELEMENTS
-                                                                                                                                                                                ================================================ */
+        /* Form */
         .auth-card .form-control {
             border-radius: var(--radius);
             border-color: var(--border);
@@ -161,6 +103,11 @@
             box-shadow: 0 0 0 3px rgba(201, 150, 58, 0.15);
         }
 
+        .auth-card .form-control.is-invalid:focus {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15);
+        }
+
         .auth-card .input-group>.form-control:not(:last-child) {
             border-radius: var(--radius) 0 0 var(--radius);
         }
@@ -172,21 +119,31 @@
             margin-bottom: 0.35rem;
         }
 
+        .auth-card .form-check-input:checked {
+            background-color: var(--gold);
+            border-color: var(--gold);
+        }
 
-
+        .auth-card .form-check-input:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(201, 150, 58, 0.15);
+        }
 
         .btn-toggle-pass {
             border: 1px solid var(--border);
             border-left: none;
             background: #fff;
             color: var(--ink-soft);
-
-
         }
 
         .btn-toggle-pass:hover {
             color: var(--gold-dark);
             background: #fff;
+        }
+
+        .btn-toggle-pass:focus-visible {
+            outline: 2px solid var(--gold);
+            outline-offset: -2px;
         }
 
         input[type="password"]::-ms-reveal,
@@ -204,26 +161,52 @@
             color: var(--gold);
         }
 
-        /* ================================================
-                                                                                                                                                                                   TASBIH LOADING STATE
-                                                                                                                                                                                ================================================ */
-        .tasbih-loader {
+        .alert-brand-error {
+            background: rgba(220, 53, 69, 0.08);
+            color: #842029;
+        }
+
+        /* Honeypot — screen par nahi dikhta */
+        .hp-field {
+            position: absolute;
+            left: -9999px;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+        }
+
+        /* Submit button + tasbih loader (button ke andar) */
+        .btn-gold.btn {
+            position: relative;
+        }
+
+        .btn-gold .tasbih-loader {
+            position: absolute;
+            inset: 0;
             display: none;
             align-items: center;
             justify-content: center;
             gap: 6px;
-            padding: 0.6rem 0;
+            color: var(--gold-light);
         }
 
-        .tasbih-loader.active {
+        .btn-gold.is-loading .tasbih-loader {
             display: flex;
         }
 
+        .btn-gold.is-loading .btn-label {
+            visibility: hidden;
+        }
+
+        .btn-gold.is-loading:disabled {
+            opacity: 1;
+        }
+
         .bead {
-            width: 10px;
-            height: 10px;
+            width: 9px;
+            height: 9px;
             border-radius: 50%;
-            background: var(--gold-dark);
+            background: currentColor;
             opacity: 0.25;
             animation: beadPulse 1.2s ease-in-out infinite;
         }
@@ -267,7 +250,6 @@
             50% {
                 opacity: 1;
                 transform: scale(1.15);
-                background: var(--gold);
             }
         }
 
@@ -278,27 +260,23 @@
             }
         }
 
-        /* ================================================
-                                                                                                                                                                                   REGISTER VERSE (Ta-Ha 20:114)
-                                                                                                                                                                                ================================================ */
+        /* Verse — Ta-Ha 20:114 */
         .register-verse {
-            background: linear-gradient(135deg,
-                    rgba(201, 150, 58, 0.08) 0%,
-                    rgba(27, 94, 59, 0.06) 100%);
+            background: linear-gradient(135deg, rgba(201, 150, 58, 0.08) 0%, rgba(27, 94, 59, 0.06) 100%);
             border-right: 3px solid var(--gold);
             border-radius: 0 var(--radius) var(--radius) 0;
-            padding: 1rem 1.25rem;
-            margin-bottom: 1.5rem;
+            padding: 0.75rem 1.1rem;
+            margin-bottom: 1.1rem;
         }
 
         .register-verse-ar {
             font-family: var(--font-arabic);
             font-size: 1.2rem;
-            line-height: 2;
+            line-height: 1.8;
             color: var(--ink);
             text-align: right;
             direction: rtl;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.1rem;
         }
 
         .register-verse-en {
@@ -308,22 +286,82 @@
             text-align: right;
         }
 
-        /* ================================================
-                                                                                                                                                                                   FOOTER
-                                                                                                                                                                                ================================================ */
-        .auth-footer-note {
-            color: rgba(255, 255, 255, 0.45);
-            font-size: 0.75rem;
+
+        /* Mobile */
+        @media (max-width: 991.98px) {
+            .auth-watermark {
+                display: none;
+            }
         }
 
-        .auth-footer-note a {
-            color: var(--gold-light);
-            text-decoration: none;
-            opacity: 0.85;
+        @media (max-width: 575.98px) {
+            .auth-section {
+                padding: 1.5rem 1rem;
+            }
+
+            .auth-brand {
+                margin-bottom: 1rem !important;
+            }
+
+            .auth-bismillah {
+                font-size: 1.2rem;
+                margin-bottom: 0.5rem !important;
+            }
+
+            .auth-card>p.text-muted {
+                margin-bottom: 1rem !important;
+            }
+
+            .auth-card form .mb-3 {
+                margin-bottom: 0.85rem !important;
+            }
+
+            .register-verse {
+                padding: 0.6rem 0.9rem;
+                margin-bottom: 0.9rem;
+            }
+
+            .register-verse-ar {
+                font-size: 1.05rem;
+                line-height: 1.6;
+            }
         }
 
-        .auth-footer-note a:hover {
-            opacity: 1;
+        /* Mobile */
+        .pw-hint-btn {
+            position: relative;
+            width: 17px;
+            height: 17px;
+            padding: 0;
+            border-radius: 50%;
+            border: 1.5px solid var(--gold-dark);
+            background: transparent;
+            color: var(--gold-dark);
+            font-size: 0.72rem;
+            font-weight: 700;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .pw-hint-btn::after {
+            content: '';
+            position: absolute;
+            inset: -10px;
+            /* mobile par tap karna aasan */
+        }
+
+        .pw-hint-btn:hover,
+        .pw-hint-btn[aria-expanded="true"] {
+            background: var(--gold-dark);
+            color: #fff;
+        }
+
+        .pw-hint-btn:focus-visible {
+            outline: 2px solid var(--gold);
+            outline-offset: 2px;
         }
     </style>
 @endpush
@@ -336,107 +374,125 @@
     <section class="auth-section">
         <div class="auth-wrapper">
 
-            {{-- ── Brand header ── --}}
-            <div class="text-center mb-4">
-
+            {{-- Brand header --}}
+            <div class="text-center mb-4 auth-brand">
                 <div class="auth-bismillah mb-3" lang="ar" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
 
-                <a href="{{ url('/') }}" class="text-decoration-none d-inline-block mb-1">
-                    @include('components.logo', ['variant' => 'stacked', 'height' => 48])
+                <a href="{{ url('/') }}" class="text-decoration-none d-inline-block mb-1" aria-label="Taddabur home">
+                    @include('components.logo', ['variant' => 'stacked', 'height' => 40])
                 </a>
-
-                <p class="auth-tagline mt-2 mb-1">Begin your journey of reflection</p>
 
             </div>
 
-            {{-- ── Card ── --}}
-            <div class="auth-card p-4 p-md-5">
+            {{-- Card --}}
+            <div class="auth-card p-3 p-sm-4 p-md-5">
 
-                <h4 class="heading-font mb-1" style="color:var(--ink)">Create your account</h4>
-                <p class="text-muted small mb-4">Join thousands reflecting on the Quran daily.</p>
+                <h1 class="h4 heading-font mb-1" style="color:var(--ink)">Create your account</h1>
+                <p class="text-muted small mb-4">Free forever. Start reflecting on the Quran today.</p>
 
-                {{-- Register verse — Ta-Ha 20:114 --}}
                 <div class="register-verse">
-                    <div class="register-verse-ar" lang="ar" dir="rtl">
-                        رَّبِّ زِدْنِى عِلْمًۭا
-                    </div>
-                    <div class="register-verse-en">
-                        "My Lord, increase me in knowledge." — Ta-Ha 20:114
-                    </div>
+                    <div class="register-verse-ar" lang="ar" dir="rtl">وَقُل رَّبِّ زِدْنِى عِلْمًا</div>
+                    <div class="register-verse-en">"And say: My Lord, increase me in knowledge." — Ta-Ha 20:114</div>
                 </div>
 
-                @if ($errors->any())
-                    <div class="alert alert-danger border-0 rounded-3 small py-2 mb-3">
-                        <ul class="mb-0 ps-3">
-                            @foreach ($errors->all() as $e)
-                                <li>{{ $e }}</li>
-                            @endforeach
-                        </ul>
+                @error('hp_trap')
+                    <div class="alert alert-brand-error border-0 rounded-3 small py-2 mb-3" role="alert">
+                        Something went wrong. Please reload the page and try again.
                     </div>
-                @endif
+                @enderror
 
-                <form method="POST" action="{{ route('register') }}" id="register-form">
+                <form method="POST" action="{{ route('register') }}" id="register-form" novalidate>
                     @csrf
+
+                    {{-- Honeypot --}}
+                    <div class="hp-field" aria-hidden="true">
+                        <label for="hp_trap">Leave this field empty</label>
+                        <input id="hp_trap" type="text" name="hp_trap" value="" tabindex="-1" autocomplete="off">
+                    </div>
 
                     <div class="mb-3">
                         <label for="name" class="form-label">Full Name</label>
                         <input id="name" type="text" name="name" value="{{ old('name') }}"
                             class="form-control @error('name') is-invalid @enderror" placeholder="e.g. Mohammed Ahmed"
-                            required autofocus autocomplete="name">
-
+                            required maxlength="255" autocomplete="name" autocapitalize="words">
+                        @error('name')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <div class="mb-3">
                         <label for="email" class="form-label">Email Address</label>
                         <input id="email" type="email" name="email" value="{{ old('email') }}"
                             class="form-control @error('email') is-invalid @enderror" placeholder="you@example.com" required
-                            autocomplete="username">
-
+                            maxlength="255" autocomplete="username" autocapitalize="off" spellcheck="false"
+                            inputmode="email">
+                        @error('email')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <label for="password" class="form-label mb-0">Password</label>
+                            <button type="button" class="pw-hint-btn" id="pw-hint-btn" aria-label="Password requirements"
+                                aria-expanded="false" aria-controls="password-help">!</button>
+                        </div>
                         <div class="input-group">
                             <input id="password" type="password" name="password" minlength="8"
-                                class="form-control @error('password') is-invalid @enderror" placeholder="Min. 8 characters"
-                                required autocomplete="new-password">
-                            <button class="btn btn-toggle-pass" type="button" onclick="togglePassword('password', this)"
-                                tabindex="-1" aria-label="Show password" aria-pressed="false">
-                                <i class="bi bi-eye"></i>
+                                class="form-control @error('password') is-invalid @enderror" placeholder="Create a password"
+                                required autocomplete="new-password" aria-describedby="password-help">
+                            <button class="btn btn-toggle-pass" type="button" data-toggle-password="password"
+                                aria-label="Show password" aria-controls="password" aria-pressed="false">
+                                <i class="bi bi-eye" aria-hidden="true"></i>
                             </button>
+                        </div>
+                        <div id="password-help" class="form-text small" hidden>At least 8 characters, with letters and
+                            numbers.</div>
+                        @error('password')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    </div>
 
+                    <div class="mb-3">
+                        <label for="password_confirmation" class="form-label">Confirm Password</label>
+                        <div class="input-group">
+                            <input id="password_confirmation" type="password" name="password_confirmation"
+                                class="form-control" placeholder="Repeat your password" required minlength="8"
+                                autocomplete="new-password">
+                            <button class="btn btn-toggle-pass" type="button" data-toggle-password="password_confirmation"
+                                aria-label="Show password" aria-controls="password_confirmation" aria-pressed="false">
+                                <i class="bi bi-eye" aria-hidden="true"></i>
+                            </button>
                         </div>
                     </div>
 
                     <div class="mb-4">
-                        <label for="password_confirmation" class="form-label">Confirm Password</label>
-                        <div class="input-group">
-                            <input id="password_confirmation" type="password" name="password_confirmation"
-                                class="form-control @error('password_confirmation') is-invalid @enderror"
-                                placeholder="Repeat your password" required minlength="8" autocomplete="new-password">
-                            <button class="btn btn-toggle-pass" type="button"
-                                onclick="togglePassword('password_confirmation', this)" tabindex="-1"
-                                aria-label="Show password" aria-pressed="false">
-                                <i class="bi bi-eye"></i>
-                            </button>
-
+                        <div class="form-check">
+                            <input id="age_confirmed" type="checkbox" name="age_confirmed" value="1"
+                                class="form-check-input @error('age_confirmed') is-invalid @enderror" required
+                                @checked(old('age_confirmed'))>
+                            <label for="age_confirmed" class="form-check-label small text-muted">
+                                I am 18 years or older and agree to the
+                                <a href="{{ route('terms') }}" class="link-gold" target="_blank" rel="noopener">Terms</a>
+                                and
+                                <a href="{{ route('privacy') }}" class="link-gold" target="_blank" rel="noopener">Privacy
+                                    Policy</a>.
+                            </label>
                         </div>
+                        @error('age_confirmed')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
                     </div>
 
-                    <button type="submit" class="btn-gold btn w-100 mb-1" id="register-btn">
-                        Create Account <i class="bi bi-arrow-right ms-1"></i>
+                    <button type="submit" class="btn-gold btn w-100" id="register-btn">
+                        <span class="btn-label">Create Account <i class="bi bi-arrow-right ms-1"
+                                aria-hidden="true"></i></span>
+                        <span class="tasbih-loader" aria-hidden="true">
+                            <span class="bead"></span><span class="bead"></span><span class="bead"></span>
+                            <span class="bead"></span><span class="bead"></span><span class="bead"></span>
+                            <span class="bead"></span>
+                        </span>
                     </button>
-
-                    {{-- Tasbih loader --}}
-                    <div class="tasbih-loader" id="tasbih-loader" aria-label="Creating your account…">
-                        <div class="bead"></div>
-                        <div class="bead"></div>
-                        <div class="bead"></div>
-                        <div class="bead"></div>
-                        <div class="bead"></div>
-                        <div class="bead"></div>
-                        <div class="bead"></div>
-                    </div>
 
                     <div class="text-center small text-muted mt-3">
                         Already have an account?
@@ -445,10 +501,6 @@
                 </form>
             </div>
 
-            <p class="text-center auth-footer-note mt-4">
-                By registering you agree to our
-                <a href="{{ route('terms') }}">Terms</a> &amp; <a href="{{ route('privacy') }}">Privacy Policy</a>
-            </p>
 
         </div>
     </section>
@@ -457,31 +509,71 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-
-            /* ── 2. Tasbih loader on submit ── */
             const form = document.getElementById('register-form');
             const btn = document.getElementById('register-btn');
-            const loader = document.getElementById('tasbih-loader');
+            let submitting = false;
 
-            if (form) {
-                form.addEventListener('submit', () => {
-                    btn.style.display = 'none';
-                    loader.classList.add('active');
-                });
-            }
-
-            /* ── 3. Password toggle ── */
-            window.togglePassword = (fieldId, el) => {
-                const input = document.getElementById(fieldId);
-                const icon = el.querySelector('i');
-                const isHidden = input.type === 'password';
-                input.type = isHidden ? 'text' : 'password';
-                icon.className = isHidden ? 'bi bi-eye-slash' : 'bi bi-eye';
-                el.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
-                el.setAttribute('aria-pressed', isHidden ? 'true' : 'false');
+            const resetButton = () => {
+                submitting = false;
+                btn.disabled = false;
+                btn.classList.remove('is-loading');
+                btn.removeAttribute('aria-busy');
             };
 
+            form.addEventListener('submit', (e) => {
+                if (submitting) {
+                    e.preventDefault();
+                    return;
+                }
+                if (!form.checkValidity()) {
+                    e.preventDefault();
+                    form.reportValidity();
+                    return;
+                }
+                const p = document.getElementById('password').value;
+                const c = document.getElementById('password_confirmation').value;
+                if (p !== c) {
+                    e.preventDefault();
+                    const conf = document.getElementById('password_confirmation');
+                    conf.setCustomValidity('Passwords do not match.');
+                    conf.reportValidity();
+                    conf.addEventListener('input', () => conf.setCustomValidity(''), { once: true });
+                    return;
+                }
+                submitting = true;
+                btn.classList.add('is-loading');
+                btn.setAttribute('aria-busy', 'true');
+                btn.disabled = true;
+            });
 
+            // Back button se aane par button wapas theek ho
+            window.addEventListener('pageshow', (e) => {
+                if (e.persisted) resetButton();
+            });
+
+            // Password show/hide
+            document.querySelectorAll('[data-toggle-password]').forEach((toggle) => {
+                toggle.addEventListener('click', () => {
+                    const input = document.getElementById(toggle.dataset.togglePassword);
+                    const show = input.type === 'password';
+                    input.type = show ? 'text' : 'password';
+                    toggle.querySelector('i').className = show ? 'bi bi-eye-slash' : 'bi bi-eye';
+                    toggle.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+                    toggle.setAttribute('aria-pressed', show ? 'true' : 'false');
+                });
+            });
+
+            // Password hint (! button)
+            const hintBtn = document.getElementById('pw-hint-btn');
+            const hint = document.getElementById('password-help');
+            hintBtn.addEventListener('click', () => {
+                hint.hidden = !hint.hidden;
+                hintBtn.setAttribute('aria-expanded', hint.hidden ? 'false' : 'true');
+            });
+
+            // Server error ke baad pehli galat field par focus
+            const firstInvalid = document.querySelector('.is-invalid');
+            if (firstInvalid) firstInvalid.focus();
         });
     </script>
 @endpush

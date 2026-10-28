@@ -48,6 +48,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'plan_expires_at' => 'datetime',
         'is_admin' => 'boolean',
         'password' => 'hashed',
+        'age_confirmed_at'  => 'datetime',
+        'terms_accepted_at' => 'datetime',
+        'welcome_email_sent_at' => 'datetime',
 
         // Optional if using Enum
         // 'plan' => PlanType::class,

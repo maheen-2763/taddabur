@@ -318,6 +318,18 @@ Route::get(
     [ReflectionController::class, 'show']
 )->name('reflections.show');
 
+if (app()->environment('local')) {
+    Route::get('/_mail-preview/{type}', function (string $type) {
+        $user = Auth::user() ?? \App\Models\User::firstOrFail();
+        return match ($type) {
+            'verify'  => new \App\Mail\VerifyEmailMail(url('/verify-email/1/demo'), $user->name),
+            'welcome' => new \App\Mail\WelcomeEmail($user),
+            'password-changed' => new \App\Mail\PasswordChangedMail($user->name, now()->format('d M Y, H:i T')),
+            'reset'   => new \App\Mail\ResetPasswordMail(url('/reset-password/demo?email=' . $user->email), $user->name, 60),
+            default   => abort(404),
+        };
+    });
+}
 
 
 require __DIR__ . '/auth.php';

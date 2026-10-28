@@ -4,7 +4,7 @@
 
 @section('content')
     @php
-        $updatedAt = 'October 17, 2026';   // terms badalne par ye date zaroor badlein
+        $updatedAt = 'October 23, 2026';   // terms badalne par ye date zaroor badlein
         $contactEmail = null;              // TODO: launch se pehle support email yahan daalein
     @endphp
 
@@ -23,9 +23,10 @@
                     stories, and related content to everyone, at no cost.</p>
 
                 <h4 class="heading-font mt-4">3. Accounts</h4>
-                <p>You must be at least 13 years old to create an account. Creating an account is optional and is only
-                    required to save your reading progress, notes, and bookmarks. All content can be read without one.
-                    You are responsible for keeping your account credentials secure.</p>
+                <p>You must be at least 18 years old to create an account. If you are younger, you can still read all
+                    content without an account, or a parent or guardian can create and manage an account for you. Creating
+                    an account is optional and is only required to save your reading progress, notes, and bookmarks. You are
+                    responsible for keeping your account credentials secure.</p>
 
                 <h4 class="heading-font mt-4">4. Content Accuracy Disclaimer</h4>
                 <p>Quranic text, translations, Tafsir and Hadith are drawn from established scholarly references, and we

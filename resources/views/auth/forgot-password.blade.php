@@ -6,6 +6,7 @@
     <style>
         .auth-section {
             min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -21,39 +22,20 @@
             background-size: 60px 60px;
             pointer-events: none;
             z-index: 0;
-            animation: patternDrift 60s linear infinite;
         }
 
         .auth-watermark {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            top: 55%;
+            right: 3%;
+            transform: translateY(-50%);
             font-family: var(--font-arabic);
-            font-size: clamp(9rem, 16vw, 16rem);
+            font-size: clamp(8rem, 13vw, 14rem);
             line-height: 1;
-            color: rgba(201, 150, 58, 0.05);
+            color: rgba(201, 150, 58, 0.12);
             pointer-events: none;
             z-index: 0;
             user-select: none;
-            -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 75%);
-            mask-image: radial-gradient(circle at center, black 40%, transparent 75%);
-        }
-
-        @keyframes patternDrift {
-            0% {
-                background-position: 0 0;
-            }
-
-            100% {
-                background-position: 120px 60px;
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .auth-pattern {
-                animation: none;
-            }
         }
 
         .auth-wrapper {
@@ -65,13 +47,13 @@
 
         .auth-bismillah {
             font-family: var(--font-arabic);
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             color: var(--gold-light);
             opacity: 0.85;
         }
 
         .auth-tagline {
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(255, 255, 255, 0.8);
             font-size: 0.8rem;
             letter-spacing: 0.04em;
         }
@@ -117,6 +99,7 @@
             color: var(--ink);
             padding: 0.65rem 1rem;
             font-size: 0.95rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
         .auth-card .form-control:focus {
@@ -124,11 +107,52 @@
             box-shadow: 0 0 0 3px rgba(201, 150, 58, 0.15);
         }
 
+        .auth-card .form-control.is-invalid:focus {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15);
+        }
+
+        .auth-card .input-group>.form-control:not(:last-child) {
+            border-radius: var(--radius) 0 0 var(--radius);
+        }
+
         .auth-card .form-label {
             font-weight: 500;
             font-size: 0.9rem;
             color: var(--ink);
             margin-bottom: 0.35rem;
+        }
+
+        .btn-toggle-pass {
+            border: 1px solid var(--border);
+            border-left: none;
+            background: #fff;
+            color: var(--ink-soft);
+        }
+
+        .btn-toggle-pass:hover {
+            color: var(--gold-dark);
+            background: #fff;
+        }
+
+        .btn-toggle-pass:focus-visible {
+            outline: 2px solid var(--gold);
+            outline-offset: -2px;
+        }
+
+        input[type="password"]::-ms-reveal,
+        input[type="password"]::-ms-clear {
+            display: none;
+        }
+
+        .link-gold {
+            color: var(--gold-dark);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .link-gold:hover {
+            color: var(--gold);
         }
 
         .icon-circle {
@@ -142,25 +166,77 @@
             justify-content: center;
         }
 
-        .link-gold {
-            color: var(--gold-dark);
-            font-weight: 600;
-            text-decoration: none;
+        .alert-brand-success {
+            background: rgba(27, 94, 59, 0.1);
+            border: 1px solid var(--emerald-light) !important;
+            color: var(--emerald);
         }
 
-        .link-gold:hover {
-            color: var(--gold);
+        .alert-brand-error {
+            background: rgba(220, 53, 69, 0.08);
+            color: #842029;
         }
 
-        .ayah-footer {
-            color: rgba(255, 255, 255, 0.55);
-            font-size: 0.82rem;
-            line-height: 1.7;
+        .btn-gold.btn {
+            position: relative;
         }
 
-        .ayah-footer-ref {
-            color: rgba(255, 255, 255, 0.35);
-            font-size: 0.75rem;
+        .btn-gold .tasbih-loader {
+            position: absolute;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-gold.is-loading .tasbih-loader {
+            display: flex;
+        }
+
+        .btn-gold.is-loading .btn-label {
+            visibility: hidden;
+        }
+
+        .btn-gold.is-loading:disabled {
+            opacity: 1;
+        }
+
+        .bead {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: currentColor;
+            opacity: 0.25;
+            animation: beadPulse 1.2s ease-in-out infinite;
+        }
+
+        .bead:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .bead:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+
+        .bead:nth-child(3) {
+            animation-delay: 0.30s;
+        }
+
+        .bead:nth-child(4) {
+            animation-delay: 0.45s;
+        }
+
+        .bead:nth-child(5) {
+            animation-delay: 0.60s;
+        }
+
+        .bead:nth-child(6) {
+            animation-delay: 0.75s;
+        }
+
+        .bead:nth-child(7) {
+            animation-delay: 0.90s;
         }
 
         @keyframes beadPulse {
@@ -174,7 +250,59 @@
             50% {
                 opacity: 1;
                 transform: scale(1.15);
-                background: var(--gold);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .bead {
+                animation: none;
+                opacity: 0.6;
+            }
+        }
+
+        .ayah-footer {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.82rem;
+            line-height: 1.7;
+        }
+
+        .ayah-footer-ref {
+            color: rgba(255, 255, 255, 0.65);
+            font-size: 0.75rem;
+        }
+
+        /* Mobile */
+        @media (max-width: 991.98px) {
+            .auth-watermark {
+                display: none;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .auth-section {
+                padding: 1.5rem 1rem;
+            }
+
+            .auth-brand {
+                margin-bottom: 1rem !important;
+            }
+
+            .auth-bismillah {
+                font-size: 1.2rem;
+                margin-bottom: 0.5rem !important;
+            }
+
+            .auth-head {
+                margin-bottom: 1rem !important;
+            }
+
+            .icon-circle {
+                width: 56px;
+                height: 56px;
+            }
+
+            .auth-card form .mb-3 {
+                margin-bottom: 0.85rem !important;
             }
         }
     </style>
@@ -182,74 +310,55 @@
 
 @section('content')
     <div class="auth-pattern" aria-hidden="true"></div>
-    <div class="auth-watermark" aria-hidden="true">ﷲ</div>
 
     <section class="auth-section">
         <div class="auth-wrapper">
 
-            <div class="text-center mb-4">
+            <div class="text-center mb-4 auth-brand">
                 <div class="auth-bismillah mb-3" lang="ar" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
-                <a href="{{ url('/') }}" class="text-decoration-none d-inline-block mb-1">
-                    @include('components.logo', ['variant' => 'stacked', 'height' => 48])
+                <a href="{{ url('/') }}" class="text-decoration-none d-inline-block mb-1" aria-label="Taddabur home">
+                    @include('components.logo', ['variant' => 'stacked', 'height' => 40])
                 </a>
-                <p class="auth-tagline mt-2 mb-0">Reflect. Understand. Grow.</p>
+                <p class="auth-tagline mt-2 mb-0">Understand. Reflect. Grow.</p>
             </div>
 
-            <div class="auth-card p-4 p-md-5">
+            <div class="auth-card p-3 p-sm-4 p-md-5">
 
-                <div class="text-center mb-4">
+                <div class="text-center mb-4 auth-head">
                     <div class="icon-circle mx-auto mb-3">
-                        <i class="bi bi-envelope-paper fs-4" style="color:var(--gold)"></i>
+                        <i class="bi bi-envelope-paper fs-4" style="color:var(--gold)" aria-hidden="true"></i>
                     </div>
-                    <h4 class="heading-font mb-1" style="color:var(--ink)">Forgot your password?</h4>
-                    <p class="text-muted small mb-0">
-                        No problem. Enter your email and we'll send you a reset link.
-                    </p>
+                    <h1 class="h4 heading-font mb-1" style="color:var(--ink)">Forgot your password?</h1>
+                    <p class="text-muted small mb-0">No problem. Enter your email and we'll send you a reset link.</p>
                 </div>
 
                 @if (session('status'))
-                    <div class="alert border-0 rounded-3 small py-3 mb-4"
-                        style="background:rgba(27,94,59,0.1); border:1px solid var(--emerald-light)!important; color:var(--emerald);">
-                        <i class="bi bi-check-circle-fill me-2"></i>{{ session('status') }}
+                    <div class="alert alert-brand-success border-0 rounded-3 small py-2 mb-3" role="status">
+                        <i class="bi bi-check-circle-fill me-2" aria-hidden="true"></i>{{ session('status') }}
                     </div>
                 @endif
 
-                @if ($errors->any())
-                    <div class="alert alert-danger border-0 rounded-3 small py-2 mb-3">
-                        <ul class="mb-0 ps-3">
-                            @foreach ($errors->all() as $e)
-                                <li>{{ $e }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-
-                <form method="POST" action="{{ route('password.email') }}" id="forgot-form">
+                <form method="POST" action="{{ route('password.email') }}" id="forgot-form" novalidate>
                     @csrf
                     <div class="mb-4">
                         <label for="email" class="form-label">Email Address</label>
                         <input id="email" type="email" name="email" value="{{ old('email') }}"
                             class="form-control @error('email') is-invalid @enderror" placeholder="you@example.com" required
-                            autofocus>
+                            maxlength="255" autofocus autocomplete="email" autocapitalize="off" spellcheck="false"
+                            inputmode="email">
                         @error('email')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
                     </div>
 
-                    <button type="submit" class="btn-gold btn w-100 mb-1" id="forgot-btn">
-                        <i class="bi bi-send me-1"></i> Send Reset Link
+                    <button type="submit" class="btn-gold btn w-100" id="forgot-btn">
+                        <span class="btn-label"><i class="bi bi-send me-1" aria-hidden="true"></i> Send Reset Link</span>
+                        <span class="tasbih-loader" aria-hidden="true">
+                            <span class="bead"></span><span class="bead"></span><span class="bead"></span>
+                            <span class="bead"></span><span class="bead"></span><span class="bead"></span>
+                            <span class="bead"></span>
+                        </span>
                     </button>
-
-                    <div class="tasbih-loader mt-2" id="tasbih-loader" aria-label="Sending…"
-                        style="display:none; justify-content:center; gap:6px; padding:0.6rem 0;">
-                        @for ($i = 0; $i < 7; $i++)
-                            <div
-                                style="width:10px;height:10px;border-radius:50%;background:var(--gold-dark);
-                                    opacity:0.25;animation:beadPulse 1.2s ease-in-out infinite;
-                                    animation-delay:{{ $i * 0.15 }}s">
-                            </div>
-                        @endfor
-                    </div>
 
                     <div class="text-center small text-muted mt-3">
                         Remembered your password?
@@ -272,13 +381,32 @@
         document.addEventListener('DOMContentLoaded', () => {
             const form = document.getElementById('forgot-form');
             const btn = document.getElementById('forgot-btn');
-            const loader = document.getElementById('tasbih-loader');
-            if (form) {
-                form.addEventListener('submit', () => {
-                    btn.style.display = 'none';
-                    loader.style.display = 'flex';
-                });
-            }
+            let submitting = false;
+
+            form.addEventListener('submit', (e) => {
+                if (submitting) {
+                    e.preventDefault();
+                    return;
+                }
+                if (!form.checkValidity()) {
+                    e.preventDefault();
+                    form.reportValidity();
+                    return;
+                }
+                submitting = true;
+                btn.classList.add('is-loading');
+                btn.setAttribute('aria-busy', 'true');
+                btn.disabled = true;
+            });
+
+            window.addEventListener('pageshow', (e) => {
+                if (e.persisted) {
+                    submitting = false;
+                    btn.disabled = false;
+                    btn.classList.remove('is-loading');
+                    btn.removeAttribute('aria-busy');
+                }
+            });
         });
     </script>
 @endpush

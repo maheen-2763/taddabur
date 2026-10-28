@@ -4,7 +4,7 @@
 
 @section('content')
     @php
-        $updatedAt = 'October 17, 2026';   // policy badalne par ye date zaroor badlein
+        $updatedAt = 'October 23, 2026';   // policy badalne par ye date zaroor badlein
         $contactEmail = null;              // TODO: launch se pehle support email yahan daalein
     @endphp
 
@@ -51,8 +51,9 @@
                     address when your browser fetches them. Razorpay's scripts load only on the Support page.</p>
 
                 <h4 class="heading-font mt-4">5. Data Sharing</h4>
-                <p>We do not sell or rent your personal data. We share it only with the service providers needed to run
-                    Taddabur: Razorpay (donations), our email delivery provider (account emails) and our hosting
+                <p>We do not sell or rent your personal data, and we never share it for advertising. We share it only with
+                    the service providers needed to run Taddabur, and only for that purpose: Brevo, which sends our account
+                    emails (it receives your name and email address); Razorpay, which processes donations; and our hosting
                     provider.</p>
 
                 <h4 class="heading-font mt-4">6. Data Retention and Deletion</h4>
@@ -67,8 +68,11 @@
                     anything else, including donation records, you can contact us.</p>
 
                 <h4 class="heading-font mt-4">8. Children's Privacy</h4>
-                <p>Taddabur is intended for users aged 13 and older. We do not knowingly collect data from children
-                    under 13.</p>
+                <p>Taddabur accounts are for adults (18 and older). Everything can be read without an account, so younger
+                    learners never need to share any personal data with us. If you are under 18, please ask a parent or
+                    guardian to create and manage an account for you. We do not knowingly collect personal data from anyone
+                    under 18 without a parent or guardian's involvement, and if we learn that we have, we will delete it.
+                </p>
 
                 <h4 class="heading-font mt-4">9. Security</h4>
                 <p>We take reasonable technical measures to protect your data, but no online service can guarantee
