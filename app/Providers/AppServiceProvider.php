@@ -86,8 +86,6 @@ class AppServiceProvider extends ServiceProvider
 
         Password::defaults(fn() => Password::min(8)->letters()->numbers());
 
-        VerifyEmail::toMailUsing(fn($user, string $url) => (new VerifyEmailMail($url, $user->name))->to($user->email));
-
         ResetPassword::toMailUsing(function ($user, string $token) {
             $url = url(route('password.reset', [
                 'token' => $token,

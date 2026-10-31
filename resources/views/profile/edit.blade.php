@@ -395,6 +395,16 @@
                             @enderror
                         </div>
 
+<div class="mb-3" id="email-password-box" hidden>
+    <label for="current_password" class="form-label">Current password
+        <span class="text-muted small">(needed to change your email)</span></label>
+    <input id="current_password" name="current_password" type="password"
+        class="form-control @error('current_password') is-invalid @enderror" autocomplete="current-password">
+    @error('current_password')
+        <div class="invalid-feedback d-block">{{ $message }}</div>
+    @enderror
+</div>
+
                         <button type="submit" class="btn btn-emerald">
                             Save Changes
                         </button>
@@ -610,5 +620,16 @@
 
         const initialHash = window.location.hash || '#tab-profile';
         showTab(initialHash);
+
+    (function () {
+        const email = document.getElementById('email');
+        const box = document.getElementById('email-password-box');
+        const original = @json(auth()->user()->email).toLowerCase();
+        const sync = () => { box.hidden = email.value.trim().toLowerCase() === original; };
+        email.addEventListener('input', sync);
+        sync();
+        @if ($errors->has('current_password')) box.hidden = false; @endif
+    })();
+
     </script>
 @endpush

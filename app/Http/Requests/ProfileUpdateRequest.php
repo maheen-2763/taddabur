@@ -6,14 +6,20 @@ use App\Models\User;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
 
 class ProfileUpdateRequest extends FormRequest
 {
+    protected function prepareForValidation(): void
+    {
+        $this->merge(['email' => Str::lower(trim((string) $this->input('email')))]);
+    }
     /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
+
     public function rules(): array
     {
         return [
@@ -25,6 +31,11 @@ class ProfileUpdateRequest extends FormRequest
                 'email',
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
+            ],
+            'current_password' => [
+                Rule::requiredIf(fn() => $this->input('email') !== $this->user()->email),
+                'nullable',
+                'current_password',
             ],
         ];
     }

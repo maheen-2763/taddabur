@@ -13,11 +13,12 @@ class VerifyEmailMail extends Mailable
     public function __construct(
         public string $verificationUrl,
         public string $name,
+        public bool $isChange = false, // true = user ne profile se email badla hai
     ) {}
 
     public function build()
     {
-        return $this->subject('Verify Your Email - Taddabur')
+        return $this->subject($this->isChange ? 'Confirm Your New Email - Taddabur' : 'Verify Your Email - Taddabur')
             ->view('mails.verify-email')
             ->text('mails.verify-email-text');
     }

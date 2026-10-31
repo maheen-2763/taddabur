@@ -176,6 +176,6 @@ class User extends Authenticatable implements MustVerifyEmail
             ['id' => $this->getKey(), 'hash' => sha1($this->getEmailForVerification())]
         );
 
-        Mail::to($this->email)->send(new VerifyEmailMail($verificationUrl, $this->name));
+        Mail::to($this->email)->send(new VerifyEmailMail($verificationUrl, $this->name, $this->welcome_email_sent_at !== null));
     }
 }

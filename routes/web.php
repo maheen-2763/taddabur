@@ -318,6 +318,9 @@ if (app()->environment('local')) {
             'welcome' => new \App\Mail\WelcomeEmail($user),
             'password-changed' => new \App\Mail\PasswordChangedMail($user->name, now()->format('d M Y, H:i T')),
             'reset'   => new \App\Mail\ResetPasswordMail(url('/reset-password/demo?email=' . $user->email), $user->name, 60),
+            'email-changed' => new \App\Mail\EmailChangedMail($user->name, 'newaddress@example.com', now()->format('d M Y, H:i T')),
+            'verify-change' => new \App\Mail\VerifyEmailMail(url('/verify-email/1/demo'), $user->name, true),
+            'account-deleted' => new \App\Mail\AccountDeletedMail($user->name, now()->format('d M Y, H:i T')),
             default   => abort(404),
         };
     });

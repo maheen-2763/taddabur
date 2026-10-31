@@ -11,6 +11,11 @@ use Illuminate\View\View;
 use App\Models\User;
 use App\Models\Backup;
 use Illuminate\Support\Facades\DB;
+use App\Actions\DeleteUserAccount;
+use App\Mail\AccountDeletedMail;
+use Illuminate\Support\Facades\Mail;
+use Throwable;
+
 
 class ProfileController extends Controller
 {
@@ -34,21 +39,32 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
-
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        $user = $request->user();
+        $oldEmail = $user->email;
+        $user->fill($request->safe()->only(['name', 'email']));
+        $emailChanged = $user->isDirty('email');
+        if ($emailChanged) {
+            $user->email_verified_at = null;
         }
+        $user->save();
 
-        $request->user()->save();
-
+        if ($emailChanged) {
+            try {
+                $user->sendEmailVerificationNotification();
+                \Illuminate\Support\Facades\Mail::to($oldEmail)->send(
+                    new \App\Mail\EmailChangedMail($user->name, $user->email, now()->format('d M Y, H:i T'))
+                );
+            } catch (\Throwable $e) {
+                report($e);
+            }
+        }
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
     /**
      * Delete the user's account.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request, DeleteUserAccount $deleteAccount): RedirectResponse
     {
         $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current_password'],
@@ -56,22 +72,29 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
+        if ($user->is_admin && User::where('is_admin', true)->count() <= 1) {
+            return back()->withErrors(['password' => 'The only admin account cannot be deleted.'], 'userDeletion');
+        }
+
+        $name = $user->name;
+        $email = $user->email;
+
         Auth::logout();
 
-        DB::transaction(function () use ($user) {
-            // Jin tables par foreign key cascade nahi hai, unka data yahin hatao
-            DB::table('listened_ayahs')->where('user_id', $user->id)->delete();
-            DB::table('sessions')->where('user_id', $user->id)->delete();
-            Backup::where('created_by', $user->id)->update(['created_by' => null]);
-
-            $user->delete();
-        });
+        $deleteAccount->handle($user); // fail hua to exception, kuch nahi hatega
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
+        try {
+            Mail::to($email)->send(new AccountDeletedMail($name, now()->format('d M Y, H:i T')));
+        } catch (Throwable $e) {
+            report($e);
+        }
+
         return Redirect::to('/');
     }
+
     public function updatePreferences(Request $request)
     {
         $request->validate([
