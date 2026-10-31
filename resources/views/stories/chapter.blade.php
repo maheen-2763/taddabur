@@ -172,9 +172,9 @@
             color: var(--gold-light);
         }
 
-        .story-content blockquote p:first-child {
+        .story-content blockquote p:first-child[style] {
             font-family: 'Amiri', 'Scheherazade New', serif;
-            font-size: calc(1.5rem * var(--read-scale, 1));
+            font-size: calc(1.5rem * var(--read-scale, 1)) !important;
             direction: rtl;
             text-align: right;
             line-height: 2;
@@ -208,8 +208,8 @@
                 margin: 1.25rem 0;
             }
 
-            .story-content blockquote p:first-child {
-                font-size: calc(1.3rem * var(--read-scale, 1));
+            .story-content blockquote p:first-child[style] {
+                font-size: calc(1.3rem * var(--read-scale, 1)) !important;
                 line-height: 1.95;
             }
         }
@@ -562,101 +562,101 @@
         }
 
         .sources-box {
-    margin: 2rem 0 1.5rem;
-    padding: 1.1rem 1.25rem;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: rgba(27, 94, 59, 0.03);
-}
+            margin: 2rem 0 1.5rem;
+            padding: 1.1rem 1.25rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: rgba(27, 94, 59, 0.03);
+        }
 
-.sources-title {
-    margin: 0 0 0.9rem;
-    font-size: 0.75rem;
-    font-family: var(--font-heading);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--muted);
-}
+        .sources-title {
+            margin: 0 0 0.9rem;
+            font-size: 0.75rem;
+            font-family: var(--font-heading);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
 
-.sources-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.9rem;
-    padding: 0.6rem 0;
-}
+        .sources-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.9rem;
+            padding: 0.6rem 0;
+        }
 
-.sources-row + .sources-row {
-    border-top: 1px solid var(--border);
-}
+        .sources-row+.sources-row {
+            border-top: 1px solid var(--border);
+        }
 
-.src-badge {
-    flex: 0 0 5.5rem;
-    text-align: center;
-    font-size: 0.7rem;
-    font-weight: 600;
-    padding: 0.2rem 0.5rem;
-    border-radius: 50px;
-}
+        .src-badge {
+            flex: 0 0 5.5rem;
+            text-align: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.2rem 0.5rem;
+            border-radius: 50px;
+        }
 
-.src-quran {
-    background: rgba(27, 94, 59, 0.1);
-    color: var(--emerald);
-}
+        .src-quran {
+            background: rgba(27, 94, 59, 0.1);
+            color: var(--emerald);
+        }
 
-.src-hadith {
-    background: rgba(180, 130, 40, 0.12);
-    color: var(--gold-dark);
-}
+        .src-hadith {
+            background: rgba(180, 130, 40, 0.12);
+            color: var(--gold-dark);
+        }
 
-.src-scholarly {
-    background: rgba(100, 100, 120, 0.12);
-    color: var(--ink-soft);
-}
+        .src-scholarly {
+            background: rgba(100, 100, 120, 0.12);
+            color: var(--ink-soft);
+        }
 
-.src-tradition {
-    border: 1px dashed var(--gold);
-    color: var(--gold-dark);
-}
+        .src-tradition {
+            border: 1px dashed var(--gold);
+            color: var(--gold-dark);
+        }
 
-.sources-body,
-.sources-list {
-    min-width: 0;
-    font-size: 0.85rem;
-    line-height: 1.7;
-    color: var(--ink-soft);
-}
+        .sources-body,
+        .sources-list {
+            min-width: 0;
+            font-size: 0.85rem;
+            line-height: 1.7;
+            color: var(--ink-soft);
+        }
 
-.sources-list {
-    margin: 0;
-    padding-left: 1rem;
-}
+        .sources-list {
+            margin: 0;
+            padding-left: 1rem;
+        }
 
-.sources-note {
-    margin: 0.4rem 0 0;
-    font-size: 0.78rem;
-    color: var(--muted);
-}
+        .sources-note {
+            margin: 0.4rem 0 0;
+            font-size: 0.78rem;
+            color: var(--muted);
+        }
 
-[data-bs-theme="dark"] .src-quran {
-    color: var(--emerald-light);
-}
+        [data-bs-theme="dark"] .src-quran {
+            color: var(--emerald-light);
+        }
 
-[data-bs-theme="dark"] .src-hadith,
-[data-bs-theme="dark"] .src-tradition {
-    color: var(--gold-light);
-}
+        [data-bs-theme="dark"] .src-hadith,
+        [data-bs-theme="dark"] .src-tradition {
+            color: var(--gold-light);
+        }
 
-@media (max-width: 575.98px) {
-    .sources-row {
-        flex-direction: column;
-        gap: 0.4rem;
-    }
+        @media (max-width: 575.98px) {
+            .sources-row {
+                flex-direction: column;
+                gap: 0.4rem;
+            }
 
-    .src-badge {
-        flex: none;
-        align-self: flex-start;
-    }
-}
+            .src-badge {
+                flex: none;
+                align-self: flex-start;
+            }
+        }
     </style>
 @endpush
 
@@ -664,12 +664,12 @@
     <div class="container py-4">
 
         {{-- Breadcrumb --}}
-        {{-- Breadcrumb --}}
         <nav class="chapter-crumbs mb-3">
             <a href="{{ route('stories.index') }}" class="chapter-crumb-link">Stories</a>
             <span class="chapter-crumb-sep">/</span>
             <a href="{{ route('stories.show', $story->slug) }}" class="chapter-crumb-link chapter-crumb-story"
-                title="{{ $story->title }}">{{ $story->title }}</a>
+                title="{{ $story->title }}"> {!! \App\Helpers\ArabicHelper::wrapHonorificsInHtml($story->title) !!}
+            </a>
         </nav>
 
         {{-- Progress strip (logged-in users only) --}}
@@ -744,14 +744,6 @@
                         </a>
                     @endforeach
 
-                    {{-- Quran references --}}
-                    @if ($chapter->quran_references)
-                        <hr class="divider-gold my-3">
-                        <p class="sidebar-section-title">Qur'an References</p>
-                        <div class="d-flex flex-wrap gap-1 mb-2">
-                            @include('stories.partials.quran-refs')
-                        </div>
-                    @endif
 
                     <hr class="divider-gold my-3">
                     <div style="font-size:0.76rem; color:var(--muted)">
@@ -764,7 +756,7 @@
                         @if ($story->prophet)
                             <div>
                                 <i class="bi bi-person me-1"></i>
-                                {{ $story->prophet->display_name }}
+                                {!! $story->prophet->display_name_html !!}
                             </div>
                         @endif
                     </div>
@@ -784,6 +776,7 @@
                     </span>
                     <h1 class="heading-font mt-1 mb-0" style="font-size:clamp(1.5rem,4vw,2.2rem)">
                         {{ $chapter->title }}
+
                     </h1>
                     <div class="d-flex justify-content-between align-items-center mt-1">
                         <span class="text-muted" style="font-size:0.85rem">
@@ -806,19 +799,10 @@
 
                 {{-- Chapter body --}}
                 <div class="story-content">
-                    {!! $chapter->content !!}
+                    {!! \App\Helpers\ArabicHelper::wrapHonorificsInHtml($chapter->content) !!}
                 </div>
                 @include('stories.partials.chapter-sources')
 
-                {{-- Quran references (mobile only) --}}
-                {{-- @if ($chapter->quran_references)
-                <div class="d-lg-none mt-3 mb-4">
-                    <p class="sidebar-section-title">Qur'an References</p>
-                    <div class="d-flex flex-wrap gap-1">
-                        @include('stories.partials.quran-refs')
-                    </div>
-                </div>
-                @endif --}}
 
                 <hr class="divider-gold">
 
@@ -950,15 +934,15 @@
                 banner.className = 'completion-card';
                 banner.id = 'completionCard';
                 banner.innerHTML = `
-                                                                                                                                        <div class="cc-arabic">الْحَمْدُ لِلَّٰهِ</div>
-                                                                                                                                        <h5 class="heading-font mt-2 mb-1 cc-title">Story Completed</h5>
-                                                                                                                                        <p class="cc-text"></p>
-                                                                                                                                        <p class="cc-stats"></p>
-                                                                                                                                        <div class="cc-actions">
-                                                                                                                                            <a href="${storiesIndexUrl}" class="btn cc-btn-gold">Explore More Stories</a>
-                                                                                                                                            <a href="${storyShowUrl}" class="btn cc-btn-ghost">Back to Story</a>
-                                                                                                                                        </div>
-                                                                                                                                    `;
+                                                                                                                                                                                                                                                                        <div class="cc-arabic">الْحَمْدُ لِلَّٰهِ</div>
+                                                                                                                                                                                                                                                                        <h5 class="heading-font mt-2 mb-1 cc-title">Story Completed</h5>
+                                                                                                                                                                                                                                                                        <p class="cc-text"></p>
+                                                                                                                                                                                                                                                                        <p class="cc-stats"></p>
+                                                                                                                                                                                                                                                                        <div class="cc-actions">
+                                                                                                                                                                                                                                                                            <a href="${storiesIndexUrl}" class="btn cc-btn-gold">Explore More Stories</a>
+                                                                                                                                                                                                                                                                            <a href="${storyShowUrl}" class="btn cc-btn-ghost">Back to Story</a>
+                                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                                    `;
                 banner.querySelector('.cc-text').textContent = `You have completed ${storyTitle}.`;
                 banner.querySelector('.cc-stats').textContent = storyStats;
                 article.appendChild(banner);
@@ -972,25 +956,25 @@
                 const toast = document.createElement('div');
                 toast.className = 'chapter-complete-toast';
                 toast.innerHTML = `
-                                                                                                                                                                                                                                            <span class="toast-ar">الْحَمْدُ لِلَّٰهِ</span>
-                                                                                                                                                                                                                                            <span class="toast-txt">Chapter completed</span>
-                                                                                                                                                                                                                                        `;
+                                                                                                                                                                                                                                                                                                                                                                            <span class="toast-ar">الْحَمْدُ لِلَّٰهِ</span>
+                                                                                                                                                                                                                                                                                                                                                                            <span class="toast-txt">Chapter completed</span>
+                                                                                                                                                                                                                                                                                                                                                                        `;
                 toast.style.cssText =
                     `
-                                                                                                                                                                                                                                                                                                                                position: fixed;
-                                                                                                                                                                                                                                                                                                                                top: 80px;
-                                                                                                                                                                                                                                                                                                                                left: 50%;
-                                                                                                                                                                                                                                                                                                                                transform: translateX(-50%) translateY(-12px);
-                                                                                                                                                                                                                                                                                                                                background: linear-gradient(135deg, var(--emerald-dark), var(--emerald));
-                                                                                                                                                                                                                                                                                                                                padding: 0.75rem 1.5rem;
-                                                                                                                                                                                                                                                                                                        border-radius: 50px;
-                                                                                                                                                                                                                                                                                                                                                                                                                                    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-                                                                                                                                                                                                                                                                                                                                                                                                                                    z-index: 9999;
-                                                                                                                                                                                                                                                                                                                                                                                                                                    display: flex;
-                                                                                                                                                                                                                                                                                                                                                                                                                                    align-items: center;
-                                                                                                                                                                                                                                                                                                                                                                                                                                    opacity: 0;
-                                                                                                                                                                                                                                                                                                                                                                                                                                    transition: opacity 0.35s ease, transform 0.35s ease;
-                                                                                                                                                                                                                                                                                                                                                                                                                                `;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                position: fixed;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                top: 80px;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                left: 50%;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                transform: translateX(-50%) translateY(-12px);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                background: linear-gradient(135deg, var(--emerald-dark), var(--emerald));
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                padding: 0.75rem 1.5rem;
+                                                                                                                                                                                                                                                                                                                                                                                                                                        border-radius: 50px;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    z-index: 9999;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    display: flex;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    align-items: center;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    opacity: 0;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    transition: opacity 0.35s ease, transform 0.35s ease;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                `;
                 document.body.appendChild(toast);
 
                 requestAnimationFrame(() => {

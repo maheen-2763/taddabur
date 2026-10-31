@@ -577,20 +577,21 @@
 
                             {{-- Title --}}
                             <h1 class="heading-font mb-1" style="font-size:clamp(1.4rem,3.5vw,1.9rem);
-                                                                       color:white;
-                                                                       line-height:1.25;
-                                                                       position:relative;
-                                                                       z-index:1">
-                                {{ $story->title }}
+                                                                                               color:white;
+                                                                                               line-height:1.25;
+                                                                                               position:relative;
+                                                                                               z-index:1">
+                                {!! \App\Helpers\ArabicHelper::wrapHonorificsInHtml($story->title) !!}
+
                             </h1>
 
                             {{-- Prophet name --}}
                             @if ($story->prophet)
                                 <p style="color:rgba(255,255,255,0.65);
-                                                                                              font-size:0.88rem;
-                                                                                              margin:0;
-                                                                                              position:relative;
-                                                                                              z-index:1">
+                                                                            font-size:0.88rem;
+                                            margin:0;
+                                            position:relative;
+                                            z-index:1">
                                     {!! $story->prophet->display_name_html !!}
                                 </p>
                             @endif

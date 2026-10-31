@@ -5,8 +5,8 @@
     <div class="journey-wrapper">
 
         {{-- ============================================
-         HEADER — Prophet name + journey intro
-    ============================================ --}}
+        HEADER — Prophet name + journey intro
+        ============================================ --}}
         <div class="journey-header text-center">
             <p class="journey-eyebrow">The Life of</p>
             <h1 class="journey-title">{!! $prophet->display_name_html !!}</h1>
@@ -18,8 +18,8 @@
         </div>
 
         {{-- ============================================
-         STEPPER — vertical timeline of 6 parts
-    ============================================ --}}
+        STEPPER — vertical timeline of 6 parts
+        ============================================ --}}
         <div class="journey-stepper">
             @foreach ($stories as $index => $story)
                 @php
@@ -28,12 +28,12 @@
                     $isComplete = $progress === 100;
                     $isLocked = $story->is_locked;
                     // "Current" = first unlocked part that isn't finished yet
-$isCurrent =
-    !$isLocked &&
-    !$isComplete &&
-    $stories
-        ->take($index)
-        ->every(fn($s) => $s->user_progress['percentage'] === 100 || $s === $story);
+                    $isCurrent =
+                        !$isLocked &&
+                        !$isComplete &&
+                        $stories
+                            ->take($index)
+                            ->every(fn($s) => $s->user_progress['percentage'] === 100 || $s === $story);
                 @endphp
 
                 <div
@@ -56,7 +56,8 @@ $isCurrent =
                     {{-- Card content --}}
                     <div class="journey-card">
                         <p class="journey-part-label">Part {{ $partNumber }} of {{ $stories->count() }}</p>
-                        <h3 class="journey-card-title">{{ $story->title }}</h3>
+                        <h3 class="journey-card-title"> {!! \App\Helpers\ArabicHelper::wrapHonorificsInHtml($story->title) !!}
+                        </h3>
                         <p class="journey-card-summary">{{ $story->summary }}</p>
 
                         @if (!$isLocked)

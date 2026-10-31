@@ -72,4 +72,12 @@ class ArabicHelper
         // Pehle escape (XSS se bachav), phir ﷺ ko span mein wrap karo
         return str_replace('ﷺ', '<span class="arabic-symbol">ﷺ</span>', e($text));
     }
+
+
+    public static function wrapHonorificsInHtml(?string $html): string
+    {
+        if (!$html) return '';
+
+        return str_replace('ﷺ', '<span class="arabic-symbol">ﷺ</span>', $html);
+    }
 }
