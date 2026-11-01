@@ -6,6 +6,7 @@ use App\Models\Backup;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Account delete: user ka personal data poori tarah hatata hai.
@@ -41,6 +42,8 @@ class DeleteUserAccount
 
     public function handle(User $user): void
     {
+        $avatar = $user->avatar;
+
         DB::transaction(function () use ($user) {
             // Pehle anonymize, taaki user delete hone par cascade inhe na hataye
             foreach (self::ANONYMIZE_TABLES as $table) {
@@ -71,5 +74,10 @@ class DeleteUserAccount
 
             $user->delete();
         });
+
+        // File transaction ka hissa nahi hoti, isliye commit ke baad hatao
+        if ($avatar) {
+            Storage::disk('public')->delete($avatar);
+        }
     }
 }

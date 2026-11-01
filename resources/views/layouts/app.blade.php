@@ -87,18 +87,19 @@
             @endif
         </div>
     @endif
-
-    @if ($errors->any())
-        <div class="container mt-3">
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
+    @unless (View::hasSection('no_global_errors'))
+        @if ($errors->any())
+            <div class="container mt-3">
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
             </div>
-        </div>
-    @endif
+        @endif
+    @endunless
 
     {{-- ✅ MAIN CONTENT — sirf EK jagah render hota hai --}}
     @hasSection('sidebar')

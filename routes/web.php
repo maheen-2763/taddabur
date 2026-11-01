@@ -27,6 +27,7 @@ use App\Http\Controllers\FeaturesController;
 use App\Http\Controllers\SupportController;
 use App\Http\Controllers\DonationController;
 use App\Http\Controllers\RazorpayWebhookController;
+use App\Http\Controllers\ProfileAvatarController;
 
 
 // Re-import any missing translations weekly (catches new additions)
@@ -234,6 +235,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/', [ProfileController::class, 'destroy'])->name('destroy');
         Route::post('/preferences', [ProfileController::class, 'updatePreferences'])->name('preferences');
     });
+
+    Route::post('/profile/avatar', [ProfileAvatarController::class, 'update'])
+        ->middleware('throttle:10,1')->name('profile.avatar');
+    Route::delete('/profile/avatar', [ProfileAvatarController::class, 'destroy'])
+        ->name('profile.avatar.destroy');
 });
 
 // ============================================================

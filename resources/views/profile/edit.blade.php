@@ -1,134 +1,70 @@
 {{-- resources/views/profile/edit.blade.php --}}
 @extends('layouts.app')
 @section('title', 'My Profile')
+{{-- Is page par errors inline dikhte hain; layout ka global error block yahan nahi chalega --}}
+@section('no_global_errors', '1')
+
+@php
+    $nameParts = explode(' ', trim($user->name));
+    $initials =
+        count($nameParts) > 1
+        ? strtoupper(substr($nameParts[0], 0, 1) . substr(end($nameParts), 0, 1))
+        : strtoupper(substr($nameParts[0], 0, 2));
+
+    // Server error aaya to wahi tab kholo jahan error hai
+    $startTab = null;
+    if ($errors->hasBag('updatePassword') || $errors->hasBag('userDeletion')) {
+        $startTab = '#tab-password';
+    } elseif ($errors->hasAny(['preferred_language', 'preferred_translation', 'preferred_tafsir', 'preferred_reciter'])) {
+        $startTab = '#tab-preferences';
+    } elseif ($errors->any()) {
+        $startTab = '#tab-profile';
+    }
+    $emailBoxOpen = $errors->has('current_password');
+
+    $flash = session('message') ?? match (session('status')) {
+        'profile-updated' => 'Your profile was updated.',
+        'password-updated' => 'Your password was updated.',
+        'avatar-updated' => 'Your photo was updated.',
+        'avatar-removed' => 'Your photo was removed.',
+        'verification-link-sent' => 'A new verification link has been sent to your email address.',
+        default => null,
+    };
+@endphp
 
 @push('styles')
     <style>
-        /* ── Page Layout ── */
         .profile-page {
+            --pp-gold: var(--gold, #C9963A);
+            --pp-gold-dark: var(--gold-dark, #8a5f12);
+            --pp-emerald: var(--emerald, #1B5E3B);
+            --pp-ink: var(--ink, #1A1A2E);
+            --pp-cream: var(--cream, #FDFBF7);
+            --pp-red: var(--red, #dd2d4a);
+            --pp-border: var(--border, rgba(201, 150, 58, 0.28));
             min-height: calc(100vh - 60px);
-            padding: 2.5rem 1rem 2.5rem;
+            padding: 2rem 1rem 3rem;
         }
 
         .profile-inner {
-            max-width: 680px;
+            max-width: 700px;
             margin: 0 auto;
             position: relative;
             z-index: 1;
         }
 
-        /* ── Avatar Block ── */
-        .profile-avatar-block {
-            text-align: center;
-            margin-bottom: 1.75rem;
-        }
-
-        .profile-avatar-ring {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            border: 2px solid var(--gold, #C9963A);
-            background: rgba(201, 150, 58, 0.12);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 0.75rem;
-            font-family: 'Cinzel', serif;
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--gold, #C9963A);
-            letter-spacing: 1px;
-        }
-
-        .profile-user-name {
-            font-family: 'Cinzel', serif;
-            font-size: 18px;
-            color: var(--ink);
-            margin-bottom: 0.35rem;
-        }
-
-        .profile-plan-badge {
-            display: inline-block;
-            padding: 4px 16px;
-            border-radius: 20px;
-            font-size: 11px;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            font-family: 'Cinzel', serif;
-        }
-
-        /* ── Quran Verse Band ── */
-        .verse-band {
-            background: rgba(201, 150, 58, 0.07);
-            border: 1px solid rgba(201, 150, 58, 0.2);
-            border-radius: 10px;
-            padding: 0.85rem 1.25rem;
-            text-align: center;
-            margin-bottom: 1.75rem;
-        }
-
-        .verse-band .arabic {
-            font-family: 'Amiri', serif;
-            font-size: 18px;
-            color: var(--gold, #C9963A);
-            direction: rtl;
-            margin-bottom: 4px;
-        }
-
-        .verse-band .reference {
-            font-size: 11px;
-            color: var(--gold, #C9963A);
-            letter-spacing: 0.5px;
-        }
-
-        /* ── Tabs ── */
-        .profile-tabs {
-            display: flex;
-            border-bottom: 1px solid rgba(201, 150, 58, 0.3);
-            margin-bottom: 1.75rem;
-            gap: 0;
-        }
-
-        .profile-tab {
-            flex: 1;
-            text-align: center;
-            padding: 10px 8px;
-            font-size: 12px;
-            color: rgba(26, 26, 46, 0.5);
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            margin-bottom: -1px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            font-family: 'Cinzel', serif;
-            transition: color 0.2s, border-color 0.2s;
-            text-decoration: none;
-            display: block;
-        }
-
-        .profile-tab:hover {
-            color: var(--gold, #C9963A);
-            border-bottom-color: rgba(201, 150, 58, 0.3);
-        }
-
-        .profile-tab.active {
-            color: var(--gold, #C9963A);
-            border-bottom-color: var(--gold, #C9963A);
-        }
-
-        /* ── Cards ── */
-        .card-islamic {
-            background: var(--cream, #FDFBF7);
-            border: 1px solid var(--border, rgba(201, 150, 58, 0.25));
-            border-radius: 10px;
+        /* ───────── Cards ───────── */
+        .pp-card {
+            background: var(--pp-cream);
+            border: 1px solid var(--pp-border);
+            border-radius: 12px;
             padding: 1.5rem;
             margin-bottom: 1.25rem;
             position: relative;
             overflow: hidden;
-            background-clip: padding-box;
         }
 
-        .card-islamic::before {
+        .pp-card::before {
             content: '';
             position: absolute;
             top: 0;
@@ -138,185 +74,441 @@
             background: linear-gradient(90deg, transparent, rgba(201, 150, 58, 0.6), transparent);
         }
 
-        /* ── Section Label ── */
-        .section-label {
+        .pp-section-label {
             font-family: 'Cinzel', serif;
             font-size: 11px;
             letter-spacing: 1.5px;
             text-transform: uppercase;
-            color: var(--gold, #C9963A);
-            margin-bottom: 1.25rem;
+            color: var(--pp-gold-dark);
+            margin: 0 0 1.25rem;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .section-label::after {
+        .pp-section-label::after {
             content: '';
             flex: 1;
             height: 1px;
-            background: rgba(201, 150, 58, 0.2);
+            background: rgba(201, 150, 58, 0.25);
         }
 
-        /* ── Form Elements ── */
-        .form-label {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--gold, #C9963A);
-            margin-bottom: 6px;
+        /* ───────── Hero (avatar + identity) ───────── */
+        .pp-hero {
+            text-align: center;
+            padding: 2rem 1.5rem 1.5rem;
+        }
+
+        .pp-avatar {
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            border: 2px solid var(--pp-gold);
+            background: rgba(201, 150, 58, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.9rem;
+            font-family: 'Cinzel', serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--pp-gold-dark);
+            overflow: hidden;
+            box-shadow: 0 0 0 4px rgba(201, 150, 58, 0.12);
+        }
+
+        .pp-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
             display: block;
         }
 
-        .form-control,
-        .form-select {
-            background: rgba(201, 150, 58, 0.12);
-            border: 1px solid var(--border, rgba(201, 150, 58, 0.3)) !important;
-            color: var(--ink, #1A1A2E) !important;
-            border-radius: 6px !important;
+        .pp-name {
+            font-family: 'Cinzel', serif;
+            font-size: 20px;
+            color: var(--pp-ink);
+            margin: 0 0 0.35rem;
+            word-break: break-word;
+        }
+
+        .pp-email {
+            font-size: 13px;
+            color: var(--pp-ink);
+            margin: 0 0 0.75rem;
+            word-break: break-all;
+        }
+
+        .pp-meta {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 1.1rem;
+        }
+
+        .pp-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 11px;
+            letter-spacing: 0.4px;
+            font-weight: 600;
+        }
+
+        .pp-pill-free {
+            background: var(--pp-emerald);
+            color: #fff;
+            font-family: 'Cinzel', serif;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+        }
+
+        .pp-pill-ok {
+            background: rgba(25, 135, 84, 0.12);
+            font-family: 'Cinzel', serif;
+            color: #146c43;
+        }
+
+        [data-bs-theme="dark"] .pp-pill-ok {
+            color: var(--emerald-light);
+        }
+
+        .pp-pill-warn {
+            background: rgba(255, 193, 7, 0.2);
+            font-family: 'Cinzel', serif;
+            color: #7a5b00;
+        }
+
+        [data-bs-theme="dark"] .pp-pill-warn {
+            color: var(--pp-gold);
+        }
+
+        .pp-pill-muted {
+            background: rgba(255, 193, 7, 0.2);
+            font-family: 'Cinzel', serif;
+            color: #7a5b00;
+        }
+
+        [data-bs-theme="dark"] .pp-pill-muted {
+            color: var(--gold-light);
+        }
+
+        .pp-avatar-actions {
+            display: flex;
+            gap: 0.6rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .pp-avatar-actions form {
+            margin: 0;
+        }
+
+        .pp-hint {
+            font-size: 11.5px;
+            color: rgba(26, 26, 46, 0.6);
+            margin-top: 0.6rem;
+        }
+
+        /* ───────── Buttons ───────── */
+        .pp-btn,
+        .pp-btn-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.1s;
+        }
+
+        .pp-btn {
+            background: var(--pp-emerald);
+            color: #fff;
+            border: none;
+            font-family: 'Cinzel', serif;
+            font-size: 13px;
+            letter-spacing: 1px;
+            font-weight: 700;
+            padding: 11px 26px;
+            border-radius: 8px;
+        }
+
+        .pp-btn:hover {
+            background: var(--emerald-dark, #164a2f);
+            transform: translateY(-1px);
+        }
+
+        .pp-btn:disabled,
+        .pp-btn-pill:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .pp-btn-pill {
+            background: transparent;
+            color: var(--pp-gold-dark);
+            border: 1px solid var(--pp-gold);
+            border-radius: 999px;
+            padding: 7px 16px;
+            font-size: 12.5px;
+            font-weight: 600;
+        }
+
+        .pp-btn-pill:hover {
+            background: rgba(201, 150, 58, 0.14);
+        }
+
+        .pp-btn-pill-danger {
+            color: #b02a37;
+            border-color: rgba(220, 53, 69, 0.5);
+        }
+
+        .pp-btn-pill-danger:hover {
+            background: rgba(220, 53, 69, 0.08);
+        }
+
+        .pp-btn-danger {
+            background: #b02a37;
+            color: #fff;
+            border: none;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 10px 22px;
+            border-radius: 8px;
+        }
+
+        .pp-btn-danger:hover {
+            background: #8f2230;
+        }
+
+        .pp-btn:focus-visible,
+        .pp-btn-pill:focus-visible,
+        .pp-btn-danger:focus-visible,
+        .pp-tab:focus-visible,
+        .pp-danger summary:focus-visible {
+            outline: 3px solid rgba(201, 150, 58, 0.55);
+            outline-offset: 2px;
+        }
+
+        /* ───────── Verse band ───────── */
+        .pp-verse {
+            background: rgba(201, 150, 58, 0.07);
+            border: 1px solid rgba(201, 150, 58, 0.22);
+            border-radius: 12px;
+            padding: 0.9rem 1.25rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .pp-verse .arabic {
+            font-family: 'Amiri', serif;
+            font-size: 22px;
+            color: var(--pp-gold-dark);
+            line-height: 1.8;
+        }
+
+        .pp-verse .reference {
+            font-size: 11.5px;
+            color: var(--pp-gold-dark);
+            letter-spacing: 0.4px;
+        }
+
+        [data-bs-theme="dark"] .arabic {
+            color: var(--gold-light);
+        }
+
+        [data-bs-theme="dark"] .reference {
+            color: var(--gold-light);
+        }
+
+        /* ───────── Tabs ───────── */
+        .pp-tabs {
+            display: flex;
+            border-bottom: 1px solid rgba(201, 150, 58, 0.3);
+            margin-bottom: 1.5rem;
+        }
+
+        .pp-tab {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: 11px 8px;
+            font-family: 'Cinzel', serif;
+            font-size: 12px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: rgba(26, 26, 46, 0.6);
+            text-decoration: none;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            transition: color 0.2s, border-color 0.2s;
+        }
+
+        .pp-tab:hover {
+            color: var(--pp-gold-dark);
+            border-bottom-color: rgba(201, 150, 58, 0.35);
+        }
+
+        .pp-tab.active {
+            color: var(--pp-gold-dark);
+            border-bottom-color: var(--pp-gold);
+        }
+
+        /* ───────── Forms ───────── */
+        .profile-page .form-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--pp-gold-dark);
+            margin-bottom: 6px;
+            display: block;
+            font-weight: 600;
+        }
+
+        .profile-page .form-control,
+        .profile-page .form-select {
+            background: rgba(201, 150, 58, 0.1);
+            border: 1px solid var(--pp-border) !important;
+            color: var(--pp-ink) !important;
+            border-radius: 8px !important;
             padding: 10px 14px !important;
             font-size: 14px !important;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
 
-        .form-control:focus,
-        .form-select:focus {
-            border-color: var(--gold, #C9963A) !important;
-            box-shadow: 0 0 0 3px rgba(201, 150, 58, 0.12) !important;
+        .profile-page .form-control:focus,
+        .profile-page .form-select:focus {
+            border-color: var(--pp-gold) !important;
+            box-shadow: 0 0 0 3px rgba(201, 150, 58, 0.15) !important;
             outline: none !important;
         }
 
-        .form-control::placeholder {
-            color: rgba(26, 26, 46, 0.3) !important;
+        .profile-page .form-control.is-invalid {
+            border-color: #dc3545 !important;
         }
 
-        /* ── Buttons ── */
-        .btn-emerald {
-            background: var(--emerald, #1B5E3B) !important;
-            color: #fff !important;
-            border: none !important;
-            font-family: 'Cinzel', serif !important;
-            font-size: 13px !important;
-            letter-spacing: 1px !important;
-            padding: 10px 24px !important;
-            border-radius: 6px !important;
-            font-weight: 700 !important;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.1s !important;
+        .profile-page .form-control::placeholder {
+            color: rgba(26, 26, 46, 0.35) !important;
         }
 
-        .btn-emerald:hover {
-            background: var(--emerald-dark, #164a2f) !important;
-            color: #fff !important;
-            transform: translateY(-1px);
-        }
-
-        .btn-emerald:active {
-            transform: translateY(0);
-        }
-
-        .btn-outline-gold {
-            background: transparent !important;
-            color: var(--gold, #C9963A) !important;
-            border: 1px solid var(--gold, #C9963A) !important;
-            font-family: 'Cinzel', serif !important;
-            font-size: 13px !important;
-            letter-spacing: 1px !important;
-            padding: 9px 20px !important;
-            border-radius: 6px !important;
-            cursor: pointer;
-            transition: background 0.2s, color 0.2s, transform 0.1s !important;
-        }
-
-        .btn-outline-gold:hover {
-            background: rgba(201, 150, 58, 0.1) !important;
-            color: var(--gold, #C9963A) !important;
-            transform: translateY(-1px);
-        }
-
-        .btn-outline-gold:active {
-            transform: translateY(0);
-        }
-
-        .btn-danger-outline {
-            background: transparent !important;
-            color: #dc3545 !important;
-            border: 1px solid rgba(220, 53, 69, 0.4) !important;
-            font-size: 13px !important;
-            padding: 9px 20px !important;
-            border-radius: 6px !important;
-            cursor: pointer;
-            transition: background 0.2s, color 0.2s !important;
-        }
-
-        .btn-danger-outline:hover {
-            background: rgba(220, 53, 69, 0.08) !important;
-            color: #b02a37 !important;
-        }
-
-        /* ── Subscription Card ── */
-        .subscription-card {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .sub-plan-name {
-            font-family: 'Cinzel', serif;
-            font-size: 22px;
-            color: var(--gold, #C9963A);
-            font-weight: 700;
-        }
-
-        .sub-plan-desc {
+        .pp-field-hint {
             font-size: 12px;
-            color: var(--gold, #C9963A);
-            margin-top: 3px;
+            color: rgba(26, 26, 46, 0.65);
+            margin-top: 5px;
         }
 
-        /* ── Danger Zone ── */
-        .danger-zone {
-            border: 1px solid rgba(220, 53, 69, 0.3);
-            border-radius: 10px;
-            padding: 1.25rem 1.5rem;
-            background: rgba(220, 53, 69, 0.04);
+        .pp-error {
+            color: #b02a37;
+            font-size: 12.5px;
+            margin-top: 5px;
         }
 
-        .danger-zone-label {
-            font-family: 'Cinzel', serif;
-            font-size: 11px;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: #dc3545;
-            margin-bottom: 0.5rem;
+        .pp-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.1rem;
+            margin-bottom: 1.4rem;
         }
 
-        .danger-zone-text {
-            font-size: 12px;
-            color: #dc3545 !important;
-            margin-bottom: 1rem;
-            line-height: 1.6;
+        @media (min-width: 576px) {
+            .pp-grid {
+                grid-template-columns: 1fr 1fr;
+            }
         }
 
-
-
-
-        /* ── Alert ── */
-        .alert-islamic-success {
+        .pp-flash {
             background: rgba(25, 135, 84, 0.1);
             border: 1px solid rgba(25, 135, 84, 0.3);
             color: #146c43;
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 12px 16px;
-            font-size: 13px;
+            font-size: 13.5px;
+            margin-bottom: 1.25rem;
         }
 
-        .text-danger {
-            color: #dc3545 !important;
+        /* ───────── Danger zone ───────── */
+        .pp-danger {
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            border-radius: 12px;
+            background: rgba(220, 53, 69, 0.04);
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .pp-danger summary {
+            cursor: pointer;
+            list-style: none;
+            padding: 1rem 1.25rem;
+            font-family: 'Cinzel', serif;
             font-size: 12px;
-            margin-top: 4px;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            color: #b02a37;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+
+
+        .pp-danger summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .pp-danger summary::after {
+            content: '\F282';
+            font-family: 'bootstrap-icons';
+            transition: transform 0.2s;
+        }
+
+        .pp-danger[open] summary::after {
+            transform: rotate(180deg);
+        }
+
+        .pp-danger-body {
+            padding: 0 1.25rem 1.25rem;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #7a1f29;
+        }
+
+        [data-bs-theme="dark"] .pp-danger-body {
+            color: var(--pp-red);
+        }
+
+        .pp-danger-body ul {
+            margin: 0.4rem 0 1rem 1.1rem;
+            padding: 0;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+
+        @media (max-width: 575.98px) {
+            .profile-page {
+                padding: 1.25rem 0.75rem 2.5rem;
+            }
+
+            .pp-card {
+                padding: 1.15rem;
+            }
+
+            .pp-tab {
+                font-size: 11px;
+                letter-spacing: 0.6px;
+                gap: 5px;
+            }
+
+            .pp-btn {
+                width: 100%;
+            }
         }
     </style>
 @endpush
@@ -325,311 +517,389 @@
     <div class="profile-page">
         <div class="profile-inner">
 
-            {{-- ── Avatar & Identity ── --}}
-            @php
-                $nameParts = explode(' ', trim($user->name));
-                $initials =
-                    count($nameParts) > 1
-                        ? strtoupper(substr($nameParts[0], 0, 1) . substr(end($nameParts), 0, 1))
-                        : strtoupper(substr($nameParts[0], 0, 2));
-            @endphp
-            <div class="profile-avatar-block">
-                <div class="profile-avatar-ring">
-                    {{ $initials }}
+            {{-- ───── Hero: photo + identity (Free forever sirf yahin, ek baar) ───── --}}
+            <section class="pp-card pp-hero" aria-label="Your profile">
+                <div class="pp-avatar">
+                    @if ($user->avatar)
+                        <img src="{{ $user->avatar_url }}" alt="Profile photo of {{ $user->name }}" width="96" height="96">
+                    @else
+                        <span aria-hidden="true">{{ $initials }}</span>
+                    @endif
                 </div>
-                <div class="profile-user-name">{{ $user->name }}</div>
-                <span class="profile-plan-badge" style="background:var(--emerald); color:#fff">
-                    <i class="bi bi-check-circle-fill me-1"></i>FREE FOREVER
-                </span>
-            </div>
 
-            {{-- ── Quranic Verse Band ── --}}
-            <div class="verse-band">
-                <div class="arabic">رَبِّ زِدۡنِی عِلۡمًا</div>
+                <h1 class="pp-name">{{ $user->name }}</h1>
+                <p class="pp-email">{{ $user->email }}</p>
+
+                <div class="pp-meta">
+                    <span class="pp-pill pp-pill-free"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Free
+                        forever</span>
+                    @if ($user->hasVerifiedEmail())
+                        <span class="pp-pill pp-pill-ok"><i class="bi bi-patch-check-fill" aria-hidden="true"></i> Email
+                            verified</span>
+                    @else
+                        <span class="pp-pill pp-pill-warn"><i class="bi bi-exclamation-circle-fill" aria-hidden="true"></i>
+                            Email not verified</span>
+                    @endif
+                    <span class="pp-pill pp-pill-muted">Member since {{ $user->created_at?->format('F Y') }}</span>
+                </div>
+
+                <div class="pp-avatar-actions">
+                    <form method="POST" action="{{ route('profile.avatar') }}" enctype="multipart/form-data"
+                        id="avatar-form">
+                        @csrf
+                        <input type="file" name="avatar" id="avatar-input" accept="image/jpeg,image/png,image/webp" hidden>
+                        <button type="button" class="pp-btn-pill" id="avatar-pick">
+                            <i class="bi bi-camera" aria-hidden="true"></i>
+                            {{ $user->avatar ? 'Change photo' : 'Add photo' }}
+                        </button>
+                    </form>
+
+                    @if ($user->avatar)
+                        <form method="POST" action="{{ route('profile.avatar.destroy') }}" data-single-submit
+                            onsubmit="return confirm('Remove your profile photo?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="pp-btn-pill pp-btn-pill-danger">
+                                <i class="bi bi-trash3" aria-hidden="true"></i> Remove
+                            </button>
+                        </form>
+                    @endif
+
+                    @unless ($user->hasVerifiedEmail())
+                        <form method="POST" action="{{ route('verification.send') }}" data-single-submit>
+                            @csrf
+                            <button type="submit" class="pp-btn-pill">
+                                <i class="bi bi-envelope" aria-hidden="true"></i> Resend verification
+                            </button>
+                        </form>
+                    @endunless
+                </div>
+                <div class="pp-hint">JPG, PNG or WebP, up to 2 MB.</div>
+                <div class="pp-error" id="avatar-error" role="alert" @if (!$errors->has('avatar')) hidden @endif>
+                    {{ $errors->first('avatar') }}
+                </div>
+            </section>
+
+            {{-- ───── Ayah ───── --}}
+            <div class="pp-verse">
+                <div class="arabic" lang="ar" dir="rtl">رَّبِّ زِدْنِى عِلْمًا</div>
                 <div class="reference">My Lord, increase me in knowledge — Ta-Ha 20:114</div>
             </div>
 
-            {{-- ── Success Flash ── --}}
-            @if (session('message'))
-                <div class="alert-islamic-success mb-4">
-                    {{ session('message') }}
-                </div>
+            @if ($flash)
+                <div class="pp-flash" role="status">{{ $flash }}</div>
             @endif
 
-            {{-- ── Tabs ── --}}
-            <div class="profile-tabs">
-                <a href="#tab-profile" class="profile-tab active" id="link-profile">
-                    Profile
-                </a>
-                <a href="#tab-preferences" class="profile-tab" id="link-preferences">Preferences</a>
-                <a href="#tab-password" class="profile-tab" id="link-password">Password</a>
+            {{-- ───── Tabs ───── --}}
+            <div class="pp-tabs" role="tablist" aria-label="Profile sections">
+                <a href="#tab-profile" class="pp-tab active" id="link-profile" role="tab" aria-controls="tab-profile"
+                    aria-selected="true"><i class="bi bi-person" aria-hidden="true"></i> Profile</a>
+                <a href="#tab-preferences" class="pp-tab" id="link-preferences" role="tab" aria-controls="tab-preferences"
+                    aria-selected="false"><i class="bi bi-sliders" aria-hidden="true"></i> Preferences</a>
+                <a href="#tab-password" class="pp-tab" id="link-password" role="tab" aria-controls="tab-password"
+                    aria-selected="false"><i class="bi bi-shield-lock" aria-hidden="true"></i> Security</a>
             </div>
 
-            {{-- ══════════════════════════════════════
-             TAB 1 — PROFILE
-        ══════════════════════════════════════ --}}
-            <div id="tab-profile">
-
-                <form method="POST" action="{{ route('profile.update') }}">
+            {{-- ═════════ TAB 1: PROFILE ═════════ --}}
+            <div id="tab-profile" role="tabpanel" aria-labelledby="link-profile">
+                <form method="POST" action="{{ route('profile.update') }}" data-single-submit>
                     @csrf
                     @method('PATCH')
 
-                    <div class="card-islamic">
-                        <div class="section-label">Personal Information</div>
+                    <div class="pp-card">
+                        <h2 class="pp-section-label">Personal Information</h2>
 
                         <div class="mb-3">
-                            <label class="form-label">Full Name</label>
-                            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
-                                value="{{ old('name', $user->name) }}" placeholder="Your name">
+                            <label for="name" class="form-label">Full Name</label>
+                            <input id="name" type="text" name="name"
+                                class="form-control @error('name') is-invalid @enderror"
+                                value="{{ old('name', $user->name) }}" placeholder="Your name" maxlength="255" required
+                                autocomplete="name">
                             @error('name')
-                                <div class="text-danger mt-1">{{ $message }}</div>
+                                <div class="pp-error">{{ $message }}</div>
                             @enderror
                         </div>
 
-                        <div class="mb-4">
-                            <label class="form-label">Email Address</label>
-                            <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
-                                value="{{ old('email', $user->email) }}" placeholder="your@email.com">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input id="email" type="email" name="email"
+                                class="form-control @error('email') is-invalid @enderror"
+                                value="{{ old('email', $user->email) }}" placeholder="your@email.com" maxlength="255"
+                                required autocomplete="email" autocapitalize="off" spellcheck="false" inputmode="email">
                             @error('email')
-                                <div class="text-danger mt-1">{{ $message }}</div>
+                                <div class="pp-error">{{ $message }}</div>
                             @enderror
                         </div>
 
-<div class="mb-3" id="email-password-box" hidden>
-    <label for="current_password" class="form-label">Current password
-        <span class="text-muted small">(needed to change your email)</span></label>
-    <input id="current_password" name="current_password" type="password"
-        class="form-control @error('current_password') is-invalid @enderror" autocomplete="current-password">
-    @error('current_password')
-        <div class="invalid-feedback d-block">{{ $message }}</div>
-    @enderror
-</div>
+                        {{-- Email badalne par hi dikhta hai (isi tab mein) --}}
+                        <div class="mb-3" id="email-password-box" hidden>
+                            <label for="current_password" class="form-label">Current password</label>
+                            <input id="current_password" name="current_password" type="password"
+                                class="form-control @error('current_password') is-invalid @enderror"
+                                autocomplete="current-password">
+                            <div class="pp-field-hint">Needed to change your email. We will send a confirmation link to
+                                the new address and a notice to your old one.</div>
+                            @error('current_password')
+                                <div class="pp-error">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                        <button type="submit" class="btn btn-emerald">
-                            Save Changes
-                        </button>
+                        <button type="submit" class="pp-btn mt-2">Save Changes</button>
                     </div>
                 </form>
+            </div>
 
-                {{-- ── Subscription Info Card ── --}}
-                <div class="card-islamic">
-                    <div class="section-label">Your Plan</div>
-                    <div class="subscription-card">
-                        <div>
-                            <div class="sub-plan-name">
-                                <i class="bi bi-check-circle-fill me-1" style="color:var(--emerald)"></i>FREE FOREVER
-                            </div>
-                            <div class="sub-plan-desc">
-                                Full access to everything — all Prophet stories, Hadith, tafsir, personal notes, unlimited
-                                bookmarks. No restrictions.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>{{-- end #tab-profile --}}
-
-
-            {{-- ══════════════════════════════════════
-             TAB 2 — PREFERENCES
-        ══════════════════════════════════════ --}}
-            <div id="tab-preferences">
-
-                <form method="POST" action="{{ route('profile.preferences') }}">
+            {{-- ═════════ TAB 2: PREFERENCES ═════════ --}}
+            <div id="tab-preferences" role="tabpanel" aria-labelledby="link-preferences">
+                <form method="POST" action="{{ route('profile.preferences') }}" data-single-submit>
                     @csrf
 
-                    <div class="card-islamic">
-                        <div class="section-label">Reading Preferences</div>
+                    <div class="pp-card">
+                        <h2 class="pp-section-label">Reading Preferences</h2>
 
-                        <div class="mb-4">
-                            <label class="form-label">Preferred Language</label>
-                            <select name="preferred_language" class="form-select">
-                                <option value="en" {{ $user->preferred_language === 'en' ? 'selected' : '' }}>
-                                    English
-                                </option>
-                                <option value="ur" {{ $user->preferred_language === 'ur' ? 'selected' : '' }}>
-                                    اردو — Urdu
-                                </option>
-                                <option value="ar" {{ $user->preferred_language === 'ar' ? 'selected' : '' }}>
-                                    العربية — Arabic
-                                </option>
-                            </select>
+                        <div class="pp-grid">
+                            <div>
+                                <label for="preferred_language" class="form-label">Language</label>
+                                <select id="preferred_language" name="preferred_language" class="form-select">
+                                    <option value="en" @selected($user->preferred_language === 'en')>English</option>
+                                    <option value="ur" @selected($user->preferred_language === 'ur')>اردو — Urdu</option>
+                                    <option value="ar" @selected($user->preferred_language === 'ar')>العربية — Arabic</option>
+                                </select>
+                                @error('preferred_language')
+                                    <div class="pp-error">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="preferred_translation" class="form-label">Quran Translation</label>
+                                <select id="preferred_translation" name="preferred_translation" class="form-select">
+                                    @foreach ($translations as $t)
+                                        <option value="{{ $t->slug }}" @selected($user->preferred_translation === $t->slug)>
+                                            {{ $t->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('preferred_translation')
+                                    <div class="pp-error">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="preferred_tafsir" class="form-label">Tafsir</label>
+                                <select id="preferred_tafsir" name="preferred_tafsir" class="form-select">
+                                    @foreach ($tafsirs as $t)
+                                        <option value="{{ $t->slug }}" @selected($user->preferred_tafsir === $t->slug)>
+                                            {{ $t->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('preferred_tafsir')
+                                    <div class="pp-error">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="preferred_reciter" class="form-label">Reciter</label>
+                                <select id="preferred_reciter" name="preferred_reciter" class="form-select">
+                                    @foreach ($reciters as $r)
+                                        <option value="{{ $r->slug }}" @selected($user->preferred_reciter === $r->slug)>
+                                            {{ $r->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('preferred_reciter')
+                                    <div class="pp-error">{{ $message }}</div>
+                                @enderror
+                            </div>
                         </div>
 
-                        {{-- ✅ NAYA — Translation dropdown --}}
-                        <div class="mb-4">
-                            <label class="form-label">Preferred Quran Translation</label>
-                            <select name="preferred_translation" class="form-select">
-                                @foreach ($translations as $t)
-                                    <option value="{{ $t->slug }}"
-                                        {{ $user->preferred_translation === $t->slug ? 'selected' : '' }}>
-                                        {{ $t->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="form-label">Preferred Tafsir</label>
-                            <select name="preferred_tafsir" class="form-select">
-                                @foreach ($tafsirs as $t)
-                                    <option value="{{ $t->slug }}"
-                                        {{ $user->preferred_tafsir === $t->slug ? 'selected' : '' }}>
-                                        {{ $t->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="form-label">Preferred Reciter</label>
-                            <select name="preferred_reciter" class="form-select">
-                                @foreach ($reciters as $r)
-                                    <option value="{{ $r->slug }}"
-                                        {{ $user->preferred_reciter === $r->slug ? 'selected' : '' }}>
-                                        {{ $r->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <button type="submit" class="btn btn-emerald">
-                            Save Preferences
-                        </button>
+                        <button type="submit" class="pp-btn">Save Preferences</button>
                     </div>
                 </form>
+            </div>
 
-            </div>{{-- end #tab-preferences --}}
-
-
-            {{-- ══════════════════════════════════════
-             TAB 3 — PASSWORD
-        ══════════════════════════════════════ --}}
-            <div id="tab-password">
-
-                <form method="POST" action="{{ route('password.update') }}">
+            {{-- ═════════ TAB 3: SECURITY (password + delete) ═════════ --}}
+            <div id="tab-password" role="tabpanel" aria-labelledby="link-password">
+                <form method="POST" action="{{ route('password.update') }}" data-single-submit>
                     @csrf
                     @method('PUT')
 
-                    <div class="card-islamic">
-                        <div class="section-label">Change Password</div>
+                    <div class="pp-card">
+                        <h2 class="pp-section-label">Change Password</h2>
 
                         <div class="mb-3">
-                            <label class="form-label">Current Password</label>
-                            <input type="password" name="current_password"
-                                class="form-control @error('current_password') is-invalid @enderror" placeholder="••••••••">
-                            @error('current_password')
-                                <div class="text-danger mt-1">{{ $message }}</div>
+                            <label for="update_current_password" class="form-label">Current Password</label>
+                            <input id="update_current_password" type="password" name="current_password"
+                                class="form-control @error('current_password', 'updatePassword') is-invalid @enderror"
+                                placeholder="••••••••" required autocomplete="current-password">
+                            @error('current_password', 'updatePassword')
+                                <div class="pp-error">{{ $message }}</div>
                             @enderror
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">New Password</label>
-                            <input type="password" name="password"
-                                class="form-control @error('password') is-invalid @enderror" placeholder="Min 8 characters">
-                            @error('password')
-                                <div class="text-danger mt-1">{{ $message }}</div>
+                            <label for="update_password" class="form-label">New Password</label>
+                            <input id="update_password" type="password" name="password" minlength="8"
+                                class="form-control @error('password', 'updatePassword') is-invalid @enderror"
+                                placeholder="Create a new password" required autocomplete="new-password">
+                            <div class="pp-field-hint">At least 8 characters, with letters and numbers.</div>
+                            @error('password', 'updatePassword')
+                                <div class="pp-error">{{ $message }}</div>
                             @enderror
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label">Confirm New Password</label>
-                            <input type="password" name="password_confirmation" class="form-control"
-                                placeholder="Repeat new password">
+                            <label for="update_password_confirmation" class="form-label">Confirm New Password</label>
+                            <input id="update_password_confirmation" type="password" name="password_confirmation"
+                                class="form-control" placeholder="Repeat new password" required minlength="8"
+                                autocomplete="new-password">
                         </div>
 
-                        <button type="submit" class="btn btn-emerald">
-                            Update Password
-                        </button>
+                        <button type="submit" class="pp-btn">Update Password</button>
                     </div>
                 </form>
 
-                {{-- ── Danger Zone ── --}}
-                <div class="danger-zone">
-                    <div class="danger-zone-label">Danger Zone</div>
-                    <div class="danger-zone-text">
-                        Permanently deletes your account and removes all reading progress,
-                        bookmarks, and notes. This action cannot be undone.
+                <details class="pp-danger" @if ($errors->hasBag('userDeletion')) open @endif>
+                    <summary>Delete my account</summary>
+                    <div class="pp-danger-body">
+                        <p class="mb-1">This permanently removes:</p>
+                        <ul>
+                            <li>your profile photo and preferences</li>
+                            <li>your reading progress, bookmarks and notes</li>
+                        </ul>
+                        <p>Donations, if you made any, are recorded separately by the name you entered and are not
+                            linked to your account. This cannot be undone.</p>
+
+                        <form action="{{ route('profile.destroy') }}" method="POST" data-single-submit
+                            onsubmit="return confirm('Are you absolutely sure? Your account and its data will be permanently deleted. This cannot be undone.')">
+                            @csrf
+                            @method('DELETE')
+
+                            <div class="mb-3">
+                                <label for="delete_password" class="form-label" style="color:#b02a37">Confirm your
+                                    password</label>
+                                <input type="password" id="delete_password" name="password"
+                                    class="form-control @error('password', 'userDeletion') is-invalid @enderror"
+                                    placeholder="Enter your password to confirm" required autocomplete="current-password">
+                                @error('password', 'userDeletion')
+                                    <div class="pp-error">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <button type="submit" class="pp-btn-danger">Delete my account</button>
+                        </form>
                     </div>
+                </details>
+            </div>
 
-                    <form action="{{ route('profile.destroy') }}" method="POST" class="d-block danger-zone-label"
-                        onsubmit="return confirm('Are you absolutely sure? This will permanently delete your account and remove all reading progress, bookmarks, and notes. This cannot be undone.')">
-                        @csrf
-                        @method('DELETE')
-
-                        <div class="mb-3">
-                            <label for="delete_password" class="form-label">Confirm your
-                                password</label>
-                            <input type="password" id="delete_password" name="password"
-                                class="form-control @error('password', 'userDeletion') is-invalid @enderror"
-                                placeholder="Enter your password to confirm">
-                            @error('password', 'userDeletion')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <button type="submit" class="btn btn-danger-outline">
-                            Delete My Account
-                        </button>
-                    </form>
-                </div>
-
-            </div>{{-- end #tab-password --}}
-
-        </div>{{-- .profile-inner --}}
-    </div>{{-- .profile-page --}}
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
     <script>
-        const sections = {
-            'tab-profile': document.getElementById('tab-profile'),
-            'tab-preferences': document.getElementById('tab-preferences'),
-            'tab-password': document.getElementById('tab-password'),
-        };
+        document.addEventListener('DOMContentLoaded', () => {
+            /* ── Tabs ── */
+            const panels = ['tab-profile', 'tab-preferences', 'tab-password'];
+            const tabLinks = document.querySelectorAll('.pp-tab');
 
-        const tabLinks = document.querySelectorAll('.profile-tab');
+            function showTab(hash) {
+                const id = hash.replace('#', '');
+                if (!panels.includes(id)) return showTab('#tab-profile');
 
-        function showTab(targetId) {
-            Object.values(sections).forEach(el => {
-                if (el) el.style.display = 'none';
-            });
-
-            tabLinks.forEach(link => link.classList.remove('active'));
-
-            const sectionId = targetId.replace('#', '');
-            if (sections[sectionId]) {
-                sections[sectionId].style.display = 'block';
+                panels.forEach((p) => { document.getElementById(p).style.display = p === id ? 'block' : 'none'; });
+                tabLinks.forEach((link) => {
+                    const active = link.getAttribute('href') === '#' + id;
+                    link.classList.toggle('active', active);
+                    link.setAttribute('aria-selected', active ? 'true' : 'false');
+                });
             }
 
-            tabLinks.forEach(link => {
-                if (link.getAttribute('href') === targetId) {
-                    link.classList.add('active');
+            tabLinks.forEach((link) => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    history.pushState(null, '', link.getAttribute('href'));
+                    showTab(link.getAttribute('href'));
+                });
+            });
+
+            showTab(@json($startTab) || window.location.hash || '#tab-profile');
+
+            /* ── Email badalne par current password isi tab mein ── */
+            const emailInput = document.getElementById('email');
+            const passwordBox = document.getElementById('email-password-box');
+            const passwordInput = document.getElementById('current_password');
+
+            if (emailInput && passwordBox) {
+                const original = @json(strtolower($user->email));
+                const sync = () => {
+                    const changed = emailInput.value.trim().toLowerCase() !== original;
+                    passwordBox.hidden = !changed;
+                    passwordInput.required = changed;
+                };
+                emailInput.addEventListener('input', sync);
+                sync();
+                if (@json($emailBoxOpen)) {
+                    passwordBox.hidden = false;
+                    passwordInput.required = true;
                 }
-            });
-        }
+            }
 
-        tabLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = this.getAttribute('href');
-                history.pushState(null, null, target);
-                showTab(target);
+            /* ── Double-click se do baar submit nahi (password mail do baar ja rahi thi) ── */
+            document.querySelectorAll('form[data-single-submit]').forEach((form) => {
+                form.addEventListener('submit', (e) => {
+                    // confirm() mein "Cancel" dabaya to kuch mat karo
+                    if (e.defaultPrevented) return;
+
+                    if (form.dataset.submitting === '1') {
+                        e.preventDefault();
+                        return;
+                    }
+                    form.dataset.submitting = '1';
+
+                    const button = form.querySelector('button[type="submit"]');
+                    if (button) {
+                        button.dataset.label = button.innerHTML;
+                        button.disabled = true;
+                        button.setAttribute('aria-busy', 'true');
+                        button.textContent = 'Please wait…';
+                    }
+                });
             });
+
+            // Back button se wapas aane par page taza ho (stale state/token na rahe)
+            window.addEventListener('pageshow', (e) => {
+                if (e.persisted) window.location.reload();
+            });
+
+            /* ── Avatar: chunne par seedha upload ── */
+            const pick = document.getElementById('avatar-pick');
+            const fileInput = document.getElementById('avatar-input');
+            const avatarForm = document.getElementById('avatar-form');
+            const avatarError = document.getElementById('avatar-error');
+
+            if (pick && fileInput && avatarForm) {
+                pick.addEventListener('click', () => fileInput.click());
+                fileInput.addEventListener('change', () => {
+                    const file = fileInput.files[0];
+                    if (!file) return;
+
+                    const fail = (message) => {
+                        avatarError.textContent = message;
+                        avatarError.hidden = false;
+                        fileInput.value = '';
+                    };
+
+                    if (file.size > 2 * 1024 * 1024) return fail('The photo must be smaller than 2 MB.');
+                    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+                        return fail('Please upload a JPG, PNG or WebP image.');
+                    }
+
+                    pick.disabled = true;
+                    pick.textContent = 'Uploading…';
+                    avatarForm.submit();
+                });
+            }
         });
-
-        const initialHash = window.location.hash || '#tab-profile';
-        showTab(initialHash);
-
-    (function () {
-        const email = document.getElementById('email');
-        const box = document.getElementById('email-password-box');
-        const original = @json(auth()->user()->email).toLowerCase();
-        const sync = () => { box.hidden = email.value.trim().toLowerCase() === original; };
-        email.addEventListener('input', sync);
-        sync();
-        @if ($errors->has('current_password')) box.hidden = false; @endif
-    })();
-
     </script>
 @endpush
