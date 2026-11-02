@@ -42,6 +42,7 @@
             --pp-cream: var(--cream, #FDFBF7);
             --pp-red: var(--red, #dd2d4a);
             --pp-border: var(--border, rgba(201, 150, 58, 0.28));
+            --pp-muted: color-mix(in srgb, var(--pp-ink) 62%, transparent);
             min-height: calc(100vh - 60px);
             padding: 2rem 1rem 3rem;
         }
@@ -187,9 +188,9 @@
         }
 
         .pp-pill-muted {
-            background: rgba(255, 193, 7, 0.2);
+            background: rgba(201, 150, 58, 0.12);
             font-family: 'Cinzel', serif;
-            color: #7a5b00;
+            color: var(--pp-gold-dark);
         }
 
         [data-bs-theme="dark"] .pp-pill-muted {
@@ -209,7 +210,7 @@
 
         .pp-hint {
             font-size: 11.5px;
-            color: rgba(26, 26, 46, 0.6);
+            color: var(--pp-muted);
             margin-top: 0.6rem;
         }
 
@@ -317,11 +318,11 @@
             letter-spacing: 0.4px;
         }
 
-        [data-bs-theme="dark"] .arabic {
+        [data-bs-theme="dark"] .pp-verse .arabic {
             color: var(--gold-light);
         }
 
-        [data-bs-theme="dark"] .reference {
+        [data-bs-theme="dark"] .pp-verse .reference {
             color: var(--gold-light);
         }
 
@@ -343,7 +344,7 @@
             font-size: 12px;
             letter-spacing: 1px;
             text-transform: uppercase;
-            color: rgba(26, 26, 46, 0.6);
+            color: var(--pp-muted);
             text-decoration: none;
             border-bottom: 2px solid transparent;
             margin-bottom: -1px;
@@ -399,7 +400,7 @@
 
         .pp-field-hint {
             font-size: 12px;
-            color: rgba(26, 26, 46, 0.65);
+            color: var(--pp-muted);
             margin-top: 5px;
         }
 
@@ -510,6 +511,52 @@
                 width: 100%;
             }
         }
+
+        .pp-flash {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            background: rgba(25, 135, 84, 0.1);
+            border: 1px solid rgba(25, 135, 84, 0.3);
+            color: #146c43;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 13.5px;
+            margin-bottom: 1.25rem;
+            max-height: 140px;
+            transition: opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease, margin 0.4s ease, padding 0.4s ease;
+        }
+
+        [data-bs-theme="dark"] .pp-flash {
+            color: var(--emerald-light);
+        }
+
+        .pp-flash.is-hiding {
+            opacity: 0;
+            transform: translateY(-6px);
+            max-height: 0;
+            margin-bottom: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            overflow: hidden;
+        }
+
+        .pp-flash-close {
+            background: none;
+            border: none;
+            color: inherit;
+            font-size: 22px;
+            line-height: 1;
+            cursor: pointer;
+            padding: 0 4px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .pp-flash {
+                transition: none;
+            }
+        }
     </style>
 @endpush
 
@@ -587,7 +634,10 @@
             </div>
 
             @if ($flash)
-                <div class="pp-flash" role="status">{{ $flash }}</div>
+                <div class="pp-flash" role="status" data-autodismiss="5000">
+                    <span>{{ $flash }}</span>
+                    <button type="button" class="pp-flash-close" aria-label="Dismiss message">&times;</button>
+                </div>
             @endif
 
             {{-- ───── Tabs ───── --}}
@@ -844,6 +894,26 @@
                     passwordInput.required = true;
                 }
             }
+
+            /* ── Flash: 5 second baad khud fade (hover/focus par ruk jata hai) ── */
+            document.querySelectorAll('[data-autodismiss]').forEach((el) => {
+                const delay = parseInt(el.dataset.autodismiss, 10) || 5000;
+                let timer;
+                const hide = () => {
+                    clearTimeout(timer);
+                    el.classList.add('is-hiding');
+                    setTimeout(() => el.remove(), 500);
+                };
+                const start = () => { timer = setTimeout(hide, delay); };
+                const stop = () => clearTimeout(timer);
+
+                el.addEventListener('mouseenter', stop);
+                el.addEventListener('mouseleave', start);
+                el.addEventListener('focusin', stop);
+                el.addEventListener('focusout', start);
+                el.querySelector('.pp-flash-close')?.addEventListener('click', hide);
+                start();
+            });
 
             /* ── Double-click se do baar submit nahi (password mail do baar ja rahi thi) ── */
             document.querySelectorAll('form[data-single-submit]').forEach((form) => {

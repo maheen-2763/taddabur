@@ -231,8 +231,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // --------------------------------------------------------
     Route::prefix('profile')->name('profile.')->group(function () {
         Route::get('/', [ProfileController::class, 'edit'])->name('edit');
-        Route::patch('/', [ProfileController::class, 'update'])->name('update');
-        Route::delete('/', [ProfileController::class, 'destroy'])->name('destroy');
+        Route::patch('/', [ProfileController::class, 'update'])->middleware('throttle:6,1')->name('update');
+        Route::delete('/', [ProfileController::class, 'destroy'])->middleware('throttle:6,1')->name('destroy');
         Route::post('/preferences', [ProfileController::class, 'updatePreferences'])->name('preferences');
     });
 

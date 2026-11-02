@@ -35,6 +35,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Support\Facades\Blade;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -78,6 +79,10 @@ class AppServiceProvider extends ServiceProvider
 
         View::composer('layouts.app', function ($view) {
             $view->with('devNoteHadith', Hadith::find(14516));
+        });
+
+        Blade::directive('honor', function ($expression) {
+            return "<?php echo \\App\\Helpers\\ArabicHelper::wrapHonorificsInHtml(e({$expression})); ?>";
         });
 
         Event::listen(Verified::class, SendWelcomeEmail::class);

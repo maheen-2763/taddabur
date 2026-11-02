@@ -25,8 +25,8 @@ return [
     ],
     [
         'tag' => 'Names & Attributes',
-        'title' => "Allah's 99 Names & the Prophet's <span class='arabic-symbol'>ﷺ</span> Names",
-        'description' => "An interactive honeycomb of Allah's 99 Names, and a verified collection of the Prophet Muhammad's <span class='arabic-symbol'>ﷺ</span> names and titles — sourced only from the Qur'an and Sahih Hadith.",
+        'title' => "Allah's 99 Names & the Prophet's ﷺ Names",
+        'description' => "An interactive honeycomb of Allah's 99 Names, and a verified collection of the Prophet Muhammad's ﷺ names and titles — sourced only from the Qur'an and Sahih Hadith.",
         'icon' => 'bi-hexagon-half',
         'tier' => null,
     ],

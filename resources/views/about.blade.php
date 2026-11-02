@@ -3,7 +3,14 @@
 
 @push('styles')
     <style>
-        {{-- ✅ Poori purani CSS yahan same rahegi — bilkul copy-paste, kuch change nahi --}} .source-card {
+        {
+                {
+                -- ✅ Poori purani CSS yahan same rahegi — bilkul copy-paste,
+                kuch change nahi --
+            }
+        }
+
+        .source-card {
             background: var(--cream-dark);
             border: 1px solid var(--border);
             border-radius: var(--radius);
@@ -220,8 +227,8 @@
                 @foreach ($sources as $source)
                     <div class="col-md-6">
                         <div class="source-card">
-                            <span class="source-tag">{{ $source['tag'] }}</span>
-                            <h5 class="mb-2">{{ $source['title'] }}</h5>
+                            <span class="source-tag">@honor($source['tag'])</span>
+                            <h5 class="mb-2">@honor($source['title'])</h5>
 
                             @if (isset($source['reciters_verified']))
                                 <p class="text-muted small fw-semibold mb-1 mt-2">✓ Verified Word-Sync</p>
@@ -246,7 +253,8 @@
 
             {{-- Accuracy --}}
             <h4 class="heading-font mb-2">How We Ensure Accuracy</h4>
-            <p class="text-muted small mb-0">We aim for a 0% error rate across everything we publish. Here's how each part
+            <p class="text-muted small mb-0">We try and hope to aim for a 0% error rate across everything we publish. Here's
+                how each part
                 of the app is checked.</p>
 
             @foreach ($accuracy as $sectionTitle => $items)
@@ -255,9 +263,9 @@
                     @foreach ($items as $item)
                         <div class="col-md-6">
                             <div class="source-card">
-                                <span class="source-tag">{{ $item['tag'] }}</span>
-                                <h5 class="mb-2">{{ $item['title'] }}</h5>
-                                <p class="text-muted small mb-0">{{ $item['description'] }}</p>
+                                <span class="source-tag">@honor($item['tag'])</span>
+                                <h5 class="mb-2">@honor($item['title'])</h5>
+                                <p class="text-muted small mb-0">@honor($item['description'])</p>
                             </div>
                         </div>
                     @endforeach
@@ -275,7 +283,7 @@
             <div class="source-card honesty-card mb-5">
                 <p class="honesty-quote mb-2">"{{ $honestyQuote['text'] }}"</p>
                 <p class="text-muted small mb-0">
-                    — {{ $honestyQuote['narrator'] }}
+                    — @honor($honestyQuote['narrator'])
                     (<a href="{{ route('hadith.show', ['collection' => $honestyQuote['hadith_collection'], 'chapter' => $honestyQuote['hadith_chapter']]) }}?highlight={{ $honestyQuote['hadith_highlight_id'] }}"
                         style="color:var(--gold-dark)">{{ $honestyQuote['hadith_label'] }}</a>)
                 </p>
@@ -294,8 +302,8 @@
 
             <h4 class="heading-font mb-3">Found an Error?</h4>
             <p class="text-muted">
-                If you notice any inaccuracy, please <a href="mailto:your-email@example.com"
-                    style="color:var(--gold-dark)">let us know</a>.
+                If you notice any inaccuracy, please <a href="mailto:support@taddabur.in" style="color:var(--gold-dark)">let
+                    us know</a>.
                 Every report is reviewed against the original source before any correction is made.
             </p>
 

@@ -29,32 +29,31 @@
                 </ul>
             </div>
         @endif
-
-        @if ($scholarly)
+        @if ($scholarly || $tradition)
             <div class="sources-row">
-                <span class="src-badge src-scholarly">Scholarly</span>
-                <ul class="sources-list">
-                    @foreach ($scholarly as $item)
-                        <li>{{ $item }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        @if ($tradition)
-            <div class="sources-row">
-                <span class="src-badge src-tradition">Tradition</span>
+                <span class="src-badge src-scholarly">Scholarly Tradition</span>
                 <div class="sources-body">
                     <ul class="sources-list">
-                        @foreach ($tradition as $item)
+                        @foreach ($scholarly as $item)
                             <li>{{ $item }}</li>
                         @endforeach
+                        @foreach ($tradition as $item)
+                            <li class="sources-caveat">{{ $item }}</li>
+                        @endforeach
                     </ul>
-                    <p class="sources-note">
-                        These details come from tradition and tafsir, not from the Qur'an text itself.
-                    </p>
+                    @if ($tradition)
+                        <p class="sources-note">Italic notes explain where a report is weaker or disputed.</p>
+                    @endif
                 </div>
             </div>
         @endif
+
     </section>
 @endif
+@push('styles')
+    <style>
+        .sources-caveat {
+            font-style: italic;
+        }
+    </style>
+@endpush

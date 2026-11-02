@@ -556,6 +556,7 @@
 
         .read-size-ctrl button+button {
             border-left: 1px solid var(--border);
+
         }
 
         .read-size-ctrl button:hover {
@@ -669,10 +670,67 @@
                 align-self: flex-start;
             }
         }
+
+        .read-progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            width: 0;
+            background: linear-gradient(90deg, var(--emerald), var(--gold));
+            z-index: 1090;
+            pointer-events: none;
+        }
+
+        .chapter-nav-btn.next.pulse {
+            animation: nextNudge 1.2s ease 2;
+        }
+
+        @keyframes nextNudge {
+            50% {
+                transform: translateX(4px);
+                box-shadow: 0 0 0 4px rgba(27, 94, 59, 0.18);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .chapter-nav-btn.next.pulse {
+                animation: none;
+            }
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--ink-soft);
+            width: 44px;
+            height: 40px;
+            border-radius: 50px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.18s;
+        }
+
+        .icon-btn:hover {
+            color: var(--emerald-light);
+            border-color: var(--emerald-light);
+        }
+
+        .icon-btn.on {
+            color: var(--gold-dark);
+            border-color: var(--gold);
+            background: rgba(180, 130, 40, 0.1);
+        }
+
+        [data-bs-theme="dark"] .icon-btn.on {
+            color: var(--gold-light);
+        }
     </style>
 @endpush
 
 @section('content')
+    <div id="readProgressBar" class="read-progress-bar" aria-hidden="true"></div>
     <div class="container py-4">
 
         {{-- Breadcrumb --}}
@@ -796,10 +854,26 @@
                                 <i class="bi bi-clock me-1"></i>{{ $chapter->read_time_minutes }} min read
                             @endif
                         </span>
-                        <div class="read-size-ctrl" role="group" aria-label="Text size">
-                            <button type="button" onclick="setReadScale(-1)" aria-label="Smaller text">A−</button>
-                            <button type="button" onclick="setReadScale(1)" aria-label="Larger text">A+</button>
+
+                        <div class="d-flex align-items-center gap-2">
+                            @auth
+                                <button type="button" id="bookmarkBtn" class="icon-btn {{ $isBookmarked ? 'on' : '' }}"
+                                    onclick="toggleBookmark({{ $chapter->id }})"
+                                    aria-pressed="{{ $isBookmarked ? 'true' : 'false' }}" aria-label="Bookmark this chapter"
+                                    title="Bookmark">
+                                    <i class="bi {{ $isBookmarked ? 'bi-bookmark-fill' : 'bi-bookmark' }}"></i>
+                                </button>
+                                <button type="button" class="icon-btn" data-bs-toggle="modal" data-bs-target="#noteModal"
+                                    aria-label="Add a note" title="Add a note">
+                                    <i class="bi bi-journal-plus"></i>
+                                </button>
+                            @endauth
+                            <div class="read-size-ctrl" role="group" aria-label="Text size">
+                                <button type="button" onclick="setReadScale(-1)" aria-label="Smaller text">A−</button>
+                                <button type="button" onclick="setReadScale(1)" aria-label="Larger text">A+</button>
+                            </div>
                         </div>
+
                     </div>
                 </div>
 
@@ -880,7 +954,25 @@
             </article>
         </div>
     </div>
-
+    @auth
+        <div class="modal fade" id="noteModal" tabindex="-1" aria-labelledby="noteModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content" style="border-radius:var(--radius); border:1px solid var(--border)">
+                    <div class="modal-body p-4">
+                        <h6 class="heading-font mb-1" id="noteModalLabel">Add a note</h6>
+                        <p class="text-muted small mb-3">{{ $story->title }} — {{ $chapter->title }}</p>
+                        <textarea id="noteContent" class="form-control mb-3" rows="5" maxlength="2000"
+                            placeholder="What did you learn or want to remember?"></textarea>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-outline-secondary w-50" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" id="saveNoteBtn" class="btn-emerald btn w-50" onclick="saveNote()">Save
+                                note</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endauth
     @push('scripts')
         <script>
             const storiesIndexUrl = "{{ route('stories.index') }}";
@@ -925,6 +1017,8 @@
                             navNum.innerHTML = '<i class="bi bi-check-lg" style="font-size:0.75rem"></i>';
                         }
 
+                        document.querySelector('.chapter-nav-btn.next')?.classList.add('pulse');
+
                         if (data.isStoryCompleted) {
                             showStoryCompletedBanner();
                         } else {
@@ -946,21 +1040,23 @@
                 banner.className = 'completion-card';
                 banner.id = 'completionCard';
                 banner.innerHTML = `
-                                                                                                                                                                                                                                                                                                        <div class="cc-arabic">الْحَمْدُ لِلَّٰهِ</div>
-                                                                                                                                                                                                                                                                                                        <h5 class="heading-font mt-2 mb-1 cc-title">Story Completed</h5>
-                                                                                                                                                                                                                                                                                                        <p class="cc-text"></p>
-                                                                                                                                                                                                                                                                                                        <p class="cc-stats"></p>
-                                                                                                                                                                                                                                                                                                        <div class="cc-actions">
-                                                                                                                                                                                                                                                                                                            <a href="${storiesIndexUrl}" class="btn cc-btn-gold">Explore More Stories</a>
-                                                                                                                                                                                                                                                                                                            <a href="${storyShowUrl}" class="btn cc-btn-ghost">Back to Story</a>
-                                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                                    `;
+                                                                                                                                                                                                                                                                                                                                                                                                                                        <div class="cc-arabic">الْحَمْدُ لِلَّٰهِ</div>
+                                                                                                                                                                                                                                                                                                                                                                                                                                        <h5 class="heading-font mt-2 mb-1 cc-title">Story Completed</h5>
+                                                                                                                                                                                                                                                                                                                                                                                                                                        <p class="cc-text"></p>
+                                                                                                                                                                                                                                                                                                                                                                                                                                        <p class="cc-stats"></p>
+                                                                                                                                                                                                                                                                                                                                                                                                                                        <div class="cc-actions">
+                                                                                                                                                                                                                                                                                                                                                                                                                                            <a href="${storiesIndexUrl}" class="btn cc-btn-gold">Explore More Stories</a>
+                                                                                                                                                                                                                                                                                                                                                                                                                                            <a href="${storyShowUrl}" class="btn cc-btn-ghost">Back to Story</a>
+                                                                                                                                                                                                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                                                                                                                                                                                                    `;
                 banner.querySelector('.cc-text').textContent = `You have completed ${storyTitle}.`;
                 banner.querySelector('.cc-stats').textContent = storyStats;
                 article.appendChild(banner);
 
                 banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
+
+
             function showCompletionToast() {
                 const existing = document.querySelector('.chapter-complete-toast');
                 if (existing) existing.remove();
@@ -968,25 +1064,25 @@
                 const toast = document.createElement('div');
                 toast.className = 'chapter-complete-toast';
                 toast.innerHTML = `
-                                                                                                                                                                                                                                                                                                                                                                                                            <span class="toast-ar">الْحَمْدُ لِلَّٰهِ</span>
-                                                                                                                                                                                                                                                                                                                                                                                                            <span class="toast-txt">Chapter completed</span>
-                                                                                                                                                                                                                                                                                                                                                                                                        `;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <span class="toast-ar">الْحَمْدُ لِلَّٰهِ</span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <span class="toast-txt">Chapter completed</span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        `;
                 toast.style.cssText =
                     `
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                position: fixed;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                top: 80px;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                left: 50%;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                transform: translateX(-50%) translateY(-12px);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                background: linear-gradient(135deg, var(--emerald-dark), var(--emerald));
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                padding: 0.75rem 1.5rem;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                        border-radius: 50px;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    z-index: 9999;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    display: flex;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    align-items: center;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    opacity: 0;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    transition: opacity 0.35s ease, transform 0.35s ease;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                `;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                position: fixed;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                top: 80px;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                left: 50%;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                transform: translateX(-50%) translateY(-12px);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                background: linear-gradient(135deg, var(--emerald-dark), var(--emerald));
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                padding: 0.75rem 1.5rem;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        border-radius: 50px;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    z-index: 9999;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    display: flex;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    align-items: center;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    opacity: 0;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    transition: opacity 0.35s ease, transform 0.35s ease;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                `;
                 document.body.appendChild(toast);
 
                 requestAnimationFrame(() => {
@@ -1022,6 +1118,117 @@
                     try { localStorage.setItem('readScale', scale); } catch (e) { }
                 };
             })();
+
+
+            const prevUrl = @json($prevChapter ? route('stories.chapter', [$story->slug, $prevChapter->slug]) : null);
+            const nextUrl = @json($nextChapter ? route('stories.chapter', [$story->slug, $nextChapter->slug]) : null);
+
+            // ← / → se Prev/Next chapter
+            document.addEventListener('keydown', function (e) {
+                if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+                if (document.body.classList.contains('modal-open')) return;
+
+                const tag = (e.target.tagName || '').toLowerCase();
+                if (['input', 'textarea', 'select'].includes(tag) || e.target.isContentEditable) return;
+
+                if (e.key === 'ArrowLeft' && prevUrl) window.location.href = prevUrl;
+                if (e.key === 'ArrowRight' && nextUrl) window.location.href = nextUrl;
+            });
+
+            // Chapter ke andar scroll progress
+            (function () {
+                const content = document.querySelector('.story-content');
+                const bar = document.getElementById('readProgressBar');
+                if (!content || !bar) return;
+
+                let ticking = false;
+
+                function update() {
+                    const rect = content.getBoundingClientRect();
+                    const p = Math.min(1, Math.max(0, (window.innerHeight - rect.top) / rect.height));
+                    bar.style.width = (p * 100) + '%';
+                    ticking = false;
+                }
+
+                window.addEventListener('scroll', function () {
+                    if (!ticking) {
+                        requestAnimationFrame(update);
+                        ticking = true;
+                    }
+                }, { passive: true });
+
+                window.addEventListener('resize', update);
+                update();
+            })();
+
+
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+            const noteStoryId = {{ $story->id }};
+            const noteTitle = @json(Str::limit($story->title . ' — ' . $chapter->title, 250));
+
+            function toggleBookmark(chapterId) {
+                const btn = document.getElementById('bookmarkBtn');
+                if (!btn || btn.disabled) return;
+                btn.disabled = true;
+
+                fetch("{{ route('bookmarks.store') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify({ type: 'chapter', id: chapterId })
+                })
+                    .then(r => {
+                        if (!r.ok) throw new Error(r.status);
+                        return r.json();
+                    })
+                    .then(data => {
+                        const on = data.status === 'added';
+                        btn.classList.toggle('on', on);
+                        btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+                        btn.querySelector('i').className = 'bi ' + (on ? 'bi-bookmark-fill' : 'bi-bookmark');
+                        showFlash(on ? 'Chapter Bookmarked' : 'Bookmark Removed', 'success');
+                    })
+                    .catch(() => showFlash('Could not update bookmark. Please try again.', 'error'))
+                    .finally(() => { btn.disabled = false; });
+            }
+
+            function saveNote() {
+                const field = document.getElementById('noteContent');
+                const btn = document.getElementById('saveNoteBtn');
+                const content = field.value.trim();
+                if (!content) { field.focus(); return; }
+
+                btn.disabled = true;
+
+                fetch("{{ route('notes.store') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify({
+                        story_id: noteStoryId,
+                        title: noteTitle,
+                        content: content,
+                        is_private: true
+                    })
+                })
+                    .then(r => {
+                        if (!r.ok) throw new Error(r.status);
+                        return r.json();
+                    })
+                    .then(() => {
+                        field.value = '';
+                        bootstrap.Modal.getInstance(document.getElementById('noteModal'))?.hide();
+                        showFlash('Note Saved', 'success');
+                    })
+                    .catch(() => showFlash('Could not save note. Please try again.', 'error'))
+                    .finally(() => { btn.disabled = false; });
+            }
         </script>
     @endpush
 

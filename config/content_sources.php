@@ -7,7 +7,7 @@ return [
         ['number' => '15,427', 'label' => 'Hadiths Classified'],
         ['number' => '345', 'label' => 'Hadith Chapters Audited'],
         ['number' => '6', 'label' => 'Hadith Collections'],
-        ['number' => '25', 'label' => 'Prophet Stories'],
+        ['number' => '26', 'label' => 'Prophet Stories'],
         ['number' => '4', 'label' => 'Scholars (Four Imams)'],
     ],
 
@@ -66,7 +66,13 @@ return [
         [
             'tag' => 'Prophet Stories',
             'title' => 'Quran-grounded narratives',
-            'description' => '25 Prophet stories across 136 chapters — every story is built from explicit Quranic statements first; supplementary details from Sahih Bukhari/Muslim are clearly marked where used.',
+            'description' => 'Every story is built from explicit Quranic statements first. Supplementary details come from authentic Hadith and from classical sirah and tafsir works (such as Ibn Hisham, Ibn Sa\'d, Al-Tabari and Ibn Kathir), and each one is labeled by type at the end of its chapter.',
+        ],
+
+        [
+            'tag' => 'Chapter Sources',
+            'title' => 'Every Detail, Clearly Sourced',
+            'description' => "Each story chapter ends with a Sources box. Every reference carries one label: Qur'an (stated in the Qur'an itself, linked to the ayah), Hadith (from a hadith collection, with its number and grade), or Scholarly Tradition (from classical sirah and tafsir works). Where a report's chain is weak, incomplete or missing, we say so plainly. Labels show where a detail comes from — they do not claim every narration is equally strong.",
         ],
         [
             'tag' => 'Four Imams',
@@ -164,6 +170,7 @@ return [
                 'title' => 'Name-Based Count with Scholarly Note',
                 'description' => 'Prophet Muhammad ﷺ is mentioned by the name "Muhammad" 4 times in the Quran. He is also referred to as "Ahmad" once (Surah As-Saff 61:6), in a prophecy by Isa (AS) — understood by scholarly consensus (ijma) to refer to him as well.',
             ],
+
             [
                 'tag' => 'Summary Source Transparency',
                 'title' => 'Quran vs. Tradition, Clearly Separated',
@@ -179,6 +186,11 @@ return [
                 'tag' => 'Timeline Source Transparency',
                 'title' => 'Quran, Hadith & Tradition — Clearly Labeled',
                 'description' => 'Every event in each prophet\'s life-journey timeline is individually tagged as coming from the Quran, authentic Hadith, or Islamic tradition/tafsir — so readers always know the origin of what they are reading, event by event.',
+            ],
+            [
+                'tag' => 'Chapter Source Labels',
+                'title' => 'Weak Chains Are Never Presented as Sahih',
+                'description' => 'Reports from sirah works whose chains are weak, incomplete or absent are shown as part of the traditional account, with a caution note, never as authenticated hadith.',
             ],
         ],
     ],
@@ -203,5 +215,5 @@ return [
         'hadith_label' => 'Sahih Bukhari, Hadith 6094',
     ],
 
-    'audit_timestamp' => 'App bugs last audited: September 2026',
+    'audit_timestamp' => 'App bugs last audited: November 2026',
 ];

@@ -12,11 +12,14 @@ use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
-
+use App\Services\BookmarkService;
 
 class StoryController extends Controller
 {
-    public function __construct(private StoryService $storyService) {}
+    public function __construct(
+        private StoryService $storyService,
+        private BookmarkService $bookmarkService,
+    ) {}
 
     // GET /stories
     public function index(Request $request): View|RedirectResponse
@@ -121,6 +124,7 @@ class StoryController extends Controller
         if ($user) {
             $data['progress'] = $this->storyService->saveStoryProgress($user, $story, $chapter);
             $data['isChapterCompleted'] = $this->storyService->isChapterCompleted($user, $chapter);
+            $data['isBookmarked'] = $this->bookmarkService->isBookmarked($user, 'chapter', $chapter->id);
 
             $completedIds = $this->storyService->getCompletedChapterIds($user, $story);
             $data['completedChapterIds'] = $completedIds;
@@ -131,6 +135,7 @@ class StoryController extends Controller
             $data['completedChapterIds'] = [];
             $data['completedChaptersCount'] = 0;
             $data['isStoryCompleted'] = false;
+            $data['isBookmarked'] = false;
         }
 
         return view('stories.chapter', $data);
