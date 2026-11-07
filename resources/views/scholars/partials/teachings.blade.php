@@ -2,7 +2,7 @@
     <div class="card mb-3 border-0 shadow-sm teaching-card" style="--madhab-color: var(--madhab-{{ $scholar->madhab }})">
         <div class="card-body">
             <h5 class="card-title fw-bold">{{ $teaching->title }}</h5>
-            <p class="card-text">{{ $teaching->content }}</p>
+            <p class="card-text">@honor($teaching->content)</p>
         </div>
     </div>
 @empty

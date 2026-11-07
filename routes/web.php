@@ -28,6 +28,7 @@ use App\Http\Controllers\SupportController;
 use App\Http\Controllers\DonationController;
 use App\Http\Controllers\RazorpayWebhookController;
 use App\Http\Controllers\ProfileAvatarController;
+use App\Http\Controllers\Admin\ActivityLogController;
 
 
 // Re-import any missing translations weekly (catches new additions)
@@ -268,6 +269,9 @@ Route::middleware(['auth', 'admin'])
         Route::get('/users/{user}', [App\Http\Controllers\Admin\UserController::class, 'show'])
             ->name('users.show');
 
+        Route::delete('/users/{user}', [App\Http\Controllers\Admin\UserController::class, 'destroy'])
+            ->name('users.destroy');
+
         // ── STORIES ──
         Route::get('/stories', [App\Http\Controllers\Admin\StoryController::class, 'index'])->name('stories.index');
         Route::get('/stories/create', [App\Http\Controllers\Admin\StoryController::class, 'create'])->name('stories.create');
@@ -295,6 +299,8 @@ Route::middleware(['auth', 'admin'])
         Route::get('/donations', [App\Http\Controllers\Admin\DonorController::class, 'index'])
             ->name('donations.index');
 
+        Route::get('/activity-log', [App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('activity-log.index');
+        Route::get('/changelog', [App\Http\Controllers\Admin\ChangelogController::class, 'index'])->name('changelog.index');
 
         Route::resource(
             'daily-reflections',

@@ -46,8 +46,25 @@
                         <label class="form-label text-muted" style="font-size:.75rem">PREFERRED LANGUAGE</label>
                         <p class="mb-0">{{ strtoupper($user->preferred_language ?? 'EN') }}</p>
                     </div>
+                    <div class="col-md-6">
+                        @unless ($user->is(auth()->user()))
+    <form method="POST" action="{{ route('admin.users.destroy', $user) }}"
+          onsubmit="return confirm('Are you Sure? User will get deleted permanently!')">
+        @csrf
+        @method('DELETE')
+        <input type="password" name="password" placeholder="your admin password"
+               required autocomplete="current-password">
+        @error('password') <p>{{ $message }}</p> @enderror
+        @error('user') <p>{{ $message }}</p> @enderror
+        <button type="submit">Delete user</button>
+    </form>
+@endunless
+                    </div>
                 </div>
+                
             </div>
+
+            
 
             <div class="admin-card">
                 <div class="admin-card-header">

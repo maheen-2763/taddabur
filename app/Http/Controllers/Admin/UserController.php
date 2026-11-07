@@ -7,6 +7,11 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use App\Actions\DeleteUserAccount;
+use App\Actions\RecordActivity;
+use App\Enums\ActivityEvent;
+use Illuminate\Http\RedirectResponse;
+
 
 class UserController extends Controller
 {
@@ -58,5 +63,23 @@ class UserController extends Controller
         ];
 
         return view('admin.users.show', compact('user', 'stats'));
+    }
+
+    public function destroy(
+        Request $request,
+        User $user,
+        DeleteUserAccount $deleteUserAccount,
+        RecordActivity $record,
+    ): RedirectResponse {
+        if ($user->is($request->user())) {
+            return back()->withErrors(['user' => 'Aap apna admin account yahan se delete nahi kar sakte.']);
+        }
+
+        $request->validate(['password' => ['required', 'current_password']]);
+
+        $deleteUserAccount->handle($user);
+        $record->handle(ActivityEvent::AdminUserDeleted, $request->user()->id);
+
+        return redirect()->route('admin.users.index')->with('status', 'User delete ho gaya.');
     }
 }

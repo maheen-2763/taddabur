@@ -23,8 +23,8 @@
                             <i class="bi {{ $feature['icon'] }}"></i>
                         </div>
                         <span class="feat-tag">{{ $feature['tag'] }}</span>
-                        <h3 class="feat-title">{{ $feature['title'] }}</h3>
-                        <p class="feat-desc">{{ $feature['description'] }}</p>
+                        <h3 class="feat-title">@honor($feature['title'])</h3>
+                        <p class="feat-desc">@honor($feature['description'])</p>
                     </div>
                 </div>
             @endforeach

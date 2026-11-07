@@ -6,7 +6,7 @@
                 <p class="arabic mb-1" dir="rtl" lang="ar">{{ $work->arabic_title }}</p>
             @endif
             @if ($work->description)
-                <small class="text-muted">{{ $work->description }}</small>
+                <small class="text-muted">@honor($work->description)</small>
             @endif
         </div>
     </div>

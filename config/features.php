@@ -32,7 +32,7 @@ return [
     ],
     [
         'tag' => 'Prophet Stories',
-        'title' => '25 Stories, 136 Chapters',
+        'title' => '26 Stories, 136 Chapters',
         'description' => 'The lives of the Prophets, told primarily from explicit Quranic statements, with supplementary details from Sahih Bukhari and Muslim clearly marked.',
         'icon' => 'bi-signpost-split',
         'tier' => null,

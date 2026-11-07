@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
+use App\Enums\ActivityEvent;
 
 /**
  * Account delete: user ka personal data poori tarah hatata hai.
@@ -70,10 +71,16 @@ class DeleteUserAccount
                     ->delete();
             }
 
+            // Is user ke purane log se id hata do, taaki personal link na bache
+            DB::table('activity_logs')->where('actor_id', $user->id)->update(['actor_id' => null]);
+
             Backup::where('created_by', $user->id)->update(['created_by' => null]);
 
             $user->delete();
         });
+
+        // Commit ke baad log likho, transaction fail hua to log nahi banega
+        app(RecordActivity::class)->handle(ActivityEvent::AccountDeleted);
 
         // File transaction ka hissa nahi hoti, isliye commit ke baad hatao
         if ($avatar) {
