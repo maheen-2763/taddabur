@@ -29,7 +29,7 @@ use App\Http\Controllers\DonationController;
 use App\Http\Controllers\RazorpayWebhookController;
 use App\Http\Controllers\ProfileAvatarController;
 use App\Http\Controllers\Admin\ActivityLogController;
-
+use App\Http\Controllers\FeedbackController;
 
 // Re-import any missing translations weekly (catches new additions)
 Schedule::command('quran:import-translations --all')
@@ -241,6 +241,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('throttle:10,1')->name('profile.avatar');
     Route::delete('/profile/avatar', [ProfileAvatarController::class, 'destroy'])
         ->name('profile.avatar.destroy');
+
+    Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
+    Route::post('/feedback/review', [FeedbackController::class, 'storeReview'])
+        ->middleware('throttle:10,60')->name('feedback.review.store');
+    Route::delete('/feedback/review', [FeedbackController::class, 'destroyReview'])
+        ->middleware('throttle:10,60')->name('feedback.review.destroy');
+    Route::post('/feedback/complaint', [FeedbackController::class, 'storeComplaint'])
+        ->middleware('throttle:5,60')->name('feedback.complaint.store');
 });
 
 // ============================================================
@@ -272,6 +280,8 @@ Route::middleware(['auth', 'admin'])
         Route::delete('/users/{user}', [App\Http\Controllers\Admin\UserController::class, 'destroy'])
             ->name('users.destroy');
 
+        Route::delete('/backups', [BackupController::class, 'destroyMany'])->name('backups.destroy-many');
+
         // ── STORIES ──
         Route::get('/stories', [App\Http\Controllers\Admin\StoryController::class, 'index'])->name('stories.index');
         Route::get('/stories/create', [App\Http\Controllers\Admin\StoryController::class, 'create'])->name('stories.create');
@@ -301,6 +311,17 @@ Route::middleware(['auth', 'admin'])
 
         Route::get('/activity-log', [App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('activity-log.index');
         Route::get('/changelog', [App\Http\Controllers\Admin\ChangelogController::class, 'index'])->name('changelog.index');
+
+
+        // ── FEEDBACK ──
+        Route::get('/reviews', [App\Http\Controllers\Admin\ReviewController::class, 'index'])->name('reviews.index');
+        Route::patch('/reviews/{review}/hide', [App\Http\Controllers\Admin\ReviewController::class, 'hide'])->name('reviews.hide');
+        Route::patch('/reviews/{review}/restore', [App\Http\Controllers\Admin\ReviewController::class, 'restore'])
+            ->withTrashed()->name('reviews.restore');
+
+        Route::get('/complaints', [App\Http\Controllers\Admin\ComplaintController::class, 'index'])->name('complaints.index');
+        Route::get('/complaints/{complaint}', [App\Http\Controllers\Admin\ComplaintController::class, 'show'])->name('complaints.show');
+        Route::patch('/complaints/{complaint}', [App\Http\Controllers\Admin\ComplaintController::class, 'update'])->name('complaints.update');
 
         Route::resource(
             'daily-reflections',

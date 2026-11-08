@@ -72,7 +72,7 @@ class UserController extends Controller
         RecordActivity $record,
     ): RedirectResponse {
         if ($user->is($request->user())) {
-            return back()->withErrors(['user' => 'Aap apna admin account yahan se delete nahi kar sakte.']);
+            return back()->withErrors(['user' => 'You cannot delete your own admin account here.']);
         }
 
         $request->validate(['password' => ['required', 'current_password']]);
@@ -80,6 +80,6 @@ class UserController extends Controller
         $deleteUserAccount->handle($user);
         $record->handle(ActivityEvent::AdminUserDeleted, $request->user()->id);
 
-        return redirect()->route('admin.users.index')->with('status', 'User delete ho gaya.');
+        return redirect()->route('admin.users.index')->with('success', 'User deleted.');
     }
 }

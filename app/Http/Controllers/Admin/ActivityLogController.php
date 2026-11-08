@@ -25,7 +25,7 @@ class ActivityLogController  extends Controller
             ->when($data['event'] ?? null, fn($q, $v) => $q->where('event', $v))
             ->when($data['from'] ?? null, fn($q, $v) => $q->where('created_at', '>=', Carbon::parse($v)->startOfDay()))
             ->when($data['to'] ?? null, fn($q, $v) => $q->where('created_at', '<=', Carbon::parse($v)->endOfDay()))
-            ->latest('created_at')->latest('id')
+            ->with('actor:id,name')->latest('created_at')->latest('id')
             ->paginate(50)->withQueryString();
 
         return view('admin.activity-log.index', ['logs' => $logs, 'events' => ActivityEvent::cases()]);

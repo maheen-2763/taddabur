@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use LogicException;
 use Tests\TestCase;
+use Illuminate\Auth\Events\Login;
 
 class ActivityLogTest extends TestCase
 {
@@ -109,7 +110,9 @@ class ActivityLogTest extends TestCase
         $this->actingAs($user)
             ->get(route('admin.activity-log.index'))->assertForbidden();
         $this->actingAs(User::factory()->admin()->create())
-            ->get(route('admin.activity-log.index'))->assertOk();
+            ->get(route('admin.activity-log.index'))
+            ->assertOk()
+            ->assertSee('Activity Log');
     }
 
     public function test_event_filter_works(): void
@@ -119,7 +122,7 @@ class ActivityLogTest extends TestCase
 
         $response = $this->actingAs(User::factory()->admin()->create())
             ->get(route('admin.activity-log.index', ['event' => 'auth.lockout']))
-            ->assertOk();
+            ->assertOk()->assertSee('Activity Log');
 
         $this->assertSame(1, $response->viewData('logs')->total());
     }
@@ -129,5 +132,72 @@ class ActivityLogTest extends TestCase
         $this->actingAs(User::factory()->admin()->create())
             ->get(route('admin.activity-log.index', ['event' => 'hack']))
             ->assertSessionHasErrors('event');
+    }
+
+    public function test_sidebar_links_to_activity_log_and_changelog(): void
+    {
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('admin.dashboard'))
+            ->assertOk()
+            ->assertSee(route('admin.activity-log.index'))
+            ->assertSee(route('admin.changelog.index'));
+    }
+
+
+    public function test_every_event_has_label_and_badge(): void
+    {
+        foreach (ActivityEvent::cases() as $event) {
+            $this->assertNotSame('', $event->label());
+            $this->assertNotSame('', $event->badge());
+        }
+    }
+
+    public function test_page_shows_label_actor_link_and_details(): void
+    {
+        $admin = User::factory()->admin()->create();
+        app(RecordActivity::class)->handle(ActivityEvent::BackupDeleted, $admin->id, ['count' => 2]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.activity-log.index'))
+            ->assertOk()
+            ->assertSee('Backups deleted')
+            ->assertSee(route('admin.users.show', $admin->id))
+            ->assertSee('count: 2');
+    }
+
+    public function test_badge_classes_match_severity(): void
+    {
+        $this->assertSame('bg-danger', ActivityEvent::BackupDeleted->badge());
+        $this->assertSame('bg-warning text-dark', ActivityEvent::LoginFailed->badge());
+        $this->assertSame('bg-success', ActivityEvent::BackupCreated->badge());
+    }
+
+
+
+    public function test_admin_login_is_logged_with_actor(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        event(new Login('web', $admin, false));
+
+        $log = ActivityLog::sole();
+        $this->assertSame('auth.admin_login', $log->event);
+        $this->assertSame($admin->id, $log->actor_id);
+    }
+
+    public function test_regular_user_login_is_not_logged(): void
+    {
+        event(new Login('web', User::factory()->create(), false));
+
+        $this->assertSame(0, ActivityLog::count());
+    }
+
+    public function test_real_admin_sign_in_is_logged(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $this->post('/login', ['email' => $admin->email, 'password' => 'password']);
+
+        $this->assertDatabaseHas('activity_logs', ['event' => 'auth.admin_login', 'actor_id' => $admin->id]);
     }
 }

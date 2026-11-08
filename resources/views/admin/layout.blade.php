@@ -66,6 +66,22 @@
             display: flex;
             flex-direction: column;
             border-right: 1px solid rgba(201, 150, 58, 0.2);
+            max-height: 100vh;
+            max-height: 100dvh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            overscroll-behavior: contain;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, .3) transparent;
+        }
+
+        .admin-sidebar::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .admin-sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, .3);
+            border-radius: 3px;
         }
 
         /* Geometric pattern on sidebar */
@@ -422,10 +438,34 @@
 
             <hr class="sidebar-divider mx-3">
 
+            <div class="sidebar-label">Feedback</div>
+            <a href="{{ route('admin.reviews.index') }}"
+                class="sidebar-link {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}">
+                <i class="bi bi-star-fill"></i> Reviews
+            </a>
+            <a href="{{ route('admin.complaints.index') }}"
+                class="sidebar-link {{ request()->routeIs('admin.complaints.*') ? 'active' : '' }}">
+                <i class="bi bi-exclamation-triangle"></i> Complaints
+                @if (($openComplaintsCount ?? 0) > 0)
+                    <span class="badge bg-danger ms-2">{{ $openComplaintsCount }}</span>
+                @endif
+            </a>
+
+            <hr class="sidebar-divider mx-3">
+
             <div class="sidebar-label">System</div>
             <a href="{{ route('admin.backups') }}"
                 class="sidebar-link {{ request()->routeIs('admin.backups*') ? 'active' : '' }}">
                 <i class="bi bi-hdd"></i> Backups
+            </a>
+
+            <a href="{{ route('admin.activity-log.index') }}"
+                class="sidebar-link {{ request()->routeIs('admin.activity-log.*') ? 'active' : '' }}">
+                <i class="bi bi-clock-history"></i> Activity Log
+            </a>
+            <a href="{{ route('admin.changelog.index') }}"
+                class="sidebar-link {{ request()->routeIs('admin.changelog.*') ? 'active' : '' }}">
+                <i class="bi bi-card-list"></i> Changelog
             </a>
             <a href="{{ route('home') }}" class="sidebar-link" target="_blank" rel="noopener">
                 <i class="bi bi-box-arrow-up-right"></i> View Site

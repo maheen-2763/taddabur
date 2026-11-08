@@ -12,6 +12,9 @@ return [
     'prophet_names' => 'bi-patch-check-fill',
     'app_features' => 'bi-puzzle-fill',
     'about'        => 'bi-lightbulb-fill',
+    'feedback'  => 'bi-chat-square-text',
+    'rating'    => 'bi-star-fill',
+    'complaint' => 'bi-exclamation-triangle',
 ];
 
 // ⚠️ Important: config file banane ke baad ye command chalao (Laravel config cache clear/load karne ke liye):

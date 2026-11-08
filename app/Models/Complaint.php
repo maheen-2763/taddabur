@@ -25,6 +25,41 @@ class Complaint extends Model
 
     // ── Relationships ────────────────────────────────
 
+    public const USER_CATEGORIES = [
+        'content' => 'Content (Quran, stories, hadith)',
+        'account' => 'Account / login',
+        'bug'     => 'Bug (nothing is working)',
+        'other'   => 'Other',
+    ];
+
+
+    public const STATUSES = ['open', 'in_progress', 'resolved'];
+
+    public function statusLabel(): string
+    {
+        return match ($this->status) {
+            'open'        => 'Open',
+            'in_progress' => 'In progress',
+            'resolved'    => 'Resolved',
+            default       => ucfirst($this->status),
+        };
+    }
+
+    public function statusBadge(): string
+    {
+        return match ($this->status) {
+            'open'        => 'bg-warning text-dark',
+            'in_progress' => 'bg-info text-dark',
+            'resolved'    => 'bg-success',
+            default       => 'bg-secondary',
+        };
+    }
+
+    public function categoryLabel(): string
+    {
+        return self::USER_CATEGORIES[$this->category] ?? ucfirst($this->category);
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

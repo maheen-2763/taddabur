@@ -37,6 +37,8 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Blade;
+use App\Models\Complaint;
+
 
 
 class AppServiceProvider extends ServiceProvider
@@ -71,6 +73,9 @@ class AppServiceProvider extends ServiceProvider
         if (config('app.force_https', false)) {
             URL::forceScheme('https');
         }
+
+        View::composer('admin.layout', fn($view) => $view->with('openComplaintsCount', Complaint::open()->count()));
+
         Story::observe(StoryObserver::class);
 
         StoryChapter::observe(StoryChapterObserver::class);

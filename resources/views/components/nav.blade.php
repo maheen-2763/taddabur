@@ -1,6 +1,6 @@
 {{--
-    Navigation Component — Taddabur
-    Place this file at: resources/views/components/nav.blade.php
+Navigation Component — Taddabur
+Place this file at: resources/views/components/nav.blade.php
 --}}
 <nav class="navbar navbar-islamic navbar-expand-lg">
     <div class="container-fluid px-3 px-md-5">
@@ -36,6 +36,7 @@
                         <i class="bi {{ config('icons.quran') }} me-1"></i>Quran
                     </a>
                 </li>
+
 
                 <li class="nav-item dropdown">
                     <a class="nav-link-islamic nav-link dropdown-toggle {{ request()->routeIs(['stories.*', 'prophets.*', 'scholars.*', 'hadith.*', 'allah-names.*', 'prophet-names.*']) ? 'active' : '' }}"
@@ -110,6 +111,11 @@
                 </button>
 
                 @auth
+                    <a href="{{ route('feedback.index') }}"
+                        class="theme-toggle d-inline-flex align-items-center justify-content-center text-decoration-none"
+                        aria-label="Send feedback" title="Feedback">
+                        <i class="bi {{ config('icons.feedback') }}"></i>
+                    </a>
                     <div class="dropdown">
                         <button class="dropdown-toggle nav-user-badge" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-person-circle"></i>
@@ -119,6 +125,12 @@
                             <li>
                                 <a class="dropdown-item small" href="{{ route('profile.edit') }}">
                                     <i class="bi bi-person me-2"></i>Profile
+                                </a>
+                            </li>
+
+                            <li>
+                                <a class="dropdown-item small" href="{{ route('feedback.index') }}">
+                                    <i class="bi {{ config('icons.feedback') }} me-2"></i>Feedback
                                 </a>
                             </li>
 

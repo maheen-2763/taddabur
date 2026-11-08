@@ -8,6 +8,7 @@ use Illuminate\Auth\Events\Failed;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Events\Dispatcher;
+use Illuminate\Auth\Events\Login;
 
 final class LogAuthActivity
 {
@@ -19,6 +20,7 @@ final class LogAuthActivity
             Failed::class => 'onFailed',
             Lockout::class => 'onLockout',
             PasswordReset::class => 'onPasswordReset',
+            Login::class => 'onLogin'
         ];
     }
 
@@ -36,5 +38,14 @@ final class LogAuthActivity
     public function onPasswordReset(PasswordReset $event): void
     {
         $this->record->handle(ActivityEvent::PasswordReset, (int) $event->user->getAuthIdentifier());
+    }
+
+
+    // Only admin sign-ins are logged; regular users' sign-ins are not tracked.
+    public function onLogin(Login $event): void
+    {
+        if ($event->user->is_admin) {
+            $this->record->handle(ActivityEvent::AdminLogin, (int) $event->user->getAuthIdentifier());
+        }
     }
 }

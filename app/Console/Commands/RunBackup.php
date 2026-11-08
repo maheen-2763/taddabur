@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Number;
+use App\Actions\PruneAutoBackups;
+use App\Actions\RecordActivity;
+use App\Enums\ActivityEvent;
 use Illuminate\Support\Str;
 use PDO;
 use RuntimeException;
@@ -66,7 +69,13 @@ class RunBackup extends Command
             'created_by' => $this->option('user') ?: null,
         ]);
 
-        $this->rotate((int) $this->option('keep'));
+        app(RecordActivity::class)->handle(
+            ActivityEvent::BackupCreated,
+            $this->option('user') ? (int) $this->option('user') : null,
+            ['reason' => $label === '' ? 'auto' : 'manual'],
+        );
+
+        app(PruneAutoBackups::class)->handle((int) $this->option('keep'));
 
         Log::info('Backup created', ['filename' => $filename, 'size' => $size]);
         $this->info("Backup created and verified: {$filename} ({$size})");

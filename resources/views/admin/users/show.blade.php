@@ -46,18 +46,32 @@
                         <label class="form-label text-muted" style="font-size:.75rem">PREFERRED LANGUAGE</label>
                         <p class="mb-0">{{ strtoupper($user->preferred_language ?? 'EN') }}</p>
                     </div>
+
                     <div class="col-md-6">
+                        <label class="form-label text-muted" style="font-size:.75rem">DELETE USER</label>
                         @unless ($user->is(auth()->user()))
-    <form method="POST" action="{{ route('admin.users.destroy', $user) }}"
-          onsubmit="return confirm('Are you Sure? User will get deleted permanently!')">
-        @csrf
-        @method('DELETE')
-        <input type="password" name="password" placeholder="your admin password"
-               required autocomplete="current-password">
-        @error('password') <p>{{ $message }}</p> @enderror
-        @error('user') <p>{{ $message }}</p> @enderror
-        <button type="submit">Delete user</button>
-    </form>
+    <div class="border border-danger-subtle rounded-3 p-3 mt-4">
+        <h6 class="text-danger mb-1"><i class="bi bi-exclamation-triangle me-1"></i>Danger zone</h6>
+        <p class="small text-muted mb-3">
+            All User data (bookmarks, notes, reviews, complaints, progress) will get deleted permanently. This can't be retreived back.
+        </p>
+        <form method="POST" action="{{ route('admin.users.destroy', $user) }}"
+              class="d-flex gap-2 align-items-start flex-wrap"
+              onsubmit="return confirm('User will be deleted permanently. Are you sure?')">
+            @csrf
+            @method('DELETE')
+            <div>
+                <input type="password" name="password" required autocomplete="current-password"
+                       class="form-control form-control-sm @error('password') is-invalid @enderror"
+                       placeholder="Your admin password">
+                @error('password') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            </div>
+            <button type="submit" class="btn btn-sm btn-danger">
+                <i class="bi bi-trash me-1"></i>Delete user
+            </button>
+        </form>
+        @error('user') <div class="text-danger small mt-2">{{ $message }}</div> @enderror
+    </div>
 @endunless
                     </div>
                 </div>

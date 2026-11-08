@@ -34,7 +34,7 @@ class AdminUserDeleteTest extends TestCase
 
         $this->actingAs($admin)
             ->delete(route('admin.users.destroy', $target), ['password' => 'password'])
-            ->assertRedirect(route('admin.users.index'));
+            ->assertRedirect(route('admin.users.index'))->assertSessionHas('success');
 
         $this->assertModelMissing($target);
         $this->assertDatabaseHas('activity_logs', ['event' => 'account.deleted', 'actor_id' => null]);

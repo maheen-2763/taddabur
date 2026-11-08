@@ -77,16 +77,9 @@
     @include('components.nav')
 
     {{-- FLASH MESSAGES — content se pehle, taaki upar dikhein --}}
-    @if (session('success') || session('upgrade_message'))
-        <div class="container mt-3">
-            @if (session('success'))
-                <div class="alert alert-islamic-success d-flex align-items-center gap-2" role="alert">
-                    <i class="bi bi-check-circle-fill"></i>
-                    {{ session('success') }}
-                </div>
-            @endif
-        </div>
-    @endif
+
+    @include('components.flash')
+
     @unless (View::hasSection('no_global_errors'))
         @if ($errors->any())
             <div class="container mt-3">
