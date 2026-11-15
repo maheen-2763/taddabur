@@ -12,6 +12,36 @@ final class GitHistory
 
     public const MAX_COMMITS = 200;
 
+    public const TYPE_BADGES = [
+        'feat' => 'bg-success',
+        'fix' => 'bg-danger',
+        'style' => 'bg-info text-dark',
+        'refactor' => 'bg-secondary',
+        'test' => 'bg-warning text-dark',
+        'docs' => 'bg-primary',
+        'chore' => 'bg-dark',
+    ];
+
+    /** Splits "type: summary" into [type, summary]. Messages without a known type prefix return [null, message]. */
+    public static function splitType(string $message): array
+    {
+        $types = implode('|', array_keys(self::TYPE_BADGES));
+
+        if (preg_match('/^(' . $types . '):\s*(.+)$/i', $message, $match)) {
+            return [strtolower($match[1]), $match[2]];
+        }
+
+        return [null, $message];
+    }
+
+    /** When the exported file was last written, or null if it does not exist. */
+    public static function builtAt(): ?Carbon
+    {
+        return Storage::exists(self::FILE)
+            ? Carbon::createFromTimestamp(Storage::lastModified(self::FILE))
+            : null;
+    }
+
     /** Each commit starts with the record separator, then hash, committer date (ISO 8601) and subject split by the unit separator. */
     public const LOG_FORMAT = '--pretty=format:%x1e%h%x1f%cI%x1f%s';
 
@@ -125,10 +155,15 @@ final class GitHistory
             ? array_filter(array_map('intval', $commit['counts']))
             : array_count_values(array_column($files, 'status'));
 
+        [$type, $summary] = self::splitType($commit['message']);
+
         return [
             'hash' => $commit['hash'],
             'date' => $commit['date'],
             'message' => $commit['message'],
+            'type' => $type,
+            'summary' => $summary,
+            'type_badge' => $type === null ? null : self::TYPE_BADGES[$type],
             'files' => $files,
             'files_total' => max((int) ($commit['files_total'] ?? 0), count($files)),
             'counts' => $counts,

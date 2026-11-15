@@ -14,6 +14,7 @@ All notable changes to the app and admin panel are recorded here.
 - Admin content changes (stories, chapters, prophets, daily content) are recorded in the Activity Log
 - Changelog page shows recent git commits with the files each one added, modified or deleted
 - Changelog page paginates recent commits
+- Changelog page shows commit type badges, commit times (IST) and when the list was last built
 
 ### Changed
 

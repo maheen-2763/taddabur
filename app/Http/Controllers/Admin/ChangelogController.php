@@ -31,6 +31,8 @@ class ChangelogController extends Controller
 
         return view('admin.changelog.index', [
             'html' => Changelog::html(),
+            'builtAt' => GitHistory::builtAt(),
+            'latestCommit' => $all->first(),
             'commits' => $commits,
             'commitsByDate' => $commits->getCollection()->groupBy(
                 fn(array $commit) => Carbon::parse($commit['date'])->timezone('Asia/Kolkata')->format('d M Y'),

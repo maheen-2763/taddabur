@@ -8,6 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
+use Illuminate\Support\Carbon;
 
 class GitHistoryTest extends TestCase
 {
@@ -303,5 +304,73 @@ class GitHistoryTest extends TestCase
         $this->artisan('changelog:build-git --limit=5')->assertSuccessful();
 
         Process::assertRan(fn($process) => in_array('-n5', (array) $process->command, true));
+    }
+
+
+
+    public function test_split_type_recognises_known_prefixes_only(): void
+    {
+        $this->assertSame(['feat', 'Add pagination'], GitHistory::splitType('feat: Add pagination'));
+        $this->assertSame(['fix', 'Stop duplicate rows'], GitHistory::splitType('Fix:   Stop duplicate rows'));
+        $this->assertSame([null, 'improvised admin panel'], GitHistory::splitType('improvised admin panel'));
+        $this->assertSame([null, 'feature: not a known type'], GitHistory::splitType('feature: not a known type'));
+        $this->assertSame([null, 'fix:'], GitHistory::splitType('fix:'));
+    }
+
+    public function test_recent_adds_type_summary_and_badge_for_prefixed_messages(): void
+    {
+        Storage::put(GitHistory::FILE, json_encode([
+            ['hash' => 'abc1234', 'date' => self::DATE, 'message' => 'feat: Add pagination'],
+            ['hash' => 'def5678', 'date' => self::DATE, 'message' => 'improvised admin panel'],
+        ]));
+
+        [$prefixed, $plain] = GitHistory::recent();
+
+        $this->assertSame('feat', $prefixed['type']);
+        $this->assertSame('Add pagination', $prefixed['summary']);
+        $this->assertSame('bg-success', $prefixed['type_badge']);
+        $this->assertNull($plain['type']);
+        $this->assertSame('improvised admin panel', $plain['summary']);
+        $this->assertNull($plain['type_badge']);
+    }
+
+    public function test_page_shows_the_type_without_repeating_the_prefix_in_the_title(): void
+    {
+        Storage::put(GitHistory::FILE, json_encode([
+            ['hash' => 'abc1234', 'date' => self::DATE, 'message' => 'fix: Stop duplicate rows'],
+            ['hash' => 'def5678', 'date' => self::DATE, 'message' => 'improvised admin panel'],
+        ]));
+
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('admin.changelog.index'))
+            ->assertOk()
+            ->assertSee('Stop duplicate rows')
+            ->assertDontSee('fix: Stop duplicate rows')
+            ->assertSee('improvised admin panel');
+    }
+
+    public function test_page_shows_when_the_list_was_built_and_the_latest_commit_in_ist(): void
+    {
+        $this->seedCommits(1);
+        touch(Storage::path(GitHistory::FILE), Carbon::parse('2026-11-08 12:00:00', 'UTC')->getTimestamp());
+
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('admin.changelog.index'))
+            ->assertOk()
+            ->assertSee('List built')
+            ->assertSee('08 Nov 2026, 05:30 PM')
+            ->assertSee('0000001');
+    }
+
+    public function test_page_shows_commit_time_in_ist(): void
+    {
+        Storage::put(GitHistory::FILE, json_encode([
+            ['hash' => 'abc1234', 'date' => '2026-11-08T22:30:00+00:00', 'message' => 'Fix thing'],
+        ]));
+
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('admin.changelog.index'))
+            ->assertOk()
+            ->assertSee('04:00 AM');
     }
 }

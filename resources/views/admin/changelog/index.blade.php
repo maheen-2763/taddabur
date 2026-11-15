@@ -14,15 +14,11 @@
         <article class="changelog admin-table p-4">{!! $html !!}</article>
     @endif
 
-    <h6 class="mt-4 mb-2">
-        Recent changes
-        @if ($commits->total() > 0)
-            <small class="text-muted fw-normal">({{ $commits->firstItem() }}-{{ $commits->lastItem() }} of
-                {{ $commits->total() }})</small>
-        @endif
-    </h6>
-
     @php
+        $rangeText = $commits->total() > 0
+            ? "{$commits->firstItem()}-{$commits->lastItem()} of {$commits->total()}"
+            : null;
+
         $statusInfo = [
             'A' => ['Added', 'bg-success'],
             'M' => ['Modified', 'bg-primary'],
@@ -33,6 +29,22 @@
         ];
     @endphp
 
+    <h6 class="mt-4 mb-2">
+        Recent changes
+        @if ($rangeText)
+            <small class="text-muted fw-normal">({{ $rangeText }})</small>
+        @endif
+    </h6>
+
+    @if ($builtAt)
+        <div class="small text-muted mb-2">
+            List built {{ $builtAt->copy()->timezone('Asia/Kolkata')->format('d M Y, h:i A') }} IST
+            @if ($latestCommit)
+                · latest commit <code>{{ $latestCommit['hash'] }}</code>
+            @endif
+        </div>
+    @endif
+
     @forelse ($commitsByDate as $date => $dayCommits)
         <div class="admin-table p-3 mb-3">
             <div class="small text-muted mb-2">{{ $date }}</div>
@@ -41,12 +53,11 @@
                 @if ($commit['files'])
                     <details class="mb-1">
                         <summary class="d-flex gap-2 align-items-baseline flex-wrap" style="cursor:pointer">
-                            <code>{{ $commit['hash'] }}</code>
-                            <span>{{ $commit['message'] }}</span>
+                            @include('admin.changelog._commit-title')
                             <span class="ms-auto d-flex gap-1">
                                 @foreach ($statusInfo as $code => [$label, $badge])
                                     @if (($commit['counts'][$code] ?? 0) > 0)
-                                        <span class="badge" style="min-width:1.5rem; text-align:center" {{ $badge }}">{{ $commit['counts'][$code] }} {{ strtolower($label) }}</span>
+                                        <span class="badge {{ $badge }}">{{ $commit['counts'][$code] }} {{ strtolower($label) }}</span>
                                     @endif
                                 @endforeach
                             </span>
@@ -54,7 +65,8 @@
                         <ul class="list-unstyled small mt-2 mb-1 ms-4">
                             @foreach ($commit['files'] as $file)
                                 <li class="d-flex gap-2 align-items-baseline">
-                                    <span class="badge {{ $statusInfo[$file['status']][1] ?? 'bg-secondary' }}"
+                                    <span class="badge text-center {{ $statusInfo[$file['status']][1] ?? 'bg-secondary' }}"
+                                        style="min-width:1.5rem"
                                         title="{{ $statusInfo[$file['status']][0] ?? $file['status'] }}">{{ $file['status'] }}</span>
                                     <code class="text-break">{{ $file['path'] }}</code>
                                     @if (!empty($file['from']))
@@ -69,8 +81,7 @@
                     </details>
                 @else
                     <div class="d-flex gap-2 align-items-baseline mb-1">
-                        <code>{{ $commit['hash'] }}</code>
-                        <span>{{ $commit['message'] }}</span>
+                        @include('admin.changelog._commit-title')
                     </div>
                 @endif
             @endforeach
