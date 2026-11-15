@@ -15,6 +15,8 @@ use App\Actions\DeleteUserAccount;
 use App\Mail\AccountDeletedMail;
 use Illuminate\Support\Facades\Mail;
 use Throwable;
+use App\Actions\RecordActivity;
+use App\Enums\ActivityEvent;
 
 
 class ProfileController extends Controller
@@ -37,7 +39,7 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(ProfileUpdateRequest $request, RecordActivity $record): RedirectResponse
     {
         $user = $request->user();
         $oldEmail = $user->email;
@@ -49,6 +51,9 @@ class ProfileController extends Controller
         $user->save();
 
         if ($emailChanged) {
+            // Logged right after the save so it is recorded even if the mails below fail.
+            $record->handle(ActivityEvent::EmailChanged, $user->id);
+
             try {
                 $user->sendEmailVerificationNotification();
                 \Illuminate\Support\Facades\Mail::to($oldEmail)->send(
@@ -58,6 +63,7 @@ class ProfileController extends Controller
                 report($e);
             }
         }
+
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 

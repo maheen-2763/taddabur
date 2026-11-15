@@ -23,6 +23,9 @@ enum ActivityEvent: string
     case ContentDeleted = 'content.deleted';
     case ContentRestored = 'content.restored';
 
+    case EmailChanged = 'account.email_changed';
+    case PasswordChanged = 'account.password_changed';
+
     public function label(): string
     {
         return match ($this) {
@@ -43,6 +46,8 @@ enum ActivityEvent: string
             self::ContentUpdated => 'Content updated',
             self::ContentDeleted => 'Content deleted',
             self::ContentRestored => 'Content restored',
+            self::EmailChanged => 'Email address changed',
+            self::PasswordChanged => 'Password changed',
         };
     }
 
@@ -60,6 +65,7 @@ enum ActivityEvent: string
             self::ContentCreated, self::ContentRestored => 'bg-success',
             self::ContentUpdated => 'bg-primary',
             self::ContentDeleted => 'bg-danger',
+            self::EmailChanged, self::PasswordChanged => 'bg-warning text-dark',
         };
     }
 }
