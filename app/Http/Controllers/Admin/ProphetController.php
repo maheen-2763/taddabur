@@ -11,7 +11,7 @@ class ProphetController extends Controller
 {
     public function index(): View
     {
-        $prophets = Prophet::withCount('stories')->orderBy('order')->get();
+        $prophets = Prophet::withCount('stories')->orderBy('order')->paginate(10);
 
         return view('admin.prophets.index', compact('prophets'));
     }

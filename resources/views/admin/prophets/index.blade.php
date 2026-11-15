@@ -43,36 +43,33 @@
                         <td style="text-align:right; vertical-align:middle">
 
                             {{-- Arabic name --}}
-                            <span
-                                style="font-family:'Amiri', serif;
-                                     font-size:1.6rem;
-                                     direction:rtl;
-                                     display:block;
-                                     text-align:right;
-                                     unicode-bidi:bidi-override;
-                                     color:var(--emerald);
-                                     line-height:1.8; margin-bottom:0.2rem">
+                            <span style="font-family:'Amiri', serif;
+                                                     font-size:1.6rem;
+                                                     direction:rtl;
+                                                     display:block;
+                                                     text-align:right;
+                                                     unicode-bidi:bidi-override;
+                                                     color:var(--emerald);
+                                                     line-height:1.8; margin-bottom:0.2rem">
                                 {{ $prophet->name_arabic }}
                             </span>
 
                             {{-- Arabic honour title --}}
                             @if ($prophet->title_arabic)
-                                <span
-                                    style="font-family:'Amiri', serif;
-                                         font-size:1rem;
-                                         direction:rtl;
-                                         display:block;
-                                         text-align:right;
-                                         unicode-bidi:bidi-override;
-                                         color:var(--gold);
-                                         line-height:1.6">
+                                <span style="font-family:'Amiri', serif;
+                                                                 font-size:1rem;
+                                                                 direction:rtl;
+                                                                 display:block;
+                                                                 text-align:right;
+                                                                 unicode-bidi:bidi-override;
+                                                                 color:var(--gold);
+                                                                 line-height:1.6">
                                     {{ $prophet->title_arabic }}
                                 </span>
-                                <small
-                                    style="display:block;
-                                          text-align:right;
-                                          color:#999;
-                                          font-size:0.7rem">
+                                <small style="display:block;
+                                                                  text-align:right;
+                                                                  color:#999;
+                                                                  font-size:0.7rem">
                                     {{ $prophet->title_transliteration }}
                                 </small>
                             @endif
@@ -101,6 +98,7 @@
                 @endforeach
             </tbody>
         </table>
+        <div class="p-3">{{ $prophets->links() }}</div>
     </div>
 
 @endsection
