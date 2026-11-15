@@ -13,6 +13,7 @@ All notable changes to the app and admin panel are recorded here.
 - User feedback page with star rating and complaints; admin Reviews and Complaints pages
 - Admin content changes (stories, chapters, prophets, daily content) are recorded in the Activity Log
 - Changelog page shows recent git commits with the files each one added, modified or deleted
+- Changelog page paginates recent commits
 
 ### Changed
 

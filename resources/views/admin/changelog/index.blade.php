@@ -14,66 +14,76 @@
         <article class="changelog admin-table p-4">{!! $html !!}</article>
     @endif
 
-    <h6 class="mt-4 mb-2">Recent changes</h6>
+    <h6 class="mt-4 mb-2">
+        Recent changes
+        @if ($commits->total() > 0)
+            <small class="text-muted fw-normal">({{ $commits->firstItem() }}-{{ $commits->lastItem() }} of
+                {{ $commits->total() }})</small>
+        @endif
+    </h6>
 
-@php
-    $statusInfo = [
-        'A' => ['Added', 'bg-success'],
-        'M' => ['Modified', 'bg-primary'],
-        'D' => ['Deleted', 'bg-danger'],
-        'R' => ['Renamed', 'bg-info text-dark'],
-        'C' => ['Copied', 'bg-secondary'],
-        'T' => ['Type changed', 'bg-secondary'],
-    ];
-@endphp
+    @php
+        $statusInfo = [
+            'A' => ['Added', 'bg-success'],
+            'M' => ['Modified', 'bg-primary'],
+            'D' => ['Deleted', 'bg-danger'],
+            'R' => ['Renamed', 'bg-info text-dark'],
+            'C' => ['Copied', 'bg-secondary'],
+            'T' => ['Type changed', 'bg-secondary'],
+        ];
+    @endphp
 
-@forelse ($commitsByDate as $date => $commits)
-    <div class="admin-table p-3 mb-3">
-        <div class="small text-muted mb-2">{{ $date }}</div>
+    @forelse ($commitsByDate as $date => $dayCommits)
+        <div class="admin-table p-3 mb-3">
+            <div class="small text-muted mb-2">{{ $date }}</div>
 
-        @foreach ($commits as $commit)
-            @if ($commit['files'])
-                <details class="mb-1">
-                    <summary class="d-flex gap-2 align-items-baseline flex-wrap" style="cursor:pointer">
+            @foreach ($dayCommits as $commit)
+                @if ($commit['files'])
+                    <details class="mb-1">
+                        <summary class="d-flex gap-2 align-items-baseline flex-wrap" style="cursor:pointer">
+                            <code>{{ $commit['hash'] }}</code>
+                            <span>{{ $commit['message'] }}</span>
+                            <span class="ms-auto d-flex gap-1">
+                                @foreach ($statusInfo as $code => [$label, $badge])
+                                    @if (($commit['counts'][$code] ?? 0) > 0)
+                                        <span class="badge" style="min-width:1.5rem; text-align:center" {{ $badge }}">{{ $commit['counts'][$code] }} {{ strtolower($label) }}</span>
+                                    @endif
+                                @endforeach
+                            </span>
+                        </summary>
+                        <ul class="list-unstyled small mt-2 mb-1 ms-4">
+                            @foreach ($commit['files'] as $file)
+                                <li class="d-flex gap-2 align-items-baseline">
+                                    <span class="badge {{ $statusInfo[$file['status']][1] ?? 'bg-secondary' }}"
+                                        title="{{ $statusInfo[$file['status']][0] ?? $file['status'] }}">{{ $file['status'] }}</span>
+                                    <code class="text-break">{{ $file['path'] }}</code>
+                                    @if (!empty($file['from']))
+                                        <span class="text-muted">(from {{ $file['from'] }})</span>
+                                    @endif
+                                </li>
+                            @endforeach
+                        </ul>
+                        @if ($commit['files_total'] > count($commit['files']))
+                            <div class="small text-muted ms-4">+ {{ $commit['files_total'] - count($commit['files']) }} more file(s)</div>
+                        @endif
+                    </details>
+                @else
+                    <div class="d-flex gap-2 align-items-baseline mb-1">
                         <code>{{ $commit['hash'] }}</code>
                         <span>{{ $commit['message'] }}</span>
-                        <span class="ms-auto d-flex gap-1">
-                            @foreach ($statusInfo as $code => [$label, $badge])
-                                @if (($commit['counts'][$code] ?? 0) > 0)
-                                    <span class="badge {{ $badge }}">{{ $commit['counts'][$code] }} {{ strtolower($label) }}</span>
-                                @endif
-                            @endforeach
-                        </span>
-                    </summary>
-                    <ul class="list-unstyled small mt-2 mb-1 ms-4">
-                        @foreach ($commit['files'] as $file)
-                            <li class="d-flex gap-2 align-items-baseline">
-                                <span class="badge {{ $statusInfo[$file['status']][1] ?? 'bg-secondary' }}"
-                                    title="{{ $statusInfo[$file['status']][0] ?? $file['status'] }}">{{ $file['status'] }}</span>
-                                <code class="text-break">{{ $file['path'] }}</code>
-                                @if (! empty($file['from']))
-                                    <span class="text-muted">(from {{ $file['from'] }})</span>
-                                @endif
-                            </li>
-                        @endforeach
-                    </ul>
-                    @if ($commit['files_total'] > count($commit['files']))
-                        <div class="small text-muted ms-4">+ {{ $commit['files_total'] - count($commit['files']) }} more file(s)</div>
-                    @endif
-                </details>
-            @else
-                <div class="d-flex gap-2 align-items-baseline mb-1">
-                    <code>{{ $commit['hash'] }}</code>
-                    <span>{{ $commit['message'] }}</span>
-                </div>
-            @endif
-        @endforeach
-    </div>
-@empty
-    <p class="text-muted small">
-        No git history yet. Run <code>php artisan changelog:build-git</code> after each deploy.
-    </p>
-@endforelse
+                    </div>
+                @endif
+            @endforeach
+        </div>
+    @empty
+        <p class="text-muted small">
+            No git history yet. Run <code>php artisan changelog:build-git</code> after each deploy.
+        </p>
+    @endforelse
+    @if ($commits->hasPages())
+        <div class="mt-2">{{ $commits->links() }}</div>
+    @endif
+
 
 
     <style>

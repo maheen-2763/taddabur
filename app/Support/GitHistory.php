@@ -10,6 +10,8 @@ final class GitHistory
 {
     public const FILE = 'git-history.json';
 
+    public const MAX_COMMITS = 200;
+
     /** Each commit starts with the record separator, then hash, committer date (ISO 8601) and subject split by the unit separator. */
     public const LOG_FORMAT = '--pretty=format:%x1e%h%x1f%cI%x1f%s';
 

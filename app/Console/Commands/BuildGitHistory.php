@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Storage;
 
 class BuildGitHistory extends Command
 {
-    protected $signature = 'changelog:build-git {--limit=50 : Number of recent commits to export}';
+    protected $signature = 'changelog:build-git {--limit=100 : Number of recent commits to export}';
 
     protected $description = 'Export recent git commit subjects to storage for the admin Changelog page';
 
@@ -17,8 +17,8 @@ class BuildGitHistory extends Command
     {
         $limit = (int) $this->option('limit');
 
-        if ($limit < 1 || $limit > 200) {
-            $this->error('The limit must be between 1 and 200.');
+        if ($limit < 1 || $limit > GitHistory::MAX_COMMITS) {
+            $this->error('The limit must be between 1 and ' . GitHistory::MAX_COMMITS . '.');
 
             return self::FAILURE;
         }

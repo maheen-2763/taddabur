@@ -214,4 +214,94 @@ class GitHistoryTest extends TestCase
             ->assertOk()
             ->assertSee('changelog:build-git');
     }
+
+    private function seedCommits(int $count): void
+    {
+        $commits = [];
+
+        for ($i = 1; $i <= $count; $i++) {
+            $commits[] = [
+                'hash' => sprintf('%07x', $i),
+                'date' => '2026-11-08T10:00:00+05:30',
+                'message' => "Commit number {$i}",
+                'files' => [],
+                'files_total' => 0,
+                'counts' => [],
+            ];
+        }
+
+        Storage::put(GitHistory::FILE, json_encode($commits));
+    }
+
+    public function test_first_page_shows_the_ten_newest_commits_with_page_links(): void
+    {
+        $this->seedCommits(25);
+
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('admin.changelog.index'))
+            ->assertOk()
+            ->assertSee('Commit number 10')
+            ->assertDontSee('Commit number 11')
+            ->assertSee('1-10 of 25')
+            ->assertSee('page=2', false);
+    }
+
+    public function test_second_and_last_pages_show_the_right_slices(): void
+    {
+        $this->seedCommits(25);
+        $admin = User::factory()->admin()->create();
+
+        $this->actingAs($admin)->get(route('admin.changelog.index', ['page' => 2]))
+            ->assertSee('Commit number 11')
+            ->assertSee('Commit number 20')
+            ->assertDontSee('Commit number 10')
+            ->assertSee('11-20 of 25');
+
+        $this->actingAs($admin)->get(route('admin.changelog.index', ['page' => 3]))
+            ->assertSee('Commit number 25')
+            ->assertSee('21-25 of 25');
+    }
+
+    public function test_invalid_page_numbers_fall_back_to_valid_pages(): void
+    {
+        $this->seedCommits(25);
+        $admin = User::factory()->admin()->create();
+
+        $this->actingAs($admin)->get(route('admin.changelog.index', ['page' => 99]))
+            ->assertOk()->assertSee('21-25 of 25');
+
+        foreach ([0, -3, 'abc'] as $bad) {
+            $this->actingAs($admin)->get(route('admin.changelog.index', ['page' => $bad]))
+                ->assertOk()->assertSee('1-10 of 25');
+        }
+    }
+
+    public function test_no_page_links_when_everything_fits_on_one_page(): void
+    {
+        $this->seedCommits(5);
+
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('admin.changelog.index'))
+            ->assertOk()
+            ->assertSee('1-5 of 5')
+            ->assertDontSee('page=2', false);
+    }
+
+    public function test_command_exports_the_last_100_commits_by_default(): void
+    {
+        Process::fake(['*' => Process::result(output: '')]);
+
+        $this->artisan('changelog:build-git')->assertSuccessful();
+
+        Process::assertRan(fn($process) => in_array('-n100', (array) $process->command, true));
+    }
+
+    public function test_command_passes_a_custom_limit_to_git(): void
+    {
+        Process::fake(['*' => Process::result(output: '')]);
+
+        $this->artisan('changelog:build-git --limit=5')->assertSuccessful();
+
+        Process::assertRan(fn($process) => in_array('-n5', (array) $process->command, true));
+    }
 }
