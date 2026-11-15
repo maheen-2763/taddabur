@@ -21,8 +21,8 @@ final class AdminContentObserver
     /** Models whose changes are logged. */
     public const MODELS = [Story::class, StoryChapter::class, Prophet::class, DailyContent::class];
 
-    /** Columns that change automatically and are not worth logging on their own. */
-    private const IGNORED_FIELDS = ['updated_at'];
+    /** Columns that change automatically (soft delete, computed stats) and are not worth logging on their own. */
+    private const IGNORED_FIELDS = ['updated_at', 'deleted_at', 'word_count', 'read_time_minutes'];
 
     public function __construct(private readonly RecordActivity $record) {}
 

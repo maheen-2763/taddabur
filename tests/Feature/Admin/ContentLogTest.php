@@ -128,4 +128,39 @@ class ContentLogTest extends TestCase
             ->assertSee('subject: story')
             ->assertSee('fields: title, summary');
     }
+
+
+    public function test_changes_to_deleted_at_alone_are_not_logged_as_updates(): void
+    {
+        $this->actingAs(User::factory()->admin()->create());
+
+        // Laravel's restore() saves the model, which fires "updated" before "restored".
+        $story = $this->story();
+        $story->deleted_at = now();
+        $story->syncChanges();
+
+        app(AdminContentObserver::class)->updated($story);
+
+        $this->assertSame(0, ActivityLog::count());
+    }
+
+    public function test_computed_fields_are_not_logged(): void
+    {
+        $this->actingAs(User::factory()->admin()->create());
+        $observer = app(AdminContentObserver::class);
+
+        $story = $this->story();
+        $story->word_count = 500;
+        $story->read_time_minutes = 3;
+        $story->syncChanges();
+        $observer->updated($story);
+        $this->assertSame(0, ActivityLog::count());
+
+        $story->title = 'New title';
+        $story->word_count = 900;
+        $story->syncChanges();
+        $observer->updated($story);
+
+        $this->assertSame('title', ActivityLog::sole()->properties['fields']);
+    }
 }
