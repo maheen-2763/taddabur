@@ -12,9 +12,19 @@ All notable changes to the app and admin panel are recorded here.
 - Backups page: total size, Auto/Manual badge and delete selected
 - User feedback page with star rating and complaints; admin Reviews and Complaints pages
 - Admin content changes (stories, chapters, prophets, daily content) are recorded in the Activity Log
-- Changelog page shows recent git commits
+- Changelog page shows recent git commits with the files each one added, modified or deleted
 
 ### Changed
 
 - Auto-backup rotation now removes both the file and the database row safely
 - Success messages fade out automatically
+
+### Format to follow while commiting in Git
+
+- feat: log admin content changes in the activity log
+- fix: ignore deleted_at and computed fields in content log updates
+- style: make the admin sidebar scrollable
+- refactor: behaviour same, clean code
+- chore : Config Cleanup
+- test: cover git history parsing and file counts
+- docs: update changelog for admin module

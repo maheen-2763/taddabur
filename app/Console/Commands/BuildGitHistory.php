@@ -25,9 +25,12 @@ class BuildGitHistory extends Command
 
         $result = Process::path(base_path())->timeout(30)->run([
             'git',
+            '-c',
+            'core.quotepath=off',
             'log',
             '--no-merges',
             "-n{$limit}",
+            '--name-status',
             GitHistory::LOG_FORMAT,
         ]);
 
