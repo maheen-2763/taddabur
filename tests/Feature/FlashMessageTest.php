@@ -24,7 +24,7 @@ class FlashMessageTest extends TestCase
             ->assertSee('data-autohide-close', false)
             ->getContent();
 
-        $this->assertSame(1, substr_count($html, 'Your Review has been saved.'));
+        $this->assertSame(1, substr_count($html, 'Your review has been saved.'));
     }
 
     public function test_no_flash_markup_without_a_message(): void

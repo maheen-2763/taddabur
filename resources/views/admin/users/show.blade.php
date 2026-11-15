@@ -53,11 +53,11 @@
     <div class="border border-danger-subtle rounded-3 p-3 mt-4">
         <h6 class="text-danger mb-1"><i class="bi bi-exclamation-triangle me-1"></i>Danger zone</h6>
         <p class="small text-muted mb-3">
-            All User data (bookmarks, notes, reviews, complaints, progress) will get deleted permanently. This can't be retreived back.
+            All of this user's data (bookmarks, notes, reviews, complaints, progress) will be permanently deleted. This cannot be undone.
         </p>
         <form method="POST" action="{{ route('admin.users.destroy', $user) }}"
               class="d-flex gap-2 align-items-start flex-wrap"
-              onsubmit="return confirm('User will be deleted permanently. Are you sure?')">
+              onsubmit="return confirm('Permanently delete this user?')">
             @csrf
             @method('DELETE')
             <div>

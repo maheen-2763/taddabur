@@ -31,7 +31,7 @@ class FeedbackController extends Controller
             'comment' => ['nullable', 'string', 'max:1000'],
         ]);
 
-        // withTrashed: admin ne hide kiya ho to bhi wahi row update ho (unique user_id se 500 na aaye)
+        // withTrashed: update the same row even if an admin hid it (avoids a unique user_id violation)
         $review = Review::withTrashed()->firstOrNew(['user_id' => $request->user()->id]);
         $isNew = ! $review->exists;
         $review->fill([
@@ -40,15 +40,15 @@ class FeedbackController extends Controller
             'category' => 'general',
         ])->save();
 
-        return redirect()->route('feedback.index')->with('success', $isNew ? 'JazakAllahu Khair! Your Review has been saved.' : 'Your Review has been updated.');
+        return redirect()->route('feedback.index')->with('success', $isNew ? 'JazakAllahu Khair! Your review has been saved.' : 'Your review has been updated.');
     }
 
     public function destroyReview(Request $request): RedirectResponse
     {
-        // User khud hataye to hamesha ke liye (soft-delete nahi)
+        // A user removing their own review is permanent (no soft delete)
         Review::withTrashed()->where('user_id', $request->user()->id)->forceDelete();
 
-        return redirect()->route('feedback.index')->with('success', 'Your review has been deleted.');
+        return redirect()->route('feedback.index')->with('success', 'Your review has been removed.');
     }
 
     public function storeComplaint(Request $request): RedirectResponse
@@ -63,13 +63,13 @@ class FeedbackController extends Controller
 
         if (Complaint::where('user_id', $userId)->open()->count() >= self::MAX_OPEN_COMPLAINTS) {
             return back()
-                ->withErrors(['complaint' => 'Your ' . self::MAX_OPEN_COMPLAINTS . 'complaints are still opened . kindly wait for the response.'])
+                ->withErrors(['complaint' => 'You already have ' . self::MAX_OPEN_COMPLAINTS . ' open complaints. Please wait for a reply before sending more.'])
                 ->withInput();
         }
 
-        // status, user_id, admin_reply request se kabhi nahi aate, sirf validated fields
+        // status, user_id and admin_reply never come from the request, only validated fields
         Complaint::create($data + ['user_id' => $userId]);
 
-        return redirect()->route('feedback.index')->with('success', 'Complaint has been received. we will review it shortly.');
+        return redirect()->route('feedback.index')->with('success', 'Your complaint has been received. We will review it shortly.');
     }
 }

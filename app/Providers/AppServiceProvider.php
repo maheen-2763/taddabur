@@ -38,6 +38,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Blade;
 use App\Models\Complaint;
+use App\Observers\AdminContentObserver;
 
 
 
@@ -77,6 +78,10 @@ class AppServiceProvider extends ServiceProvider
         View::composer('admin.layout', fn($view) => $view->with('openComplaintsCount', Complaint::open()->count()));
 
         Story::observe(StoryObserver::class);
+
+        foreach (AdminContentObserver::MODELS as $model) {
+            $model::observe(AdminContentObserver::class);
+        }
 
         StoryChapter::observe(StoryChapterObserver::class);
         \Illuminate\Support\Facades\Route::bind('surah', function ($value) {

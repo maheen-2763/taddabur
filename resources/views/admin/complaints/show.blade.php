@@ -42,15 +42,16 @@
 
             <div class="mb-3">
                 <label for="admin_reply" class="form-label small text-muted mb-1">
-                    Jawab (user ko apne Feedback page par dikhega)
+                    Reply (shown to the user on their Feedback page)
                 </label>
                 <textarea name="admin_reply" id="admin_reply" rows="5" maxlength="2000"
                     class="form-control @error('admin_reply') is-invalid @enderror">{{ old('admin_reply', $complaint->admin_reply) }}</textarea>
                 @error('admin_reply')
                 <div class="invalid-feedback">{{ $message }}</div> @enderror
                 @if ($complaint->replied_at)
-                    <div class="form-text">Pichhla jawab:
-                        {{ $complaint->replied_at->copy()->timezone('Asia/Kolkata')->format('d M Y, h:i A') }}</div>
+                    <div class="form-text">Last reply:
+                        {{ $complaint->replied_at->copy()->timezone('Asia/Kolkata')->format('d M Y, h:i A') }}
+                    </div>
                 @endif
             </div>
 

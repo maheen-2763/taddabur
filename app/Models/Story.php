@@ -167,6 +167,6 @@ class Story extends Model
 
     public function isAccessibleBy(?User $user): bool
     {
-        return true; // Sab stories sab users ke liye accessible hain ab
+        return true; // All stories are accessible to all users
     }
 }

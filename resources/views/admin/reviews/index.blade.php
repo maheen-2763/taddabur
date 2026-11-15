@@ -6,7 +6,7 @@
         <h5 class="mb-0" style="font-family:var(--font-heading)">
             <i class="bi bi-star-fill text-warning me-2"></i>Reviews
         </h5>
-        <small class="text-muted">App ke baare me users ke ratings aur comments</small>
+        <small class="text-muted">Ratings and comments from users about the app</small>
     </div>
 
     <div class="d-flex gap-3 mb-3 small text-muted">
@@ -57,7 +57,8 @@
                 @forelse ($reviews as $review)
                     <tr>
                         <td class="text-nowrap small">
-                            {{ $review->created_at->copy()->timezone('Asia/Kolkata')->format('d M Y') }}</td>
+                            {{ $review->created_at->copy()->timezone('Asia/Kolkata')->format('d M Y') }}
+                        </td>
                         <td>
                             @if ($review->user)
                                 <a href="{{ route('admin.users.show', $review->user_id) }}">{{ $review->user->name }}</a>
@@ -76,7 +77,7 @@
                                 </form>
                             @else
                                 <form method="POST" action="{{ route('admin.reviews.hide', $review) }}"
-                                    onsubmit="return confirm('Ye review users ke liye hide ho jayega. Pakka?')">
+                                    onsubmit="return confirm('Hide this review from users?')">
                                     @csrf
                                     @method('PATCH')
                                     <button type="submit" class="btn btn-sm btn-outline-danger">Hide</button>
@@ -86,7 +87,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="text-center text-muted py-4">Koi review nahi.</td>
+                        <td colspan="5" class="text-center text-muted py-4">No reviews.</td>
                     </tr>
                 @endforelse
             </tbody>

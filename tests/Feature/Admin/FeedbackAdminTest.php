@@ -236,7 +236,7 @@ class FeedbackAdminTest extends TestCase
         $this->assertStringNotContainsString('secret-reply-text', $raw);
         $this->assertStringNotContainsString('private-message-text', $raw);
 
-        // Sirf reply badla, status wahi: koi naya log nahi
+        // Only the reply changed, not the status: no new log row
         $this->actingAs($admin)->patch($url, ['status' => 'in_progress', 'admin_reply' => 'second reply']);
         $this->assertSame(1, ActivityLog::count());
     }

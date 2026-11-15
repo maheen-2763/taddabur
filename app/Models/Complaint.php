@@ -28,7 +28,7 @@ class Complaint extends Model
     public const USER_CATEGORIES = [
         'content' => 'Content (Quran, stories, hadith)',
         'account' => 'Account / login',
-        'bug'     => 'Bug (nothing is working)',
+        'bug'     => 'Bug (something is not working)',
         'other'   => 'Other',
     ];
 

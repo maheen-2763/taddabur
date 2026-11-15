@@ -71,7 +71,7 @@ class DeleteUserAccount
                     ->delete();
             }
 
-            // Is user ke purane log se id hata do, taaki personal link na bache
+            // Detach this user's id from old log rows so no personal link remains
             DB::table('activity_logs')->where('actor_id', $user->id)->update(['actor_id' => null]);
 
             Backup::where('created_by', $user->id)->update(['created_by' => null]);
@@ -79,7 +79,7 @@ class DeleteUserAccount
             $user->delete();
         });
 
-        // Commit ke baad log likho, transaction fail hua to log nahi banega
+        // Log after commit so nothing is logged if the transaction fails
         app(RecordActivity::class)->handle(ActivityEvent::AccountDeleted);
 
         // File transaction ka hissa nahi hoti, isliye commit ke baad hatao

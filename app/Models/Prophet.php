@@ -114,10 +114,10 @@ class Prophet extends Model
         return \App\Helpers\ArabicHelper::wrapHonorifics($this->display_name);
     }
 
-    // Model me naya attribute
+    // New model attribute
     public function getNameArabicWatermarkAttribute(): string
     {
-        // Sirf naam, honorific symbol watermark ke liye nahi chahiye
+        // Name only; the honorific symbol is not wanted in the watermark
         return trim(str_replace('ﷺ', '', $this->name_arabic));
     }
 }

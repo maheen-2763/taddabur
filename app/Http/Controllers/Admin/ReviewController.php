@@ -33,7 +33,7 @@ class ReviewController extends Controller
         return view('admin.reviews.index', [
             'reviews'    => $reviews,
             'visibility' => $visibility,
-            // Average sirf visible reviews ka (hidden spam average na bigade)
+            // Average counts visible reviews only, so hidden spam does not skew it.
             'stats'      => [
                 'count'   => Review::count(),
                 'average' => round((float) Review::avg('rating'), 1),
@@ -47,7 +47,7 @@ class ReviewController extends Controller
         $review->delete();
         $record->handle(ActivityEvent::ReviewHidden, Auth::id());
 
-        return back()->with('success', 'Review has been hided.');
+        return back()->with('success', 'Review hidden.');
     }
 
     public function restore(Review $review, RecordActivity $record): RedirectResponse
@@ -55,6 +55,6 @@ class ReviewController extends Controller
         $review->restore();
         $record->handle(ActivityEvent::ReviewRestored, Auth::id());
 
-        return back()->with('success', 'Review has been restored.');
+        return back()->with('success', 'Review restored.');
     }
 }

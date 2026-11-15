@@ -24,7 +24,7 @@ final class LogAuthActivity
         ];
     }
 
-    // Credentials / IP / email yahan kabhi read nahi hote.
+    // Credentials, IP and email are never read here.
     public function onFailed(Failed $event): void
     {
         $this->record->handle(ActivityEvent::LoginFailed);

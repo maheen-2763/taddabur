@@ -8,7 +8,7 @@ use Illuminate\Support\Arr;
 
 final class RecordActivity
 {
-    private const ALLOWED_PROPERTIES = ['reason', 'count', 'status'];
+    private const ALLOWED_PROPERTIES = ['reason', 'count', 'status', 'subject', 'subject_id', 'fields'];
     public function handle(ActivityEvent $event, ?int $actorId = null, array $properties = []): ActivityLog
     {
         $safe = array_filter(

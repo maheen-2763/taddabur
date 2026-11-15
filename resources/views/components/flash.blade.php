@@ -41,7 +41,7 @@
                     const start = () => { if (!gone) timer = setTimeout(hide, delay); };
                     const stop = () => clearTimeout(timer);
 
-                    // Hover/focus par ruk jata hai, hatne par phir 5 second ka timer
+                    // Pauses on hover/focus and restarts the 5-second timer on leave
                     el.addEventListener('mouseenter', stop);
                     el.addEventListener('mouseleave', start);
                     el.addEventListener('focusin', stop);

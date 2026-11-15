@@ -60,7 +60,7 @@ class ComplaintController extends Controller
 
         $complaint->admin_reply = $reply;
         $complaint->status = $data['status'];
-        // Resolved rehne par purana time bacha rahta hai, reopen par null
+        // Keep the original time while it stays resolved; clear it when reopened.
         $complaint->resolved_at = $data['status'] === 'resolved' ? ($complaint->resolved_at ?? now()) : null;
         $complaint->save();
 

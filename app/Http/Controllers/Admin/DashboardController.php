@@ -16,6 +16,8 @@ use Illuminate\View\View;
 use App\Models\Backup;
 use Illuminate\Support\Facades\Storage;
 use App\Models\DailyContent;
+use App\Enums\ActivityEvent;
+use App\Models\ActivityLog;
 
 class DashboardController extends Controller
 {
@@ -23,6 +25,8 @@ class DashboardController extends Controller
     private const EXPECTED_AYAHS       = 6236;
     private const EXPECTED_JUZS        = 30;
     private const EXPECTED_ALLAH_NAMES = 99;
+
+    private const FAILED_LOGIN_ALERT_THRESHOLD = 10;
 
     // Donor.status ki "paid" value — tinker se verify karna (neeche instructions)
     private const DONATION_PAID_STATUS = DonorController::PAID_STATUS;
@@ -215,7 +219,7 @@ class DashboardController extends Controller
         }
 
         if ($feedback['openComplaints'] > 0) {
-            $alerts[] = ['danger', "{$feedback['openComplaints']} open complaint(s)", '#feedback'];
+            $alerts[] = ['danger', "{$feedback['openComplaints']} open complaint(s)", route('admin.complaints.index')];
         }
 
         $notCompleted = $donations['attempts'] - $donations['paidCount'];
@@ -230,6 +234,21 @@ class DashboardController extends Controller
             $alerts[] = ['danger', 'Latest backup file is missing on disk', route('admin.backups')];
         } elseif ($latest->created_at->lt(now()->subDays(7))) {
             $alerts[] = ['warning', 'Last backup is older than 7 days', route('admin.backups')];
+        }
+
+        $failedLogins = ActivityLog::where('event', ActivityEvent::LoginFailed->value)
+            ->where('created_at', '>=', now()->subDay())
+            ->count();
+
+        if ($failedLogins >= self::FAILED_LOGIN_ALERT_THRESHOLD) {
+            $alerts[] = [
+                'warning',
+                "{$failedLogins} failed login attempt(s) in the last 24 hours",
+                route('admin.activity-log.index', [
+                    'event' => ActivityEvent::LoginFailed->value,
+                    'from' => now()->subDay()->toDateString(),
+                ]),
+            ];
         }
 
         foreach (['ayah', 'hadith'] as $type) {

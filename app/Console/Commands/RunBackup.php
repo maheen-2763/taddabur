@@ -99,7 +99,7 @@ class RunBackup extends Command
             throw new RuntimeException("ayahs count mismatch (backup {$copy}, live {$live}).");
         }
 
-        $pdo = null; // Windows par file handle chhodna zaroori hai
+        $pdo = null; //Release the file handle (required on Windows)
     }
 
     private function makeZip(string $source, string $zipPath): void

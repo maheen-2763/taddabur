@@ -13,7 +13,7 @@
 @section('content')
 <div class="container py-4" style="max-width:820px">
     <h1 class="h4 mb-1"><i class="bi {{ config('icons.feedback') }} me-2"></i>Feedback</h1>
-    <p class="text-muted small mb-4">Help us to make Taddabur more better.</p>
+    <p class="text-muted small mb-4">Help us make Taddabur better.</p>
 
     {{-- Rating --}}
     <section class="card mb-4">
@@ -34,7 +34,7 @@
 
                 <textarea id="comment" name="comment" rows="3" maxlength="1000"
                     class="form-control @error('comment') is-invalid @enderror"
-                    placeholder="What did you liked, and what can be improved? (optional)">{{ old('comment', $review?->comment) }}</textarea>
+                    placeholder="What did you like, and what could be better? (optional)">{{ old('comment', $review?->comment) }}</textarea>
                 @error('comment')
                 <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                 <div class="form-text text-end mb-2"><span data-count-for="comment">0</span>/1000</div>
@@ -46,10 +46,10 @@
 
             @if ($review)
                 <form method="POST" action="{{ route('feedback.review.destroy') }}" class="mt-2"
-                    onsubmit="return confirm('Your review will be removed permanently. Are you sure?')">
+                    onsubmit="return confirm('Remove your review permanently?')">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="btn btn-link btn-sm text-danger p-0">Remove your Review</button>
+                    <button type="submit" class="btn btn-link btn-sm text-danger p-0">Remove my review</button>
                 </form>
             @endif
         </div>
@@ -58,7 +58,7 @@
     {{-- Complaint --}}
     <section class="card mb-4">
         <div class="card-body">
-            <h2 class="h6 mb-3"><i class="bi {{ config('icons.complaint') }} me-1"></i>Submit a Complaint or Problem
+            <h2 class="h6 mb-3"><i class="bi {{ config('icons.complaint') }} me-1"></i>Report a problem or complaint
             </h2>
 
             @error('complaint')
@@ -90,7 +90,7 @@
                     @error('message')
                     <div class="invalid-feedback">{{ $message }}</div> @enderror
                     <div class="form-text d-flex justify-content-between">
-                        <span>Don't enter any password or private details.</span>
+                        <span>Do not include passwords or other private information.</span>
                         <span><span data-count-for="message">0</span>/2000</span>
                     </div>
                 </div>
@@ -101,7 +101,7 @@
 
     {{-- My complaints --}}
     <section>
-        <h2 class="h6 mb-3">Your complaints</h2>
+        <h2 class="h6 mb-3">My complaints</h2>
         @forelse ($complaints as $complaint)
         @php([$statusText, $statusClass] = $statusLabels[$complaint->status] ?? [$complaint->status, 'bg-secondary'])
         <div class="card mb-2">
@@ -170,7 +170,7 @@
 @push('scripts')
     <script>
         (() => {
-            const texts = { 1: 'Bahut kharab', 2: 'Theek nahi', 3: 'Theek-thaak', 4: 'Accha', 5: 'Bahut accha' };
+            const texts = { 1: 'Very poor', 2: 'Poor', 3: 'Okay', 4: 'Good', 5: 'Excellent' };
             const out = document.getElementById('rating-text');
             const show = () => {
                 const checked = document.querySelector('input[name="rating"]:checked');
@@ -190,7 +190,7 @@
         document.querySelectorAll('form[data-once]').forEach(form => {
             form.addEventListener('submit', () => { form.querySelector('button[type="submit"]').disabled = true; });
         });
-        // Back button se wapas aane par button phir se chalu ho
+        // Re-enable buttons when returning via the back button
         window.addEventListener('pageshow', () => {
             document.querySelectorAll('form[data-once] button[type="submit"]').forEach(b => { b.disabled = false; });
         });

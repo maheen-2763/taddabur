@@ -18,6 +18,11 @@ enum ActivityEvent: string
     case ComplaintStatusChanged = 'complaint.status_changed';
     case AdminLogin = 'auth.admin_login';
 
+    case ContentCreated = 'content.created';
+    case ContentUpdated = 'content.updated';
+    case ContentDeleted = 'content.deleted';
+    case ContentRestored = 'content.restored';
+
     public function label(): string
     {
         return match ($this) {
@@ -34,6 +39,10 @@ enum ActivityEvent: string
             self::ReviewRestored => 'Review restored',
             self::ComplaintStatusChanged => 'Complaint status changed',
             self::AdminLogin => 'Admin login',
+            self::ContentCreated => 'Content created',
+            self::ContentUpdated => 'Content updated',
+            self::ContentDeleted => 'Content deleted',
+            self::ContentRestored => 'Content restored',
         };
     }
 
@@ -48,6 +57,9 @@ enum ActivityEvent: string
             self::ReviewRestored => 'bg-success',
             self::ComplaintStatusChanged => 'bg-info text-dark',
             self::AdminLogin => 'bg-primary',
+            self::ContentCreated, self::ContentRestored => 'bg-success',
+            self::ContentUpdated => 'bg-primary',
+            self::ContentDeleted => 'bg-danger',
         };
     }
 }

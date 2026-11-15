@@ -27,7 +27,7 @@
     @endif
 
     <form action="{{ route('admin.backups.destroy-many') }}" method="POST"
-        onsubmit="return confirm('Selected backups will be deleted permanently. Are you sure?')">
+        onsubmit="return confirm('Delete the selected backups permanently?')">
         @csrf
         @method('DELETE')
 
@@ -56,7 +56,7 @@
                             <td>
                                 <input type="checkbox" name="ids[]" value="{{ $backup->id }}" class="row-check"
                                     @disabled($backup->id === $latestId)
-                                @if ($backup->id === $latestId) title="Most new backup cant be deleted" @endif>
+                                @if ($backup->id === $latestId) title="The newest backup cannot be deleted" @endif>
                             </td>
                             <td style="font-family:monospace; font-size:.8rem">{{ $backup->filename }}</td>
                             <td>

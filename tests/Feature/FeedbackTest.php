@@ -55,9 +55,9 @@ class FeedbackTest extends TestCase
 
         $this->actingAs($user)->post(route('feedback.review.store'), ['rating' => 5, 'comment' => 'Mashallah'])
             ->assertRedirect(route('feedback.index'))
-            ->assertSessionHas('success', 'JazakAllahu Khair! Your Review has been saved.');
+            ->assertSessionHas('success', 'JazakAllahu Khair! Your review has been saved.');
         $this->actingAs($user)->post(route('feedback.review.store'), ['rating' => 3])
-            ->assertSessionHas('success', 'Your Review has been updated.');
+            ->assertSessionHas('success', 'Your review has been updated.');
 
         $this->assertSame(1, Review::count());
         $review = Review::sole();
@@ -148,15 +148,17 @@ class FeedbackTest extends TestCase
 
     public function test_complaint_is_created_open(): void
     {
-        /** @var User $user */
         $user = User::factory()->create();
+        /** @var User $user */
+        $payload = $this->complaintPayload();
 
-        $this->actingAs($user)->post(route('feedback.complaint.store'), $this->complaintPayload())
-            ->assertRedirect(route('feedback.index'))->assertSessionHas('success');
+        $this->actingAs($user)->post(route('feedback.complaint.store'), $payload)
+            ->assertRedirect(route('feedback.index'))
+            ->assertSessionHas('success', 'Your complaint has been received. We will review it shortly.');
 
         $this->assertDatabaseHas('complaints', [
             'user_id' => $user->id,
-            'subject' => 'Audio nahi chal raha',
+            'subject' => $payload['subject'],
             'status' => 'open',
         ]);
     }
@@ -216,8 +218,9 @@ class FeedbackTest extends TestCase
         }
 
         $this->actingAs($user)->post(route('feedback.complaint.store'), $this->complaintPayload())
-            ->assertSessionHasErrors('complaint');
-
+            ->assertSessionHasErrors([
+                'complaint' => 'You already have 5 open complaints. Please wait for a reply before sending more.',
+            ]);
         $this->assertSame(5, Complaint::count());
     }
 

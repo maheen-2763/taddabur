@@ -11,6 +11,8 @@ All notable changes to the app and admin panel are recorded here.
 - Admin can delete a user after confirming their own password (uses `DeleteUserAccount`)
 - Backups page: total size, Auto/Manual badge and delete selected
 - User feedback page with star rating and complaints; admin Reviews and Complaints pages
+- Admin content changes (stories, chapters, prophets, daily content) are recorded in the Activity Log
+- Changelog page shows recent git commits
 
 ### Changed
 
