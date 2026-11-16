@@ -17,6 +17,7 @@ All notable changes to the app and admin panel are recorded here.
 - Changelog page shows commit type badges, commit times (IST) and when the list was last built
 - Email changes are recorded in the Activity Log (addresses are never stored)
 - Email and password changes are recorded in the Activity Log (no addresses or passwords are stored)
+- Backups page shows what each backup contains (rows per table and last migration)
 
 ### Changed
 

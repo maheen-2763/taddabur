@@ -58,7 +58,32 @@
                                     @disabled($backup->id === $latestId)
                                 @if ($backup->id === $latestId) title="The newest backup cannot be deleted" @endif>
                             </td>
-                            <td style="font-family:monospace; font-size:.8rem">{{ $backup->filename }}</td>
+                            <td>
+    <span style="font-family:monospace; font-size:.8rem">{{ $backup->filename }}</span>
+    @if ($backup->details)
+        @php
+            $details = $backup->details;
+            $tableCount = $details['table_count'] ?? 0;
+            $summary = number_format($details['total_rows'] ?? 0) . ' rows in ' . $tableCount . ' ' . \Illuminate\Support\Str::plural('table', $tableCount);
+            $tables = collect($details['tables'] ?? [])->sortDesc();
+        @endphp
+        <details class="mt-1">
+            <summary class="small text-muted" style="cursor:pointer">Contents: {{ $summary }}</summary>
+            <div class="row row-cols-2 row-cols-md-3 g-1 small mt-2">
+                @foreach ($tables as $table => $count)
+                    <div class="col d-flex justify-content-between gap-2 border-bottom">
+                        <span class="text-break">{{ $table }}</span><strong>{{ number_format($count) }}</strong>
+                    </div>
+                @endforeach
+            </div>
+            @if (! empty($details['last_migration']))
+                <div class="small text-muted mt-2">Last migration: <code>{{ $details['last_migration'] }}</code></div>
+            @endif
+        </details>
+    @else
+        <div class="small text-muted">No contents recorded</div>
+    @endif
+</td>
                             <td>
                                 <span class="badge bg-secondary">{{ $backup->isAuto() ? 'Auto' : 'Manual' }}</span>
                             </td>

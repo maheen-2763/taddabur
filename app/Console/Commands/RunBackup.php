@@ -13,6 +13,7 @@ use App\Actions\RecordActivity;
 use App\Enums\ActivityEvent;
 use Illuminate\Support\Str;
 use PDO;
+use App\Support\BackupDetails;
 use RuntimeException;
 use Throwable;
 use ZipArchive;
@@ -47,9 +48,13 @@ class RunBackup extends Command
         $zipPath = Storage::path("backups/{$filename}");
         $tmpPath = storage_path('app/backup_snapshot_' . Str::random(8) . '.sqlite');
 
+        $details = null;
+
+
         try {
             DB::statement('VACUUM INTO ' . DB::getPdo()->quote($tmpPath));
             $this->verifySnapshot($tmpPath);
+            $details = $this->describeSnapshot($tmpPath);
             $this->makeZip($tmpPath, $zipPath);
         } catch (Throwable $e) {
             @unlink($zipPath);
@@ -66,6 +71,7 @@ class RunBackup extends Command
         Backup::create([
             'filename'   => $filename,
             'size'       => $size,
+            'details' => $details,
             'created_by' => $this->option('user') ?: null,
         ]);
 
@@ -138,5 +144,17 @@ class RunBackup extends Command
                 Storage::delete('backups/' . basename($b->filename));
                 $b->delete();
             });
+    }
+
+    /** The details are secondary: if they cannot be read, the backup itself must still succeed. */
+    private function describeSnapshot(string $path): ?array
+    {
+        try {
+            return BackupDetails::describe($path);
+        } catch (Throwable $e) {
+            report($e);
+
+            return null;
+        }
     }
 }

@@ -8,7 +8,9 @@ class Backup extends Model
 {
     private const DIRECTORY = 'backups';
 
-    protected $fillable = ['filename', 'size', 'created_by'];
+    protected $fillable = ['filename', 'size', 'created_by', 'details'];
+
+    protected $casts = ['details' => 'array'];
 
     /** Only "_auto.zip" backups are rotated automatically. */
     public function isAuto(): bool
