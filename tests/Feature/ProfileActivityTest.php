@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
+use Illuminate\Support\Facades\Hash;
 
 class ProfileActivityTest extends TestCase
 {
@@ -72,6 +73,55 @@ class ProfileActivityTest extends TestCase
         ])->assertSessionHasErrors('current_password');
 
         $this->assertSame('old@example.com', $user->fresh()->email);
+        $this->assertSame(0, ActivityLog::count());
+    }
+
+    public function test_password_change_is_logged_with_the_user_id_and_no_password_values(): void
+    {
+        $user = User::factory()->create();
+        /** @var User $user */
+
+        $this->actingAs($user)->put(route('password.update'), [
+            'current_password' => 'password',
+            'password' => 'N3w-Strong-Pass!2026',
+            'password_confirmation' => 'N3w-Strong-Pass!2026',
+        ])->assertSessionHas('status', 'password-updated');
+
+        $this->assertTrue(Hash::check('N3w-Strong-Pass!2026', $user->fresh()->password));
+
+        $log = ActivityLog::sole();
+        $this->assertSame('account.password_changed', $log->event);
+        $this->assertSame($user->id, $log->actor_id);
+        $this->assertNull($log->properties);
+        $this->assertStringNotContainsString('N3w-Strong-Pass', json_encode(DB::table('activity_logs')->get()));
+    }
+
+    public function test_password_change_with_the_wrong_current_password_is_not_logged(): void
+    {
+        $user = User::factory()->create();
+
+        /** @var User $user */
+
+        $this->actingAs($user)->put(route('password.update'), [
+            'current_password' => 'wrong-password',
+            'password' => 'N3w-Strong-Pass!2026',
+            'password_confirmation' => 'N3w-Strong-Pass!2026',
+        ])->assertSessionHasErrors('current_password', null, 'updatePassword');
+
+        $this->assertTrue(Hash::check('password', $user->fresh()->password));
+        $this->assertSame(0, ActivityLog::count());
+    }
+
+    public function test_a_password_that_fails_validation_is_not_logged(): void
+    {
+        $user = User::factory()->create();
+        /** @var User $user */
+        $this->actingAs($user)->put(route('password.update'), [
+            'current_password' => 'password',
+            'password' => 'short',
+            'password_confirmation' => 'short',
+        ])->assertSessionHasErrors('password', null, 'updatePassword');
+
         $this->assertSame(0, ActivityLog::count());
     }
 }

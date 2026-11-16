@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Throwable;
+use App\Actions\RecordActivity;
+use App\Enums\ActivityEvent;
 use Illuminate\Support\Facades\Mail;
 
 class PasswordController extends Controller
@@ -17,7 +19,7 @@ class PasswordController extends Controller
     /**
      * Update the user's password.
      */
-    public function update(Request $request): RedirectResponse
+    public function update(Request $request, RecordActivity $record): RedirectResponse
     {
         $validated = $request->validateWithBag('updatePassword', [
             'current_password' => ['required', 'current_password'],
@@ -33,6 +35,9 @@ class PasswordController extends Controller
             ->update(['password' => Hash::make($validated['password'])]);
 
         if ($updated === 1) {
+            // Logged right after the update so it is recorded even if the mail below fails.
+            $record->handle(ActivityEvent::PasswordChanged, $user->id);
+
             try {
                 Mail::to($user->email)->send(
                     new PasswordChangedMail($user->name, now()->format('d M Y, H:i T'))
