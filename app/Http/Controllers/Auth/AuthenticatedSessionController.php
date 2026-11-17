@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use App\Support\SingleSession;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -36,6 +37,9 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
         $request->session()->regenerate();
+
+        // One active session per account: every older session of this user ends now.
+        SingleSession::endOtherSessions(Auth::user(), $request->session()->getId());
 
         if (Auth::user()->is_admin) {
             return redirect()->route('admin.dashboard');

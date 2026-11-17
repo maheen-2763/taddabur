@@ -20,6 +20,9 @@ All notable changes to the app and admin panel are recorded here.
 - Backups page shows what each backup contains (rows per table and last migration)
 - Public footer shows the app's average rating once there are at least 5 ratings
 - Admin layout is responsive: collapsible sidebar on mobile and horizontally scrollable tables
+- One active session per account: a second admin sign-in is blocked, and a new user sign-in ends older sessions
+- Admin sessions expire after 30 minutes of inactivity; password changes and resets end other sessions
+- Backups list tables that could not be counted instead of dropping the whole summary
 
 ### Changed
 

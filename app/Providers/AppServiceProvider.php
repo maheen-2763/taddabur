@@ -39,8 +39,7 @@ use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Blade;
 use App\Models\Complaint;
 use App\Observers\AdminContentObserver;
-
-
+use App\Listeners\EndSessionsAfterPasswordReset;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -97,6 +96,8 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Event::subscribe(LogAuthActivity::class);
+
+        Event::subscribe(EndSessionsAfterPasswordReset::class);
 
         Event::listen(Verified::class, SendWelcomeEmail::class);
 

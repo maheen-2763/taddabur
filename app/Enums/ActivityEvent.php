@@ -26,6 +26,8 @@ enum ActivityEvent: string
     case EmailChanged = 'account.email_changed';
     case PasswordChanged = 'account.password_changed';
 
+    case AdminLoginBlocked = 'auth.admin_login_blocked';
+
     public function label(): string
     {
         return match ($this) {
@@ -48,6 +50,7 @@ enum ActivityEvent: string
             self::ContentRestored => 'Content restored',
             self::EmailChanged => 'Email address changed',
             self::PasswordChanged => 'Password changed',
+            self::AdminLoginBlocked => 'Admin sign-in blocked'
         };
     }
 
@@ -66,6 +69,7 @@ enum ActivityEvent: string
             self::ContentUpdated => 'bg-primary',
             self::ContentDeleted => 'bg-danger',
             self::EmailChanged, self::PasswordChanged => 'bg-warning text-dark',
+            self::AdminLoginBlocked => 'bg-danger',
         };
     }
 }

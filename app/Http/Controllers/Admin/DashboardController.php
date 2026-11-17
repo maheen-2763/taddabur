@@ -251,6 +251,27 @@ class DashboardController extends Controller
             ];
         }
 
+
+        $blockedLogins = ActivityLog::where('event', ActivityEvent::AdminLoginBlocked->value)
+            ->where('created_at', '>=', now()->subDay())
+            ->count();
+
+        if ($blockedLogins > 0) {
+            $alerts[] = [
+                'danger',
+                "{$blockedLogins} blocked admin sign-in attempt(s) in the last 24 hours",
+                route('admin.activity-log.index', [
+                    'event' => ActivityEvent::AdminLoginBlocked->value,
+                    'from' => now()->subDay()->toDateString(),
+                ]),
+            ];
+        }
+
+        // Single-session protection reads the sessions table, so it silently does nothing with any other driver.
+        if (app()->environment('production') && config('session.driver') !== 'database') {
+            $alerts[] = ['danger', 'Single-session protection is off: set SESSION_DRIVER=database', route('admin.dashboard')];
+        }
+
         foreach (['ayah', 'hadith'] as $type) {
             $exists = DailyContent::where('type', $type)->whereDate('scheduled_for', today())->exists();
 

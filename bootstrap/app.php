@@ -29,7 +29,10 @@ return Application::configure(basePath: dirname(__DIR__))
         // Register route aliases
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
+
         ]);
+
+        $middleware->appendToGroup('web', \App\Http\Middleware\EnforceAdminIdleTimeout::class);
 
         $middleware->validateCsrfTokens(except: [
             'webhooks/razorpay',

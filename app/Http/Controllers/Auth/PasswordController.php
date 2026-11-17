@@ -12,6 +12,7 @@ use Illuminate\Validation\Rules\Password;
 use Throwable;
 use App\Actions\RecordActivity;
 use App\Enums\ActivityEvent;
+use App\Support\SingleSession;
 use Illuminate\Support\Facades\Mail;
 
 class PasswordController extends Controller
@@ -37,6 +38,10 @@ class PasswordController extends Controller
         if ($updated === 1) {
             // Logged right after the update so it is recorded even if the mail below fails.
             $record->handle(ActivityEvent::PasswordChanged, $user->id);
+
+            // The old password may have been compromised: end every other session and remember-me cookie.
+            SingleSession::endOtherSessions($user, $request->session()->getId());
+            SingleSession::rotateRememberToken($user);
 
             try {
                 Mail::to($user->email)->send(

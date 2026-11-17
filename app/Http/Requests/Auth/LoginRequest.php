@@ -2,6 +2,10 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Actions\RecordActivity;
+use App\Enums\ActivityEvent;
+use App\Models\User;
+use App\Support\SingleSession;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -40,7 +44,20 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        $credentials = $this->only('email', 'password');
+        $user = $this->userWithValidPassword($credentials);
+
+        $this->ensureAdminIsNotSignedInElsewhere($user);
+
+        $isAdmin = (bool) $user?->is_admin;
+
+        // Newest sign-in wins for regular users: rotating the token invalidates remember-me cookies on other devices.
+        if ($user && ! $isAdmin) {
+            SingleSession::rotateRememberToken($user);
+        }
+
+        // Admins never get a remember-me cookie.
+        if (! Auth::attempt($credentials, $this->boolean('remember') && ! $isAdmin)) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
@@ -65,7 +82,7 @@ class LoginRequest extends FormRequest
 
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
-        // Page refresh ke baad bhi live countdown dikhane ke liye session mein rakho.
+        // Kept in the session so the live countdown survives a page refresh.
         $this->session()->put('login_lock', [
             'email' => (string) $this->input('email'),
             'until' => time() + $seconds,
@@ -79,5 +96,34 @@ class LoginRequest extends FormRequest
     public function throttleKey(): string
     {
         return Str::transliterate(Str::lower((string) $this->input('email')) . '|' . $this->ip());
+    }
+
+    /** Returns the user only when both the email and the password are correct. */
+    private function userWithValidPassword(array $credentials): ?User
+    {
+        $provider = Auth::getProvider();
+        $user = $provider->retrieveByCredentials($credentials);
+
+        return $user && $provider->validateCredentials($user, $credentials) ? $user : null;
+    }
+
+    /**
+     * Only reached with a correct password, so the message never reveals anything to someone who does not know it.
+     *
+     * @throws ValidationException
+     */
+    private function ensureAdminIsNotSignedInElsewhere(?User $user): void
+    {
+        if (! $user?->is_admin || ! SingleSession::hasOtherActiveSession($user)) {
+            return;
+        }
+
+        RateLimiter::hit($this->throttleKey());
+
+        app(RecordActivity::class)->handle(ActivityEvent::AdminLoginBlocked, $user->id);
+
+        throw ValidationException::withMessages([
+            'email' => 'This admin account is already signed in on another device. Sign out there first, or wait until that session has been idle for ' . SingleSession::ADMIN_IDLE_MINUTES . ' minutes.',
+        ]);
     }
 }
