@@ -9,7 +9,7 @@ final class AppRating
 {
     public const CACHE_KEY = 'app-rating-summary';
 
-    public const MIN_RATINGS = 2;
+    public const MIN_RATINGS = 5;
 
     private const TTL_MINUTES = 10;
 

@@ -234,6 +234,7 @@
 
             <div class="row mt-2 pt-3" style="border-top:1px solid rgba(201,150,58,0.15);">
                 <div class="col-12 text-center">
+                    @include('components.app-rating')
                     <p class="mb-0" style="font-size:0.75rem; color:rgba(255,255,255,0.3);">
                         &copy; {{ now()->year }} Taddabur. All rights reserved.
                     </p>
