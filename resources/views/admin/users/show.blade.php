@@ -18,7 +18,7 @@
                         {{ strtoupper(mb_substr($user->name, 0, 1)) }}
                     </div>
                     <div>
-                        <h5 class="mb-0">{{ $user->name }}</h5>
+                        <h5 class="mb-0">{{ $user->name }}</h5> <span class="badge bg-light text-dark border ms-2">ID: {{ $user->id }}</span>
                         <p class="text-muted mb-0" style="font-size:.85rem">{{ $user->email }}</p>
                     </div>
                     @if ($user->is_admin)

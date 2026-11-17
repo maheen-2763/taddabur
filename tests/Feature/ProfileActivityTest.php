@@ -124,4 +124,14 @@ class ProfileActivityTest extends TestCase
 
         $this->assertSame(0, ActivityLog::count());
     }
+
+    public function test_admin_user_page_shows_the_user_id(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('admin.users.show', $user))
+            ->assertOk()
+            ->assertSee('ID: ' . $user->id);
+    }
 }
