@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use App\Enums\ActivityEvent;
+use App\Support\AppRating;
 
 /**
  * Account delete: user ka personal data poori tarah hatata hai.
@@ -78,6 +79,9 @@ class DeleteUserAccount
 
             $user->delete();
         });
+
+        // Reviews are removed with the query builder (no model events), so refresh the footer rating.
+        AppRating::forget();
 
         // Log after commit so nothing is logged if the transaction fails
         app(RecordActivity::class)->handle(ActivityEvent::AccountDeleted);

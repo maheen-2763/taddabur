@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Support\AppRating;
 
 class Review extends Model
 {
@@ -63,5 +64,12 @@ class Review extends Model
     public function isNegative(): bool
     {
         return $this->rating <= 2;
+    }
+
+    protected static function booted(): void
+    {
+        foreach (['saved', 'deleted', 'restored'] as $event) {
+            static::$event(fn() => AppRating::forget());
+        }
     }
 }

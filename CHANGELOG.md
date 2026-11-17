@@ -18,6 +18,8 @@ All notable changes to the app and admin panel are recorded here.
 - Email changes are recorded in the Activity Log (addresses are never stored)
 - Email and password changes are recorded in the Activity Log (no addresses or passwords are stored)
 - Backups page shows what each backup contains (rows per table and last migration)
+- Public footer shows the app's average rating once there are at least 5 ratings
+- Admin layout is responsive: collapsible sidebar on mobile and horizontally scrollable tables
 
 ### Changed
 

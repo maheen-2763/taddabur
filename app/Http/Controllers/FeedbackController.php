@@ -8,6 +8,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use App\Support\AppRating;
 
 class FeedbackController extends Controller
 {
@@ -47,6 +48,9 @@ class FeedbackController extends Controller
     {
         // A user removing their own review is permanent (no soft delete)
         Review::withTrashed()->where('user_id', $request->user()->id)->forceDelete();
+
+        // Query-level deletes do not fire model events, so clear the cached footer rating explicitly.
+        AppRating::forget();
 
         return redirect()->route('feedback.index')->with('success', 'Your review has been removed.');
     }
