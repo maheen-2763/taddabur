@@ -8,6 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 use PDO;
 use Tests\Concerns\MakesBackups;
+use PDOException;
 use Tests\TestCase;
 
 class BackupDetailsTest extends TestCase
@@ -123,5 +124,52 @@ class BackupDetailsTest extends TestCase
             ->assertOk()
             ->assertSee('&lt;b&gt;x&lt;/b&gt;', false)
             ->assertDontSee('<b>x</b>', false);
+    }
+
+    public function test_a_table_that_cannot_be_counted_is_reported_instead_of_failing_everything(): void
+    {
+        $pdo = new PDO('sqlite:' . $this->dbPath);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        try {
+            $pdo->exec('CREATE TABLE docs (id INTEGER PRIMARY KEY, body TEXT)');
+            $pdo->exec("INSERT INTO docs (body) VALUES ('x')");
+            $pdo->exec("CREATE VIRTUAL TABLE docs_fts USING fts5(missing_col, content='docs', content_rowid='id')");
+        } catch (PDOException) {
+            $this->markTestSkipped('This SQLite build has no FTS5.');
+        }
+
+        try {
+            $pdo->query('SELECT COUNT(*) FROM docs_fts')->fetchColumn();
+            $this->markTestSkipped('This SQLite build does not fail on the broken full-text table.');
+        } catch (PDOException) {
+            // Expected: this is the failure we want describe() to survive.
+        }
+
+        $pdo = null;
+
+        $details = BackupDetails::describe($this->dbPath);
+
+        $this->assertSame(1, $details['tables']['docs']);
+        $this->assertArrayHasKey('docs_fts', $details['skipped']);
+        $this->assertStringContainsString('missing_col', $details['skipped']['docs_fts']);
+    }
+
+    public function test_backups_page_lists_tables_that_were_not_counted(): void
+    {
+        $this->makeBackup()->update(['details' => [
+            'tables' => ['users' => 1],
+            'skipped' => ['docs_fts' => 'no such column: T.missing_col'],
+            'table_count' => 1,
+            'total_rows' => 1,
+            'last_migration' => null,
+        ]]);
+
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('admin.backups'))
+            ->assertOk()
+            ->assertSee('Not counted:')
+            ->assertSee('docs_fts')
+            ->assertSee('no such column: T.missing_col');
     }
 }

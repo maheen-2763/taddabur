@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use PDO;
+use PDOException;
 
 final class BackupDetails
 {
@@ -21,10 +22,17 @@ final class BackupDetails
             ->fetchAll(PDO::FETCH_COLUMN);
 
         $tables = [];
+        $skipped = [];
 
         foreach ($names as $name) {
             $quoted = '"' . str_replace('"', '""', $name) . '"';
-            $tables[$name] = (int) $pdo->query("SELECT COUNT(*) FROM {$quoted}")->fetchColumn();
+
+            try {
+                $tables[$name] = (int) $pdo->query("SELECT COUNT(*) FROM {$quoted}")->fetchColumn();
+            } catch (PDOException $e) {
+                // For example a full-text index whose content table lost a column: report it instead of losing every count.
+                $skipped[$name] = mb_substr((string) preg_replace('/^SQLSTATE\[[^\]]*\]: /', '', $e->getMessage()), 0, 150);
+            }
         }
 
         $lastMigration = in_array('migrations', $names, true)
@@ -35,6 +43,7 @@ final class BackupDetails
 
         return [
             'tables' => $tables,
+            'skipped' => $skipped,
             'table_count' => count($tables),
             'total_rows' => array_sum($tables),
             'last_migration' => $lastMigration === false ? null : (string) $lastMigration,
