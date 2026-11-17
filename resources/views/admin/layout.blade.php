@@ -239,7 +239,7 @@
             background: white;
             border-radius: var(--radius);
             border: 1px solid var(--border);
-            overflow: hidden;
+            overflow-x: auto;
         }
 
         .admin-card-header {
@@ -264,7 +264,7 @@
             background: white;
             border-radius: var(--radius);
             border: 1px solid var(--border);
-            overflow: hidden;
+            overflow-x: auto;
         }
 
         .admin-table .table {
@@ -378,6 +378,69 @@
             background: rgba(201, 150, 58, 0.3);
             border-radius: 3px;
         }
+
+        /* ══ RESPONSIVE (below lg) ═══════════════════ */
+        .admin-menu-toggle {
+            display: none;
+        }
+
+        .admin-backdrop {
+            display: none;
+        }
+
+        @media (max-width: 991.98px) {
+            .admin-sidebar {
+                z-index: 101;
+                height: 100vh;
+                height: 100dvh;
+                min-height: 0;
+                transform: translateX(-100%);
+                visibility: hidden;
+                transition: transform .25s ease, visibility 0s linear .25s;
+            }
+
+            body.admin-nav-open .admin-sidebar {
+                transform: translateX(0);
+                visibility: visible;
+                transition: transform .25s ease;
+                box-shadow: 0 0 40px rgba(0, 0, 0, .35);
+            }
+
+            body.admin-nav-open {
+                overflow: hidden;
+            }
+
+            body.admin-nav-open .admin-backdrop {
+                display: block;
+                position: fixed;
+                inset: 0;
+                z-index: 100;
+                background: rgba(0, 0, 0, .45);
+            }
+
+            .admin-main {
+                margin-left: 0;
+            }
+
+            .admin-menu-toggle {
+                display: inline-flex;
+                align-items: center;
+            }
+
+            .admin-topbar {
+                padding: .6rem 1rem;
+            }
+
+            .admin-content {
+                padding: 1rem;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .admin-sidebar {
+                transition: none !important;
+            }
+        }
     </style>
 
     @stack('styles')
@@ -386,8 +449,7 @@
 <body>
 
     {{-- ══ SIDEBAR ══════════════════════════════════════ --}}
-    <aside class="admin-sidebar">
-
+    <aside class="admin-sidebar" id="adminSidebar">
         {{-- Logo --}}
         <div class="sidebar-brand">
             @include('components.logo', ['height' => 30])
@@ -485,12 +547,18 @@
 
         {{-- Topbar --}}
         <div class="admin-topbar">
-            <div>
-                <div class="topbar-title">@yield('title', 'Dashboard')</div>
-                <div class="topbar-breadcrumb">Admin Panel · Taddabur</div>
+            <div class="d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-sm admin-menu-toggle" id="adminMenuToggle" aria-label="Toggle menu"
+                    aria-controls="adminSidebar" aria-expanded="false">
+                    <i class="bi bi-list" style="font-size:1.5rem"></i>
+                </button>
+                <div>
+                    <div class="topbar-title">@yield('title', 'Dashboard')</div>
+                    <div class="topbar-breadcrumb">Admin Panel · Taddabur</div>
+                </div>
             </div>
             <div class="d-flex align-items-center gap-3">
-                <span style="font-size:0.82rem; color:#888">{{ auth()->user()->name }}</span>
+                <span class="d-none d-sm-inline" style="font-size:0.82rem; color:#888">{{ auth()->user()->name }}</span>
                 <span class="badge badge-admin">ADMIN</span>
             </div>
         </div>
@@ -517,6 +585,26 @@
 
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     @stack('scripts')
+
+    <div class="admin-backdrop" id="adminBackdrop"></div>
+
+    <script>
+        (() => {
+            const toggle = document.getElementById('adminMenuToggle');
+            const backdrop = document.getElementById('adminBackdrop');
+
+            const setOpen = (open) => {
+                document.body.classList.toggle('admin-nav-open', open);
+                toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+            };
+
+            toggle.addEventListener('click', () => setOpen(!document.body.classList.contains('admin-nav-open')));
+            backdrop.addEventListener('click', () => setOpen(false));
+            document.addEventListener('keydown', (event) => { if (event.key === 'Escape') setOpen(false); });
+            // Resizing up to the desktop layout closes the mobile menu.
+            window.matchMedia('(min-width: 992px)').addEventListener('change', (event) => { if (event.matches) setOpen(false); });
+        })();
+    </script>
 </body>
 
 </html>
