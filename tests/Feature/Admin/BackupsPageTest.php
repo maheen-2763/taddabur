@@ -151,4 +151,26 @@ class BackupsPageTest extends TestCase
         $this->assertTrue($this->makeBackup('auto')->isAuto());
         $this->assertFalse($this->makeBackup('manual')->isAuto());
     }
+
+    public function test_deleting_without_a_selection_shows_a_friendly_message(): void
+    {
+        $this->makeBackup();
+
+        $this->actingAs(User::factory()->admin()->create())
+            ->delete(route('admin.backups.destroy-many'))
+            ->assertSessionHasErrors([
+                'ids' => 'Select at least one backup to delete. The newest backup is protected and cannot be selected.',
+            ]);
+    }
+
+    public function test_delete_button_starts_disabled_and_the_page_explains_the_protection(): void
+    {
+        $this->makeBackup();
+
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('admin.backups'))
+            ->assertOk()
+            ->assertSee('id="delete-selected"', false)
+            ->assertSee('The newest backup is protected and cannot be selected.');
+    }
 }

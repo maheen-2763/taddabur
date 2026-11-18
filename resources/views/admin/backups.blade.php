@@ -31,11 +31,12 @@
         @csrf
         @method('DELETE')
 
-        <div class="mb-2">
-            <button type="submit" class="btn btn-sm btn-outline-danger">
-                <i class="bi bi-trash me-1"></i>Delete selected
-            </button>
-        </div>
+        <div class="mb-2 d-flex align-items-center gap-2">
+    <button type="submit" id="delete-selected" class="btn btn-sm btn-outline-danger" disabled>
+        <i class="bi bi-trash me-1"></i>Delete selected
+    </button>
+    <small class="text-muted">{{ 'The newest backup is protected and cannot be selected.' }}</small>
+</div>
 
         <div class="admin-table">
             <table class="table table-hover align-middle">
@@ -78,18 +79,18 @@
                                             @endforeach
                                         </div>
                                         @if (!empty($details['last_migration']))
+                                           <div class="small text-muted mt-2">Last migration:
+                                                <code>{{ $details['last_migration'] }}</code></div>
+                                        @endif
 
                                             @if (!empty($details['skipped']))
-                                                <div class="small text-warning mt-2">
-                                                    Not counted:
+                                                <div class="small text-warning mt-2">Not counted:
                                                     @foreach ($details['skipped'] as $table => $reason)
                                                         <code>{{ $table }}</code> ({{ $reason }})@if (!$loop->last), @endif
                                                     @endforeach
                                                 </div>
                                             @endif
-                                            <div class="small text-muted mt-2">Last migration:
-                                                <code>{{ $details['last_migration'] }}</code></div>
-                                        @endif
+                                        
                                     </details>
                                 @else
                                     <div class="small text-muted">No contents recorded</div>
@@ -133,8 +134,18 @@
     <div class="p-3">{{ $backups->links() }}</div>
 
     <script>
-        document.getElementById('select-all')?.addEventListener('change', function () {
-            document.querySelectorAll('.row-check:not(:disabled)').forEach(c => c.checked = this.checked);
-        });
-    </script>
+    const rowChecks = () => document.querySelectorAll('.row-check:not(:disabled)');
+    const deleteButton = document.getElementById('delete-selected');
+    const refreshDeleteButton = () => {
+        deleteButton.disabled = ![...rowChecks()].some((box) => box.checked);
+    };
+
+    document.getElementById('select-all')?.addEventListener('change', function () {
+        rowChecks().forEach((box) => { box.checked = this.checked; });
+        refreshDeleteButton();
+    });
+    rowChecks().forEach((box) => box.addEventListener('change', refreshDeleteButton));
+    window.addEventListener('pageshow', refreshDeleteButton);
+    refreshDeleteButton();
+</script>
 @endsection

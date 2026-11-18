@@ -68,8 +68,11 @@ class BackupController extends Controller
     public function destroyMany(Request $request, DeleteBackup $deleteBackup, RecordActivity $record): RedirectResponse
     {
         $data = $request->validate([
-            'ids'   => ['required', 'array', 'max:50'],
+            'ids' => ['required', 'array', 'max:50'],
             'ids.*' => ['integer', 'distinct', 'exists:backups,id'],
+        ], [
+            'ids.required' => 'Select at least one backup to delete. The newest backup is protected and cannot be selected.',
+            'ids.max' => 'You can delete at most 50 backups at a time.',
         ]);
 
         $latestId = (int) Backup::max('id');
