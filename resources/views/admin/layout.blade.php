@@ -529,6 +529,10 @@
                 class="sidebar-link {{ request()->routeIs('admin.changelog.*') ? 'active' : '' }}">
                 <i class="bi bi-card-list"></i> Changelog
             </a>
+            <a href="{{ route('admin.system.index') }}"
+                class="sidebar-link {{ request()->routeIs('admin.system.*') ? 'active' : '' }}">
+                <i class="bi bi-diagram-3"></i> App Overview
+            </a>
             <a href="{{ route('home') }}" class="sidebar-link" target="_blank" rel="noopener">
                 <i class="bi bi-box-arrow-up-right"></i> View Site
             </a>

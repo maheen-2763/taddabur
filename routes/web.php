@@ -312,6 +312,12 @@ Route::middleware(['auth', 'admin'])
         Route::get('/activity-log', [App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('activity-log.index');
         Route::get('/changelog', [App\Http\Controllers\Admin\ChangelogController::class, 'index'])->name('changelog.index');
 
+        // ── SYSTEM ──
+        Route::get('/system', [App\Http\Controllers\Admin\SystemOverviewController::class, 'index'])->name('system.index');
+        Route::get('/system/export', [App\Http\Controllers\Admin\SystemOverviewController::class, 'export'])->name('system.export');
+        Route::post('/system/refresh', [App\Http\Controllers\Admin\SystemOverviewController::class, 'refresh'])
+            ->middleware('throttle:6,1')->name('system.refresh');
+
 
         // ── FEEDBACK ──
         Route::get('/reviews', [App\Http\Controllers\Admin\ReviewController::class, 'index'])->name('reviews.index');

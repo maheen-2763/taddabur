@@ -23,6 +23,7 @@ All notable changes to the app and admin panel are recorded here.
 - One active session per account: a second admin sign-in is blocked, and a new user sign-in ends older sessions
 - Admin sessions expire after 30 minutes of inactivity; password changes and resets end other sessions
 - Backups list tables that could not be counted instead of dropping the whole summary
+- Admin App Overview page: app size, code stats, structure, environment and packages, with Markdown export
 
 ### Changed
 
