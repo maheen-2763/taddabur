@@ -80,4 +80,20 @@ class ArabicHelper
 
         return str_replace('ﷺ', '<span class="arabic-symbol">ﷺ</span>', $html);
     }
+
+
+    public static function normalizeForCompare(string $text): string
+    {
+        // tatweel aur saari harakat/combining marks hatao
+        $text = preg_replace('/[\x{0640}\p{Mn}]/u', '', $text);
+
+        // alef ke rup ek karo, ya maksura ko ya karo (ta marbuta ko mat chhedo)
+        $text = preg_replace('/[\x{0622}\x{0623}\x{0625}\x{0671}]/u', 'ا', $text);
+        $text = str_replace('ى', 'ي', $text);
+
+        // punctuation hatao, sirf harf aur space rakho
+        $text = preg_replace('/[^\p{L}\s]/u', ' ', $text);
+
+        return trim(preg_replace('/\s+/u', ' ', $text));
+    }
 }
