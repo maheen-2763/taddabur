@@ -31,13 +31,7 @@ use App\Http\Controllers\ProfileAvatarController;
 use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\FeedbackController;
 
-// Re-import any missing translations weekly (catches new additions)
-Schedule::command('quran:import-translations --all')
-    ->weekly()
-    ->sundays()
-    ->at('02:00')
-    ->runInBackground()
-    ->emailOutputOnFailure(config('mail.from.address'));
+
 
 
 // ============================================================

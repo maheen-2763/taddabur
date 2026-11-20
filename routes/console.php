@@ -9,6 +9,14 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
+// Re-import any missing translations weekly (catches new additions)
+Schedule::command('quran:import-translations --all')
+    ->weekly()
+    ->sundays()
+    ->at('02:00')
+    ->runInBackground()
+    ->emailOutputOnFailure(config('mail.from.address'));
+
 Schedule::command('backup:run --keep=14')->dailyAt('02:00')->timezone('Asia/Kolkata')->withoutOverlapping();
 
 Schedule::command('daily:generate-ayah')
