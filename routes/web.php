@@ -318,6 +318,11 @@ Route::middleware(['auth', 'admin'])
         Route::post('/system/refresh', [App\Http\Controllers\Admin\SystemOverviewController::class, 'refresh'])
             ->middleware('throttle:6,1')->name('system.refresh');
 
+        Route::get('/system/architecture', [App\Http\Controllers\Admin\SystemOverviewController::class, 'architecture'])->name('system.architecture');
+        Route::get('/system/architecture/export', [App\Http\Controllers\Admin\SystemOverviewController::class, 'exportArchitecture'])->name('system.architecture.export');
+        Route::post('/system/architecture/refresh', [App\Http\Controllers\Admin\SystemOverviewController::class, 'refreshArchitecture'])
+            ->middleware('throttle:6,1')->name('system.architecture.refresh');
+
 
         // ── FEEDBACK ──
         Route::get('/reviews', [App\Http\Controllers\Admin\ReviewController::class, 'index'])->name('reviews.index');

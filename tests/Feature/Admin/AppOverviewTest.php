@@ -35,7 +35,7 @@ class AppOverviewTest extends TestCase
         parent::tearDown();
     }
 
-    private function put(string $relative, string $content): void
+    private function writeFile(string $relative, string $content): void
     {
         $path = $this->root . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $relative);
 
@@ -53,13 +53,13 @@ class AppOverviewTest extends TestCase
 
     public function test_size_sums_top_level_entries_and_skips_node_modules(): void
     {
-        $this->put('app/A.php', str_repeat('a', 100));
-        $this->put('vendor/pkg/x.txt', str_repeat('b', 1000));
-        $this->put('storage/app/backups/b.zip', str_repeat('c', 500));
-        $this->put('storage/app/public/u.png', str_repeat('d', 200));
-        $this->put('storage/logs/laravel.log', str_repeat('e', 50));
-        $this->put('.env', 'APP_KEY=secret-value');
-        $this->put('node_modules/big/index.js', str_repeat('f', 9999));
+        $this->writeFile('app/A.php', str_repeat('a', 100));
+        $this->writeFile('vendor/pkg/x.txt', str_repeat('b', 1000));
+        $this->writeFile('storage/app/backups/b.zip', str_repeat('c', 500));
+        $this->writeFile('storage/app/public/u.png', str_repeat('d', 200));
+        $this->writeFile('storage/logs/laravel.log', str_repeat('e', 50));
+        $this->writeFile('.env', 'APP_KEY=secret-value');
+        $this->writeFile('node_modules/big/index.js', str_repeat('f', 9999));
 
         $size = $this->overview()->size();
 
@@ -74,7 +74,7 @@ class AppOverviewTest extends TestCase
     public function test_database_size_reads_the_sqlite_file(): void
     {
         $database = $this->root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'app.sqlite';
-        $this->put('data/app.sqlite', str_repeat('x', 321));
+        $this->writeFile('data/app.sqlite', str_repeat('x', 321));
 
         config(['database.default' => 'sqlite', 'database.connections.sqlite.database' => $database]);
         $this->assertSame(321, $this->overview()->size()['database_bytes']);
@@ -85,14 +85,14 @@ class AppOverviewTest extends TestCase
 
     public function test_code_counts_files_and_lines_by_type(): void
     {
-        $this->put('app/Foo.php', "a\nb\nc");
-        $this->put('tests/Unit/BarTest.php', 'x');
-        $this->put('resources/views/page.blade.php', "a\nb\n");
-        $this->put('resources/js/app.js', "1\n2\n3\n4\n");
-        $this->put('resources/css/app.css', "1\n2\n3\n4\n5");
-        $this->put('resources/js/vendor.min.js', "ignored\n");
-        $this->put('database/seeders/data.json', "ignored\n");
-        $this->put('vendor/lib/Lib.php', 'ignored');
+        $this->writeFile('app/Foo.php', "a\nb\nc");
+        $this->writeFile('tests/Unit/BarTest.php', 'x');
+        $this->writeFile('resources/views/page.blade.php', "a\nb\n");
+        $this->writeFile('resources/js/app.js', "1\n2\n3\n4\n");
+        $this->writeFile('resources/css/app.css', "1\n2\n3\n4\n5");
+        $this->writeFile('resources/js/vendor.min.js', "ignored\n");
+        $this->writeFile('database/seeders/data.json', "ignored\n");
+        $this->writeFile('vendor/lib/Lib.php', 'ignored');
 
         $code = $this->overview()->code();
 
@@ -125,15 +125,15 @@ class AppOverviewTest extends TestCase
                 'database/seeders/S.php',
             ] as $path
         ) {
-            $this->put($path, '<?php');
+            $this->writeFile($path, '<?php');
         }
 
-        $this->put('tests/Feature/FooTest.php', "<?php\nclass FooTest {\n public function test_one() {}\n public function test_two() {}\n}\n");
-        $this->put('tests/Pest/ExampleTest.php', "<?php\nit('works', fn () => 1);\ntest('also works', fn () => 1);\n");
-        $this->put('tests/TestCase.php', '<?php');
+        $this->writeFile('tests/Feature/FooTest.php', "<?php\nclass FooTest {\n public function test_one() {}\n public function test_two() {}\n}\n");
+        $this->writeFile('tests/Pest/ExampleTest.php', "<?php\nit('works', fn () => 1);\ntest('also works', fn () => 1);\n");
+        $this->writeFile('tests/TestCase.php', '<?php');
 
         $structure = $this->overview()->structure();
-        $allRoutes = Route::getRoutes()->count();
+        $allRoutes = count(Route::getRoutes()->getRoutes());
 
         $this->assertSame([
             '(app root)' => 1,
@@ -156,7 +156,7 @@ class AppOverviewTest extends TestCase
 
     public function test_packages_are_read_from_composer_lock(): void
     {
-        $this->put('composer.lock', json_encode([
+        $this->writeFile('composer.lock', json_encode([
             'packages' => [
                 ['name' => 'laravel/framework', 'version' => 'v13.0.1'],
                 ['name' => 'brick/math', 'version' => '0.12.0'],
@@ -178,7 +178,7 @@ class AppOverviewTest extends TestCase
     {
         $this->assertSame(['production' => [], 'dev_count' => 0, 'dev' => []], $this->overview()->packages());
 
-        $this->put('composer.lock', 'not json');
+        $this->writeFile('composer.lock', 'not json');
         $this->assertSame([], $this->overview()->packages()['production']);
     }
 
@@ -204,7 +204,7 @@ class AppOverviewTest extends TestCase
 
     public function test_page_shows_all_sections_and_never_the_env_contents(): void
     {
-        $this->put('.env', 'APP_KEY=secret-value');
+        $this->writeFile('.env', 'APP_KEY=secret-value');
 
         $this->actingAs(User::factory()->admin()->create())
             ->get(route('admin.system.index'))
@@ -238,7 +238,7 @@ class AppOverviewTest extends TestCase
 
     public function test_markdown_export_is_a_download_and_never_leaks_secrets(): void
     {
-        $this->put('.env', 'APP_KEY=secret-value');
+        $this->writeFile('.env', 'APP_KEY=secret-value');
 
         $response = $this->actingAs(User::factory()->admin()->create())
             ->get(route('admin.system.export'))
@@ -291,5 +291,13 @@ class AppOverviewTest extends TestCase
             ->assertOk()
             ->assertSee(route('admin.system.index'))
             ->assertSee('App Overview');
+    }
+
+    public function test_overview_links_to_the_architecture_page(): void
+    {
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('admin.system.index'))
+            ->assertOk()
+            ->assertSee(route('admin.system.architecture'));
     }
 }

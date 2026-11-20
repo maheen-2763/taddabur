@@ -24,6 +24,9 @@
             <small class="text-muted">{{ $subtitle }}</small>
         </div>
         <div class="d-flex gap-2">
+            <a href="{{ route('admin.system.architecture') }}" class="btn btn-admin-outline">
+                <i class="bi bi-diagram-2 me-1"></i>Architecture
+            </a>
             <a href="{{ route('admin.system.export') }}" class="btn btn-admin-outline">
                 <i class="bi bi-download me-1"></i>Export Markdown
             </a>
@@ -70,10 +73,17 @@
     </div>
 
     <div class="admin-table mb-4">
-        <div class="admin-card-header"><h6>Size breakdown</h6></div>
+        <div class="admin-card-header">
+            <h6>Size breakdown</h6>
+        </div>
         <table class="table align-middle">
             <thead>
-                <tr><th>Entry</th><th>Type</th><th class="text-end">Size</th><th style="width:30%">Share</th></tr>
+                <tr>
+                    <th>Entry</th>
+                    <th>Type</th>
+                    <th class="text-end">Size</th>
+                    <th style="width:30%">Share</th>
+                </tr>
             </thead>
             <tbody>
                 @foreach ($size['entries'] as $entry)
@@ -110,10 +120,16 @@
     <div class="row g-3 mb-4">
         <div class="col-lg-5">
             <div class="admin-table h-100">
-                <div class="admin-card-header"><h6>Code</h6></div>
+                <div class="admin-card-header">
+                    <h6>Code</h6>
+                </div>
                 <table class="table align-middle">
                     <thead>
-                        <tr><th>Type</th><th class="text-end">Files</th><th class="text-end">Lines</th></tr>
+                        <tr>
+                            <th>Type</th>
+                            <th class="text-end">Files</th>
+                            <th class="text-end">Lines</th>
+                        </tr>
                     </thead>
                     <tbody>
                         @foreach ($code['types'] as $type => $counts)
@@ -134,18 +150,25 @@
         </div>
         <div class="col-lg-7">
             <div class="admin-table h-100">
-                <div class="admin-card-header"><h6>Structure</h6></div>
+                <div class="admin-card-header">
+                    <h6>Structure</h6>
+                </div>
                 <div class="row g-0">
                     <div class="col-md-5 p-3 small border-end">
-                        <div class="d-flex justify-content-between"><span>Blade views</span><strong>{{ $structure['blade_views'] }}</strong></div>
-                        <div class="d-flex justify-content-between"><span>Migrations</span><strong>{{ $structure['migrations'] }}</strong></div>
-                        <div class="d-flex justify-content-between"><span>Seeders</span><strong>{{ $structure['seeders'] }}</strong></div>
-                        <div class="d-flex justify-content-between"><span>Artisan commands</span><strong>{{ $structure['artisan_commands'] }}</strong></div>
+                        <div class="d-flex justify-content-between"><span>Blade
+                                views</span><strong>{{ $structure['blade_views'] }}</strong></div>
+                        <div class="d-flex justify-content-between">
+                            <span>Migrations</span><strong>{{ $structure['migrations'] }}</strong></div>
+                        <div class="d-flex justify-content-between">
+                            <span>Seeders</span><strong>{{ $structure['seeders'] }}</strong></div>
+                        <div class="d-flex justify-content-between"><span>Artisan
+                                commands</span><strong>{{ $structure['artisan_commands'] }}</strong></div>
                     </div>
                     <div class="col-md-7 p-3 small">
                         <div class="text-muted mb-1">PHP files in app/</div>
                         @foreach ($structure['app_groups'] as $group => $count)
-                            <div class="d-flex justify-content-between"><span>{{ $group }}</span><strong>{{ $count }}</strong></div>
+                            <div class="d-flex justify-content-between"><span>{{ $group }}</span><strong>{{ $count }}</strong>
+                            </div>
                         @endforeach
                     </div>
                 </div>
@@ -156,11 +179,16 @@
     <div class="row g-3 mb-4">
         <div class="col-lg-6">
             <div class="admin-table h-100">
-                <div class="admin-card-header"><h6>Environment</h6></div>
+                <div class="admin-card-header">
+                    <h6>Environment</h6>
+                </div>
                 <dl class="row mb-0 p-3 small">
-                    <dt class="col-5">PHP</dt><dd class="col-7">{{ $env['php'] }}</dd>
-                    <dt class="col-5">Laravel</dt><dd class="col-7">{{ $env['laravel'] }}</dd>
-                    <dt class="col-5">Environment</dt><dd class="col-7">{{ $env['environment'] }}</dd>
+                    <dt class="col-5">PHP</dt>
+                    <dd class="col-7">{{ $env['php'] }}</dd>
+                    <dt class="col-5">Laravel</dt>
+                    <dd class="col-7">{{ $env['laravel'] }}</dd>
+                    <dt class="col-5">Environment</dt>
+                    <dd class="col-7">{{ $env['environment'] }}</dd>
                     <dt class="col-5">Debug</dt>
                     <dd class="col-7">
                         @if ($env['debug'])
@@ -169,12 +197,18 @@
                             <span class="badge bg-success">off</span>
                         @endif
                     </dd>
-                    <dt class="col-5">Timezone</dt><dd class="col-7">{{ $env['timezone'] }}</dd>
-                    <dt class="col-5">Database</dt><dd class="col-7">{{ $env['database'] }}</dd>
-                    <dt class="col-5">Session driver</dt><dd class="col-7">{{ $env['session_driver'] }}</dd>
-                    <dt class="col-5">Cache store</dt><dd class="col-7">{{ $env['cache_store'] }}</dd>
-                    <dt class="col-5">Queue</dt><dd class="col-7">{{ $env['queue'] }}</dd>
-                    <dt class="col-5">Mailer</dt><dd class="col-7">{{ $env['mailer'] }}</dd>
+                    <dt class="col-5">Timezone</dt>
+                    <dd class="col-7">{{ $env['timezone'] }}</dd>
+                    <dt class="col-5">Database</dt>
+                    <dd class="col-7">{{ $env['database'] }}</dd>
+                    <dt class="col-5">Session driver</dt>
+                    <dd class="col-7">{{ $env['session_driver'] }}</dd>
+                    <dt class="col-5">Cache store</dt>
+                    <dd class="col-7">{{ $env['cache_store'] }}</dd>
+                    <dt class="col-5">Queue</dt>
+                    <dd class="col-7">{{ $env['queue'] }}</dd>
+                    <dt class="col-5">Mailer</dt>
+                    <dd class="col-7">{{ $env['mailer'] }}</dd>
                 </dl>
                 <details class="px-3 pb-3 small">
                     <summary style="cursor:pointer">PHP extensions ({{ count($env['extensions']) }})</summary>
@@ -188,10 +222,13 @@
         </div>
         <div class="col-lg-6">
             <div class="admin-table h-100">
-                <div class="admin-card-header"><h6>Packages</h6></div>
+                <div class="admin-card-header">
+                    <h6>Packages</h6>
+                </div>
                 <div class="p-3 small">
                     <div class="mb-2">
-                        <strong>{{ count($packages['production']) }}</strong> production · <strong>{{ $packages['dev_count'] }}</strong> dev
+                        <strong>{{ count($packages['production']) }}</strong> production ·
+                        <strong>{{ $packages['dev_count'] }}</strong> dev
                     </div>
                     <details>
                         <summary style="cursor:pointer">Production packages</summary>

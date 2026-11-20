@@ -24,6 +24,7 @@ All notable changes to the app and admin panel are recorded here.
 - Admin sessions expire after 30 minutes of inactivity; password changes and resets end other sessions
 - Backups list tables that could not be counted instead of dropping the whole summary
 - Admin App Overview page: app size, code stats, structure, environment and packages, with Markdown export
+- Admin Architecture page generated from the live code: module map, ER diagrams, routes, commands, schedule and event wiring, with Markdown export
 
 ### Changed
 
