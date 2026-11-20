@@ -96,4 +96,26 @@ class ArabicHelper
 
         return trim(preg_replace('/\s+/u', ' ', $text));
     }
+
+
+
+    public static function normalizeHarakat(string $text): string
+    {
+        // chhupe nishaan, tatweel aur sukun hatao
+        $text = preg_replace('/[\x{200B}-\x{200F}\x{FEFF}\x{0640}\x{0652}]/u', '', $text);
+
+        // alef ke rup ek karo, ى ko ي karo
+        $text = str_replace(['أ', 'إ', 'آ', 'ٱ'], 'ا', $text);
+        $text = str_replace('ى', 'ي', $text);
+
+        // harakat ki tarteeb dono taraf ek jaisi karo
+        if (class_exists(\Normalizer::class)) {
+            $text = \Normalizer::normalize($text, \Normalizer::FORM_D);
+        }
+
+        // sirf harf, harakat aur space rakho
+        $text = preg_replace('/[^\p{L}\p{Mn}\s]/u', ' ', $text);
+
+        return trim(preg_replace('/\s+/u', ' ', $text));
+    }
 }
